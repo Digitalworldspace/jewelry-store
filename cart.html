@@ -33,7 +33,6 @@
         .empty-cart h3 { color: var(--primary); margin-bottom: 15px; }
         .continue-shopping { display: inline-block; margin-top: 20px; padding: 12px 30px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; }
         footer { background: #0a0a0a; color: white; text-align: center; padding: 40px; margin-top: 60px; }
-        .debug-console { background: #1e1e1e; color: #0f0; font-family: monospace; font-size: 11px; padding: 10px; margin-top: 20px; border-radius: 8px; max-height: 150px; overflow-y: auto; display: none; }
         @media (max-width: 768px) { 
             header { flex-direction: column; gap: 15px; padding: 15px; }
             .cart-item { grid-template-columns: 80px 1fr; gap: 10px; }
@@ -62,7 +61,6 @@
             <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
             <button onclick="clearCart()" class="clear-btn">Clear Cart</button>
         </div>
-        <div class="debug-console" id="debugConsole"></div>
     </div>
 
     <footer>
@@ -70,101 +68,151 @@
         <p style="margin-top: 10px; font-size: 12px;">Free Shipping on orders above ₹10,000</p>
     </footer>
 
-    <script type="importmap">
-        {
-            "imports": {
-                "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
-            }
-        }
-    </script>
-    <script type="module">
-        import { createClient } from '@supabase/supabase-js';
-        import { getCart, removeFromCart, updateCartQuantity, clearCart } from './js/supabase-client.js';
+    <script>
+        // Supabase configuration
+        const SUPABASE_URL = "https://tbopyyocuvlsjvtdogcp.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRib3B5eW9jdXZsc2p2dGRvZ2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYxNzcsImV4cCI6MjA4OTYxMjE3N30.TfEtU1NBHCGnZqZzm4LuI1iw22lSPav0OrUskhDw5wc";
         
-        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let cart = [];
         let sessionId = localStorage.getItem('sessionId');
-        
-        function debugLog(msg) {
-            console.log(msg);
-            const debugDiv = document.getElementById('debugConsole');
-            if (debugDiv) {
-                debugDiv.style.display = 'block';
-                debugDiv.innerHTML += `[${new Date().toLocaleTimeString()}] ${msg}<br>`;
-                debugDiv.scrollTop = debugDiv.scrollHeight;
-            }
-        }
         
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
-            debugLog('New session created: ' + sessionId);
-        } else {
-            debugLog('Existing session: ' + sessionId);
+            console.log('New session created:', sessionId);
         }
         
-        async function loadCart() {
-            debugLog('Loading cart...');
-            const cartData = await getCart();
-            cart = cartData.items;
-            debugLog('Cart loaded with ' + cart.length + ' items');
-            displayCart();
-            updateCartCount();
+        // Helper function for Supabase requests
+        async function supabaseRequest(table, action, data = null, id = null) {
+            const url = `${SUPABASE_URL}/rest/v1/${table}`;
+            const headers = {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            };
+            
+            let options = { method: 'GET', headers };
+            
+            if (action === 'select') {
+                const queryUrl = id ? `${url}?session_id=eq.${id}&select=*` : url;
+                const response = await fetch(queryUrl, options);
+                return await response.json();
+            }
+            
+            if (action === 'upsert') {
+                options.method = 'POST';
+                options.headers['Prefer'] = 'resolution=merge-duplicates';
+                options.body = JSON.stringify(data);
+                const response = await fetch(url, options);
+                return await response.json();
+            }
         }
         
+        // Get cart from Supabase
+        async function loadCartFromDB() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}&select=*`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                const data = await response.json();
+                if (data && data.length > 0 && data[0].items) {
+                    cart = data[0].items;
+                } else {
+                    cart = [];
+                }
+                console.log('Cart loaded:', cart);
+                displayCart();
+                updateCartCount();
+            } catch (error) {
+                console.error('Error loading cart:', error);
+                cart = [];
+                displayCart();
+            }
+        }
+        
+        // Save cart to Supabase
+        async function saveCartToDB() {
+            try {
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const cartData = {
+                    session_id: sessionId,
+                    items: cart,
+                    total: total,
+                    updated_at: new Date().toISOString()
+                };
+                
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/carts`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'resolution=merge-duplicates'
+                    },
+                    body: JSON.stringify(cartData)
+                });
+                
+                if (response.ok) {
+                    console.log('Cart saved successfully');
+                    return true;
+                } else {
+                    console.error('Error saving cart:', await response.text());
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error saving cart:', error);
+                return false;
+            }
+        }
+        
+        // Update quantity
         window.updateQuantity = async function(id, qty) {
             qty = parseInt(qty);
-            if (isNaN(qty)) qty = 1;
-            if (qty < 1) qty = 1;
+            if (isNaN(qty) || qty < 1) qty = 1;
             if (qty > 10) qty = 10;
             
-            debugLog(`Updating quantity for item ${id} to ${qty}`);
-            const result = await updateCartQuantity(id, qty);
-            if (result.success) {
-                debugLog('Quantity updated successfully');
-                await loadCart();
-            } else {
-                debugLog('Error updating quantity: ' + (result.error || 'Unknown error'));
-                alert('Error updating quantity: ' + (result.error || 'Unknown error'));
+            const itemIndex = cart.findIndex(i => i.id === id);
+            if (itemIndex !== -1) {
+                cart[itemIndex].quantity = qty;
+                await saveCartToDB();
+                await loadCartFromDB();
             }
         };
         
+        // Remove item
         window.removeItem = async function(id) {
-            debugLog(`Attempting to remove item with ID: ${id}`);
-            const result = await removeFromCart(id);
-            if (result.success) {
-                debugLog('Item removed successfully');
-                await loadCart();
-            } else {
-                debugLog('Error removing item: ' + (result.error || 'Unknown error'));
-                alert('Error removing item: ' + (result.error || 'Unknown error'));
-            }
+            console.log('Removing item with ID:', id);
+            cart = cart.filter(item => item.id !== id);
+            await saveCartToDB();
+            await loadCartFromDB();
+            showNotification('Item removed from cart', 'success');
         };
         
+        // Clear cart
         window.clearCart = async function() {
             if (cart.length === 0) {
                 alert('Cart is already empty');
                 return;
             }
             if (confirm('Clear all items from cart?')) {
-                debugLog('Clearing cart...');
-                const result = await clearCart();
-                if (result.success) {
-                    debugLog('Cart cleared successfully');
-                    await loadCart();
-                    alert('Cart cleared successfully');
-                } else {
-                    debugLog('Error clearing cart: ' + (result.error || 'Unknown error'));
-                    alert('Error clearing cart');
-                }
+                cart = [];
+                await saveCartToDB();
+                await loadCartFromDB();
+                showNotification('Cart cleared successfully', 'success');
             }
         };
         
+        // Display cart items
         function displayCart() {
             const container = document.getElementById('cartItems');
             const summaryDiv = document.getElementById('cartSummary');
             
-            if (cart.length === 0) {
+            if (!cart || cart.length === 0) {
                 container.innerHTML = `
                     <div class="empty-cart">
                         <h3>🛒 Your Cart is Empty</h3>
@@ -178,11 +226,12 @@
             
             summaryDiv.style.display = 'block';
             let html = '', subtotal = 0;
+            
             cart.forEach(item => {
                 const itemTotal = item.price * item.quantity;
                 subtotal += itemTotal;
                 html += `
-                    <div class="cart-item" data-id="${item.id}">
+                    <div class="cart-item">
                         <img src="${item.image || 'https://via.placeholder.com/100x100'}" onerror="this.src='https://via.placeholder.com/100x100'">
                         <div>
                             <h4>${escapeHtml(item.name)}</h4>
@@ -202,8 +251,6 @@
             document.getElementById('subtotal').textContent = subtotal.toLocaleString();
             document.getElementById('tax').textContent = tax.toLocaleString();
             document.getElementById('total').textContent = total.toLocaleString();
-            
-            debugLog(`Cart summary: Subtotal ₹${subtotal}, Tax ₹${tax}, Total ₹${total}`);
         }
         
         function escapeHtml(str) {
@@ -214,11 +261,33 @@
         }
         
         function updateCartCount() {
-            const count = cart.reduce((t, i) => t + i.quantity, 0);
-            document.getElementById('cartCount').textContent = count;
+            const count = cart.reduce((t, i) => t + (i.quantity || 1), 0);
+            const cartCountElement = document.getElementById('cartCount');
+            if (cartCountElement) cartCountElement.textContent = count;
         }
         
-        loadCart();
+        function showNotification(message, type = 'info') {
+            const notif = document.createElement('div');
+            notif.textContent = message;
+            notif.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#28a745' : '#d4af37'};
+                color: ${type === 'success' ? 'white' : '#1a1a1a'};
+                padding: 12px 24px;
+                border-radius: 50px;
+                z-index: 9999;
+                font-weight: 500;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                animation: fadeInUp 0.3s ease;
+            `;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+        
+        // Load cart on page load
+        loadCartFromDB();
     </script>
 </body>
 </html>
