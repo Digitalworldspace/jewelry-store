@@ -6,7 +6,10 @@ const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 // ==================== PRODUCTS ====================
 export async function getProducts() {
     const { data, error } = await supabase.from('products').select('*').order('id');
-    if (error) return [];
+    if (error) {
+        console.error('Error fetching products:', error);
+        return [];
+    }
     return data || [];
 }
 
@@ -15,25 +18,34 @@ export async function addProduct(product) {
         sku: product.sku,
         name: product.name,
         category: product.category,
-        price: product.price,
-        stock: product.stock,
-        description: product.description,
+        price: parseFloat(product.price),
+        stock: parseInt(product.stock),
+        description: product.description || '',
         images: product.images || []
     }]).select();
     
-    if (error) return { success: false, error: error.message };
+    if (error) {
+        console.error('Error adding product:', error);
+        return { success: false, error: error.message };
+    }
     return { success: true, data: data[0] };
 }
 
 export async function updateProduct(id, updates) {
     const { error } = await supabase.from('products').update(updates).eq('id', id);
-    if (error) return { success: false, error: error.message };
+    if (error) {
+        console.error('Error updating product:', error);
+        return { success: false, error: error.message };
+    }
     return { success: true };
 }
 
 export async function deleteProduct(id) {
     const { error } = await supabase.from('products').delete().eq('id', id);
-    if (error) return { success: false, error: error.message };
+    if (error) {
+        console.error('Error deleting product:', error);
+        return { success: false, error: error.message };
+    }
     return { success: true };
 }
 
@@ -47,9 +59,11 @@ export async function uploadImage(file, productId, imageIndex) {
         .from('product-images')
         .upload(filePath, file);
     
-    if (error) return { success: false, error: error.message };
+    if (error) {
+        console.error('Error uploading image:', error);
+        return { success: false, error: error.message };
+    }
     
-    // Get public URL
     const { data: urlData } = supabase.storage
         .from('product-images')
         .getPublicUrl(filePath);
@@ -58,23 +72,59 @@ export async function uploadImage(file, productId, imageIndex) {
 }
 
 export async function deleteImage(imageUrl) {
-    const filePath = imageUrl.split('/').pop();
-    const { error } = await supabase.storage
-        .from('product-images')
-        .remove([`products/${filePath}`]);
-    
-    if (error) return false;
-    return true;
+    try {
+        const filePath = imageUrl.split('/').pop();
+        const { error } = await supabase.storage
+            .from('product-images')
+            .remove([`products/${filePath}`]);
+        
+        if (error) throw error;
+        return true;
+    } catch (error) {
+        console.error('Error deleting image:', error);
+        return false;
+    }
 }
 
 // ==================== ORDERS ====================
 export async function getOrders() {
     const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
-    if (error) return [];
+    if (error) {
+        console.error('Error fetching orders:', error);
+        return [];
+    }
     return data || [];
 }
 
 export async function placeOrder(order) {
+    // First, validate and deduct stock for each item
+    for (const item of order.items) {
+        const { data: product, error: fetchError } = await supabase
+            .from('products')
+            .select('stock')
+            .eq('id', item.id)
+            .single();
+        
+        if (fetchError || !product) {
+            return { success: false, error: `Product ${item.name} not found` };
+        }
+        
+        if (product.stock < item.quantity) {
+            return { success: false, error: `Insufficient stock for ${item.name}` };
+        }
+        
+        // Deduct stock
+        const { error: updateError } = await supabase
+            .from('products')
+            .update({ stock: product.stock - item.quantity })
+            .eq('id', item.id);
+        
+        if (updateError) {
+            return { success: false, error: `Failed to update stock for ${item.name}` };
+        }
+    }
+    
+    // Create order
     const { data, error } = await supabase.from('orders').insert([{
         order_id: 'ORD' + Date.now(),
         customer_name: order.name,
@@ -89,19 +139,44 @@ export async function placeOrder(order) {
         status: 'Pending'
     }]).select();
     
-    if (error) return { success: false, error: error.message };
+    if (error) {
+        console.error('Error placing order:', error);
+        return { success: false, error: error.message };
+    }
+    
+    // Clear cart after successful order
+    await clearCartAfterOrder();
+    
     return { success: true, orderId: data[0].order_id };
+}
+
+async function clearCartAfterOrder() {
+    const sessionId = localStorage.getItem('sessionId');
+    if (sessionId) {
+        await supabase.from('carts').upsert({
+            session_id: sessionId,
+            items: [],
+            total: 0,
+            updated_at: new Date().toISOString()
+        });
+    }
 }
 
 export async function updateOrderStatus(orderId, status) {
     const { error } = await supabase.from('orders').update({ status }).eq('order_id', orderId);
-    if (error) return { success: false, error: error.message };
+    if (error) {
+        console.error('Error updating order status:', error);
+        return { success: false, error: error.message };
+    }
     return { success: true };
 }
 
 export async function deleteOrder(orderId) {
     const { error } = await supabase.from('orders').delete().eq('order_id', orderId);
-    if (error) return { success: false, error: error.message };
+    if (error) {
+        console.error('Error deleting order:', error);
+        return { success: false, error: error.message };
+    }
     return { success: true };
 }
 
@@ -114,7 +189,10 @@ if (!sessionId) {
 
 export async function getCart() {
     const { data, error } = await supabase.from('carts').select('items, total').eq('session_id', sessionId).maybeSingle();
-    if (error) return { items: [], total: 0 };
+    if (error) {
+        console.error('Error fetching cart:', error);
+        return { items: [], total: 0 };
+    }
     return { items: data?.items || [], total: data?.total || 0 };
 }
 
@@ -125,7 +203,10 @@ export async function saveCart(items, total) {
         total: total,
         updated_at: new Date().toISOString()
     });
-    if (error) return false;
+    if (error) {
+        console.error('Error saving cart:', error);
+        return false;
+    }
     return true;
 }
 
