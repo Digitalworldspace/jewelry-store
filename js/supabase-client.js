@@ -1,6 +1,7 @@
 // js/supabase-client.js
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+// Initialize Supabase client
 const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
 // ==================== PRODUCTS ====================
@@ -49,43 +50,6 @@ export async function deleteProduct(id) {
     return { success: true };
 }
 
-// ==================== IMAGE UPLOAD ====================
-export async function uploadImage(file, productId, imageIndex) {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${productId}_${imageIndex}_${Date.now()}.${fileExt}`;
-    const filePath = `products/${fileName}`;
-    
-    const { data, error } = await supabase.storage
-        .from('product-images')
-        .upload(filePath, file);
-    
-    if (error) {
-        console.error('Error uploading image:', error);
-        return { success: false, error: error.message };
-    }
-    
-    const { data: urlData } = supabase.storage
-        .from('product-images')
-        .getPublicUrl(filePath);
-    
-    return { success: true, url: urlData.publicUrl };
-}
-
-export async function deleteImage(imageUrl) {
-    try {
-        const filePath = imageUrl.split('/').pop();
-        const { error } = await supabase.storage
-            .from('product-images')
-            .remove([`products/${filePath}`]);
-        
-        if (error) throw error;
-        return true;
-    } catch (error) {
-        console.error('Error deleting image:', error);
-        return false;
-    }
-}
-
 // ==================== ORDERS ====================
 export async function getOrders() {
     const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
@@ -97,7 +61,7 @@ export async function getOrders() {
 }
 
 export async function placeOrder(order) {
-    // First, validate and deduct stock for each item
+    // Validate and deduct stock for each item
     for (const item of order.items) {
         const { data: product, error: fetchError } = await supabase
             .from('products')
@@ -113,7 +77,6 @@ export async function placeOrder(order) {
             return { success: false, error: `Insufficient stock for ${item.name}` };
         }
         
-        // Deduct stock
         const { error: updateError } = await supabase
             .from('products')
             .update({ stock: product.stock - item.quantity })
@@ -124,7 +87,6 @@ export async function placeOrder(order) {
         }
     }
     
-    // Create order
     const { data, error } = await supabase.from('orders').insert([{
         order_id: 'ORD' + Date.now(),
         customer_name: order.name,
@@ -144,13 +106,7 @@ export async function placeOrder(order) {
         return { success: false, error: error.message };
     }
     
-    // Clear cart after successful order
-    await clearCartAfterOrder();
-    
-    return { success: true, orderId: data[0].order_id };
-}
-
-async function clearCartAfterOrder() {
+    // Clear cart
     const sessionId = localStorage.getItem('sessionId');
     if (sessionId) {
         await supabase.from('carts').upsert({
@@ -160,6 +116,8 @@ async function clearCartAfterOrder() {
             updated_at: new Date().toISOString()
         });
     }
+    
+    return { success: true, orderId: data[0].order_id };
 }
 
 export async function updateOrderStatus(orderId, status) {
