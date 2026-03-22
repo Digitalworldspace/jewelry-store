@@ -8,11 +8,11 @@
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --primary: #d4af37; --dark: #1a1a1a; --darker: #0a0a0a; --light: #ffffff; --gray-100: #f8f9fa; --gray-200: #e9ecef; --gray-600: #6c757d; --danger: #dc3545; --success: #28a745; }
+        :root { --primary: #d4af37; --dark: #1a1a1a; --darker: #0a0a0a; --light: #ffffff; --gray-100: #f8f9fa; --gray-200: #e9ecef; --gray-600: #6c757d; --success: #28a745; }
         body { font-family: 'Inter', sans-serif; background: var(--gray-100); }
         header { background: var(--darker); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 24px; font-weight: 600; color: var(--primary); }
-        .logo span { background: var(--primary); color: var(--darker); padding: 4px 8px; border-radius: 4px; font-size: 14px; margin-left: 8px; }
+        .logo span { background: var(--primary); color: var(--darker); padding: 4px 8px; border-radius: 4px; }
         nav a { color: #aaa; text-decoration: none; margin-left: 20px; padding: 8px 15px; border-radius: 6px; }
         nav a:hover, nav a.active { background: rgba(212,175,55,0.1); color: var(--primary); }
         .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
@@ -26,8 +26,9 @@
         .card-header { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--gray-200); }
         .action-btn { background: var(--primary); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; }
         .order-item, .product-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid var(--gray-200); }
+        .empty-message { text-align: center; padding: 40px; color: var(--gray-600); }
         footer { background: var(--darker); color: white; text-align: center; padding: 30px; margin-top: 60px; }
-        @media (max-width: 768px) { .stats { grid-template-columns: 1fr; } header { flex-direction: column; gap: 15px; padding: 15px; } nav { flex-wrap: wrap; justify-content: center; } }
+        @media (max-width: 768px) { .stats { grid-template-columns: 1fr; } header { flex-direction: column; gap: 15px; padding: 15px; } }
     </style>
 </head>
 <body>
@@ -52,12 +53,12 @@
         
         <div class="card">
             <div class="card-header"><h2>Recent Orders</h2><a href="admin-orders.html" class="action-btn">View All</a></div>
-            <div id="recentOrders"></div>
+            <div id="recentOrders"><div class="empty-message">No orders yet</div></div>
         </div>
         
         <div class="card">
             <div class="card-header"><h2>Products</h2><a href="admin-products.html" class="action-btn">Manage</a></div>
-            <div id="productsList"></div>
+            <div id="productsList"><div class="empty-message">No products added yet</div></div>
         </div>
     </div>
 
@@ -93,16 +94,24 @@
             `;
             
             let recentHtml = '';
-            orderData.slice(0, 5).forEach(o => {
-                recentHtml += `<div class="order-item"><span>${o.order_id}</span><span>${o.customer_name}</span><span class="status-badge" style="background:#fff3cd;color:#856404;padding:2px 8px;border-radius:20px;">${o.status}</span><span>₹${o.total}</span></div>`;
-            });
-            document.getElementById('recentOrders').innerHTML = recentHtml || '<div class="order-item">No recent orders</div>';
+            if (orderData.length === 0) {
+                recentHtml = '<div class="empty-message">No orders yet</div>';
+            } else {
+                orderData.slice(0, 5).forEach(o => {
+                    recentHtml += `<div class="order-item"><span>${o.order_id}</span><span>${o.customer_name}</span><span style="background:#fff3cd;color:#856404;padding:2px 8px;border-radius:20px;">${o.status}</span><span>₹${o.total}</span></div>`;
+                });
+            }
+            document.getElementById('recentOrders').innerHTML = recentHtml;
             
             let productsHtml = '';
-            (products.data || []).slice(0, 5).forEach(p => {
-                productsHtml += `<div class="product-item"><span>${p.name}</span><span>SKU: ${p.sku}</span><span>Stock: ${p.stock}</span><span>₹${p.price}</span></div>`;
-            });
-            document.getElementById('productsList').innerHTML = productsHtml || '<div class="product-item">No products</div>';
+            if (productCount === 0) {
+                productsHtml = '<div class="empty-message">No products added yet. Click "Manage" to add your first product.</div>';
+            } else {
+                (products.data || []).slice(0, 5).forEach(p => {
+                    productsHtml += `<div class="product-item"><span>${p.name}</span><span>SKU: ${p.sku}</span><span>Stock: ${p.stock}</span><span>₹${p.price}</span></div>`;
+                });
+            }
+            document.getElementById('productsList').innerHTML = productsHtml;
         }
         
         window.logout = function() { sessionStorage.removeItem('adminLoggedIn'); window.location.href = 'login.html'; };
