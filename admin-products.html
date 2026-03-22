@@ -1,52 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <!-- ========== SECURITY HEADERS ========== -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     <meta name="format-detection" content="telephone=no">
-
+    
     <!-- ========== COMPLETELY HIDDEN FROM SEARCH ENGINES ========== -->
     <meta name="robots" content="noindex, nofollow">
     <meta name="googlebot" content="noindex, nofollow">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>Product Management - Style Of Life</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --primary: #d4af37; --primary-dark: #b8962e; --dark: #1a1a1a; --darker: #0a0a0a; --light: #ffffff; --gray-100: #f8f9fa; --gray-200: #e9ecef; --gray-600: #6c757d; --danger: #dc3545; --success: #28a745; }
+        :root { --primary: #d4af37; --primary-dark: #b8962e; --dark: #1a1a1a; --darker: #0a0a0a; --light: #ffffff; --gray-100: #f8f9fa; --gray-200: #e9ecef; --gray-600: #6c757d; --danger: #dc3545; --success: #28a745; --info: #17a2b8; }
         body { font-family: 'Inter', sans-serif; background: var(--gray-100); }
-        header { background: var(--darker); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 24px; font-weight: 600; color: var(--primary); }
-        .logo span { background: var(--primary); color: var(--darker); padding: 4px 8px; border-radius: 4px; }
-        nav a { color: #aaa; text-decoration: none; margin-left: 20px; padding: 8px 15px; border-radius: 6px; }
+        
+        header { background: var(--darker); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 24px; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .logo span { background: var(--primary); color: var(--darker); padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+        nav a { color: #aaa; text-decoration: none; margin-left: 20px; padding: 8px 16px; border-radius: 8px; transition: all 0.3s; font-weight: 500; }
         nav a:hover, nav a.active { background: rgba(212,175,55,0.1); color: var(--primary); }
+        
         .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
-        h1 { color: var(--primary); margin-bottom: 30px; }
-        .toolbar { display: flex; justify-content: flex-end; margin-bottom: 30px; }
-        .btn { background: var(--primary); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; }
-        .form-card { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--gray-200); }
-        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px; }
-        .form-group { margin-bottom: 15px; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; }
-        .image-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 15px 0; }
-        .image-slot { background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 6px; padding: 8px; text-align: center; }
-        .image-slot input { width: 100%; padding: 5px; font-size: 11px; margin-top: 5px; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .product-card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--gray-200); }
-        .product-card img { width: 100%; height: 180px; object-fit: cover; }
-        .product-info { padding: 15px; }
-        .product-info h4 { margin-bottom: 5px; }
-        .product-price { color: var(--primary); font-weight: bold; margin: 10px 0; }
-        .edit-btn, .delete-btn { width: 48%; padding: 8px; margin-top: 10px; border: none; border-radius: 4px; cursor: pointer; }
-        .edit-btn { background: #2196f3; color: white; }
+        h1 { color: var(--primary); margin-bottom: 30px; font-size: 28px; }
+        
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
+        .btn { background: var(--primary); color: #1a1a1a; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s; font-size: 14px; }
+        .btn:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #218838; }
+        .search-box input { padding: 12px 18px; border: 1px solid var(--gray-200); border-radius: 10px; width: 280px; font-size: 14px; transition: all 0.3s; }
+        .search-box input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
+        
+        .form-card { background: white; border-radius: 24px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--gray-200); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .form-card h2 { color: var(--primary); margin-bottom: 20px; font-size: 20px; }
+        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--gray-600); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        input, textarea, select { width: 100%; padding: 12px 15px; border: 1px solid var(--gray-200); border-radius: 10px; font-size: 14px; transition: all 0.3s; font-family: 'Inter', sans-serif; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
+        
+        .image-upload-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin: 20px 0; }
+        .upload-slot { background: var(--gray-100); border: 2px dashed var(--gray-200); border-radius: 16px; padding: 15px; text-align: center; transition: all 0.3s; cursor: pointer; min-height: 180px; position: relative; }
+        .upload-slot:hover { border-color: var(--primary); background: white; transform: translateY(-2px); }
+        .upload-slot .slot-label { font-size: 11px; color: var(--gray-600); margin-bottom: 10px; display: block; font-weight: 500; text-transform: uppercase; }
+        .upload-slot .slot-preview { width: 100%; height: 90px; object-fit: contain; margin-bottom: 8px; border-radius: 8px; background: white; display: none; }
+        .upload-slot .upload-icon { font-size: 32px; color: var(--gray-600); margin: 15px 0; display: block; }
+        .upload-slot input { display: none; }
+        .upload-slot .upload-btn { background: var(--primary); color: #1a1a1a; padding: 5px 12px; border: none; border-radius: 20px; font-size: 10px; cursor: pointer; margin-top: 5px; width: auto; display: inline-block; font-weight: 500; }
+        .upload-slot .remove-btn { background: var(--danger); color: white; padding: 4px 10px; border: none; border-radius: 20px; font-size: 10px; cursor: pointer; margin-top: 5px; width: auto; display: inline-block; margin-left: 5px; }
+        
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; margin-top: 20px; }
+        .product-card { background: white; border-radius: 20px; overflow: hidden; transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--gray-200); }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(212,175,55,0.15); border-color: var(--primary); }
+        .product-image { width: 100%; height: 220px; object-fit: cover; background: var(--gray-100); }
+        .product-info { padding: 20px; }
+        .product-info h4 { font-size: 18px; font-weight: 600; margin-bottom: 5px; }
+        .product-sku { font-size: 11px; color: var(--gray-600); margin-bottom: 5px; }
+        .product-category { color: var(--primary); font-size: 11px; margin-bottom: 8px; text-transform: uppercase; font-weight: 600; }
+        .product-price { font-size: 24px; font-weight: 700; color: var(--primary); margin: 10px 0; }
+        .product-stock { font-size: 12px; margin-bottom: 15px; padding: 4px 12px; border-radius: 30px; display: inline-block; font-weight: 500; }
+        .stock-high { background: #d4edda; color: #155724; }
+        .stock-low { background: #fff3cd; color: #856404; }
+        .stock-out { background: #f8d7da; color: #721c24; }
+        .product-actions { display: flex; gap: 10px; margin-top: 15px; }
+        .edit-btn, .delete-btn { flex: 1; padding: 10px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s; font-size: 13px; }
+        .edit-btn { background: var(--info); color: white; }
+        .edit-btn:hover { background: #138496; transform: translateY(-2px); }
         .delete-btn { background: var(--danger); color: white; }
-        .empty-state { text-align: center; padding: 50px; color: var(--gray-600); }
+        .delete-btn:hover { background: #c82333; transform: translateY(-2px); }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; overflow-y: auto; backdrop-filter: blur(4px); }
+        .modal-content { background: white; max-width: 900px; margin: 50px auto; padding: 30px; border-radius: 28px; animation: slideUp 0.3s ease; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--primary); }
+        .modal-header h2 { color: var(--primary); font-size: 24px; }
+        .close-modal { background: none; border: none; font-size: 28px; cursor: pointer; color: var(--gray-600); transition: all 0.3s; }
+        .close-modal:hover { color: var(--danger); transform: rotate(90deg); }
+        .modal-actions { display: flex; gap: 15px; margin-top: 25px; }
+        
+        .empty-state { text-align: center; padding: 80px; background: white; border-radius: 20px; border: 1px solid var(--gray-200); }
         footer { background: var(--darker); color: white; text-align: center; padding: 30px; margin-top: 60px; }
-        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .image-grid { grid-template-columns: repeat(2, 1fr); } header { flex-direction: column; gap: 15px; padding: 15px; } }
+        
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .toast { position: fixed; bottom: 20px; right: 20px; background: var(--success); color: white; padding: 12px 24px; border-radius: 50px; z-index: 9999; font-weight: 500; animation: fadeInUp 0.3s ease; }
+        
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 15px; padding: 15px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .image-upload-grid { grid-template-columns: repeat(2, 1fr); }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .search-box input { width: 100%; }
+            .modal-content { margin: 20px; padding: 20px; }
+            .product-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -61,146 +117,490 @@
     </header>
 
     <div class="container">
-        <h1>Product Management</h1>
-        <div class="toolbar"><button class="btn" onclick="toggleForm()">+ Add New Product</button></div>
+        <h1>📦 Product Management</h1>
         
-        <div id="addForm" class="form-card" style="display: none;">
-            <h2 style="margin-bottom: 20px;">Add New Product</h2>
-            <div class="form-grid">
-                <input type="text" id="sku" placeholder="SKU *">
-                <input type="text" id="name" placeholder="Product Name *">
-                <input type="text" id="category" placeholder="Category *">
-            </div>
-            <div class="form-grid">
-                <input type="number" id="price" placeholder="Price *">
-                <input type="number" id="stock" placeholder="Stock *">
-            </div>
-            <textarea id="description" rows="2" placeholder="Description"></textarea>
-            <h3 style="margin: 15px 0;">Image URLs (5 images)</h3>
-            <div class="image-grid">
-                <div class="image-slot">Image 1<br><input type="url" id="img1" placeholder="https://..."></div>
-                <div class="image-slot">Image 2<br><input type="url" id="img2" placeholder="https://..."></div>
-                <div class="image-slot">Image 3<br><input type="url" id="img3" placeholder="https://..."></div>
-                <div class="image-slot">Image 4<br><input type="url" id="img4" placeholder="https://..."></div>
-                <div class="image-slot">Image 5<br><input type="url" id="img5" placeholder="https://..."></div>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn" onclick="saveProduct()">Save Product</button>
-                <button class="btn" onclick="toggleForm()" style="background: #6c757d;">Cancel</button>
+        <div class="toolbar">
+            <button class="btn" onclick="showAddForm()">➕ Add New Product</button>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Search by name or SKU..." onkeyup="searchProducts()">
             </div>
         </div>
         
+        <!-- Add Product Form -->
+        <div id="addForm" class="form-card" style="display: none;">
+            <h2>✨ Add New Product</h2>
+            <div class="form-grid">
+                <div class="form-group"><label>SKU *</label><input type="text" id="sku" placeholder="e.g., GOLD001"></div>
+                <div class="form-group"><label>Product Name *</label><input type="text" id="name" placeholder="e.g., Gold Necklace"></div>
+                <div class="form-group"><label>Category *</label>
+                    <select id="category">
+                        <option value="Necklaces">Necklaces</option>
+                        <option value="Rings">Rings</option>
+                        <option value="Earrings">Earrings</option>
+                        <option value="Bracelets">Bracelets</option>
+                        <option value="Bangles">Bangles</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group"><label>Price (₹) *</label><input type="number" id="price" placeholder="e.g., 25000" step="0.01"></div>
+                <div class="form-group"><label>Stock Quantity *</label><input type="number" id="stock" placeholder="e.g., 10" value="10" min="0"></div>
+            </div>
+            <div class="form-group"><label>Description</label><textarea id="description" rows="3" placeholder="Product description..."></textarea></div>
+            
+            <h3 style="margin: 20px 0 10px;">📸 Product Images (Max 5)</h3>
+            <div class="image-upload-grid" id="imageUploadGrid"></div>
+            
+            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                <button class="btn" onclick="saveProduct()" style="flex: 1;">💾 Save Product</button>
+                <button class="btn btn-danger" onclick="hideAddForm()" style="flex: 1;">Cancel</button>
+            </div>
+        </div>
+        
+        <!-- Products Grid -->
         <div id="productsGrid" class="product-grid">
-            <div class="empty-state">Loading products...</div>
+            <div class="empty-state"><div style="width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px;"></div><p>Loading products...</p></div>
         </div>
     </div>
 
-    <footer><p>© 2026 STYLE OF LIFE</p></footer>
+    <footer>
+        <p>© 2026 STYLE OF LIFE. All rights reserved.</p>
+        <p style="margin-top: 8px; font-size: 12px;">Admin Panel v2.0</p>
+    </footer>
 
-    <script type="importmap">
-        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
-    </script>
-    <script type="module">
-        import { createClient } from '@supabase/supabase-js';
+    <!-- Edit Product Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ Edit Product</h2>
+                <button class="close-modal" onclick="closeEditModal()">&times;</button>
+            </div>
+            <input type="hidden" id="editId">
+            <div class="form-grid">
+                <div><label>SKU</label><input type="text" id="editSku"></div>
+                <div><label>Product Name</label><input type="text" id="editName"></div>
+                <div><label>Category</label><select id="editCategory">
+                    <option value="Necklaces">Necklaces</option>
+                    <option value="Rings">Rings</option>
+                    <option value="Earrings">Earrings</option>
+                    <option value="Bracelets">Bracelets</option>
+                    <option value="Bangles">Bangles</option>
+                </select></div>
+            </div>
+            <div class="form-grid">
+                <div><label>Price (₹)</label><input type="number" id="editPrice" step="0.01"></div>
+                <div><label>Stock</label><input type="number" id="editStock" min="0"></div>
+            </div>
+            <div><label>Description</label><textarea id="editDescription" rows="3"></textarea></div>
+            <h3 style="margin: 20px 0 10px;">📸 Product Images</h3>
+            <div class="image-upload-grid" id="editImageGrid"></div>
+            <div class="modal-actions">
+                <button class="btn btn-success" onclick="updateProduct()" style="flex: 1;">💾 Save Changes</button>
+                <button class="btn btn-danger" onclick="closeEditModal()" style="flex: 1;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = "https://tbopyyocuvlsjvtdogcp.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRib3B5eW9jdXZsc2p2dGRvZ2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYxNzcsImV4cCI6MjA4OTYxMjE3N30.TfEtU1NBHCGnZqZzm4LuI1iw22lSPav0OrUskhDw5wc";
         
-        if (!sessionStorage.getItem('adminLoggedIn')) window.location.href = 'login.html';
-        
-        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-        
-        async function loadProducts() {
-            const { data, error } = await supabase.from('products').select('*').order('id');
-            if (error) { console.error(error); return; }
-            displayProducts(data || []);
+        // Check admin login
+        if (!sessionStorage.getItem('adminLoggedIn')) {
+            window.location.href = 'login.html';
         }
         
+        let allProducts = [];
+        let currentImages = { add: {}, edit: {} };
+        
+        // Helper function for Supabase requests
+        async function supabaseRequest(endpoint, options = {}) {
+            const defaultHeaders = {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            };
+            
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
+                ...options,
+                headers: { ...defaultHeaders, ...options.headers }
+            });
+            
+            if (!response.ok && options.method !== 'DELETE') {
+                const error = await response.text();
+                throw new Error(error);
+            }
+            
+            if (options.method === 'DELETE') return true;
+            return await response.json();
+        }
+        
+        // Create upload slot HTML
+        function createUploadSlot(slotIndex, existingImage = null, isEdit = false) {
+            const hasImage = existingImage && existingImage !== '';
+            const previewStyle = hasImage ? 'display: block;' : 'display: none;';
+            const iconStyle = hasImage ? 'display: none;' : 'display: block;';
+            
+            return `
+                <div class="upload-slot" data-slot="${slotIndex}" onclick="document.getElementById('${isEdit ? 'edit' : 'add'}_img_${slotIndex}').click()">
+                    <div class="slot-label">Image ${slotIndex + 1} ${slotIndex === 0 ? '★ Main' : ''}</div>
+                    ${hasImage ? `<img src="${existingImage}" class="slot-preview" style="${previewStyle}">` : '<img class="slot-preview" style="display: none;">'}
+                    <div class="upload-icon" style="${iconStyle}">📷</div>
+                    <input type="file" id="${isEdit ? 'edit' : 'add'}_img_${slotIndex}" accept="image/jpeg,image/png,image/gif,image/webp" onchange="handleImageUpload(this, ${slotIndex}, ${isEdit})">
+                    <div>
+                        <button class="upload-btn" onclick="event.stopPropagation(); document.getElementById('${isEdit ? 'edit' : 'add'}_img_${slotIndex}').click()">Choose File</button>
+                        ${hasImage ? `<button class="remove-btn" onclick="event.stopPropagation(); removeImage(${slotIndex}, ${isEdit})">Remove</button>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Handle image upload
+        window.handleImageUpload = function(input, slotIndex, isEdit) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select an image file (JPEG, PNG, GIF)', 'error');
+                input.value = '';
+                return;
+            }
+            
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('File too large! Maximum size is 2MB', 'error');
+                input.value = '';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+                
+                const slot = document.querySelector(`.upload-slot[data-slot="${slotIndex}"]`);
+                if (slot) {
+                    const preview = slot.querySelector('.slot-preview');
+                    const icon = slot.querySelector('.upload-icon');
+                    if (preview) {
+                        preview.src = imageData;
+                        preview.style.display = 'block';
+                    }
+                    if (icon) icon.style.display = 'none';
+                    
+                    // Add remove button if not exists
+                    if (!slot.querySelector('.remove-btn')) {
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'remove-btn';
+                        removeBtn.innerHTML = 'Remove';
+                        removeBtn.onclick = (e) => {
+                            e.stopPropagation();
+                            removeImage(slotIndex, isEdit);
+                        };
+                        const btnDiv = slot.querySelector('div:last-child');
+                        if (btnDiv) btnDiv.appendChild(removeBtn);
+                    }
+                }
+                
+                if (isEdit) {
+                    if (!currentImages.edit) currentImages.edit = {};
+                    currentImages.edit[slotIndex] = imageData;
+                } else {
+                    if (!currentImages.add) currentImages.add = {};
+                    currentImages.add[slotIndex] = imageData;
+                }
+            };
+            reader.readAsDataURL(file);
+        };
+        
+        // Remove image
+        window.removeImage = function(slotIndex, isEdit) {
+            if (isEdit) {
+                delete currentImages.edit[slotIndex];
+            } else {
+                delete currentImages.add[slotIndex];
+            }
+            
+            const slot = document.querySelector(`.upload-slot[data-slot="${slotIndex}"]`);
+            if (slot) {
+                const preview = slot.querySelector('.slot-preview');
+                const icon = slot.querySelector('.upload-icon');
+                if (preview) {
+                    preview.src = '';
+                    preview.style.display = 'none';
+                }
+                if (icon) icon.style.display = 'block';
+                const removeBtn = slot.querySelector('.remove-btn');
+                if (removeBtn) removeBtn.remove();
+            }
+            
+            const inputId = `${isEdit ? 'edit' : 'add'}_img_${slotIndex}`;
+            const input = document.getElementById(inputId);
+            if (input) input.value = '';
+        };
+        
+        // Initialize upload grids
+        function initUploadGrids() {
+            const addGrid = document.getElementById('imageUploadGrid');
+            const editGrid = document.getElementById('editImageGrid');
+            
+            if (addGrid) {
+                addGrid.innerHTML = '';
+                for (let i = 0; i < 5; i++) {
+                    addGrid.innerHTML += createUploadSlot(i, null, false);
+                }
+            }
+        }
+        
+        // Load products from Supabase
+        async function loadProducts() {
+            try {
+                const products = await supabaseRequest('products?select=*&order=id.asc');
+                allProducts = products || [];
+                displayProducts(allProducts);
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showToast('Error loading products: ' + error.message, 'error');
+                document.getElementById('productsGrid').innerHTML = '<div class="empty-state"><p>❌ Error loading products</p><button class="btn" onclick="loadProducts()" style="margin-top:15px;">Retry</button></div>';
+            }
+        }
+        
+        // Display products in grid
         function displayProducts(products) {
             const grid = document.getElementById('productsGrid');
-            if (products.length === 0) {
-                grid.innerHTML = '<div class="empty-state">No products found. Click "Add New Product" to get started.</div>';
+            if (!products || products.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><h3>📭 No Products Found</h3><p>Click "Add New Product" to get started.</p></div>';
                 return;
             }
             
             let html = '';
-            products.forEach(p => {
-                const img = p.images?.[0] || 'https://via.placeholder.com/300x200?text=No+Image';
+            for (let p of products) {
+                const mainImage = (p.images && p.images[0]) || 'https://via.placeholder.com/300x200?text=No+Image';
+                let stockClass = p.stock > 20 ? 'stock-high' : (p.stock > 0 ? 'stock-low' : 'stock-out');
+                let stockText = p.stock > 0 ? `In Stock (${p.stock})` : 'Out of Stock';
+                if (p.stock > 0 && p.stock < 10) stockText = `⚠️ Low Stock (${p.stock})`;
+                
                 html += `
                     <div class="product-card">
-                        <img src="${img}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                        <img src="${mainImage}" class="product-image" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
                         <div class="product-info">
-                            <h4>${p.name}</h4>
-                            <div style="color:#6c757d;">${p.sku} | ${p.category}</div>
-                            <div class="product-price">₹${Number(p.price).toLocaleString()}</div>
-                            <div>Stock: ${p.stock}</div>
-                            <div style="display: flex; gap: 5px;">
-                                <button class="edit-btn" onclick="editProduct(${p.id})">Edit</button>
-                                <button class="delete-btn" onclick="deleteProduct(${p.id})">Delete</button>
+                            <h4>${escapeHtml(p.name)}</h4>
+                            <div class="product-sku">SKU: ${p.sku}</div>
+                            <div class="product-category">${p.category || 'Jewelry'}</div>
+                            <div class="product-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
+                            <div class="product-stock ${stockClass}">${stockText}</div>
+                            <div class="product-actions">
+                                <button class="edit-btn" onclick="openEditModal(${p.id})">✏️ Edit</button>
+                                <button class="delete-btn" onclick="deleteProduct(${p.id})">🗑️ Delete</button>
                             </div>
                         </div>
                     </div>
                 `;
-            });
+            }
             grid.innerHTML = html;
         }
         
-        window.toggleForm = function() {
-            const form = document.getElementById('addForm');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        function escapeHtml(str) { 
+            if (!str) return ''; 
+            return str.replace(/[&<>]/g, function(m) { 
+                return {'&':'&amp;','<':'&lt;','>':'&gt;'}[m]; 
+            }); 
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.background = type === 'error' ? '#dc3545' : '#28a745';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        // Search products
+        window.searchProducts = function() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(term) || p.sku.toLowerCase().includes(term));
+            displayProducts(filtered);
         };
         
+        // Show add form
+        window.showAddForm = function() {
+            currentImages.add = {};
+            initUploadGrids();
+            document.getElementById('addForm').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+        
+        // Hide add form
+        window.hideAddForm = function() {
+            document.getElementById('addForm').style.display = 'none';
+            document.getElementById('sku').value = '';
+            document.getElementById('name').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('stock').value = '10';
+            document.getElementById('description').value = '';
+            document.getElementById('category').value = 'Necklaces';
+            currentImages.add = {};
+        };
+        
+        // Save new product
         window.saveProduct = async function() {
             const sku = document.getElementById('sku').value.trim();
             const name = document.getElementById('name').value.trim();
-            const category = document.getElementById('category').value.trim();
-            const price = document.getElementById('price').value.trim();
-            const stock = document.getElementById('stock').value.trim();
+            const category = document.getElementById('category').value;
+            const price = parseFloat(document.getElementById('price').value);
+            const stock = parseInt(document.getElementById('stock').value);
+            const description = document.getElementById('description').value.trim();
             
-            if (!sku || !name || !category || !price || !stock) {
-                alert('Please fill all required fields');
+            if (!sku || !name || isNaN(price) || isNaN(stock)) {
+                showToast('Please fill all required fields', 'error');
                 return;
             }
             
-            const images = [1,2,3,4,5].map(i => document.getElementById(`img${i}`).value.trim());
-            
-            const { error } = await supabase.from('products').insert([{
-                sku, name, category, price: Number(price), stock: Number(stock),
-                description: document.getElementById('description').value.trim(),
-                images: images
-            }]);
-            
-            if (error) {
-                alert('Error: ' + error.message);
+            if (price < 0) {
+                showToast('Price cannot be negative', 'error');
                 return;
             }
             
-            alert('✅ Product added successfully! Customers can now see it.');
-            toggleForm();
-            await loadProducts();
-            ['sku','name','category','price','stock','description','img1','img2','img3','img4','img5'].forEach(id => document.getElementById(id).value = '');
+            if (stock < 0) {
+                showToast('Stock cannot be negative', 'error');
+                return;
+            }
+            
+            // Collect images
+            const images = [];
+            for (let i = 0; i < 5; i++) {
+                if (currentImages.add[i]) {
+                    images.push(currentImages.add[i]);
+                }
+            }
+            
+            try {
+                const result = await supabaseRequest('products', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        sku, name, category, price, stock, description,
+                        images: images
+                    })
+                });
+                
+                showToast('✅ Product added successfully!');
+                hideAddForm();
+                await loadProducts();
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
         };
         
-        window.editProduct = async function(id) {
-            const { data } = await supabase.from('products').select('*').eq('id', id);
-            const product = data?.[0];
+        // Open edit modal
+        window.openEditModal = async function(id) {
+            const product = allProducts.find(p => p.id === id);
             if (!product) return;
             
-            const newName = prompt('Edit product name:', product.name);
-            if (newName && newName !== product.name) {
-                const { error } = await supabase.from('products').update({ name: newName }).eq('id', id);
-                if (error) alert('Error: ' + error.message);
-                else await loadProducts();
+            document.getElementById('editId').value = product.id;
+            document.getElementById('editSku').value = product.sku || '';
+            document.getElementById('editName').value = product.name || '';
+            document.getElementById('editCategory').value = product.category || 'Necklaces';
+            document.getElementById('editPrice').value = product.price || '';
+            document.getElementById('editStock').value = product.stock || '';
+            document.getElementById('editDescription').value = product.description || '';
+            
+            currentImages.edit = {};
+            const editGrid = document.getElementById('editImageGrid');
+            editGrid.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const existingImage = product.images && product.images[i] ? product.images[i] : null;
+                editGrid.innerHTML += createUploadSlot(i, existingImage, true);
+                if (existingImage) {
+                    currentImages.edit[i] = existingImage;
+                }
+            }
+            
+            document.getElementById('editModal').style.display = 'block';
+        };
+        
+        // Update product
+        window.updateProduct = async function() {
+            const id = parseInt(document.getElementById('editId').value);
+            const sku = document.getElementById('editSku').value.trim();
+            const name = document.getElementById('editName').value.trim();
+            const category = document.getElementById('editCategory').value;
+            const price = parseFloat(document.getElementById('editPrice').value);
+            const stock = parseInt(document.getElementById('editStock').value);
+            const description = document.getElementById('editDescription').value.trim();
+            
+            if (!sku || !name || isNaN(price) || isNaN(stock)) {
+                showToast('Please fill all required fields', 'error');
+                return;
+            }
+            
+            if (price < 0) {
+                showToast('Price cannot be negative', 'error');
+                return;
+            }
+            
+            if (stock < 0) {
+                showToast('Stock cannot be negative', 'error');
+                return;
+            }
+            
+            // Collect images (keep existing + new uploaded)
+            const images = [];
+            for (let i = 0; i < 5; i++) {
+                if (currentImages.edit[i]) {
+                    images.push(currentImages.edit[i]);
+                } else if (allProducts.find(p => p.id === id)?.images?.[i]) {
+                    images.push(allProducts.find(p => p.id === id).images[i]);
+                }
+            }
+            
+            try {
+                await supabaseRequest(`products?id=eq.${id}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ sku, name, category, price, stock, description, images })
+                });
+                
+                showToast('✅ Product updated successfully!');
+                closeEditModal();
+                await loadProducts();
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
             }
         };
         
+        // Delete product
         window.deleteProduct = async function(id) {
-            if (!confirm('Delete this product? This will remove it from customer view.')) return;
-            const { error } = await supabase.from('products').delete().eq('id', id);
-            if (error) { alert('Error: ' + error.message); return; }
-            alert('✅ Product deleted. No longer visible to customers.');
-            await loadProducts();
+            if (!confirm('⚠️ Delete this product permanently? This action cannot be undone.')) return;
+            
+            try {
+                await supabaseRequest(`products?id=eq.${id}`, { method: 'DELETE' });
+                showToast('✅ Product deleted successfully');
+                await loadProducts();
+                document.getElementById('searchInput').value = '';
+            } catch (error) {
+                showToast('Error: ' + error.message, 'error');
+            }
         };
         
-        window.logout = function() { sessionStorage.removeItem('adminLoggedIn'); window.location.href = 'login.html'; };
+        // Close edit modal
+        window.closeEditModal = function() { 
+            document.getElementById('editModal').style.display = 'none';
+            currentImages.edit = {};
+        };
         
+        // Logout
+        window.logout = function() { 
+            sessionStorage.removeItem('adminLoggedIn'); 
+            window.location.href = 'login.html'; 
+        };
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) { 
+            const modal = document.getElementById('editModal'); 
+            if (event.target === modal) closeEditModal(); 
+        };
+        
+        // Initialize
+        initUploadGrids();
         loadProducts();
     </script>
 </body>
