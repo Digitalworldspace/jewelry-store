@@ -2,17 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Checkout - Style Of Life | Secure Luxury Jewelry Purchase</title>
-    <meta name="description" content="Complete your secure checkout for premium handcrafted jewelry. Free shipping on orders above ₹50,000. 100% secure payment.">
-    <meta name="robots" content="noindex, follow">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Style Of Life</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --gold: #E8C47E; --gold-dark: #D4AF37; --gold-light: #F5E6C6; --charcoal: #2C2C2C; --dark: #1A1A1A; --light: #FFFFFF; --cream: #FAF7F2; --danger: #dc3545; --success: #28a745; --info: #17a2b8; }
+        :root { --gold: #E8C47E; --gold-dark: #D4AF37; --charcoal: #2C2C2C; --dark: #1A1A1A; --cream: #FAF7F2; --success: #28a745; --danger: #dc3545; }
         body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--charcoal); }
         
         .logo { display: inline-flex; align-items: center; justify-content: center; position: relative; }
@@ -36,31 +32,21 @@
         
         .checkout-form { background: white; border-radius: 24px; padding: 30px; border: 1px solid rgba(212,175,55,0.15); }
         .form-section { margin-bottom: 30px; }
-        .form-section h3 { font-size: 18px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--gold); color: var(--charcoal); }
+        .form-section h3 { font-size: 18px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--gold); }
         .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px; }
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--charcoal); font-size: 13px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 14px; transition: all 0.3s; font-family: 'Inter', sans-serif; }
-        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
-        
-        .payment-methods { display: flex; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
-        .payment-option { flex: 1; padding: 15px; border: 2px solid #efefef; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .payment-option.selected { border-color: var(--gold); background: rgba(212,175,55,0.05); }
-        .payment-option:hover { border-color: var(--gold); }
-        .payment-option .icon { font-size: 28px; margin-bottom: 8px; display: block; }
-        .payment-option .name { font-size: 14px; font-weight: 500; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 13px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 14px; }
+        .form-group input:focus { outline: none; border-color: var(--gold); }
         
         .order-summary { background: white; border-radius: 24px; padding: 30px; border: 1px solid rgba(212,175,55,0.15); position: sticky; top: 100px; }
         .summary-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--gold); }
         .order-items { max-height: 300px; overflow-y: auto; margin-bottom: 20px; }
         .order-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #efefef; }
-        .order-item-name { font-size: 14px; }
-        .order-item-price { font-weight: 500; color: var(--gold-dark); }
         .summary-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #efefef; }
-        .summary-row.total { border-bottom: none; font-size: 18px; font-weight: 700; color: var(--gold-dark); padding-top: 15px; margin-top: 5px; }
-        
-        .place-order-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #D4AF37, #E8C47E); border: none; border-radius: 50px; color: #1A1A1A; font-weight: 700; cursor: pointer; margin-top: 20px; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
-        .place-order-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(212,175,55,0.3); letter-spacing: 1.5px; }
+        .summary-row.total { border-bottom: none; font-size: 18px; font-weight: 700; color: var(--gold-dark); padding-top: 15px; }
+        .place-order-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #D4AF37, #E8C47E); border: none; border-radius: 50px; color: #1A1A1A; font-weight: 700; cursor: pointer; margin-top: 20px; transition: all 0.3s; text-transform: uppercase; }
+        .place-order-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(212,175,55,0.3); }
         .place-order-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         
         .secure-badge { display: flex; justify-content: center; gap: 15px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #efefef; font-size: 12px; color: #888; }
@@ -72,7 +58,6 @@
             .checkout-grid { grid-template-columns: 1fr; }
             .order-summary { position: static; margin-top: 20px; }
             .form-row { grid-template-columns: 1fr; }
-            .payment-methods { flex-direction: column; }
         }
     </style>
 </head>
@@ -115,14 +100,10 @@
                 
                 <div class="form-section">
                     <h3>Payment Method</h3>
-                    <div class="payment-methods">
-                        <div class="payment-option selected" data-method="razorpay" onclick="selectPayment('razorpay')">
-                            <span class="icon">💳</span>
-                            <span class="name">Card / UPI / NetBanking</span>
-                        </div>
-                        <div class="payment-option" data-method="cod" onclick="selectPayment('cod')">
-                            <span class="icon">💰</span>
-                            <span class="name">Cash on Delivery</span>
+                    <div class="payment-methods" style="display: flex; gap: 15px; margin-top: 10px;">
+                        <div class="payment-option selected" data-method="cod" onclick="selectPayment('cod')" style="flex:1; padding:15px; border:2px solid var(--gold); border-radius:16px; text-align:center; cursor:pointer; background:rgba(212,175,55,0.05);">
+                            <span class="icon" style="font-size:28px; display:block;">💰</span>
+                            <span class="name" style="font-size:14px; font-weight:500;">Cash on Delivery</span>
                         </div>
                     </div>
                 </div>
@@ -135,7 +116,7 @@
                 <div class="summary-row"><span>Shipping</span><span id="shippingText">₹100</span></div>
                 <div class="summary-row"><span>GST (18%)</span><span>₹<span id="tax">0</span></span></div>
                 <div class="summary-row total"><span>Total</span><span>₹<span id="total">0</span></span></div>
-                <button class="place-order-btn" id="placeOrderBtn" onclick="processOrder()">Place Order</button>
+                <button class="place-order-btn" id="placeOrderBtn" onclick="placeOrder()">Place Order</button>
                 <div class="secure-badge">
                     <span>🔒 Secure SSL Encryption</span>
                     <span>💳 100% Secure Payment</span>
@@ -149,59 +130,22 @@
         <p>© 2026 STYLE OF LIFE. All rights reserved. | Luxury Jewelry Since 2020</p>
     </footer>
 
-    <script type="importmap">
-        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
-    </script>
-    <script type="module">
-        import { createClient } from '@supabase/supabase-js';
+    <script src="js/cart.js"></script>
+    <script>
+        let selectedPayment = 'cod';
         
-        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-        let cart = [];
-        let sessionId = localStorage.getItem('sessionId');
-        let selectedPayment = 'razorpay';
-        
-        if (!sessionId) {
-            sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('sessionId', sessionId);
-        }
-        
-        window.selectPayment = function(method) {
+        function selectPayment(method) {
             selectedPayment = method;
             document.querySelectorAll('.payment-option').forEach(opt => {
-                opt.classList.remove('selected');
+                opt.style.borderColor = '#efefef';
+                opt.style.background = 'transparent';
             });
-            document.querySelector(`[data-method="${method}"]`).classList.add('selected');
-        };
-        
-        async function loadCart() {
-            try {
-                const { data, error } = await supabase
-                    .from('carts')
-                    .select('items')
-                    .eq('session_id', sessionId)
-                    .maybeSingle();
-                
-                if (error) throw error;
-                cart = data?.items || [];
-                updateCartCount();
-                updateOrderSummary();
-            } catch (error) {
-                console.error('Error loading cart:', error);
-                const localCart = localStorage.getItem('cart');
-                if (localCart) {
-                    cart = JSON.parse(localCart);
-                    updateOrderSummary();
-                }
-            }
-        }
-        
-        function updateCartCount() {
-            const count = cart.reduce((t, i) => t + (i.quantity || 1), 0);
-            const cartCountEl = document.getElementById('cartCount');
-            if (cartCountEl) cartCountEl.textContent = count;
+            document.querySelector(`[data-method="${method}"]`).style.borderColor = 'var(--gold)';
+            document.querySelector(`[data-method="${method}"]`).style.background = 'rgba(212,175,55,0.05)';
         }
         
         function updateOrderSummary() {
+            const cart = getCart();
             let subtotal = 0;
             let itemsHtml = '';
             
@@ -219,7 +163,7 @@
                 subtotal += itemTotal;
                 itemsHtml += `
                     <div class="order-item">
-                        <div class="order-item-name">${item.name || 'Product'} <span style="color:#888;">x${quantity}</span></div>
+                        <div class="order-item-name">${item.name} <span style="color:#888;">x${quantity}</span></div>
                         <div class="order-item-price">₹${itemTotal.toLocaleString('en-IN')}</div>
                     </div>
                 `;
@@ -236,57 +180,7 @@
             document.getElementById('shippingText').textContent = shipping === 0 ? 'Free' : '₹' + shipping;
         }
         
-        async function saveOrderToDatabase(orderData) {
-            const { data, error } = await supabase
-                .from('orders')
-                .insert([orderData])
-                .select();
-            
-            if (error) throw error;
-            return data;
-        }
-        
-        async function clearCartAfterOrder() {
-            cart = [];
-            await supabase
-                .from('carts')
-                .upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date().toISOString() });
-            localStorage.removeItem('cart');
-            updateCartCount();
-        }
-        
-        function initRazorpayPayment(orderDetails, onSuccess) {
-            const options = {
-                key: CONFIG.RAZORPAY_KEY,
-                amount: orderDetails.total * 100,
-                currency: "INR",
-                name: CONFIG.SITE_NAME,
-                description: `Order #${orderDetails.orderId}`,
-                image: "https://style-of-life.vercel.app/logo.png",
-                handler: function(response) {
-                    console.log('Payment successful:', response);
-                    onSuccess(response.razorpay_payment_id);
-                },
-                prefill: {
-                    name: orderDetails.customerName,
-                    contact: orderDetails.phone,
-                    email: orderDetails.email
-                },
-                theme: {
-                    color: "#D4AF37"
-                },
-                modal: {
-                    ondismiss: function() {
-                        console.log('Payment modal closed');
-                    }
-                }
-            };
-            
-            const rzp = new Razorpay(options);
-            rzp.open();
-        }
-        
-        window.processOrder = async function() {
+        function placeOrder() {
             const fullName = document.getElementById('fullName').value.trim();
             const phone = document.getElementById('phone').value.trim();
             const email = document.getElementById('email').value.trim();
@@ -310,7 +204,8 @@
                 return;
             }
             
-            if (!cart || cart.length === 0) {
+            const cart = getCart();
+            if (cart.length === 0) {
                 alert('Your cart is empty');
                 return;
             }
@@ -319,79 +214,47 @@
             btn.disabled = true;
             btn.textContent = 'Processing...';
             
-            const subtotal = cart.reduce((s, i) => s + ((i.price || 0) * (i.quantity || 1)), 0);
+            const subtotal = getCartTotal();
             const tax = Math.round(subtotal * 0.18);
             const shipping = subtotal >= 50000 ? 0 : 100;
             const total = subtotal + tax + shipping;
             const fullAddress = `${address}, ${city}, ${state} - ${pincode}`;
             const orderId = 'ORD' + Date.now();
             
-            const orderData = {
-                order_id: orderId,
-                customer_name: fullName,
+            const order = {
+                orderId: orderId,
+                name: fullName,
                 phone: phone,
                 email: email,
                 address: fullAddress,
-                items: cart.map(i => ({
-                    id: i.id,
-                    sku: i.sku,
-                    name: i.name,
-                    price: i.price,
-                    quantity: i.quantity || 1
-                })),
+                items: cart.map(i => ({ id: i.id, sku: i.sku, name: i.name, price: i.price, quantity: i.quantity })),
                 subtotal: subtotal,
                 tax: tax,
                 shipping: shipping,
                 total: total,
-                status: selectedPayment === 'cod' ? 'Pending' : 'Paid',
-                created_at: new Date().toISOString()
+                status: 'Pending',
+                date: new Date().toISOString()
             };
             
-            try {
-                if (selectedPayment === 'razorpay') {
-                    // Process Razorpay payment
-                    initRazorpayPayment({
-                        orderId: orderId,
-                        customerName: fullName,
-                        phone: phone,
-                        email: email,
-                        total: total
-                    }, async (paymentId) => {
-                        orderData.payment_id = paymentId;
-                        orderData.status = 'Paid';
-                        
-                        await saveOrderToDatabase(orderData);
-                        await clearCartAfterOrder();
-                        
-                        alert(`✅ Payment Successful!\nOrder ID: ${orderId}\nPayment ID: ${paymentId}`);
-                        window.location.href = `track.html?order=${orderId}`;
-                    });
-                    
-                    btn.disabled = false;
-                    btn.textContent = 'Place Order';
-                } else {
-                    // COD Order
-                    await saveOrderToDatabase(orderData);
-                    await clearCartAfterOrder();
-                    
-                    alert(`✅ Order placed successfully!\nOrder ID: ${orderId}\nTotal: ₹${total.toLocaleString('en-IN')}\n\nYou will pay ₹${total.toLocaleString('en-IN')} on delivery.`);
-                    window.location.href = `track.html?order=${orderId}`;
-                }
-            } catch (error) {
-                console.error('Order error:', error);
-                alert(`❌ Failed to place order: ${error.message}\n\nPlease try again.`);
-                btn.disabled = false;
-                btn.textContent = 'Place Order';
-            }
-        };
+            // Save order to localStorage
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            orders.push(order);
+            localStorage.setItem('orders', JSON.stringify(orders));
+            
+            // Clear cart
+            localStorage.removeItem('cart');
+            updateCartCount();
+            
+            alert(`✅ Order placed successfully!\nOrder ID: ${orderId}\nTotal: ₹${total.toLocaleString('en-IN')}\n\nYou will pay ₹${total.toLocaleString('en-IN')} on delivery.`);
+            window.location.href = `track.html?order=${orderId}`;
+        }
         
-        loadCart();
+        document.addEventListener('DOMContentLoaded', function() {
+            updateOrderSummary();
+        });
         
-        window.updateCheckoutSummary = updateOrderSummary;
+        window.updateOrderSummary = updateOrderSummary;
     </script>
-    
-    <!-- Analytics Tracking -->
     <script src="js/analytics.js"></script>
-    <script src="js/cart.js"></script>
 </body>
 </html>
