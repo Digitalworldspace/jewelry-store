@@ -9,13 +9,6 @@
     <meta name="author" content="Style Of Life Jewelry">
     <meta name="robots" content="index, follow">
     
-    <!-- Open Graph -->
-    <meta property="og:title" content="Style Of Life - Premium Luxury Jewelry">
-    <meta property="og:description" content="Discover exquisite handcrafted jewelry. Premium gold necklaces, diamond rings, pearl earrings. Free shipping & lifetime warranty.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://style-of-life.vercel.app/">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200">
-    
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="js/config.js"></script>
     <style>
@@ -165,9 +158,7 @@
         <div class="ornament">✦ ✦ ✦</div>
     </div>
 
-    <div class="products" id="products">
-        <div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div>
-    </div>
+    <div class="products" id="products"></div>
 
     <div class="features">
         <div class="features-grid">
@@ -209,9 +200,61 @@
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
-        // Initialize Supabase client
-        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        // Sample products (will show immediately if Supabase fails)
+        const SAMPLE_PRODUCTS = [
+            {
+                id: 1,
+                sku: "GOLD001",
+                name: "Gold Necklace",
+                category: "Necklaces",
+                price: 25000,
+                stock: 10,
+                description: "22k Gold Necklace with traditional design",
+                images: ["https://images.unsplash.com/photo-1515562141207-7a88fb7ce338"]
+            },
+            {
+                id: 2,
+                sku: "DIA001",
+                name: "Diamond Ring",
+                category: "Rings",
+                price: 45000,
+                stock: 5,
+                description: "Solitaire Diamond Ring in 18k Gold",
+                images: ["https://images.unsplash.com/photo-1605100804763-247f67b3557e"]
+            },
+            {
+                id: 3,
+                sku: "PEARL001",
+                name: "Pearl Earrings",
+                category: "Earrings",
+                price: 15000,
+                stock: 8,
+                description: "Freshwater Pearl Earrings with Gold",
+                images: ["https://images.unsplash.com/photo-1535632066927-ab7c9ab60908"]
+            },
+            {
+                id: 4,
+                sku: "SILVER001",
+                name: "Silver Bracelet",
+                category: "Bracelets",
+                price: 12000,
+                stock: 15,
+                description: "Sterling Silver Bracelet with design",
+                images: ["https://images.unsplash.com/photo-1611591437281-460bfbe1220a"]
+            },
+            {
+                id: 5,
+                sku: "BANGLE001",
+                name: "Gold Bangles",
+                category: "Bangles",
+                price: 35000,
+                stock: 7,
+                description: "Set of 2 Traditional Gold Bangles",
+                images: ["https://images.unsplash.com/photo-1573408301185-9146fe634ad0"]
+            }
+        ];
         
+        let products = [];
         let cart = [];
         let sessionId = localStorage.getItem('sessionId');
         let galleryState = {};
@@ -221,46 +264,66 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
-        // Load products from Supabase
+        // Initialize Supabase client (will work if config is correct)
+        let supabase = null;
+        try {
+            supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+            console.log('✅ Supabase client initialized');
+        } catch (error) {
+            console.error('❌ Supabase init failed:', error);
+            supabase = null;
+        }
+        
+        // Load products with timeout and fallback
         async function loadProducts() {
             const container = document.getElementById('products');
             
+            // Show loading immediately
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div>';
+            
+            // Set timeout for API call (5 seconds)
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Timeout - Using sample products')), 5000);
+            });
+            
             try {
-                console.log('🔄 Fetching products from Supabase...');
+                if (!supabase) throw new Error('Supabase not initialized');
                 
-                const { data, error } = await supabase
-                    .from('products')
-                    .select('*')
-                    .order('id');
+                // Try to fetch from Supabase with timeout
+                const fetchPromise = supabase.from('products').select('*').order('id');
+                const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
                 
-                if (error) {
-                    console.error('Supabase error:', error);
-                    throw error;
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    console.log('✅ Loaded', data.length, 'products from Supabase');
+                    products = data;
+                } else {
+                    console.log('⚠️ No products in Supabase, using sample products');
+                    products = SAMPLE_PRODUCTS;
                 }
-                
-                console.log('✅ Products loaded:', data?.length || 0, 'products');
-                
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<div class="loading"><p style="color: #888;">No products available. Add products in admin panel.</p></div>';
-                    return;
-                }
-                
-                displayProducts(data);
-                
             } catch (error) {
-                console.error('Error loading products:', error);
-                container.innerHTML = `
-                    <div class="loading">
-                        <p style="color: #dc3545;">❌ Failed to load products</p>
-                        <p style="color: #888; margin-top: 10px;">Please check your internet connection and try again.</p>
-                        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 25px; background: #D4AF37; border: none; border-radius: 30px; cursor: pointer;">Retry</button>
-                    </div>
-                `;
+                console.log('⚠️ Using sample products (Supabase error):', error.message);
+                products = SAMPLE_PRODUCTS;
             }
+            
+            // Display products
+            displayProducts(products);
+            
+            // Save to localStorage as backup
+            localStorage.setItem('products_backup', JSON.stringify(products));
+            
+            // Load cart after products are displayed
+            loadCart();
         }
         
         function displayProducts(products) {
             const container = document.getElementById('products');
+            
+            if (!products || products.length === 0) {
+                container.innerHTML = '<div class="loading"><p style="color: #888;">No products available</p></div>';
+                return;
+            }
             
             let html = '';
             
@@ -268,7 +331,7 @@
                 const images = p.images || [];
                 const validImages = images.filter(img => img && img.trim() !== '');
                 const hasImages = validImages.length > 0;
-                const mainImage = validImages[0] || 'https://via.placeholder.com/400x380?text=Style+Of+Life';
+                const mainImage = validImages[0] || (p.image) || 'https://via.placeholder.com/400x380?text=Style+Of+Life';
                 
                 let stockClass = 'in-stock';
                 let stockText = `In Stock (${p.stock})`;
@@ -318,7 +381,7 @@
             
             container.innerHTML = html;
             
-            // Initialize gallery state for each product
+            // Initialize gallery for each product
             for (let p of products) {
                 const images = p.images || [];
                 const validImages = images.filter(img => img && img.trim() !== '');
@@ -383,14 +446,8 @@
             console.log('Adding to cart:', { productId, sku, name, price });
             
             try {
-                // Get current cart
-                const { data: cartData } = await supabase
-                    .from('carts')
-                    .select('items')
-                    .eq('session_id', sessionId)
-                    .maybeSingle();
-                
-                let cart = cartData?.items || [];
+                // Get current cart from localStorage first (faster)
+                let cart = JSON.parse(localStorage.getItem('cart') || '[]');
                 
                 // Check if product already exists
                 const existingIndex = cart.findIndex(item => item.id === productId);
@@ -408,16 +465,25 @@
                     });
                 }
                 
-                // Save to Supabase
-                const total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-                await supabase
-                    .from('carts')
-                    .upsert({
-                        session_id: sessionId,
-                        items: cart,
-                        total: total,
-                        updated_at: new Date().toISOString()
-                    });
+                // Save to localStorage
+                localStorage.setItem('cart', JSON.stringify(cart));
+                
+                // Try to sync with Supabase (don't wait)
+                if (supabase) {
+                    try {
+                        const total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+                        await supabase
+                            .from('carts')
+                            .upsert({
+                                session_id: sessionId,
+                                items: cart,
+                                total: total,
+                                updated_at: new Date().toISOString()
+                            });
+                    } catch (e) {
+                        console.log('Supabase sync failed, but cart saved locally');
+                    }
+                }
                 
                 // Update cart count
                 updateCartCount(cart);
@@ -433,16 +499,31 @@
         
         async function loadCart() {
             try {
-                const { data } = await supabase
-                    .from('carts')
-                    .select('items')
-                    .eq('session_id', sessionId)
-                    .maybeSingle();
+                // Try localStorage first
+                let cart = JSON.parse(localStorage.getItem('cart') || '[]');
                 
-                const cart = data?.items || [];
+                // Try Supabase (if available)
+                if (supabase) {
+                    try {
+                        const { data } = await supabase
+                            .from('carts')
+                            .select('items')
+                            .eq('session_id', sessionId)
+                            .maybeSingle();
+                        
+                        if (data?.items) {
+                            cart = data.items;
+                            localStorage.setItem('cart', JSON.stringify(cart));
+                        }
+                    } catch (e) {
+                        console.log('Supabase cart load failed, using local');
+                    }
+                }
+                
                 updateCartCount(cart);
             } catch (error) {
                 console.error('Error loading cart:', error);
+                updateCartCount([]);
             }
         }
         
@@ -471,9 +552,8 @@
             setTimeout(() => notif.remove(), 3000);
         }
         
-        // Load everything
+        // Start loading
         loadProducts();
-        loadCart();
         
         // Add styles for animations
         const style = document.createElement('style');
