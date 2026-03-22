@@ -194,6 +194,7 @@
             <div><label>Description</label><textarea id="editDescription" rows="3"></textarea></div>
             <h3 style="margin: 20px 0 10px;">📸 Product Images</h3>
             <div class="image-upload-grid" id="editImageGrid"></div>
+            <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">💡 Tip: Upload new images to replace existing ones. Old images will be removed automatically.</p>
             <div class="modal-actions">
                 <button class="btn btn-success" onclick="updateProduct()" style="flex: 1;">💾 Save Changes</button>
                 <button class="btn btn-danger" onclick="closeEditModal()" style="flex: 1;">Cancel</button>
@@ -212,7 +213,7 @@
         }
         
         let allProducts = [];
-        let currentImages = { add: {}, edit: {} };
+        let editProductOriginal = null; // Store original product for image comparison
         
         // Helper function for Supabase requests
         async function supabaseRequest(endpoint, options = {}) {
@@ -256,7 +257,13 @@
             `;
         }
         
-        // Handle image upload
+        // Track new images for edit mode
+        let editNewImages = {};
+        let editRemovedSlots = {};
+        let addNewImages = {};
+        let addRemovedSlots = {};
+        
+        // Handle image upload - REPLACES existing image at that slot
         window.handleImageUpload = function(input, slotIndex, isEdit) {
             const file = input.files[0];
             if (!file) return;
@@ -301,23 +308,27 @@
                     }
                 }
                 
+                // Store the NEW image - this REPLACES the old one at this slot
                 if (isEdit) {
-                    if (!currentImages.edit) currentImages.edit = {};
-                    currentImages.edit[slotIndex] = imageData;
+                    editNewImages[slotIndex] = imageData;
+                    // If this slot was marked as removed, unmark it
+                    delete editRemovedSlots[slotIndex];
                 } else {
-                    if (!currentImages.add) currentImages.add = {};
-                    currentImages.add[slotIndex] = imageData;
+                    addNewImages[slotIndex] = imageData;
+                    delete addRemovedSlots[slotIndex];
                 }
             };
             reader.readAsDataURL(file);
         };
         
-        // Remove image
+        // Remove image from slot
         window.removeImage = function(slotIndex, isEdit) {
             if (isEdit) {
-                delete currentImages.edit[slotIndex];
+                delete editNewImages[slotIndex];
+                editRemovedSlots[slotIndex] = true;
             } else {
-                delete currentImages.add[slotIndex];
+                delete addNewImages[slotIndex];
+                addRemovedSlots[slotIndex] = true;
             }
             
             const slot = document.querySelector(`.upload-slot[data-slot="${slotIndex}"]`);
@@ -339,16 +350,43 @@
         };
         
         // Initialize upload grids
-        function initUploadGrids() {
-            const addGrid = document.getElementById('imageUploadGrid');
-            const editGrid = document.getElementById('editImageGrid');
+        function initUploadGrids(isEdit = false) {
+            const gridId = isEdit ? 'editImageGrid' : 'imageUploadGrid';
+            const grid = document.getElementById(gridId);
+            if (!grid) return;
             
-            if (addGrid) {
-                addGrid.innerHTML = '';
-                for (let i = 0; i < 5; i++) {
-                    addGrid.innerHTML += createUploadSlot(i, null, false);
+            grid.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                let existingImage = null;
+                if (isEdit && editProductOriginal && editProductOriginal.images && editProductOriginal.images[i]) {
+                    existingImage = editProductOriginal.images[i];
                 }
+                grid.innerHTML += createUploadSlot(i, existingImage, isEdit);
             }
+        }
+        
+        // Build final images array for product
+        function buildImagesArray(isEdit = false) {
+            const images = [];
+            const originalImages = isEdit && editProductOriginal ? editProductOriginal.images || [] : [];
+            
+            for (let i = 0; i < 5; i++) {
+                // If this slot has a new uploaded image, use it (REPLACES old)
+                if (isEdit && editNewImages[i]) {
+                    images.push(editNewImages[i]);
+                }
+                // If not replaced and not removed, keep original
+                else if (isEdit && !editRemovedSlots[i] && originalImages[i]) {
+                    images.push(originalImages[i]);
+                }
+                // For add mode, use new images
+                else if (!isEdit && addNewImages[i]) {
+                    images.push(addNewImages[i]);
+                }
+                // Otherwise slot remains empty
+            }
+            
+            return images;
         }
         
         // Load products from Supabase
@@ -424,8 +462,9 @@
         
         // Show add form
         window.showAddForm = function() {
-            currentImages.add = {};
-            initUploadGrids();
+            addNewImages = {};
+            addRemovedSlots = {};
+            initUploadGrids(false);
             document.getElementById('addForm').style.display = 'block';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
@@ -439,7 +478,8 @@
             document.getElementById('stock').value = '10';
             document.getElementById('description').value = '';
             document.getElementById('category').value = 'Necklaces';
-            currentImages.add = {};
+            addNewImages = {};
+            addRemovedSlots = {};
         };
         
         // Save new product
@@ -466,16 +506,16 @@
                 return;
             }
             
-            // Collect images
+            // Build images array from uploaded images only
             const images = [];
             for (let i = 0; i < 5; i++) {
-                if (currentImages.add[i]) {
-                    images.push(currentImages.add[i]);
+                if (addNewImages[i]) {
+                    images.push(addNewImages[i]);
                 }
             }
             
             try {
-                const result = await supabaseRequest('products', {
+                await supabaseRequest('products', {
                     method: 'POST',
                     body: JSON.stringify({
                         sku, name, category, price, stock, description,
@@ -496,6 +536,13 @@
             const product = allProducts.find(p => p.id === id);
             if (!product) return;
             
+            // Store original product for reference
+            editProductOriginal = JSON.parse(JSON.stringify(product));
+            
+            // Reset edit tracking objects
+            editNewImages = {};
+            editRemovedSlots = {};
+            
             document.getElementById('editId').value = product.id;
             document.getElementById('editSku').value = product.sku || '';
             document.getElementById('editName').value = product.name || '';
@@ -504,21 +551,18 @@
             document.getElementById('editStock').value = product.stock || '';
             document.getElementById('editDescription').value = product.description || '';
             
-            currentImages.edit = {};
+            // Initialize edit grid with original images
             const editGrid = document.getElementById('editImageGrid');
             editGrid.innerHTML = '';
             for (let i = 0; i < 5; i++) {
                 const existingImage = product.images && product.images[i] ? product.images[i] : null;
                 editGrid.innerHTML += createUploadSlot(i, existingImage, true);
-                if (existingImage) {
-                    currentImages.edit[i] = existingImage;
-                }
             }
             
             document.getElementById('editModal').style.display = 'block';
         };
         
-        // Update product
+        // Update product - REPLACES images with new selections
         window.updateProduct = async function() {
             const id = parseInt(document.getElementById('editId').value);
             const sku = document.getElementById('editSku').value.trim();
@@ -543,23 +587,19 @@
                 return;
             }
             
-            // Collect images (keep existing + new uploaded)
-            const images = [];
-            for (let i = 0; i < 5; i++) {
-                if (currentImages.edit[i]) {
-                    images.push(currentImages.edit[i]);
-                } else if (allProducts.find(p => p.id === id)?.images?.[i]) {
-                    images.push(allProducts.find(p => p.id === id).images[i]);
-                }
-            }
+            // Build images array - NEW images REPLACE old ones
+            const images = buildImagesArray(true);
             
             try {
                 await supabaseRequest(`products?id=eq.${id}`, {
                     method: 'PATCH',
-                    body: JSON.stringify({ sku, name, category, price, stock, description, images })
+                    body: JSON.stringify({ 
+                        sku, name, category, price, stock, description, 
+                        images: images 
+                    })
                 });
                 
-                showToast('✅ Product updated successfully!');
+                showToast('✅ Product updated successfully! New images saved.');
                 closeEditModal();
                 await loadProducts();
             } catch (error) {
@@ -584,7 +624,9 @@
         // Close edit modal
         window.closeEditModal = function() { 
             document.getElementById('editModal').style.display = 'none';
-            currentImages.edit = {};
+            editProductOriginal = null;
+            editNewImages = {};
+            editRemovedSlots = {};
         };
         
         // Logout
@@ -600,7 +642,6 @@
         };
         
         // Initialize
-        initUploadGrids();
         loadProducts();
     </script>
 </body>
