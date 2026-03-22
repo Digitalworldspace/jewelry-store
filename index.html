@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- SEO Meta Tags -->
+    <!-- SEO Meta Tags - Customer Facing -->
     <title>Style Of Life - Luxury Handcrafted Jewelry | Gold, Diamond & Silver</title>
     <meta name="description" content="Discover exquisite handcrafted jewelry at Style Of Life. Shop luxury gold necklaces, diamond rings, silver bracelets, and pearl earrings. Free shipping & lifetime warranty.">
     <meta name="keywords" content="jewelry, gold jewelry, diamond rings, necklaces, earrings, bracelets, luxury jewelry, handcrafted jewelry, fine jewelry, Indian jewelry, 22k gold, solitaire ring">
     <meta name="author" content="Style Of Life">
     <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
     <meta name="revisit-after" content="7 days">
-    <meta name="language" content="English">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -43,7 +43,6 @@
         "name": "Style Of Life",
         "description": "Luxury handcrafted jewelry store offering gold necklaces, diamond rings, silver bracelets, and pearl earrings.",
         "url": "https://styleoflife987-hub.github.io/jewelry-store/",
-        "logo": "https://styleoflife987-hub.github.io/jewelry-store/logo.png",
         "priceRange": "₹₹₹",
         "telephone": "+91-98765-43210",
         "email": "support@styleoflife.com",
@@ -421,7 +420,6 @@
     </footer>
 
     <script>
-        // Supabase Configuration
         const SUPABASE_URL = "https://tbopyyocuvlsjvtdogcp.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRib3B5eW9jdXZsc2p2dGRvZ2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYxNzcsImV4cCI6MjA4OTYxMjE3N30.TfEtU1NBHCGnZqZzm4LuI1iw22lSPav0OrUskhDw5wc";
         
@@ -471,6 +469,7 @@
             try {
                 const products = await supabaseFetch('products?select=*&order=id.asc');
                 displayProducts(products);
+                addProductSchema(products);
             } catch (error) {
                 document.getElementById('products').innerHTML = '<div class="loading"><p>Unable to load collection. Please refresh.</p></div>';
             }
@@ -664,47 +663,40 @@
             });
         }
         
-        // Product Schema for SEO
-        async function addProductSchema() {
-            try {
-                const products = await supabaseFetch('products?select=*');
-                const productSchema = {
-                    "@context": "https://schema.org",
-                    "@type": "ItemList",
-                    "name": "Style Of Life Jewelry Collection",
-                    "description": "Exquisite handcrafted gold, diamond, and silver jewelry",
-                    "itemListElement": products.map((product, index) => ({
-                        "@type": "ListItem",
-                        "position": index + 1,
-                        "item": {
-                            "@type": "Product",
-                            "name": product.name,
-                            "description": product.description || "Exquisite handcrafted jewelry",
-                            "sku": product.sku,
-                            "category": product.category,
-                            "offers": {
-                                "@type": "Offer",
-                                "price": product.price,
-                                "priceCurrency": "INR",
-                                "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
-                            },
-                            "image": product.images?.[0] || ""
-                        }
-                    }))
-                };
-                
-                const script = document.createElement('script');
-                script.type = 'application/ld+json';
-                script.textContent = JSON.stringify(productSchema);
-                document.head.appendChild(script);
-            } catch (error) {
-                console.error('Error adding product schema:', error);
-            }
+        function addProductSchema(products) {
+            const productSchema = {
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                "name": "Style Of Life Jewelry Collection",
+                "description": "Exquisite handcrafted gold, diamond, and silver jewelry",
+                "itemListElement": products.map((product, index) => ({
+                    "@type": "ListItem",
+                    "position": index + 1,
+                    "item": {
+                        "@type": "Product",
+                        "name": product.name,
+                        "description": product.description || "Exquisite handcrafted jewelry",
+                        "sku": product.sku,
+                        "category": product.category,
+                        "offers": {
+                            "@type": "Offer",
+                            "price": product.price,
+                            "priceCurrency": "INR",
+                            "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+                        },
+                        "image": product.images?.[0] || ""
+                    }
+                }))
+            };
+            
+            const script = document.createElement('script');
+            script.type = 'application/ld+json';
+            script.textContent = JSON.stringify(productSchema);
+            document.head.appendChild(script);
         }
         
         loadProducts();
         loadCartCount();
-        addProductSchema();
         
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {
