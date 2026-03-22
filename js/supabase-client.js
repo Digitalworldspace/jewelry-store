@@ -11,8 +11,30 @@ if (!sessionId) {
     localStorage.setItem('sessionId', sessionId);
 }
 
-// ==================== CART FUNCTIONS ====================
+// ==================== PRODUCTS ====================
+export async function getProducts() {
+    try {
+        const { data, error } = await supabase.from('products').select('*').order('id');
+        if (error) throw error;
+        return data || [];
+    } catch (err) {
+        console.error('Error fetching products:', err);
+        return [];
+    }
+}
 
+export async function getProductById(id) {
+    try {
+        const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
+        if (error) throw error;
+        return data;
+    } catch (err) {
+        console.error('Error fetching product:', err);
+        return null;
+    }
+}
+
+// ==================== CART ====================
 export async function getCart() {
     try {
         const { data, error } = await supabase
@@ -21,13 +43,10 @@ export async function getCart() {
             .eq('session_id', sessionId)
             .maybeSingle();
         
-        if (error) {
-            console.error('Error fetching cart:', error);
-            return { items: [], total: 0 };
-        }
+        if (error) throw error;
         return { items: data?.items || [], total: data?.total || 0 };
     } catch (err) {
-        console.error('Cart fetch error:', err);
+        console.error('Error fetching cart:', err);
         return { items: [], total: 0 };
     }
 }
@@ -41,48 +60,36 @@ export async function saveCart(items, total) {
             updated_at: new Date().toISOString()
         });
         
-        if (error) {
-            console.error('Error saving cart:', error);
-            return false;
-        }
+        if (error) throw error;
         return true;
     } catch (err) {
-        console.error('Cart save error:', err);
+        console.error('Error saving cart:', err);
         return false;
     }
 }
 
-export async function addToCart(product) {
+export async function addToCart(product, quantity = 1) {
     try {
-        // Get current cart
-        const { items } = await getCart();
-        let cartItems = [...items];
-        
-        // Check if product already in cart
+        const { items: currentItems } = await getCart();
+        let cartItems = [...currentItems];
         const existingIndex = cartItems.findIndex(i => i.id === product.id);
         
         if (existingIndex >= 0) {
-            // Increase quantity
-            cartItems[existingIndex].quantity += 1;
+            cartItems[existingIndex].quantity += quantity;
         } else {
-            // Add new item
             cartItems.push({
                 id: product.id,
                 sku: product.sku,
                 name: product.name,
                 price: product.price,
-                quantity: 1,
+                quantity: quantity,
                 image: product.images?.[0] || ''
             });
         }
         
-        // Calculate total
         const total = cartItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-        
-        // Save to Supabase
         const success = await saveCart(cartItems, total);
         return { success, items: cartItems, total };
-        
     } catch (err) {
         console.error('Add to cart error:', err);
         return { success: false, error: err.message };
@@ -94,17 +101,15 @@ export async function removeFromCart(productId) {
         const { items } = await getCart();
         const cartItems = items.filter(i => i.id !== productId);
         const total = cartItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-        
         const success = await saveCart(cartItems, total);
         return { success, items: cartItems, total };
-        
     } catch (err) {
         console.error('Remove from cart error:', err);
         return { success: false, error: err.message };
     }
 }
 
-export async function updateQuantity(productId, quantity) {
+export async function updateCartQuantity(productId, quantity) {
     try {
         const { items } = await getCart();
         const cartItems = [...items];
@@ -112,7 +117,6 @@ export async function updateQuantity(productId, quantity) {
         
         if (index >= 0) {
             if (quantity <= 0) {
-                // Remove item
                 cartItems.splice(index, 1);
             } else {
                 cartItems[index].quantity = quantity;
@@ -122,7 +126,6 @@ export async function updateQuantity(productId, quantity) {
         const total = cartItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
         const success = await saveCart(cartItems, total);
         return { success, items: cartItems, total };
-        
     } catch (err) {
         console.error('Update quantity error:', err);
         return { success: false, error: err.message };
@@ -139,56 +142,147 @@ export async function clearCart() {
     }
 }
 
-// ==================== PRODUCT FUNCTIONS ====================
-
-export async function getProducts() {
+// ==================== ORDERS ====================
+export async function placeOrder(orderData) {
     try {
-        const { data, error } = await supabase
-            .from('products')
-            .select('*')
-            .order('id');
-        
-        if (error) {
-            console.error('Error fetching products:', error);
-            return [];
+        // Check stock for each item
+        for (const item of orderData.items) {
+            const product = await getProductById(item.id);
+            if (!product) {
+                return { success: false, error: `Product ${item.name} not found` };
+            }
+            if (product.stock < item.quantity) {
+                return { success: false, error: `Insufficient stock for ${item.name}. Only ${product.stock} left.` };
+            }
         }
+        
+        // Deduct stock
+        for (const item of orderData.items) {
+            const product = await getProductById(item.id);
+            const newStock = product.stock - item.quantity;
+            const { error } = await supabase.from('products').update({ stock: newStock }).eq('id', item.id);
+            if (error) throw error;
+        }
+        
+        // Create order
+        const { data, error } = await supabase.from('orders').insert([{
+            order_id: 'ORD' + Date.now(),
+            customer_name: orderData.name,
+            phone: orderData.phone,
+            email: orderData.email || '',
+            address: orderData.address,
+            items: orderData.items,
+            subtotal: orderData.subtotal,
+            tax: orderData.tax,
+            shipping: orderData.shipping,
+            total: orderData.total,
+            status: 'Pending'
+        }]).select();
+        
+        if (error) throw error;
+        
+        // Clear cart
+        await clearCart();
+        
+        return { success: true, orderId: data[0].order_id };
+    } catch (err) {
+        console.error('Order placement error:', err);
+        return { success: false, error: err.message };
+    }
+}
+
+export async function getOrders() {
+    try {
+        const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
         return data || [];
     } catch (err) {
-        console.error('Products fetch error:', err);
+        console.error('Error fetching orders:', err);
         return [];
     }
 }
 
-// ==================== ORDER FUNCTIONS ====================
-
-export async function placeOrder(orderData) {
+export async function updateOrderStatus(orderId, status) {
     try {
-        const { data, error } = await supabase
-            .from('orders')
-            .insert([{
-                order_id: 'ORD' + Date.now(),
-                customer_name: orderData.name,
-                phone: orderData.phone,
-                email: orderData.email || '',
-                address: orderData.address,
-                items: orderData.items,
-                subtotal: orderData.subtotal,
-                tax: orderData.tax,
-                shipping: orderData.shipping,
-                total: orderData.total,
-                status: 'Pending'
-            }])
-            .select();
+        const { error } = await supabase.from('orders').update({ status }).eq('order_id', orderId);
+        if (error) throw error;
+        return { success: true };
+    } catch (err) {
+        console.error('Error updating order:', err);
+        return { success: false, error: err.message };
+    }
+}
+
+export async function deleteOrder(orderId) {
+    try {
+        const { error } = await supabase.from('orders').delete().eq('order_id', orderId);
+        if (error) throw error;
+        return { success: true };
+    } catch (err) {
+        console.error('Error deleting order:', err);
+        return { success: false, error: err.message };
+    }
+}
+
+// ==================== ADMIN ====================
+export async function addProduct(product) {
+    try {
+        const { data, error } = await supabase.from('products').insert([{
+            sku: product.sku,
+            name: product.name,
+            category: product.category,
+            price: parseFloat(product.price),
+            stock: parseInt(product.stock),
+            description: product.description || '',
+            images: product.images || []
+        }]).select();
         
         if (error) throw error;
-        
-        // Clear cart after successful order
-        await clearCart();
-        
-        return { success: true, orderId: data[0].order_id };
-        
+        return { success: true, data: data[0] };
     } catch (err) {
-        console.error('Order placement error:', err);
+        console.error('Error adding product:', err);
         return { success: false, error: err.message };
+    }
+}
+
+export async function updateProduct(id, updates) {
+    try {
+        const { error } = await supabase.from('products').update(updates).eq('id', id);
+        if (error) throw error;
+        return { success: true };
+    } catch (err) {
+        console.error('Error updating product:', err);
+        return { success: false, error: err.message };
+    }
+}
+
+export async function deleteProduct(id) {
+    try {
+        const { error } = await supabase.from('products').delete().eq('id', id);
+        if (error) throw error;
+        return { success: true };
+    } catch (err) {
+        console.error('Error deleting product:', err);
+        return { success: false, error: err.message };
+    }
+}
+
+export async function getDashboardStats() {
+    try {
+        const [products, orders] = await Promise.all([
+            supabase.from('products').select('count', { count: 'exact', head: true }),
+            supabase.from('orders').select('total, status')
+        ]);
+        
+        const totalProducts = products.count || 0;
+        const orderData = orders.data || [];
+        const totalOrders = orderData.length;
+        const totalRevenue = orderData.reduce((sum, o) => sum + (o.total || 0), 0);
+        const pendingOrders = orderData.filter(o => o.status === 'Pending').length;
+        
+        return { totalProducts, totalOrders, totalRevenue, pendingOrders };
+    } catch (err) {
+        console.error('Error fetching stats:', err);
+        return { totalProducts: 0, totalOrders: 0, totalRevenue: 0, pendingOrders: 0 };
     }
 }
