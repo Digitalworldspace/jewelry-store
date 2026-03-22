@@ -10,7 +10,7 @@ export async function getProducts() {
         console.error('Error fetching products:', error);
         return [];
     }
-    return data;
+    return data || [];
 }
 
 export async function addProduct(product) {
@@ -44,7 +44,7 @@ export async function deleteProduct(id) {
 export async function getOrders() {
     const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
     if (error) return [];
-    return data;
+    return data || [];
 }
 
 export async function placeOrder(order) {
