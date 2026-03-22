@@ -33,6 +33,7 @@
         .empty-cart h3 { color: var(--primary); margin-bottom: 15px; }
         .continue-shopping { display: inline-block; margin-top: 20px; padding: 12px 30px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; }
         footer { background: #0a0a0a; color: white; text-align: center; padding: 40px; margin-top: 60px; }
+        .debug-console { background: #1e1e1e; color: #0f0; font-family: monospace; font-size: 11px; padding: 10px; margin-top: 20px; border-radius: 8px; max-height: 150px; overflow-y: auto; display: none; }
         @media (max-width: 768px) { 
             header { flex-direction: column; gap: 15px; padding: 15px; }
             .cart-item { grid-template-columns: 80px 1fr; gap: 10px; }
@@ -61,6 +62,7 @@
             <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
             <button onclick="clearCart()" class="clear-btn">Clear Cart</button>
         </div>
+        <div class="debug-console" id="debugConsole"></div>
     </div>
 
     <footer>
@@ -83,20 +85,31 @@
         let cart = [];
         let sessionId = localStorage.getItem('sessionId');
         
+        function debugLog(msg) {
+            console.log(msg);
+            const debugDiv = document.getElementById('debugConsole');
+            if (debugDiv) {
+                debugDiv.style.display = 'block';
+                debugDiv.innerHTML += `[${new Date().toLocaleTimeString()}] ${msg}<br>`;
+                debugDiv.scrollTop = debugDiv.scrollHeight;
+            }
+        }
+        
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
+            debugLog('New session created: ' + sessionId);
+        } else {
+            debugLog('Existing session: ' + sessionId);
         }
         
         async function loadCart() {
+            debugLog('Loading cart...');
             const cartData = await getCart();
             cart = cartData.items;
+            debugLog('Cart loaded with ' + cart.length + ' items');
             displayCart();
             updateCartCount();
-        }
-        
-        async function saveAndReload() {
-            await loadCart();
         }
         
         window.updateQuantity = async function(id, qty) {
@@ -105,19 +118,25 @@
             if (qty < 1) qty = 1;
             if (qty > 10) qty = 10;
             
+            debugLog(`Updating quantity for item ${id} to ${qty}`);
             const result = await updateCartQuantity(id, qty);
             if (result.success) {
+                debugLog('Quantity updated successfully');
                 await loadCart();
             } else {
+                debugLog('Error updating quantity: ' + (result.error || 'Unknown error'));
                 alert('Error updating quantity: ' + (result.error || 'Unknown error'));
             }
         };
         
         window.removeItem = async function(id) {
+            debugLog(`Attempting to remove item with ID: ${id}`);
             const result = await removeFromCart(id);
             if (result.success) {
+                debugLog('Item removed successfully');
                 await loadCart();
             } else {
+                debugLog('Error removing item: ' + (result.error || 'Unknown error'));
                 alert('Error removing item: ' + (result.error || 'Unknown error'));
             }
         };
@@ -128,11 +147,14 @@
                 return;
             }
             if (confirm('Clear all items from cart?')) {
+                debugLog('Clearing cart...');
                 const result = await clearCart();
                 if (result.success) {
+                    debugLog('Cart cleared successfully');
                     await loadCart();
                     alert('Cart cleared successfully');
                 } else {
+                    debugLog('Error clearing cart: ' + (result.error || 'Unknown error'));
                     alert('Error clearing cart');
                 }
             }
@@ -160,7 +182,7 @@
                 const itemTotal = item.price * item.quantity;
                 subtotal += itemTotal;
                 html += `
-                    <div class="cart-item">
+                    <div class="cart-item" data-id="${item.id}">
                         <img src="${item.image || 'https://via.placeholder.com/100x100'}" onerror="this.src='https://via.placeholder.com/100x100'">
                         <div>
                             <h4>${escapeHtml(item.name)}</h4>
@@ -169,7 +191,7 @@
                         <div>₹${item.price.toLocaleString()}</div>
                         <div><input type="number" value="${item.quantity}" min="1" max="10" onchange="updateQuantity(${item.id}, this.value)"></div>
                         <div>₹${itemTotal.toLocaleString()}</div>
-                        <button onclick="removeItem(${item.id})" style="background: none; color: var(--danger); width: auto; font-size: 20px;">✕</button>
+                        <button onclick="removeItem(${item.id})" style="background: none; color: var(--danger); width: auto; font-size: 20px; cursor: pointer;">✕</button>
                     </div>
                 `;
             });
@@ -180,6 +202,8 @@
             document.getElementById('subtotal').textContent = subtotal.toLocaleString();
             document.getElementById('tax').textContent = tax.toLocaleString();
             document.getElementById('total').textContent = total.toLocaleString();
+            
+            debugLog(`Cart summary: Subtotal ₹${subtotal}, Tax ₹${tax}, Total ₹${total}`);
         }
         
         function escapeHtml(str) {
