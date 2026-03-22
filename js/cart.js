@@ -1,4 +1,4 @@
-// js/cart.js - COMPLETE FIXED CART SYSTEM
+// js/cart.js - Complete Cart System
 let cart = [];
 let sessionId = localStorage.getItem('sessionId');
 
@@ -7,91 +7,58 @@ if (!sessionId) {
     localStorage.setItem('sessionId', sessionId);
 }
 
-// Initialize cart
-document.addEventListener('DOMContentLoaded', function() {
-    loadCart();
+// Load cart from localStorage
+function loadCart() {
+    try {
+        cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    } catch (e) {
+        cart = [];
+    }
     updateCartCount();
-    
-    if (window.location.pathname.includes('cart.html')) {
-        displayCart();
-    }
-});
-
-// Load cart from Supabase
-async function loadCart() {
-    try {
-        const { data, error } = await supabase
-            .from('carts')
-            .select('items')
-            .eq('session_id', sessionId)
-            .maybeSingle();
-        
-        if (error) throw error;
-        cart = data?.items || [];
-        saveCartToLocal();
-        updateCartCount();
-        if (window.location.pathname.includes('cart.html')) displayCart();
-        if (window.location.pathname.includes('checkout.html') && typeof updateCheckoutSummary === 'function') {
-            updateCheckoutSummary();
-        }
-    } catch (error) {
-        console.error('Error loading cart:', error);
-        loadCartFromLocal();
-    }
+    return cart;
 }
 
-// Save cart to Supabase
-async function saveCartToServer() {
-    try {
-        const total = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
-        const { error } = await supabase
-            .from('carts')
-            .upsert({ 
-                session_id: sessionId, 
-                items: cart, 
-                total: total, 
-                updated_at: new Date().toISOString() 
-            });
-        
-        if (error) throw error;
-        saveCartToLocal();
-    } catch (error) {
-        console.error('Error saving cart to server:', error);
-        saveCartToLocal();
-    }
-}
-
-// Local storage backup
-function saveCartToLocal() {
+// Save cart to localStorage
+function saveCart() {
     localStorage.setItem('cart', JSON.stringify(cart));
-    localStorage.setItem('cartVersion', Date.now().toString());
+    updateCartCount();
 }
 
-function loadCartFromLocal() {
-    const saved = localStorage.getItem('cart');
-    if (saved) {
-        cart = JSON.parse(saved);
-        updateCartCount();
-        if (window.location.pathname.includes('cart.html')) displayCart();
-        if (window.location.pathname.includes('checkout.html') && typeof updateCheckoutSummary === 'function') {
-            updateCheckoutSummary();
+// Update cart count display
+function updateCartCount() {
+    const count = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+    document.querySelectorAll('.cart-count, #cartCount').forEach(el => {
+        if (el) {
+            el.textContent = count;
+            el.style.display = count > 0 ? 'inline-block' : 'none';
         }
-    }
+    });
 }
 
-// Add to cart - FIXED VERSION
-window.addToCart = async function(productId, sku, name, price, image) {
+// Get cart
+window.getCart = function() {
+    return [...cart];
+};
+
+// Get cart count
+window.getCartCount = function() {
+    return cart.reduce((total, item) => total + (item.quantity || 1), 0);
+};
+
+// Get cart total
+window.getCartTotal = function() {
+    return cart.reduce((total, item) => total + (item.price * (item.quantity || 1)), 0);
+};
+
+// Add to cart
+window.addToCart = function(productId, sku, name, price, image) {
     console.log('Adding to cart:', { productId, sku, name, price });
     
-    // Find if product already exists
-    const existingIndex = cart.findIndex(item => item.id === productId || item.sku === sku);
+    const existingIndex = cart.findIndex(item => item.id === productId);
     
     if (existingIndex >= 0) {
-        // Increase quantity
         cart[existingIndex].quantity = (cart[existingIndex].quantity || 1) + 1;
-        console.log('Increased quantity for:', name);
     } else {
-        // Add new item
         cart.push({
             id: productId,
             sku: sku,
@@ -100,20 +67,25 @@ window.addToCart = async function(productId, sku, name, price, image) {
             image: image || 'https://via.placeholder.com/100x100?text=No+Image',
             quantity: 1
         });
-        console.log('Added new item:', name);
     }
     
-    // Save to server and local
-    await saveCartToServer();
-    updateCartCount();
-    
-    // Show notification
-    showNotification(`${name} added to cart!`, 'success');
+    saveCart();
+    showNotification(`${name} added to cart!`);
     return true;
 };
 
+// Remove from cart
+window.removeFromCart = function(productId) {
+    cart = cart.filter(item => item.id !== productId);
+    saveCart();
+    if (window.location.pathname.includes('cart.html')) {
+        displayCartPage();
+    }
+    showNotification('Item removed');
+};
+
 // Update quantity
-window.updateQuantity = async function(productId, newQuantity) {
+window.updateQuantity = function(productId, newQuantity) {
     const itemIndex = cart.findIndex(item => item.id === productId);
     if (itemIndex === -1) return;
     
@@ -125,59 +97,27 @@ window.updateQuantity = async function(productId, newQuantity) {
         cart[itemIndex].quantity = newQuantity;
     }
     
-    await saveCartToServer();
-    updateCartCount();
-    if (window.location.pathname.includes('cart.html')) displayCart();
-    if (window.location.pathname.includes('checkout.html') && typeof updateCheckoutSummary === 'function') {
-        updateCheckoutSummary();
+    saveCart();
+    if (window.location.pathname.includes('cart.html')) {
+        displayCartPage();
     }
-};
-
-// Remove item
-window.removeFromCart = async function(productId) {
-    cart = cart.filter(item => item.id !== productId);
-    await saveCartToServer();
-    updateCartCount();
-    if (window.location.pathname.includes('cart.html')) displayCart();
-    if (window.location.pathname.includes('checkout.html') && typeof updateCheckoutSummary === 'function') {
-        updateCheckoutSummary();
-    }
-    showNotification('Item removed from cart', 'info');
 };
 
 // Clear cart
-window.clearCart = async function() {
+window.clearCart = function() {
     if (cart.length === 0) return;
     if (confirm('Clear your cart?')) {
         cart = [];
-        await saveCartToServer();
-        updateCartCount();
-        if (window.location.pathname.includes('cart.html')) displayCart();
-        if (window.location.pathname.includes('checkout.html') && typeof updateCheckoutSummary === 'function') {
-            updateCheckoutSummary();
+        saveCart();
+        if (window.location.pathname.includes('cart.html')) {
+            displayCartPage();
         }
-        showNotification('Cart cleared', 'info');
+        showNotification('Cart cleared');
     }
 };
 
-// Get cart functions
-window.getCart = function() { return [...cart]; };
-window.getCartCount = function() { return cart.reduce((total, item) => total + (item.quantity || 1), 0); };
-window.getCartTotal = function() { return cart.reduce((total, item) => total + (item.price * (item.quantity || 1)), 0); };
-
-// Update cart count display
-function updateCartCount() {
-    const count = window.getCartCount();
-    document.querySelectorAll('.cart-count, #cartCount').forEach(el => {
-        if (el) {
-            el.textContent = count;
-            el.style.display = count > 0 ? 'inline-block' : 'none';
-        }
-    });
-}
-
 // Display cart page
-function displayCart() {
+function displayCartPage() {
     const container = document.getElementById('cartItems');
     const subtotalEl = document.getElementById('cartSubtotal');
     const taxEl = document.getElementById('cartTax');
@@ -209,7 +149,7 @@ function displayCart() {
         
         html += `
             <div class="cart-item" data-id="${item.id}">
-                <img src="${item.image}" class="cart-item-image" onerror="this.src='https://via.placeholder.com/100x100?text=No+Image'">
+                <img src="${item.image}" class="cart-item-image" onerror="this.src='https://via.placeholder.com/80x80?text=No+Image'">
                 <div class="cart-item-info">
                     <div class="cart-item-name">${item.name}</div>
                     <div class="cart-item-sku">SKU: ${item.sku}</div>
@@ -237,31 +177,34 @@ function displayCart() {
 
 // Show notification
 function showNotification(message, type = 'success') {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
+    const notif = document.createElement('div');
+    notif.style.cssText = `
         position: fixed;
         bottom: 20px;
         right: 20px;
-        background: ${type === 'success' ? 'linear-gradient(135deg, #28a745, #20c997)' : type === 'error' ? '#dc3545' : '#17a2b8'};
+        background: ${type === 'success' ? '#28a745' : '#dc3545'};
         color: white;
         padding: 12px 24px;
         border-radius: 50px;
         z-index: 9999;
-        animation: slideIn 0.3s ease;
+        animation: slideIn 0.3s;
         font-weight: 500;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     `;
-    notification.textContent = message;
-    document.body.appendChild(notification);
-    setTimeout(() => notification.remove(), 3000);
+    notif.textContent = message;
+    document.body.appendChild(notif);
+    setTimeout(() => notif.remove(), 3000);
 }
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    loadCart();
+    if (window.location.pathname.includes('cart.html')) {
+        displayCartPage();
+    }
+});
 
 // Make functions global
+window.displayCartPage = displayCartPage;
 window.updateCartCount = updateCartCount;
-window.displayCart = displayCart;
 window.showNotification = showNotification;
-
-// Export for other files
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { getCart, getCartCount, getCartTotal, addToCart, removeFromCart, updateQuantity, clearCart };
-}
