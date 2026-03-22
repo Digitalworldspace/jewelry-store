@@ -25,21 +25,18 @@
         .search-box { display: flex; gap: 10px; }
         .search-box input { padding: 10px 15px; border: 1px solid var(--gray-200); border-radius: 6px; width: 250px; }
         
-        /* Form Card */
         .form-card { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--gray-200); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: 500; color: var(--gray-600); }
-        input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; transition: all 0.3s; }
-        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); }
         .image-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 15px 0; }
         .image-slot { background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 8px; padding: 10px; text-align: center; }
-        .image-slot label { font-size: 11px; margin-bottom: 5px; }
         .image-slot input { padding: 6px; font-size: 11px; margin-top: 5px; }
         
-        /* Product Grid */
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-top: 20px; }
-        .product-card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .product-card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; }
         .product-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: var(--primary); }
         .product-image { width: 100%; height: 200px; object-fit: cover; background: var(--gray-100); }
         .product-info { padding: 20px; }
@@ -52,15 +49,14 @@
         .stock-low { background: #fff3cd; color: #856404; }
         .stock-out { background: #f8d7da; color: #721c24; }
         .product-actions { display: flex; gap: 10px; margin-top: 15px; }
-        .edit-btn, .delete-btn { flex: 1; padding: 8px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.3s; }
+        .edit-btn, .delete-btn { flex: 1; padding: 8px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; }
         .edit-btn { background: #2196f3; color: white; }
-        .edit-btn:hover { background: #1976d2; transform: translateY(-2px); }
+        .edit-btn:hover { background: #1976d2; }
         .delete-btn { background: var(--danger); color: white; }
-        .delete-btn:hover { background: #c82333; transform: translateY(-2px); }
+        .delete-btn:hover { background: #c82333; }
         
-        /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; overflow-y: auto; }
-        .modal-content { background: white; max-width: 700px; margin: 50px auto; padding: 30px; border-radius: 16px; animation: slideUp 0.3s ease; }
+        .modal-content { background: white; max-width: 600px; margin: 50px auto; padding: 30px; border-radius: 16px; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--primary); }
         .modal-header h2 { color: var(--primary); }
         .close-modal { background: none; border: none; font-size: 28px; cursor: pointer; color: var(--gray-600); }
@@ -69,12 +65,9 @@
         
         .empty-state { text-align: center; padding: 60px; color: var(--gray-600); background: white; border-radius: 12px; border: 1px solid var(--gray-200); }
         .empty-state h3 { font-size: 20px; margin-bottom: 10px; color: var(--primary); }
-        
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .image-grid { grid-template-columns: repeat(2, 1fr); } header { flex-direction: column; gap: 15px; padding: 15px; } .search-box input { width: 100%; } .toolbar { flex-direction: column; } }
+        .spinner { width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .image-grid { grid-template-columns: repeat(2, 1fr); } header { flex-direction: column; gap: 15px; padding: 15px; } .toolbar { flex-direction: column; } .search-box input { width: 100%; } }
     </style>
 </head>
 <body>
@@ -92,7 +85,7 @@
         <h1>📦 Product Management</h1>
         
         <div class="toolbar">
-            <button class="btn" onclick="toggleForm()">+ Add New Product</button>
+            <button class="btn" id="showAddFormBtn" onclick="showAddForm()">+ Add New Product</button>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search by name or SKU..." onkeyup="searchProducts()">
             </div>
@@ -102,37 +95,30 @@
         <div id="addForm" class="form-card" style="display: none;">
             <h2 style="color: var(--primary); margin-bottom: 20px;">✨ Add New Product</h2>
             <div class="form-grid">
-                <div class="form-group"><label>SKU *</label><input type="text" id="sku" placeholder="e.g., GOLD001"></div>
-                <div class="form-group"><label>Product Name *</label><input type="text" id="name" placeholder="e.g., Gold Necklace"></div>
-                <div class="form-group"><label>Category *</label>
-                    <select id="category">
-                        <option value="Necklaces">Necklaces</option>
-                        <option value="Rings">Rings</option>
-                        <option value="Earrings">Earrings</option>
-                        <option value="Bracelets">Bracelets</option>
-                        <option value="Bangles">Bangles</option>
-                        <option value="Pendants">Pendants</option>
-                    </select>
+                <div><label>SKU *</label><input type="text" id="sku" placeholder="e.g., GOLD001"></div>
+                <div><label>Product Name *</label><input type="text" id="name" placeholder="e.g., Gold Necklace"></div>
+                <div><label>Category *</label>
+                    <select id="category"><option value="Necklaces">Necklaces</option><option value="Rings">Rings</option><option value="Earrings">Earrings</option><option value="Bracelets">Bracelets</option><option value="Bangles">Bangles</option></select>
                 </div>
             </div>
             <div class="form-grid">
-                <div class="form-group"><label>Price (₹) *</label><input type="number" id="price" placeholder="e.g., 25000"></div>
-                <div class="form-group"><label>Stock Quantity *</label><input type="number" id="stock" placeholder="e.g., 10" value="10"></div>
+                <div><label>Price (₹) *</label><input type="number" id="price" placeholder="e.g., 25000"></div>
+                <div><label>Stock Quantity *</label><input type="number" id="stock" placeholder="e.g., 10" value="10"></div>
             </div>
-            <div class="form-group"><label>Description</label><textarea id="description" rows="2" placeholder="Product description..."></textarea></div>
+            <div><label>Description</label><textarea id="description" rows="2" placeholder="Product description..."></textarea></div>
             
-            <h3 style="margin: 20px 0 10px;">📸 Image URLs (5 images)</h3>
+            <h3 style="margin: 15px 0 10px;">📸 Image URLs (5 images)</h3>
             <div class="image-grid">
-                <div class="image-slot"><label>Image 1 (Main)</label><input type="url" id="img1" placeholder="https://..."></div>
-                <div class="image-slot"><label>Image 2</label><input type="url" id="img2" placeholder="https://..."></div>
-                <div class="image-slot"><label>Image 3</label><input type="url" id="img3" placeholder="https://..."></div>
-                <div class="image-slot"><label>Image 4</label><input type="url" id="img4" placeholder="https://..."></div>
-                <div class="image-slot"><label>Image 5</label><input type="url" id="img5" placeholder="https://..."></div>
+                <div class="image-slot">Image 1<br><input type="url" id="img1" placeholder="https://..."></div>
+                <div class="image-slot">Image 2<br><input type="url" id="img2" placeholder="https://..."></div>
+                <div class="image-slot">Image 3<br><input type="url" id="img3" placeholder="https://..."></div>
+                <div class="image-slot">Image 4<br><input type="url" id="img4" placeholder="https://..."></div>
+                <div class="image-slot">Image 5<br><input type="url" id="img5" placeholder="https://..."></div>
             </div>
             
             <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn" onclick="saveProduct()">💾 Save Product</button>
-                <button class="btn btn-danger" onclick="toggleForm()">Cancel</button>
+                <button class="btn" id="saveProductBtn" onclick="saveProduct()">💾 Save Product</button>
+                <button class="btn btn-danger" onclick="hideAddForm()">Cancel</button>
             </div>
         </div>
         
@@ -145,26 +131,19 @@
                 </div>
                 <input type="hidden" id="editId">
                 <div class="form-grid">
-                    <div class="form-group"><label>SKU</label><input type="text" id="editSku"></div>
-                    <div class="form-group"><label>Product Name</label><input type="text" id="editName"></div>
-                    <div class="form-group"><label>Category</label>
-                        <select id="editCategory">
-                            <option value="Necklaces">Necklaces</option>
-                            <option value="Rings">Rings</option>
-                            <option value="Earrings">Earrings</option>
-                            <option value="Bracelets">Bracelets</option>
-                            <option value="Bangles">Bangles</option>
-                            <option value="Pendants">Pendants</option>
-                        </select>
+                    <div><label>SKU</label><input type="text" id="editSku"></div>
+                    <div><label>Product Name</label><input type="text" id="editName"></div>
+                    <div><label>Category</label>
+                        <select id="editCategory"><option value="Necklaces">Necklaces</option><option value="Rings">Rings</option><option value="Earrings">Earrings</option><option value="Bracelets">Bracelets</option><option value="Bangles">Bangles</option></select>
                     </div>
                 </div>
                 <div class="form-grid">
-                    <div class="form-group"><label>Price (₹)</label><input type="number" id="editPrice"></div>
-                    <div class="form-group"><label>Stock</label><input type="number" id="editStock"></div>
+                    <div><label>Price (₹)</label><input type="number" id="editPrice"></div>
+                    <div><label>Stock</label><input type="number" id="editStock"></div>
                 </div>
-                <div class="form-group"><label>Description</label><textarea id="editDescription" rows="2"></textarea></div>
+                <div><label>Description</label><textarea id="editDescription" rows="2"></textarea></div>
                 <div class="modal-actions">
-                    <button class="btn" onclick="updateProduct()">💾 Save Changes</button>
+                    <button class="btn" id="updateProductBtn" onclick="updateProduct()">💾 Save Changes</button>
                     <button class="btn btn-danger" onclick="closeEditModal()">Cancel</button>
                 </div>
             </div>
@@ -191,22 +170,13 @@
         
         async function loadProducts() {
             const { data, error } = await supabase.from('products').select('*').order('id');
-            if (error) { console.error(error); return; }
+            if (error) { console.error(error); document.getElementById('productsGrid').innerHTML = '<div class="empty-state"><h3>⚠️ Error Loading Products</h3><p>' + error.message + '</p></div>'; return; }
             allProducts = data || [];
             displayProducts(allProducts);
         }
         
-        function getStockClass(stock) {
-            if (stock > 20) return 'stock-high';
-            if (stock > 0) return 'stock-low';
-            return 'stock-out';
-        }
-        
-        function getStockText(stock) {
-            if (stock > 20) return `In Stock (${stock})`;
-            if (stock > 0) return `Low Stock (${stock})`;
-            return 'Out of Stock';
-        }
+        function getStockClass(stock) { if (stock > 20) return 'stock-high'; if (stock > 0) return 'stock-low'; return 'stock-out'; }
+        function getStockText(stock) { if (stock > 20) return `In Stock (${stock})`; if (stock > 0) return `Low Stock (${stock})`; return 'Out of Stock'; }
         
         function displayProducts(products) {
             const grid = document.getElementById('productsGrid');
@@ -216,11 +186,8 @@
             }
             
             let html = '';
-            products.forEach(p => {
+            for (let p of products) {
                 const img = p.images?.[0] || 'https://via.placeholder.com/300x200?text=No+Image';
-                const stockClass = getStockClass(p.stock);
-                const stockText = getStockText(p.stock);
-                
                 html += `
                     <div class="product-card" data-id="${p.id}">
                         <img src="${img}" class="product-image" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
@@ -229,7 +196,7 @@
                             <div class="product-sku">SKU: ${p.sku}</div>
                             <div class="product-category">${p.category || 'Uncategorized'}</div>
                             <div class="product-price">₹${Number(p.price).toLocaleString('en-IN')}</div>
-                            <div class="product-stock ${stockClass}">${stockText}</div>
+                            <div class="product-stock ${getStockClass(p.stock)}">${getStockText(p.stock)}</div>
                             <div class="product-actions">
                                 <button class="edit-btn" onclick="openEditModal(${p.id})">✏️ Edit</button>
                                 <button class="delete-btn" onclick="deleteProduct(${p.id})">🗑️ Delete</button>
@@ -237,25 +204,32 @@
                         </div>
                     </div>
                 `;
-            });
+            }
             grid.innerHTML = html;
         }
         
-        function escapeHtml(str) { return str?.replace(/[&<>]/g, function(m) { return {'&':'&amp;','<':'&lt;','>':'&gt;'}[m]; }) || ''; }
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { return {'&':'&amp;','<':'&lt;','>':'&gt;'}[m]; }); }
         
         window.searchProducts = function() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = allProducts.filter(p => 
-                p.name.toLowerCase().includes(searchTerm) || 
-                p.sku.toLowerCase().includes(searchTerm)
-            );
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(term) || p.sku.toLowerCase().includes(term));
             displayProducts(filtered);
         };
         
-        window.toggleForm = function() {
-            const form = document.getElementById('addForm');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-            if (form.style.display === 'block') window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.showAddForm = function() {
+            document.getElementById('addForm').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+        
+        window.hideAddForm = function() {
+            document.getElementById('addForm').style.display = 'none';
+            document.getElementById('sku').value = '';
+            document.getElementById('name').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('stock').value = '10';
+            document.getElementById('description').value = '';
+            document.getElementById('category').value = 'Necklaces';
+            for (let i = 1; i <= 5; i++) document.getElementById('img' + i).value = '';
         };
         
         window.saveProduct = async function() {
@@ -270,7 +244,11 @@
                 return;
             }
             
-            const images = [1,2,3,4,5].map(i => document.getElementById(`img${i}`).value.trim());
+            const images = [1,2,3,4,5].map(i => document.getElementById('img' + i).value.trim());
+            
+            const btn = document.getElementById('saveProductBtn');
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
             
             const { error } = await supabase.from('products').insert([{
                 sku, name, category, price: Number(price), stock: Number(stock),
@@ -278,27 +256,28 @@
                 images: images
             }]);
             
+            btn.disabled = false;
+            btn.textContent = '💾 Save Product';
+            
             if (error) { alert('Error: ' + error.message); return; }
             
             alert('✅ Product added successfully! Customers can now see it.');
-            toggleForm();
+            hideAddForm();
             await loadProducts();
-            ['sku','name','price','stock','description','img1','img2','img3','img4','img5'].forEach(id => document.getElementById(id).value = '');
-            document.getElementById('category').value = 'Necklaces';
         };
         
         window.openEditModal = async function(id) {
             const { data } = await supabase.from('products').select('*').eq('id', id);
-            const product = data?.[0];
-            if (!product) return;
+            const p = data?.[0];
+            if (!p) return;
             
-            document.getElementById('editId').value = product.id;
-            document.getElementById('editSku').value = product.sku || '';
-            document.getElementById('editName').value = product.name || '';
-            document.getElementById('editCategory').value = product.category || 'Necklaces';
-            document.getElementById('editPrice').value = product.price || '';
-            document.getElementById('editStock').value = product.stock || '';
-            document.getElementById('editDescription').value = product.description || '';
+            document.getElementById('editId').value = p.id;
+            document.getElementById('editSku').value = p.sku || '';
+            document.getElementById('editName').value = p.name || '';
+            document.getElementById('editCategory').value = p.category || 'Necklaces';
+            document.getElementById('editPrice').value = p.price || '';
+            document.getElementById('editStock').value = p.stock || '';
+            document.getElementById('editDescription').value = p.description || '';
             
             document.getElementById('editModal').style.display = 'block';
         };
@@ -317,9 +296,16 @@
                 return;
             }
             
+            const btn = document.getElementById('updateProductBtn');
+            btn.disabled = true;
+            btn.textContent = 'Updating...';
+            
             const { error } = await supabase.from('products').update({
                 sku, name, category, price: Number(price), stock: Number(stock), description
             }).eq('id', id);
+            
+            btn.disabled = false;
+            btn.textContent = '💾 Save Changes';
             
             if (error) { alert('Error: ' + error.message); return; }
             
@@ -330,8 +316,15 @@
         
         window.deleteProduct = async function(id) {
             if (!confirm('⚠️ Delete this product? This will remove it from customer view permanently.')) return;
+            
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Deleting...';
+            
             const { error } = await supabase.from('products').delete().eq('id', id);
-            if (error) { alert('Error: ' + error.message); return; }
+            
+            if (error) { alert('Error: ' + error.message); btn.disabled = false; btn.textContent = '🗑️ Delete'; return; }
+            
             alert('✅ Product deleted successfully.');
             await loadProducts();
         };
@@ -339,11 +332,7 @@
         window.closeEditModal = function() { document.getElementById('editModal').style.display = 'none'; };
         window.logout = function() { sessionStorage.removeItem('adminLoggedIn'); window.location.href = 'login.html'; };
         
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('editModal');
-            if (event.target === modal) closeEditModal();
-        };
+        window.onclick = function(event) { const modal = document.getElementById('editModal'); if (event.target === modal) closeEditModal(); };
         
         loadProducts();
     </script>
