@@ -80,18 +80,31 @@
         
         let cart = [];
         
+        // Helper function for Supabase requests
+        async function supabaseRequest(endpoint, options = {}) {
+            const defaultHeaders = {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            };
+            
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
+                ...options,
+                headers: { ...defaultHeaders, ...options.headers }
+            });
+            
+            if (!response.ok && options.method !== 'DELETE') {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            if (options.method === 'DELETE') return true;
+            return await response.json();
+        }
+        
         // Load cart from Supabase
         async function loadCart() {
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}&select=items`, {
-                    method: 'GET',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                });
-                
-                const data = await response.json();
+                const data = await supabaseRequest(`carts?session_id=eq.${sessionId}&select=items`);
                 if (data && data.length > 0 && data[0].items) {
                     cart = data[0].items;
                 } else {
@@ -106,18 +119,27 @@
             }
         }
         
-        // Save cart to Supabase
+        // Save cart to Supabase - using DELETE then INSERT to ensure clean state
         async function saveCart() {
             try {
                 const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                 
+                // First delete existing cart
+                await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                // Then insert new cart
                 await fetch(`${SUPABASE_URL}/rest/v1/carts`, {
                     method: 'POST',
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'resolution=merge-duplicates'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         session_id: sessionId,
@@ -128,8 +150,10 @@
                 });
                 
                 updateCartCount();
+                return true;
             } catch (error) {
                 console.error('Error saving cart:', error);
+                return false;
             }
         }
         
@@ -143,7 +167,7 @@
             if (itemIndex !== -1) {
                 cart[itemIndex].quantity = qty;
                 await saveCart();
-                displayCart();
+                await loadCart();
             }
         };
         
@@ -151,20 +175,23 @@
         window.removeItem = async function(id) {
             cart = cart.filter(item => item.id !== id);
             await saveCart();
-            displayCart();
+            await loadCart();
             showNotification('Item removed from cart', 'success');
         };
         
-        // Clear cart
+        // Clear cart - COMPLETELY EMPTY THE CART
         window.clearCart = async function() {
             if (cart.length === 0) {
                 alert('Cart is already empty');
                 return;
             }
             if (confirm('Clear all items from cart?')) {
+                // Set cart to empty array
                 cart = [];
+                // Save empty cart to database
                 await saveCart();
-                displayCart();
+                // Reload cart to refresh display
+                await loadCart();
                 showNotification('Cart cleared successfully', 'success');
             }
         };
@@ -224,13 +251,14 @@
         
         function updateCartCount() {
             const count = cart.reduce((t, i) => t + i.quantity, 0);
-            document.getElementById('cartCount').textContent = count;
+            const cartCountElement = document.getElementById('cartCount');
+            if (cartCountElement) cartCountElement.textContent = count;
         }
         
-        function showNotification(message) {
+        function showNotification(message, type = 'info') {
             const notif = document.createElement('div');
             notif.textContent = message;
-            notif.style.cssText = 'position:fixed; bottom:20px; right:20px; background:#28a745; color:white; padding:12px 24px; border-radius:50px; z-index:9999; font-weight:500; box-shadow:0 4px 12px rgba(0,0,0,0.2);';
+            notif.style.cssText = `position:fixed; bottom:20px; right:20px; background:${type === 'success' ? '#28a745' : '#d4af37'}; color:white; padding:12px 24px; border-radius:50px; z-index:9999; font-weight:500; box-shadow:0 4px 12px rgba(0,0,0,0.2);`;
             document.body.appendChild(notif);
             setTimeout(() => notif.remove(), 3000);
         }
