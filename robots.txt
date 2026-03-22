@@ -1,33 +1,56 @@
 # ============================================
-# robots.txt for Style Of Life Jewelry
-# Only customer pages are indexed
+# ROBOTS.TXT - Style Of Life Jewelry
+# SEO Optimized - Only Customer Pages Indexed
 # ============================================
 
 User-agent: *
-# Allow customer pages
+# Allow all crawlers to access customer pages
 Allow: /
 Allow: /index.html
 Allow: /track.html
 
-# BLOCK ALL ADMIN PAGES
+# ============================================
+# BLOCK ADMIN PAGES (No Index)
+# ============================================
 Disallow: /admin.html
 Disallow: /admin-products.html
 Disallow: /admin-orders.html
 Disallow: /login.html
 
+# ============================================
 # BLOCK TRANSACTIONAL PAGES
+# ============================================
 Disallow: /cart.html
 Disallow: /checkout.html
 
-# BLOCK ASSETS
+# ============================================
+# BLOCK ASSETS (No need to index)
+# ============================================
 Disallow: /js/
 Disallow: /css/
+Disallow: /images/
 
-# Sitemap location
+# ============================================
+# BLOCK PARAMETERS (Prevent duplicate content)
+# ============================================
+Disallow: /*?*
+Disallow: /*&*
+Disallow: /*utm*
+Disallow: /*ref*
+Disallow: /*source*
+
+# ============================================
+# CRAWL DELAY (Be respectful to search engines)
+# ============================================
+Crawl-delay: 3
+
+# ============================================
+# SITEMAP LOCATION
+# ============================================
 Sitemap: https://styleoflife987-hub.github.io/jewelry-store/sitemap.xml
 
 # ============================================
-# Googlebot Rules
+# GOOGLEBOT SPECIFIC RULES
 # ============================================
 User-agent: Googlebot
 Allow: /
@@ -37,9 +60,10 @@ Disallow: /admin*
 Disallow: /login*
 Disallow: /cart*
 Disallow: /checkout*
+Crawl-delay: 2
 
 # ============================================
-# Bingbot Rules
+# BINGBOT RULES
 # ============================================
 User-agent: Bingbot
 Allow: /
@@ -49,9 +73,43 @@ Disallow: /admin*
 Disallow: /login*
 Disallow: /cart*
 Disallow: /checkout*
+Crawl-delay: 2
 
 # ============================================
-# Block AI Crawlers
+# YANDEX RULES
+# ============================================
+User-agent: Yandex
+Allow: /
+Allow: /index.html
+Allow: /track.html
+Disallow: /admin*
+Disallow: /login*
+Crawl-delay: 3
+
+# ============================================
+# BAIDU RULES (Chinese search engine)
+# ============================================
+User-agent: Baiduspider
+Allow: /
+Allow: /index.html
+Allow: /track.html
+Disallow: /admin*
+Disallow: /login*
+Crawl-delay: 5
+
+# ============================================
+# DUCKDUCKGO RULES
+# ============================================
+User-agent: DuckDuckBot
+Allow: /
+Allow: /index.html
+Allow: /track.html
+Disallow: /admin*
+Disallow: /login*
+Crawl-delay: 3
+
+# ============================================
+# BLOCK AI CRAWLERS (Protect your content)
 # ============================================
 User-agent: GPTBot
 Disallow: /
@@ -61,3 +119,36 @@ Disallow: /
 
 User-agent: Google-Extended
 Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Omgilibot
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: MetaBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+# ============================================
+# ALLOW SPEED TEST TOOLS
+# ============================================
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Googlebot-Video
+Allow: /
+
+User-agent: Googlebot-News
+Allow: /
+
+User-agent: Google-InspectionTool
+Allow: /
