@@ -32,7 +32,10 @@
         .product-info { padding: 15px; }
         .product-info h4 { margin-bottom: 5px; }
         .product-price { color: var(--primary); font-weight: bold; margin: 10px 0; }
-        .delete-btn { background: var(--danger); color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; }
+        .edit-btn, .delete-btn { width: 48%; padding: 8px; margin-top: 10px; border: none; border-radius: 4px; cursor: pointer; }
+        .edit-btn { background: #2196f3; color: white; }
+        .delete-btn { background: var(--danger); color: white; }
+        .empty-state { text-align: center; padding: 50px; color: var(--gray-600); }
         footer { background: var(--darker); color: white; text-align: center; padding: 30px; margin-top: 60px; }
         @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .image-grid { grid-template-columns: repeat(2, 1fr); } header { flex-direction: column; gap: 15px; padding: 15px; } }
     </style>
@@ -78,7 +81,9 @@
             </div>
         </div>
         
-        <div id="productsGrid" class="product-grid"></div>
+        <div id="productsGrid" class="product-grid">
+            <div class="empty-state">Loading products...</div>
+        </div>
     </div>
 
     <footer><p>© 2026 STYLE OF LIFE</p></footer>
@@ -102,7 +107,7 @@
         function displayProducts(products) {
             const grid = document.getElementById('productsGrid');
             if (products.length === 0) {
-                grid.innerHTML = '<div style="text-align:center; padding:50px;">No products found</div>';
+                grid.innerHTML = '<div class="empty-state">No products found. Click "Add New Product" to get started.</div>';
                 return;
             }
             
@@ -117,7 +122,10 @@
                             <div style="color:#6c757d;">${p.sku} | ${p.category}</div>
                             <div class="product-price">₹${Number(p.price).toLocaleString()}</div>
                             <div>Stock: ${p.stock}</div>
-                            <button class="delete-btn" onclick="deleteProduct(${p.id})">Delete</button>
+                            <div style="display: flex; gap: 5px;">
+                                <button class="edit-btn" onclick="editProduct(${p.id})">Edit</button>
+                                <button class="delete-btn" onclick="deleteProduct(${p.id})">Delete</button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -155,17 +163,30 @@
                 return;
             }
             
-            alert('Product added!');
+            alert('✅ Product added successfully! Customers can now see it.');
             toggleForm();
             await loadProducts();
             ['sku','name','category','price','stock','description','img1','img2','img3','img4','img5'].forEach(id => document.getElementById(id).value = '');
         };
         
+        window.editProduct = async function(id) {
+            const { data } = await supabase.from('products').select('*').eq('id', id);
+            const product = data?.[0];
+            if (!product) return;
+            
+            const newName = prompt('Edit product name:', product.name);
+            if (newName && newName !== product.name) {
+                const { error } = await supabase.from('products').update({ name: newName }).eq('id', id);
+                if (error) alert('Error: ' + error.message);
+                else await loadProducts();
+            }
+        };
+        
         window.deleteProduct = async function(id) {
-            if (!confirm('Delete this product?')) return;
+            if (!confirm('Delete this product? This will remove it from customer view.')) return;
             const { error } = await supabase.from('products').delete().eq('id', id);
             if (error) { alert('Error: ' + error.message); return; }
-            alert('Product deleted');
+            alert('✅ Product deleted. No longer visible to customers.');
             await loadProducts();
         };
         
