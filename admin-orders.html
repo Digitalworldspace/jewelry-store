@@ -24,11 +24,11 @@
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--gray-200); }
         th { background: var(--gray-100); color: var(--gray-600); }
         .status-select { padding: 5px 10px; border-radius: 20px; border: none; cursor: pointer; font-weight: 500; }
-        .status-Pending { background: var(--warning); color: #856404; }
-        .status-Processing { background: #17a2b8; color: white; }
-        .status-Shipped { background: var(--success); color: white; }
-        .status-Delivered { background: #20c997; color: white; }
-        .status-Cancelled { background: var(--danger); color: white; }
+        .status-pending { background: var(--warning); color: #856404; }
+        .status-processing { background: #17a2b8; color: white; }
+        .status-shipped { background: var(--success); color: white; }
+        .status-delivered { background: #20c997; color: white; }
+        .status-cancelled { background: var(--danger); color: white; }
         .delete-btn { background: var(--danger); color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; }
         footer { background: var(--darker); color: white; text-align: center; padding: 30px; margin-top: 60px; }
         @media (max-width: 768px) { .stats { flex-direction: column; } header { flex-direction: column; gap: 15px; padding: 15px; } }
@@ -48,29 +48,22 @@
     <div class="container">
         <h1>Order Management</h1>
         <div class="stats" id="stats"></div>
-        <table>
-            <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
-            <tbody id="ordersList"></tbody>
-        </table>
+        
+        <div style="overflow-x: auto;">
+            <table>
+                <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Actions</th> </thead>
+                <tbody id="ordersList"></tbody>
+            </table>
+        </div>
     </div>
 
     <footer><p>© 2026 STYLE OF LIFE</p></footer>
 
-    <script type="importmap">
-        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
-    </script>
-    <script type="module">
-        import { createClient } from '@supabase/supabase-js';
-        
+    <script>
         if (!sessionStorage.getItem('adminLoggedIn')) window.location.href = 'login.html';
         
-        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-        
-        async function loadOrders() {
-            const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
-            if (error) { console.error(error); return; }
-            
-            const orders = data || [];
+        function loadOrders() {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
             const totalRevenue = orders.reduce((s, o) => s + (o.total || 0), 0);
             const pendingCount = orders.filter(o => o.status === 'Pending').length;
             
@@ -82,7 +75,7 @@
             
             const tbody = document.getElementById('ordersList');
             if (orders.length === 0) {
-                tbody.innerHTML = '.<td colspan="7" style="text-align:center">No orders found</td>.</tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center">No orders found</td></tr>';
                 return;
             }
             
@@ -91,12 +84,12 @@
                 const items = o.items.map(i => `${i.name} x${i.quantity}`).join('<br>');
                 html += `
                     <tr>
-                        <td><strong>${o.order_id}</strong></td>
-                        <td>${o.customer_name}<br><small>${o.phone}</small></td>
+                        <td><strong>${o.orderId}</strong></td>
+                        <td>${o.name}<br><small>${o.phone}</small></td>
                         <td><small>${items}</small></td>
-                        <td>₹${o.total.toLocaleString()}</td>
+                        <td>₹${o.total?.toLocaleString() || 0}</td>
                         <td>
-                            <select class="status-select status-${o.status}" onchange="updateStatus('${o.order_id}', this.value)">
+                            <select class="status-select status-${o.status?.toLowerCase()}" onchange="updateStatus('${o.orderId}', this.value)">
                                 <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
                                 <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
                                 <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
@@ -104,33 +97,38 @@
                                 <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
                             </select>
                         </td>
-                        <td>${new Date(o.created_at).toLocaleDateString()}</td>
-                        <td><button class="delete-btn" onclick="deleteOrder('${o.order_id}')">Delete</button></td>
+                        <td>${new Date(o.date).toLocaleDateString()}</td>
+                        <td><button class="delete-btn" onclick="deleteOrder('${o.orderId}')">Delete</button></td>
                     </tr>
                 `;
             });
             tbody.innerHTML = html;
         }
         
-        window.updateStatus = async function(orderId, status) {
-            const { error } = await supabase.from('orders').update({ status }).eq('order_id', orderId);
-            if (error) { alert('Error: ' + error.message); return; }
-            alert(`Order ${orderId} updated to ${status}`);
-            await loadOrders();
-        };
+        function updateStatus(orderId, status) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const index = orders.findIndex(o => o.orderId === orderId);
+            if (index >= 0) {
+                orders[index].status = status;
+                localStorage.setItem('orders', JSON.stringify(orders));
+                alert(`✅ Order ${orderId} updated to ${status}`);
+                loadOrders();
+            }
+        }
         
-        window.deleteOrder = async function(orderId) {
+        function deleteOrder(orderId) {
             if (!confirm('Delete this order?')) return;
-            const { error } = await supabase.from('orders').delete().eq('order_id', orderId);
-            if (error) { alert('Error: ' + error.message); return; }
-            alert('Order deleted');
-            await loadOrders();
-        };
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const filtered = orders.filter(o => o.orderId !== orderId);
+            localStorage.setItem('orders', JSON.stringify(filtered));
+            alert('✅ Order deleted');
+            loadOrders();
+        }
         
-        window.logout = function() { sessionStorage.removeItem('adminLoggedIn'); window.location.href = 'login.html'; };
+        function logout() { sessionStorage.removeItem('adminLoggedIn'); window.location.href = 'login.html'; }
         
         loadOrders();
-        setInterval(loadOrders, 10000);
+        setInterval(loadOrders, 5000);
     </script>
 </body>
 </html>
