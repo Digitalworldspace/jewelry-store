@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Style Of Life - Luxury Jewelry</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -367,18 +366,11 @@
         <p style="margin-top: 12px; font-size: 12px;">Ethically Sourced | Carbon Neutral | Certified B Corporation</p>
     </footer>
 
-    <script type="importmap">
-        {
-            "imports": {
-                "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
-            }
-        }
-    </script>
-    <script type="module">
-        import { createClient } from '@supabase/supabase-js';
-        import { getCart, addToCart, getProducts, saveCart } from './js/supabase-client.js';
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = "https://tbopyyocuvlsjvtdogcp.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRib3B5eW9jdXZsc2p2dGRvZ2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYxNzcsImV4cCI6MjA4OTYxMjE3N30.TfEtU1NBHCGnZqZzm4LuI1iw22lSPav0OrUskhDw5wc";
         
-        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let cart = [];
         let sessionId = localStorage.getItem('sessionId');
         let autoPlayIntervals = {};
@@ -386,11 +378,31 @@
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
+            console.log('New session created:', sessionId);
         }
         
+        // Helper function for Supabase requests
+        async function supabaseFetch(url, options = {}) {
+            const defaultOptions = {
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+            const response = await fetch(url, { ...defaultOptions, ...options });
+            return await response.json();
+        }
+        
+        // Load products from Supabase
         async function loadProducts() {
-            const products = await getProducts();
-            displayProducts(products);
+            try {
+                const products = await supabaseFetch(`${SUPABASE_URL}/rest/v1/products?select=*&order=id.asc`);
+                displayProducts(products || []);
+            } catch (error) {
+                console.error('Error loading products:', error);
+                document.getElementById('products').innerHTML = '<div class="loading"><p>Unable to load collection</p></div>';
+            }
         }
         
         function displayProducts(products) {
@@ -443,7 +455,7 @@
                         </div>
                         <div class="product-info">
                             <div class="product-sku">${p.sku}</div>
-                            <div class="product-name">${p.name}</div>
+                            <div class="product-name">${escapeHtml(p.name)}</div>
                             <div class="product-category">${p.category || 'Fine Jewelry'}</div>
                             <div class="product-price">₹${(p.price || 0).toLocaleString('en-IN')}</div>
                             <div class="product-stock ${stockClass}">${stockText}</div>
@@ -497,16 +509,14 @@
             if (counter) counter.textContent = `${slider.children.length} photos`;
         };
         
-        async function loadCartData() {
-            const cartData = await getCart();
-            cart = cartData.items;
-            updateCartCount();
-        }
-        
+        // Add to Cart Function
         window.addToCartHandler = async function(productId) {
             try {
-                const { data: products, error } = await supabase.from('products').select('*').eq('id', productId);
-                if (error) throw error;
+                console.log('Adding to cart:', productId);
+                
+                // Fetch product details
+                const products = await supabaseFetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${productId}&select=*`);
+                
                 if (!products || products.length === 0) {
                     alert('Product not found');
                     return;
@@ -519,34 +529,108 @@
                     return;
                 }
                 
-                const result = await addToCart(product, 1);
+                // Get current cart
+                const cartResponse = await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}&select=*`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
                 
-                if (result.success) {
-                    cart = result.items;
-                    updateCartCount();
-                    
-                    const notif = document.createElement('div');
-                    notif.textContent = `✨ ${product.name} added to cart!`;
-                    notif.style.cssText = 'position:fixed; bottom:20px; right:20px; background:#d4af37; color:#1a1a1a; padding:12px 24px; border-radius:50px; z-index:9999; font-weight:500; box-shadow:0 4px 12px rgba(0,0,0,0.2);';
-                    document.body.appendChild(notif);
-                    setTimeout(() => notif.remove(), 3000);
+                let cartData = await cartResponse.json();
+                let cartItems = (cartData && cartData.length > 0 && cartData[0].items) ? cartData[0].items : [];
+                
+                // Check if item already in cart
+                const existingIndex = cartItems.findIndex(i => i.id === productId);
+                if (existingIndex >= 0) {
+                    if (cartItems[existingIndex].quantity + 1 > product.stock) {
+                        alert(`Only ${product.stock} items available in stock!`);
+                        return;
+                    }
+                    cartItems[existingIndex].quantity += 1;
                 } else {
-                    alert('Error adding to cart: ' + (result.error || 'Unknown error'));
+                    cartItems.push({
+                        id: product.id,
+                        sku: product.sku,
+                        name: product.name,
+                        price: product.price,
+                        quantity: 1,
+                        image: product.images?.[0] || ''
+                    });
                 }
+                
+                // Save cart
+                const total = cartItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+                await fetch(`${SUPABASE_URL}/rest/v1/carts`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'resolution=merge-duplicates'
+                    },
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        items: cartItems,
+                        total: total,
+                        updated_at: new Date().toISOString()
+                    })
+                });
+                
+                // Update cart count display
+                const cartCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
+                const cartCountElement = document.getElementById('cartCount');
+                if (cartCountElement) cartCountElement.textContent = cartCount;
+                
+                // Show notification
+                showNotification(`✨ ${product.name} added to cart!`);
+                
             } catch (err) {
                 console.error('Add to cart error:', err);
                 alert('Error adding to cart. Please try again.');
             }
         };
         
-        function updateCartCount() {
-            const count = cart.reduce((t, i) => t + (i.quantity || 1), 0);
-            const cartCountElement = document.getElementById('cartCount');
-            if (cartCountElement) cartCountElement.textContent = count;
+        // Load cart count on page load
+        async function loadCartCount() {
+            try {
+                const cartResponse = await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}&select=*`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                let cartData = await cartResponse.json();
+                let cartItems = (cartData && cartData.length > 0 && cartData[0].items) ? cartData[0].items : [];
+                const cartCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
+                const cartCountElement = document.getElementById('cartCount');
+                if (cartCountElement) cartCountElement.textContent = cartCount;
+            } catch (err) {
+                console.error('Error loading cart count:', err);
+            }
         }
         
+        function showNotification(message) {
+            const notif = document.createElement('div');
+            notif.textContent = message;
+            notif.style.cssText = 'position:fixed; bottom:20px; right:20px; background:#d4af37; color:#1a1a1a; padding:12px 24px; border-radius:50px; z-index:9999; font-weight:500; box-shadow:0 4px 12px rgba(0,0,0,0.2); animation:fadeInUp 0.3s ease;';
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                return {'&':'&amp;','<':'&lt;','>':'&gt;'}[m];
+            });
+        }
+        
+        // Initialize
         loadProducts();
-        loadCartData();
+        loadCartCount();
     </script>
 </body>
 </html>
