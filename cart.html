@@ -2,16 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Shopping Cart - Style Of Life | Luxury Jewelry</title>
-    <meta name="description" content="Review your luxury jewelry selections. Secure checkout with free shipping on orders above ₹50,000.">
-    <meta name="robots" content="noindex, follow">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Style Of Life</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --gold: #E8C47E; --gold-dark: #D4AF37; --gold-light: #F5E6C6; --charcoal: #2C2C2C; --dark: #1A1A1A; --light: #FFFFFF; --cream: #FAF7F2; --danger: #dc3545; --success: #28a745; }
+        :root { --gold: #E8C47E; --gold-dark: #D4AF37; --charcoal: #2C2C2C; --dark: #1A1A1A; --cream: #FAF7F2; --danger: #dc3545; }
         body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--charcoal); }
         
         .logo { display: inline-flex; align-items: center; justify-content: center; position: relative; }
@@ -33,32 +30,30 @@
         .page-title { color: var(--gold-dark); margin-bottom: 30px; font-size: 32px; font-family: 'Playfair Display', serif; }
         
         .cart-items { background: white; border-radius: 24px; overflow: hidden; border: 1px solid rgba(212,175,55,0.15); margin-bottom: 30px; }
-        .cart-item { display: grid; grid-template-columns: 100px 2fr 1fr 120px 100px 50px; gap: 15px; align-items: center; padding: 20px; border-bottom: 1px solid #efefef; transition: all 0.3s; }
+        .cart-item { display: grid; grid-template-columns: 100px 2fr 1fr 120px 100px 50px; gap: 15px; align-items: center; padding: 20px; border-bottom: 1px solid #efefef; }
         .cart-item:last-child { border-bottom: none; }
-        .cart-item:hover { background: rgba(212,175,55,0.03); }
         .cart-item-image { width: 80px; height: 80px; object-fit: cover; border-radius: 12px; border: 1px solid #efefef; }
         .cart-item-name { font-weight: 600; font-size: 16px; margin-bottom: 5px; }
         .cart-item-sku { font-size: 11px; color: #888; text-transform: uppercase; }
         .cart-item-price { color: var(--gold-dark); font-weight: 700; font-size: 18px; }
         .cart-item-quantity input { width: 65px; padding: 8px; border: 1px solid #ddd; border-radius: 30px; text-align: center; font-size: 14px; }
         .cart-item-total { font-weight: 700; font-size: 18px; color: var(--charcoal); }
-        .remove-item { background: none; border: none; color: var(--danger); font-size: 20px; cursor: pointer; transition: all 0.3s; width: auto; padding: 5px; }
+        .remove-item { background: none; border: none; color: var(--danger); font-size: 20px; cursor: pointer; width: auto; padding: 5px; }
         .remove-item:hover { color: #c82333; transform: scale(1.1); }
         
         .cart-summary { background: white; border-radius: 24px; padding: 30px; border: 1px solid rgba(212,175,55,0.15); position: sticky; top: 100px; }
         .summary-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--gold); }
         .summary-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #efefef; }
-        .summary-row.total { border-bottom: none; font-size: 20px; font-weight: 700; color: var(--gold-dark); padding-top: 15px; margin-top: 5px; }
-        .checkout-btn { display: block; width: 100%; padding: 16px; background: linear-gradient(135deg, #D4AF37, #E8C47E); border: none; border-radius: 50px; color: #1A1A1A; font-weight: 700; text-align: center; text-decoration: none; margin-top: 20px; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
-        .checkout-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(212,175,55,0.3); letter-spacing: 1.5px; }
+        .summary-row.total { border-bottom: none; font-size: 20px; font-weight: 700; color: var(--gold-dark); padding-top: 15px; }
+        .checkout-btn { display: block; width: 100%; padding: 16px; background: linear-gradient(135deg, #D4AF37, #E8C47E); border: none; border-radius: 50px; color: #1A1A1A; font-weight: 700; text-align: center; text-decoration: none; margin-top: 20px; transition: all 0.3s; text-transform: uppercase; }
+        .checkout-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(212,175,55,0.3); }
         .clear-cart { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 12px; border-radius: 50px; width: 100%; margin-top: 15px; cursor: pointer; transition: all 0.3s; font-weight: 500; }
         .clear-cart:hover { background: var(--danger); color: white; }
         
         .empty-cart { text-align: center; padding: 80px; background: white; border-radius: 24px; border: 1px solid rgba(212,175,55,0.15); }
         .empty-cart-icon { font-size: 80px; margin-bottom: 20px; }
-        .empty-cart h3 { font-size: 24px; margin-bottom: 10px; color: var(--charcoal); }
-        .empty-cart p { color: #888; margin-bottom: 25px; }
-        .continue-shopping { display: inline-block; padding: 12px 35px; background: linear-gradient(135deg, #D4AF37, #E8C47E); border-radius: 50px; color: #1A1A1A; text-decoration: none; font-weight: 600; transition: all 0.3s; }
+        .empty-cart h3 { font-size: 24px; margin-bottom: 10px; }
+        .continue-shopping { display: inline-block; padding: 12px 35px; background: linear-gradient(135deg, #D4AF37, #E8C47E); border-radius: 50px; color: #1A1A1A; text-decoration: none; font-weight: 600; }
         .continue-shopping:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
         
         footer { background: #1A1A1A; color: #aaa; text-align: center; padding: 40px; margin-top: 60px; }
@@ -66,8 +61,6 @@
         @media (max-width: 768px) {
             header { flex-direction: column; gap: 12px; padding: 15px 20px; }
             .cart-item { grid-template-columns: 70px 1fr; gap: 10px; }
-            .cart-item-image { width: 60px; height: 60px; }
-            .cart-item-price, .cart-item-total { font-size: 14px; }
             .cart-summary { position: static; margin-top: 20px; }
         }
     </style>
@@ -97,171 +90,13 @@
         <p>© 2026 STYLE OF LIFE. All rights reserved. | Luxury Jewelry Since 2020</p>
     </footer>
 
-    <script type="importmap">
-        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
-    </script>
-    <script type="module">
-        import { createClient } from '@supabase/supabase-js';
-        
-        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-        let cart = [];
-        let sessionId = localStorage.getItem('sessionId');
-        
-        if (!sessionId) {
-            sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('sessionId', sessionId);
-        }
-        
-        async function loadCart() {
-            try {
-                const { data, error } = await supabase
-                    .from('carts')
-                    .select('items')
-                    .eq('session_id', sessionId)
-                    .maybeSingle();
-                
-                if (error) throw error;
-                cart = data?.items || [];
-                renderCart();
-                updateCartCount();
-            } catch (error) {
-                console.error('Error loading cart:', error);
-                const localCart = localStorage.getItem('cart');
-                if (localCart) {
-                    cart = JSON.parse(localCart);
-                    renderCart();
-                    updateCartCount();
-                }
-            }
-        }
-        
-        async function saveCart() {
-            try {
-                const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-                await supabase
-                    .from('carts')
-                    .upsert({ session_id: sessionId, items: cart, total: total, updated_at: new Date().toISOString() });
-                localStorage.setItem('cart', JSON.stringify(cart));
-            } catch (error) {
-                console.error('Error saving cart:', error);
-                localStorage.setItem('cart', JSON.stringify(cart));
-            }
-        }
-        
-        async function updateQuantity(productId, newQuantity) {
-            const item = cart.find(i => i.id === productId);
-            if (item) {
-                newQuantity = parseInt(newQuantity);
-                if (newQuantity < 1) {
-                    cart = cart.filter(i => i.id !== productId);
-                } else {
-                    item.quantity = Math.min(newQuantity, 10);
-                }
-                await saveCart();
-                renderCart();
-                updateCartCount();
-            }
-        }
-        
-        async function removeItem(productId) {
-            cart = cart.filter(i => i.id !== productId);
-            await saveCart();
-            renderCart();
-            updateCartCount();
-            showNotification('Item removed from cart', 'info');
-        }
-        
-        async function clearCart() {
-            if (cart.length === 0) return;
-            if (confirm('Are you sure you want to clear your cart?')) {
-                cart = [];
-                await saveCart();
-                renderCart();
-                updateCartCount();
-                showNotification('Cart cleared', 'info');
-            }
-        }
-        
-        function renderCart() {
-            const container = document.getElementById('cartContent');
-            
-            if (cart.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-cart">
-                        <div class="empty-cart-icon">🛒</div>
-                        <h3>Your cart is empty</h3>
-                        <p>Looks like you haven't added any items to your cart yet.</p>
-                        <a href="index.html" class="continue-shopping">Continue Shopping</a>
-                    </div>
-                `;
-                return;
-            }
-            
-            let subtotal = 0;
-            let itemsHtml = '';
-            
-            cart.forEach(item => {
-                const itemTotal = item.price * item.quantity;
-                subtotal += itemTotal;
-                itemsHtml += `
-                    <div class="cart-item">
-                        <img src="${item.image || 'https://via.placeholder.com/80x80?text=No+Image'}" class="cart-item-image" onerror="this.src='https://via.placeholder.com/80x80?text=No+Image'">
-                        <div>
-                            <div class="cart-item-name">${item.name}</div>
-                            <div class="cart-item-sku">SKU: ${item.sku}</div>
-                        </div>
-                        <div class="cart-item-price">₹${item.price.toLocaleString('en-IN')}</div>
-                        <div class="cart-item-quantity">
-                            <input type="number" value="${item.quantity}" min="1" max="10" onchange="updateQuantity(${item.id}, this.value)">
-                        </div>
-                        <div class="cart-item-total">₹${itemTotal.toLocaleString('en-IN')}</div>
-                        <button class="remove-item" onclick="removeItem(${item.id})">✕</button>
-                    </div>
-                `;
-            });
-            
-            const tax = Math.round(subtotal * 0.18);
-            const shipping = subtotal >= 50000 ? 0 : 100;
-            const total = subtotal + tax + shipping;
-            
-            container.innerHTML = `
-                <div style="display: grid; grid-template-columns: 1fr 380px; gap: 30px;">
-                    <div class="cart-items">${itemsHtml}</div>
-                    <div class="cart-summary">
-                        <div class="summary-title">Order Summary</div>
-                        <div class="summary-row"><span>Subtotal</span><span>₹${subtotal.toLocaleString('en-IN')}</span></div>
-                        <div class="summary-row"><span>Shipping</span><span>${shipping === 0 ? 'Free' : '₹' + shipping.toLocaleString()}</span></div>
-                        <div class="summary-row"><span>GST (18%)</span><span>₹${tax.toLocaleString('en-IN')}</span></div>
-                        <div class="summary-row total"><span>Total</span><span>₹${total.toLocaleString('en-IN')}</span></div>
-                        <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
-                        <button class="clear-cart" onclick="clearCart()">Clear Cart</button>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function updateCartCount() {
-            const count = cart.reduce((t, i) => t + i.quantity, 0);
-            document.getElementById('cartCount').textContent = count;
-        }
-        
-        function showNotification(message, type = 'success') {
-            const notif = document.createElement('div');
-            notif.style.cssText = `position:fixed; bottom:20px; right:20px; background:${type === 'success' ? 'linear-gradient(135deg, #28a745, #20c997)' : '#dc3545'}; color:white; padding:12px 24px; border-radius:50px; z-index:3000; animation:slideIn 0.3s; font-weight:500;`;
-            notif.textContent = message;
-            document.body.appendChild(notif);
-            setTimeout(() => notif.remove(), 3000);
-        }
-        
-        window.updateQuantity = updateQuantity;
-        window.removeItem = removeItem;
-        window.clearCart = clearCart;
-        
-        loadCart();
-    </script>
-    
-    <!-- Analytics Tracking -->
-    <script src="js/analytics.js"></script>
     <script src="js/cart.js"></script>
+    <script>
+        // Display cart on load
+        document.addEventListener('DOMContentLoaded', function() {
+            displayCartPage();
+        });
+    </script>
+    <script src="js/analytics.js"></script>
 </body>
 </html>
