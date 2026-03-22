@@ -32,6 +32,9 @@
         .empty-cart h3 { color: var(--primary); margin-bottom: 15px; }
         .continue-shopping { display: inline-block; margin-top: 20px; padding: 12px 30px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; }
         footer { background: #0a0a0a; color: white; text-align: center; padding: 40px; margin-top: 60px; }
+        .loading { text-align: center; padding: 40px; }
+        .spinner { width: 30px; height: 30px; border: 2px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.6s linear infinite; margin: 0 auto 10px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 768px) { 
             header { flex-direction: column; gap: 15px; padding: 15px; }
             .cart-item { grid-template-columns: 80px 1fr; gap: 10px; }
@@ -51,7 +54,9 @@
 
     <div class="container">
         <h1 style="color: var(--primary); margin-bottom: 30px;">Shopping Cart</h1>
-        <div id="cartItems"></div>
+        <div id="cartItems">
+            <div class="loading"><div class="spinner"></div><p>Loading cart...</p></div>
+        </div>
         <div class="cart-summary" id="cartSummary" style="display: none;">
             <div class="summary-row"><span>Subtotal:</span><span>₹<span id="subtotal">0</span></span></div>
             <div class="summary-row"><span>Shipping:</span><span>₹100</span></div>
@@ -76,56 +81,19 @@
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
+            console.log('New session created:', sessionId);
         }
         
         let cart = [];
+        let isLoading = false;
         
         // Helper function for Supabase requests
-        async function supabaseRequest(endpoint, options = {}) {
-            const defaultHeaders = {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                'Content-Type': 'application/json'
-            };
-            
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
-                ...options,
-                headers: { ...defaultHeaders, ...options.headers }
-            });
-            
-            if (!response.ok && options.method !== 'DELETE') {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            if (options.method === 'DELETE') return true;
-            return await response.json();
-        }
-        
-        // Load cart from Supabase
-        async function loadCart() {
+        async function saveCartToDatabase(items) {
             try {
-                const data = await supabaseRequest(`carts?session_id=eq.${sessionId}&select=items`);
-                if (data && data.length > 0 && data[0].items) {
-                    cart = data[0].items;
-                } else {
-                    cart = [];
-                }
-                displayCart();
-                updateCartCount();
-            } catch (error) {
-                console.error('Error loading cart:', error);
-                cart = [];
-                displayCart();
-            }
-        }
-        
-        // Save cart to Supabase - using DELETE then INSERT to ensure clean state
-        async function saveCart() {
-            try {
-                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                 
-                // First delete existing cart
-                await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}`, {
+                // First, delete existing cart
+                const deleteResponse = await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}`, {
                     method: 'DELETE',
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
@@ -133,8 +101,18 @@
                     }
                 });
                 
-                // Then insert new cart
-                await fetch(`${SUPABASE_URL}/rest/v1/carts`, {
+                if (!deleteResponse.ok) {
+                    console.warn('Delete response:', deleteResponse.status);
+                }
+                
+                // If cart is empty, we're done
+                if (items.length === 0) {
+                    console.log('Cart cleared successfully');
+                    return true;
+                }
+                
+                // Insert new cart
+                const insertResponse = await fetch(`${SUPABASE_URL}/rest/v1/carts`, {
                     method: 'POST',
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
@@ -143,17 +121,60 @@
                     },
                     body: JSON.stringify({
                         session_id: sessionId,
-                        items: cart,
+                        items: items,
                         total: total,
                         updated_at: new Date().toISOString()
                     })
                 });
                 
-                updateCartCount();
+                if (!insertResponse.ok) {
+                    throw new Error(`Insert failed: ${insertResponse.status}`);
+                }
+                
+                console.log('Cart saved successfully, items:', items.length);
                 return true;
             } catch (error) {
                 console.error('Error saving cart:', error);
                 return false;
+            }
+        }
+        
+        // Load cart from Supabase
+        async function loadCartFromDatabase() {
+            if (isLoading) return;
+            isLoading = true;
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}&select=items`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.length > 0 && data[0].items) {
+                    cart = data[0].items;
+                    console.log('Cart loaded from DB:', cart.length, 'items');
+                } else {
+                    cart = [];
+                    console.log('No cart found, empty cart');
+                }
+                
+                displayCart();
+                updateCartCount();
+            } catch (error) {
+                console.error('Error loading cart:', error);
+                cart = [];
+                displayCart();
+            } finally {
+                isLoading = false;
             }
         }
         
@@ -166,33 +187,48 @@
             const itemIndex = cart.findIndex(i => i.id === id);
             if (itemIndex !== -1) {
                 cart[itemIndex].quantity = qty;
-                await saveCart();
-                await loadCart();
+                const saved = await saveCartToDatabase(cart);
+                if (saved) {
+                    await loadCartFromDatabase();
+                    showNotification('Quantity updated');
+                } else {
+                    showNotification('Error updating quantity', 'error');
+                }
             }
         };
         
-        // Remove item
+        // Remove item - COMPLETELY REMOVE FROM CART AND DATABASE
         window.removeItem = async function(id) {
-            cart = cart.filter(item => item.id !== id);
-            await saveCart();
-            await loadCart();
-            showNotification('Item removed from cart', 'success');
+            console.log('Removing item with ID:', id);
+            const newCart = cart.filter(item => item.id !== id);
+            cart = newCart;
+            
+            const saved = await saveCartToDatabase(cart);
+            if (saved) {
+                await loadCartFromDatabase();
+                showNotification('Item removed from cart', 'success');
+            } else {
+                showNotification('Error removing item', 'error');
+            }
         };
         
-        // Clear cart - COMPLETELY EMPTY THE CART
+        // Clear cart - COMPLETELY EMPTY THE CART AND DATABASE
         window.clearCart = async function() {
             if (cart.length === 0) {
                 alert('Cart is already empty');
                 return;
             }
+            
             if (confirm('Clear all items from cart?')) {
-                // Set cart to empty array
+                console.log('Clearing cart...');
                 cart = [];
-                // Save empty cart to database
-                await saveCart();
-                // Reload cart to refresh display
-                await loadCart();
-                showNotification('Cart cleared successfully', 'success');
+                const saved = await saveCartToDatabase(cart);
+                if (saved) {
+                    await loadCartFromDatabase();
+                    showNotification('Cart cleared successfully', 'success');
+                } else {
+                    showNotification('Error clearing cart', 'error');
+                }
             }
         };
         
@@ -253,18 +289,30 @@
             const count = cart.reduce((t, i) => t + i.quantity, 0);
             const cartCountElement = document.getElementById('cartCount');
             if (cartCountElement) cartCountElement.textContent = count;
+            
+            // Also update localStorage for quick access
+            localStorage.setItem('cartCount', count);
         }
         
         function showNotification(message, type = 'info') {
             const notif = document.createElement('div');
             notif.textContent = message;
-            notif.style.cssText = `position:fixed; bottom:20px; right:20px; background:${type === 'success' ? '#28a745' : '#d4af37'}; color:white; padding:12px 24px; border-radius:50px; z-index:9999; font-weight:500; box-shadow:0 4px 12px rgba(0,0,0,0.2);`;
+            const bgColor = type === 'success' ? '#28a745' : (type === 'error' ? '#dc3545' : '#d4af37');
+            const textColor = type === 'error' ? 'white' : '#1a1a1a';
+            notif.style.cssText = `position:fixed; bottom:20px; right:20px; background:${bgColor}; color:${textColor}; padding:12px 24px; border-radius:50px; z-index:9999; font-weight:500; box-shadow:0 4px 12px rgba(0,0,0,0.2); animation:fadeInUp 0.3s ease;`;
             document.body.appendChild(notif);
             setTimeout(() => notif.remove(), 3000);
         }
         
         // Load cart on page load
-        loadCart();
+        loadCartFromDatabase();
+        
+        // Also listen for page visibility to refresh cart when coming back
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                loadCartFromDatabase();
+            }
+        });
     </script>
 </body>
 </html>
