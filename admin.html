@@ -3,7 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ========== SECURITY HEADERS ========== -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta name="format-detection" content="telephone=no">
+    
+    <!-- ========== COMPLETELY HIDDEN FROM SEARCH ENGINES ========== -->
     <title>Admin Dashboard - Style Of Life</title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="googlebot" content="noindex, nofollow">
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="js/config.js"></script>
     <style>
@@ -85,82 +96,82 @@
         <p style="margin-top: 8px; font-size: 12px;">Admin Dashboard v1.0</p>
     </footer>
 
-    <script type="importmap">
-        {
-            "imports": {
-                "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
-            }
-        }
-    </script>
-    <script type="module">
-        import { createClient } from '@supabase/supabase-js';
+    <script>
+        const SUPABASE_URL = "https://tbopyyocuvlsjvtdogcp.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRib3B5eW9jdXZsc2p2dGRvZ2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYxNzcsImV4cCI6MjA4OTYxMjE3N30.TfEtU1NBHCGnZqZzm4LuI1iw22lSPav0OrUskhDw5wc";
         
         if (!sessionStorage.getItem('adminLoggedIn')) {
             window.location.href = 'login.html';
         }
         
-        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-        
         async function loadDashboard() {
-            const [productsResult, ordersResult] = await Promise.all([
-                supabase.from('products').select('*'),
-                supabase.from('orders').select('*').order('created_at', { ascending: false })
-            ]);
-            
-            const products = productsResult.data || [];
-            const orders = ordersResult.data || [];
-            
-            const productCount = products.length;
-            const totalOrders = orders.length;
-            const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
-            const pendingOrders = orders.filter(o => o.status === 'Pending').length;
-            
-            document.getElementById('statProducts').textContent = productCount;
-            document.getElementById('statOrders').textContent = totalOrders;
-            document.getElementById('statRevenue').textContent = '₹' + totalRevenue.toLocaleString();
-            document.getElementById('statPending').textContent = pendingOrders;
-            
-            const recentOrdersDiv = document.getElementById('recentOrders');
-            if (orders.length === 0) {
-                recentOrdersDiv.innerHTML = '<div class="empty-message">📭 No orders placed yet</div>';
-            } else {
-                let ordersHtml = '';
-                orders.slice(0, 5).forEach(o => {
-                    let statusClass = '';
-                    if (o.status === 'Pending') statusClass = 'badge-pending';
-                    else if (o.status === 'Processing') statusClass = 'badge-processing';
-                    else if (o.status === 'Shipped') statusClass = 'badge-shipped';
-                    else statusClass = 'badge-pending';
-                    
-                    ordersHtml += `
-                        <div class="order-item">
-                            <span><strong>${o.order_id}</strong></span>
-                            <span>${escapeHtml(o.customer_name)}</span>
-                            <span class="badge ${statusClass}">${o.status}</span>
-                            <span>₹${o.total.toLocaleString()}</span>
-                            <span style="font-size: 12px; color: var(--gray-600);">${new Date(o.created_at).toLocaleDateString()}</span>
-                        </div>
-                    `;
-                });
-                recentOrdersDiv.innerHTML = ordersHtml;
-            }
-            
-            const productsListDiv = document.getElementById('productsList');
-            if (products.length === 0) {
-                productsListDiv.innerHTML = '<div class="empty-message">📦 No products added. Click "Manage" to add your first product.</div>';
-            } else {
-                let productsHtml = '';
-                products.slice(0, 5).forEach(p => {
-                    productsHtml += `
-                        <div class="product-item">
-                            <span><strong>${escapeHtml(p.name)}</strong></span>
-                            <span style="color: var(--gray-600);">SKU: ${p.sku}</span>
-                            <span>Stock: ${p.stock}</span>
-                            <span style="color: var(--primary); font-weight: 600;">₹${p.price.toLocaleString()}</span>
-                        </div>
-                    `;
-                });
-                productsListDiv.innerHTML = productsHtml;
+            try {
+                const [productsRes, ordersRes] = await Promise.all([
+                    fetch(`${SUPABASE_URL}/rest/v1/products?select=*`, {
+                        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                    }),
+                    fetch(`${SUPABASE_URL}/rest/v1/orders?select=*&order=created_at.desc`, {
+                        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                    })
+                ]);
+                
+                const products = await productsRes.json();
+                const orders = await ordersRes.json();
+                
+                const productCount = products.length;
+                const totalOrders = orders.length;
+                const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+                const pendingOrders = orders.filter(o => o.status === 'Pending').length;
+                
+                document.getElementById('statProducts').textContent = productCount;
+                document.getElementById('statOrders').textContent = totalOrders;
+                document.getElementById('statRevenue').textContent = '₹' + totalRevenue.toLocaleString();
+                document.getElementById('statPending').textContent = pendingOrders;
+                
+                const recentOrdersDiv = document.getElementById('recentOrders');
+                if (orders.length === 0) {
+                    recentOrdersDiv.innerHTML = '<div class="empty-message">📭 No orders placed yet</div>';
+                } else {
+                    let ordersHtml = '';
+                    orders.slice(0, 5).forEach(o => {
+                        let statusClass = '';
+                        if (o.status === 'Pending') statusClass = 'badge-pending';
+                        else if (o.status === 'Processing') statusClass = 'badge-processing';
+                        else if (o.status === 'Shipped') statusClass = 'badge-shipped';
+                        else statusClass = 'badge-pending';
+                        
+                        ordersHtml += `
+                            <div class="order-item">
+                                <span><strong>${o.order_id}</strong></span>
+                                <span>${escapeHtml(o.customer_name)}</span>
+                                <span class="badge ${statusClass}">${o.status}</span>
+                                <span>₹${o.total.toLocaleString()}</span>
+                                <span style="font-size: 12px; color: var(--gray-600);">${new Date(o.created_at).toLocaleDateString()}</span>
+                            </div>
+                        `;
+                    });
+                    recentOrdersDiv.innerHTML = ordersHtml;
+                }
+                
+                const productsListDiv = document.getElementById('productsList');
+                if (products.length === 0) {
+                    productsListDiv.innerHTML = '<div class="empty-message">📦 No products added. Click "Manage" to add your first product.</div>';
+                } else {
+                    let productsHtml = '';
+                    products.slice(0, 5).forEach(p => {
+                        productsHtml += `
+                            <div class="product-item">
+                                <span><strong>${escapeHtml(p.name)}</strong></span>
+                                <span style="color: var(--gray-600);">SKU: ${p.sku}</span>
+                                <span>Stock: ${p.stock}</span>
+                                <span style="color: var(--primary); font-weight: 600;">₹${p.price.toLocaleString()}</span>
+                            </div>
+                        `;
+                    });
+                    productsListDiv.innerHTML = productsHtml;
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
             }
         }
         
