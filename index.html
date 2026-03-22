@@ -3,17 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Style Of Life - Premium Luxury Jewelry | Gold Necklaces, Diamond Rings</title>
-    <meta name="description" content="Discover exquisite handcrafted jewelry at Style Of Life. Shop premium gold necklaces, diamond rings, pearl earrings, and luxury bracelets. Free shipping & lifetime warranty.">
-    <meta name="keywords" content="luxury jewelry, gold necklace, diamond ring, pearl earrings, fine jewelry, handcrafted jewelry">
-    <meta name="author" content="Style Of Life Jewelry">
-    <meta name="robots" content="index, follow">
-    
+    <title>Style Of Life - Premium Luxury Jewelry</title>
+    <meta name="description" content="Discover exquisite handcrafted jewelry at Style Of Life. Shop premium gold necklaces, diamond rings, pearl earrings, and luxury bracelets.">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --gold: #E8C47E; --gold-dark: #D4AF37; --gold-light: #F5E6C6; --charcoal: #2C2C2C; --dark: #1A1A1A; --light: #FFFFFF; --cream: #FAF7F2; --success: #28a745; --danger: #dc3545; }
+        :root { --gold: #E8C47E; --gold-dark: #D4AF37; --charcoal: #2C2C2C; --dark: #1A1A1A; --cream: #FAF7F2; --success: #28a745; --danger: #dc3545; }
         body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--charcoal); }
         
         .logo { display: inline-flex; align-items: center; justify-content: center; position: relative; }
@@ -38,7 +34,7 @@
         .hero h1 { font-family: 'Playfair Display', serif; font-size: 68px; font-weight: 700; margin-bottom: 20px; }
         .hero h1 span { background: linear-gradient(135deg, var(--gold), #FFE6B3); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .hero p { font-size: 18px; margin-bottom: 35px; max-width: 600px; margin-left: auto; margin-right: auto; }
-        .hero-btn { background: linear-gradient(135deg, var(--gold-dark), var(--gold)); border: none; color: var(--dark); padding: 14px 42px; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: all 0.4s; border-radius: 50px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .hero-btn { background: linear-gradient(135deg, var(--gold-dark), var(--gold)); border: none; color: var(--dark); padding: 14px 42px; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: all 0.4s; border-radius: 50px; }
         .hero-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(212,175,55,0.4); }
         .trust-badges { display: flex; justify-content: center; gap: 25px; margin-top: 45px; flex-wrap: wrap; }
         .trust-badges span { display: flex; align-items: center; gap: 8px; font-size: 12px; background: rgba(255,255,255,0.12); backdrop-filter: blur(8px); padding: 6px 18px; border-radius: 40px; }
@@ -91,7 +87,6 @@
         .testimonials { background: linear-gradient(135deg, #FAF7F2, #F4E9E0); padding: 60px 40px; }
         .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1200px; margin: 35px auto 0; }
         .testimonial-card { background: white; padding: 30px; border-radius: 24px; text-align: center; transition: all 0.3s; }
-        .testimonial-card:hover { transform: translateY(-3px); }
         .testimonial-card .quote { font-size: 42px; color: var(--gold); margin-bottom: 10px; }
         .testimonial-card .rating { color: var(--gold); margin-bottom: 12px; letter-spacing: 2px; }
         .testimonial-card p { font-size: 14px; line-height: 1.5; margin-bottom: 15px; font-style: italic; color: #555; }
@@ -110,7 +105,6 @@
         .loading { text-align: center; padding: 80px; }
         .spinner { width: 45px; height: 45px; border: 2px solid rgba(212,175,55,0.2); border-top: 2px solid var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         
         @media (max-width: 768px) {
             header { flex-direction: column; gap: 12px; padding: 15px 20px; }
@@ -194,13 +188,8 @@
         <p>© 2026 STYLE OF LIFE. All rights reserved. | Luxury Jewelry Since 2020</p>
     </footer>
 
-    <script type="importmap">
-        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
-    </script>
-    <script type="module">
-        import { createClient } from '@supabase/supabase-js';
-        
-        // Sample products (will show immediately if Supabase fails)
+    <script>
+        // SAMPLE PRODUCTS - Will always show if Supabase fails
         const SAMPLE_PRODUCTS = [
             {
                 id: 1,
@@ -255,66 +244,42 @@
         ];
         
         let products = [];
-        let cart = [];
-        let sessionId = localStorage.getItem('sessionId');
         let galleryState = {};
         
-        if (!sessionId) {
-            sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('sessionId', sessionId);
-        }
-        
-        // Initialize Supabase client (will work if config is correct)
-        let supabase = null;
-        try {
-            supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-            console.log('✅ Supabase client initialized');
-        } catch (error) {
-            console.error('❌ Supabase init failed:', error);
-            supabase = null;
-        }
-        
-        // Load products with timeout and fallback
+        // Load products
         async function loadProducts() {
             const container = document.getElementById('products');
-            
-            // Show loading immediately
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div>';
             
-            // Set timeout for API call (5 seconds)
-            const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Timeout - Using sample products')), 5000);
-            });
-            
-            try {
-                if (!supabase) throw new Error('Supabase not initialized');
-                
-                // Try to fetch from Supabase with timeout
-                const fetchPromise = supabase.from('products').select('*').order('id');
-                const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
-                
-                if (error) throw error;
-                
-                if (data && data.length > 0) {
-                    console.log('✅ Loaded', data.length, 'products from Supabase');
-                    products = data;
-                } else {
-                    console.log('⚠️ No products in Supabase, using sample products');
-                    products = SAMPLE_PRODUCTS;
-                }
-            } catch (error) {
-                console.log('⚠️ Using sample products (Supabase error):', error.message);
-                products = SAMPLE_PRODUCTS;
-            }
-            
-            // Display products
+            // Use sample products immediately (fast)
+            products = SAMPLE_PRODUCTS;
             displayProducts(products);
             
-            // Save to localStorage as backup
-            localStorage.setItem('products_backup', JSON.stringify(products));
+            // Try to load from localStorage backup
+            const backup = localStorage.getItem('products_backup');
+            if (backup) {
+                try {
+                    const backupProducts = JSON.parse(backup);
+                    if (backupProducts && backupProducts.length > 0) {
+                        products = backupProducts;
+                        displayProducts(products);
+                    }
+                } catch(e) {}
+            }
             
-            // Load cart after products are displayed
-            loadCart();
+            // Try Supabase in background
+            try {
+                if (typeof supabase !== 'undefined' && supabase) {
+                    const { data } = await supabase.from('products').select('*').order('id');
+                    if (data && data.length > 0) {
+                        products = data;
+                        displayProducts(products);
+                        localStorage.setItem('products_backup', JSON.stringify(products));
+                    }
+                }
+            } catch (error) {
+                console.log('Supabase not available, using sample products');
+            }
         }
         
         function displayProducts(products) {
@@ -381,7 +346,7 @@
             
             container.innerHTML = html;
             
-            // Initialize gallery for each product
+            // Initialize gallery
             for (let p of products) {
                 const images = p.images || [];
                 const validImages = images.filter(img => img && img.trim() !== '');
@@ -441,133 +406,28 @@
             }, 5000);
         }
         
-        // Add to cart function
-        window.addToCart = async function(productId, sku, name, price, image) {
-            console.log('Adding to cart:', { productId, sku, name, price });
-            
+        // Load cart count from localStorage
+        function updateCartCountFromLocal() {
             try {
-                // Get current cart from localStorage first (faster)
-                let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-                
-                // Check if product already exists
-                const existingIndex = cart.findIndex(item => item.id === productId);
-                
-                if (existingIndex >= 0) {
-                    cart[existingIndex].quantity = (cart[existingIndex].quantity || 1) + 1;
-                } else {
-                    cart.push({
-                        id: productId,
-                        sku: sku,
-                        name: name,
-                        price: Number(price),
-                        image: image,
-                        quantity: 1
-                    });
-                }
-                
-                // Save to localStorage
-                localStorage.setItem('cart', JSON.stringify(cart));
-                
-                // Try to sync with Supabase (don't wait)
-                if (supabase) {
-                    try {
-                        const total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-                        await supabase
-                            .from('carts')
-                            .upsert({
-                                session_id: sessionId,
-                                items: cart,
-                                total: total,
-                                updated_at: new Date().toISOString()
-                            });
-                    } catch (e) {
-                        console.log('Supabase sync failed, but cart saved locally');
-                    }
-                }
-                
-                // Update cart count
-                updateCartCount(cart);
-                
-                // Show notification
-                showNotification(`${name} added to cart!`, 'success');
-                
-            } catch (error) {
-                console.error('Error adding to cart:', error);
-                showNotification('Failed to add to cart', 'error');
-            }
-        };
-        
-        async function loadCart() {
-            try {
-                // Try localStorage first
-                let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-                
-                // Try Supabase (if available)
-                if (supabase) {
-                    try {
-                        const { data } = await supabase
-                            .from('carts')
-                            .select('items')
-                            .eq('session_id', sessionId)
-                            .maybeSingle();
-                        
-                        if (data?.items) {
-                            cart = data.items;
-                            localStorage.setItem('cart', JSON.stringify(cart));
-                        }
-                    } catch (e) {
-                        console.log('Supabase cart load failed, using local');
-                    }
-                }
-                
-                updateCartCount(cart);
-            } catch (error) {
-                console.error('Error loading cart:', error);
-                updateCartCount([]);
-            }
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                const count = cart.reduce((t, i) => t + (i.quantity || 1), 0);
+                document.getElementById('cartCount').textContent = count;
+            } catch(e) {}
         }
         
-        function updateCartCount(cart) {
-            const count = cart.reduce((t, i) => t + (i.quantity || 1), 0);
-            document.getElementById('cartCount').textContent = count;
-        }
-        
-        function showNotification(message, type = 'success') {
-            const notif = document.createElement('div');
-            notif.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: ${type === 'success' ? '#28a745' : '#dc3545'};
-                color: white;
-                padding: 12px 24px;
-                border-radius: 50px;
-                z-index: 9999;
-                animation: slideIn 0.3s;
-                font-weight: 500;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            `;
-            notif.textContent = message;
-            document.body.appendChild(notif);
-            setTimeout(() => notif.remove(), 3000);
-        }
-        
-        // Start loading
+        // Initialize
         loadProducts();
+        updateCartCountFromLocal();
         
-        // Add styles for animations
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
+        // Listen for cart updates
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'cart') {
+                updateCartCountFromLocal();
             }
-            .add-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        `;
-        document.head.appendChild(style);
+        });
     </script>
     
-    <!-- Analytics Tracking -->
+    <script src="js/cart.js"></script>
     <script src="js/analytics.js"></script>
 </body>
 </html>
