@@ -1,0 +1,36 @@
+# .htaccess - SEO Optimization
+# Improves URL structure and SEO
+
+# Enable rewrite engine
+RewriteEngine On
+
+# Force HTTPS (if using custom domain)
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# Remove .html extension from URLs (cleaner URLs)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^(.*)$ $1.html [NC,L]
+
+# Redirect old URLs to new clean URLs
+RewriteRule ^products/(.*)$ /#$1 [R=301,NE,L]
+
+# Custom 404 page
+ErrorDocument 404 /404.html
+
+# Set default charset
+AddDefaultCharset UTF-8
+
+# Enable compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Set cache headers for static files
+<FilesMatch "\.(jpg|jpeg|png|gif|ico|css|js)$">
+    Header set Cache-Control "max-age=2592000, public"
+</FilesMatch>
+
+# Prevent access to hidden files
+RedirectMatch 403 /\..*$
