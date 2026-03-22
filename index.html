@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Style Of Life - Luxury Jewelry</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -371,37 +372,55 @@
         const SUPABASE_URL = "https://tbopyyocuvlsjvtdogcp.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRib3B5eW9jdXZsc2p2dGRvZ2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYxNzcsImV4cCI6MjA4OTYxMjE3N30.TfEtU1NBHCGnZqZzm4LuI1iw22lSPav0OrUskhDw5wc";
         
-        let cart = [];
         let sessionId = localStorage.getItem('sessionId');
-        let autoPlayIntervals = {};
-        
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
-            console.log('New session created:', sessionId);
         }
         
+        let autoPlayIntervals = {};
+        
         // Helper function for Supabase requests
-        async function supabaseFetch(url, options = {}) {
-            const defaultOptions = {
-                headers: {
-                    'apikey': SUPABASE_ANON_KEY,
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                    'Content-Type': 'application/json'
-                }
+        async function supabaseRequest(endpoint, options = {}) {
+            const defaultHeaders = {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
             };
-            const response = await fetch(url, { ...defaultOptions, ...options });
+            
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
+                ...options,
+                headers: { ...defaultHeaders, ...options.headers }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             return await response.json();
         }
         
-        // Load products from Supabase
+        // Load cart count
+        async function loadCartCount() {
+            try {
+                const data = await supabaseRequest(`carts?session_id=eq.${sessionId}&select=items`);
+                if (data && data.length > 0 && data[0].items) {
+                    const count = data[0].items.reduce((sum, item) => sum + item.quantity, 0);
+                    document.getElementById('cartCount').textContent = count;
+                }
+            } catch (error) {
+                console.error('Error loading cart count:', error);
+            }
+        }
+        
+        // Load products
         async function loadProducts() {
             try {
-                const products = await supabaseFetch(`${SUPABASE_URL}/rest/v1/products?select=*&order=id.asc`);
-                displayProducts(products || []);
+                const products = await supabaseRequest('products?select=*&order=id.asc');
+                displayProducts(products);
             } catch (error) {
                 console.error('Error loading products:', error);
-                document.getElementById('products').innerHTML = '<div class="loading"><p>Unable to load collection</p></div>';
+                document.getElementById('products').innerHTML = '<div class="loading"><p>Unable to load collection. Please refresh.</p></div>';
             }
         }
         
@@ -417,7 +436,6 @@
                 const images = p.images || [];
                 const validImages = images.filter(img => img && img.trim() !== '');
                 const hasImages = validImages.length > 0;
-                const mainImage = validImages[0] || 'https://via.placeholder.com/400x380?text=Style+Of+Life';
                 
                 let stockClass = 'in-stock';
                 let stockText = `In Stock (${p.stock})`;
@@ -450,7 +468,7 @@
                                     `).join('')}
                                 </div>
                             ` : `
-                                <img src="${mainImage}" style="width:100%; height:100%; object-fit:cover;">
+                                <img src="https://via.placeholder.com/400x380?text=Style+Of+Life" style="width:100%; height:100%; object-fit:cover;">
                             `}
                         </div>
                         <div class="product-info">
@@ -459,13 +477,14 @@
                             <div class="product-category">${p.category || 'Fine Jewelry'}</div>
                             <div class="product-price">₹${(p.price || 0).toLocaleString('en-IN')}</div>
                             <div class="product-stock ${stockClass}">${stockText}</div>
-                            <button class="add-btn" onclick="addToCartHandler(${p.id})" ${p.stock <= 0 ? 'disabled' : ''}>Add to Cart</button>
+                            <button class="add-btn" onclick="addToCart(${p.id}, '${p.sku}', '${escapeHtml(p.name)}', ${p.price}, '${p.images?.[0] || ''}')" ${p.stock <= 0 ? 'disabled' : ''}>Add to Cart</button>
                         </div>
                     </div>
                 `;
             }
             container.innerHTML = html;
             
+            // Start auto-play for galleries
             for (let p of products) {
                 const images = p.images || [];
                 const validImages = images.filter(img => img && img.trim() !== '');
@@ -502,66 +521,46 @@
             if (!slider) return;
             slider.style.transform = `translateX(-${index * 100}%)`;
             const dots = document.querySelectorAll(`#dots-${productId} .gallery-dot`);
-            const counter = document.getElementById(`counter-${productId}`);
             const thumbnails = document.querySelectorAll(`#thumbnails-${productId} .gallery-thumbnail`);
             dots.forEach((dot, idx) => { if (idx === index) dot.classList.add('active'); else dot.classList.remove('active'); });
             thumbnails.forEach((thumb, idx) => { if (idx === index) thumb.classList.add('active'); else thumb.classList.remove('active'); });
-            if (counter) counter.textContent = `${slider.children.length} photos`;
         };
         
-        // Add to Cart Function
-        window.addToCartHandler = async function(productId) {
+        // Add to Cart function
+        window.addToCart = async function(id, sku, name, price, image) {
             try {
-                console.log('Adding to cart:', productId);
-                
-                // Fetch product details
-                const products = await supabaseFetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${productId}&select=*`);
-                
-                if (!products || products.length === 0) {
-                    alert('Product not found');
-                    return;
-                }
-                
-                const product = products[0];
-                
-                if (product.stock <= 0) {
-                    alert('This product is out of stock!');
-                    return;
-                }
+                console.log('Adding to cart:', { id, sku, name, price });
                 
                 // Get current cart
-                const cartResponse = await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}&select=*`, {
-                    method: 'GET',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                });
+                let cartData = [];
+                try {
+                    const data = await supabaseRequest(`carts?session_id=eq.${sessionId}&select=items`);
+                    cartData = data;
+                } catch (e) {
+                    console.log('No existing cart, creating new one');
+                }
                 
-                let cartData = await cartResponse.json();
                 let cartItems = (cartData && cartData.length > 0 && cartData[0].items) ? cartData[0].items : [];
                 
-                // Check if item already in cart
-                const existingIndex = cartItems.findIndex(i => i.id === productId);
+                // Check if item exists
+                const existingIndex = cartItems.findIndex(i => i.id === id);
                 if (existingIndex >= 0) {
-                    if (cartItems[existingIndex].quantity + 1 > product.stock) {
-                        alert(`Only ${product.stock} items available in stock!`);
-                        return;
-                    }
                     cartItems[existingIndex].quantity += 1;
                 } else {
                     cartItems.push({
-                        id: product.id,
-                        sku: product.sku,
-                        name: product.name,
-                        price: product.price,
+                        id: id,
+                        sku: sku,
+                        name: name,
+                        price: price,
                         quantity: 1,
-                        image: product.images?.[0] || ''
+                        image: image
                     });
                 }
                 
-                // Save cart
+                // Calculate total
                 const total = cartItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+                
+                // Save cart
                 await fetch(`${SUPABASE_URL}/rest/v1/carts`, {
                     method: 'POST',
                     headers: {
@@ -579,39 +578,17 @@
                 });
                 
                 // Update cart count display
-                const cartCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
-                const cartCountElement = document.getElementById('cartCount');
-                if (cartCountElement) cartCountElement.textContent = cartCount;
+                const count = cartItems.reduce((sum, i) => sum + i.quantity, 0);
+                document.getElementById('cartCount').textContent = count;
                 
                 // Show notification
-                showNotification(`✨ ${product.name} added to cart!`);
+                showNotification(`✨ ${name} added to cart!`);
                 
-            } catch (err) {
-                console.error('Add to cart error:', err);
-                alert('Error adding to cart. Please try again.');
+            } catch (error) {
+                console.error('Add to cart error:', error);
+                alert('Error adding to cart: ' + error.message);
             }
         };
-        
-        // Load cart count on page load
-        async function loadCartCount() {
-            try {
-                const cartResponse = await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}&select=*`, {
-                    method: 'GET',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                });
-                
-                let cartData = await cartResponse.json();
-                let cartItems = (cartData && cartData.length > 0 && cartData[0].items) ? cartData[0].items : [];
-                const cartCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
-                const cartCountElement = document.getElementById('cartCount');
-                if (cartCountElement) cartCountElement.textContent = cartCount;
-            } catch (err) {
-                console.error('Error loading cart count:', err);
-            }
-        }
         
         function showNotification(message) {
             const notif = document.createElement('div');
