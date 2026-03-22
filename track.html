@@ -3,9 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Track Order - Style Of Life</title>
+    
+    <!-- ========== SECURITY HEADERS ========== -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta name="format-detection" content="telephone=no">
+    
+    <!-- ========== SEO META TAGS ========== -->
+    <title>Track Your Order - Style Of Life Jewelry</title>
+    <meta name="description" content="Track your Style Of Life jewelry order status. Enter your order ID to check shipping and delivery updates for your gold necklace, diamond ring, or other jewelry.">
+    <meta name="keywords" content="track order, order status, jewelry delivery, style of life tracking">
+    <meta name="author" content="Style Of Life">
+    <meta name="robots" content="index, follow">
+    
+    <!-- ========== CANONICAL URL ========== -->
+    <link rel="canonical" href="https://styleoflife987-hub.github.io/jewelry-store/track.html">
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --primary: #d4af37; --primary-dark: #b8962e; --light: #ffffff; --gray-200: #e9ecef; --gray-600: #6c757d; --danger: #dc3545; --success: #28a745; --warning: #ffc107; --info: #17a2b8; }
@@ -72,17 +87,9 @@
         <p style="margin-top: 10px; font-size: 12px;">Questions? Call us at +91 98765 43210</p>
     </footer>
 
-    <script type="importmap">
-        {
-            "imports": {
-                "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
-            }
-        }
-    </script>
-    <script type="module">
-        import { createClient } from '@supabase/supabase-js';
-        
-        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+    <script>
+        const SUPABASE_URL = "https://tbopyyocuvlsjvtdogcp.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRib3B5eW9jdXZsc2p2dGRvZ2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYxNzcsImV4cCI6MjA4OTYxMjE3N30.TfEtU1NBHCGnZqZzm4LuI1iw22lSPav0OrUskhDw5wc";
         
         function getStatusStep(status) {
             const steps = ['Pending', 'Processing', 'Shipped', 'Delivered'];
@@ -102,16 +109,24 @@
             }
             
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = '<div style="text-align:center; padding:40px;"><div style="width:40px; height:40px; border:3px solid var(--gray-200); border-top-color: var(--primary); border-radius:50%; animation: spin 1s linear infinite; margin:0 auto 15px;"></div><p>Searching for your order...</p></div>';
+            resultDiv.innerHTML = '<div style="text-align:center; padding:40px;"><div style="width:40px; height:40px; border:3px solid #e9ecef; border-top-color: #d4af37; border-radius:50%; animation: spin 1s linear infinite; margin:0 auto 15px;"></div><p>Searching for your order...</p></div>';
             
-            const { data, error } = await supabase.from('orders').select('*').eq('order_id', orderId);
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/orders?order_id=eq.${orderId}&select=*`, {
+                method: 'GET',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                }
+            });
             
-            if (error || !data || data.length === 0) {
+            const data = await response.json();
+            
+            if (!data || data.length === 0) {
                 resultDiv.innerHTML = `
                     <div style="text-align:center; padding:40px; background:#f8f9fa; border-radius:16px;">
                         <div style="font-size:48px; margin-bottom:15px;">🔍</div>
-                        <h3 style="color: var(--danger);">Order Not Found</h3>
-                        <p style="color: var(--gray-600); margin-top:10px;">Please check your Order ID and try again.</p>
+                        <h3 style="color: #dc3545;">Order Not Found</h3>
+                        <p style="color: #6c757d; margin-top:10px;">Please check your Order ID and try again.</p>
                         <p style="font-size:12px; margin-top:15px;">Order ID format: ORD followed by numbers (e.g., ORD1234567890)</p>
                     </div>
                 `;
@@ -146,7 +161,7 @@
             resultDiv.innerHTML = `
                 <div class="order-details">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-                        <h3 style="color: var(--primary);">Order #${order.order_id}</h3>
+                        <h3 style="color: #d4af37;">Order #${order.order_id}</h3>
                         <span class="status-badge status-${order.status}">${order.status}</span>
                     </div>
                     
@@ -166,11 +181,11 @@
                         ${itemsHtml}
                     </div>
                     
-                    <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid var(--primary);">
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #d4af37;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><strong>Subtotal:</strong> ₹${order.subtotal.toLocaleString()}</div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><strong>Tax (18%):</strong> ₹${order.tax.toLocaleString()}</div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><strong>Shipping:</strong> ₹${order.shipping}</div>
-                        <div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; color: var(--primary); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--gray-200);">
+                        <div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; color: #d4af37; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e9ecef;">
                             <span>Total:</span>
                             <span>₹${order.total.toLocaleString()}</span>
                         </div>
