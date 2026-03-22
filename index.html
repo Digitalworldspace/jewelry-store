@@ -36,6 +36,8 @@
         footer { background: #0a0a0a; color: white; text-align: center; padding: 40px; margin-top: 60px; }
         .loading { text-align: center; padding: 100px; }
         .spinner { width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        .empty-state { text-align: center; padding: 100px; color: var(--gray-600); }
+        .empty-state h3 { font-size: 24px; margin-bottom: 10px; color: var(--primary); }
         @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 768px) { header { flex-direction: column; gap: 15px; padding: 15px; } .hero h1 { font-size: 40px; } .products { padding: 20px; } }
     </style>
@@ -61,11 +63,7 @@
     <footer><p>© 2026 STYLE OF LIFE. All rights reserved.</p></footer>
 
     <script type="importmap">
-        {
-            "imports": {
-                "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
-            }
-        }
+        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
     </script>
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
@@ -82,7 +80,7 @@
         async function loadProducts() {
             const { data, error } = await supabase.from('products').select('*').order('id');
             if (error) {
-                document.getElementById('products').innerHTML = '<div class="loading">Error loading products</div>';
+                document.getElementById('products').innerHTML = '<div class="empty-state"><h3>Error Loading Products</h3><p>Please try again later.</p></div>';
                 return;
             }
             displayProducts(data || []);
@@ -90,8 +88,14 @@
         
         function displayProducts(products) {
             const container = document.getElementById('products');
-            if (products.length === 0) {
-                container.innerHTML = '<div class="loading">No products available</div>';
+            if (!products || products.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>✨ Coming Soon ✨</h3>
+                        <p>New collection arriving shortly. Check back soon!</p>
+                        <p style="margin-top: 10px; font-size: 14px;">No products available at the moment.</p>
+                    </div>
+                `;
                 return;
             }
             
