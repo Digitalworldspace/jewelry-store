@@ -3,7 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Style Of Life - Luxury Jewelry</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>Style Of Life - Luxury Handcrafted Jewelry | Gold, Diamond & Silver</title>
+    <meta name="description" content="Discover exquisite handcrafted jewelry at Style Of Life. Shop luxury gold necklaces, diamond rings, silver bracelets, and pearl earrings. Free shipping & lifetime warranty.">
+    <meta name="keywords" content="jewelry, gold jewelry, diamond rings, necklaces, earrings, bracelets, luxury jewelry, handcrafted jewelry, fine jewelry, Indian jewelry, 22k gold, solitaire ring">
+    <meta name="author" content="Style Of Life">
+    <meta name="robots" content="index, follow">
+    <meta name="revisit-after" content="7 days">
+    <meta name="language" content="English">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://styleoflife987-hub.github.io/jewelry-store/">
+    <meta property="og:title" content="Style Of Life - Luxury Handcrafted Jewelry">
+    <meta property="og:description" content="Discover exquisite handcrafted jewelry. Shop luxury gold necklaces, diamond rings, and more. Free shipping worldwide.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1200">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://styleoflife987-hub.github.io/jewelry-store/">
+    <meta name="twitter:title" content="Style Of Life - Luxury Handcrafted Jewelry">
+    <meta name="twitter:description" content="Discover exquisite handcrafted jewelry. Shop luxury gold necklaces, diamond rings, and more.">
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1200">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://styleoflife987-hub.github.io/jewelry-store/">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
+    
+    <!-- Schema.org / Organization -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "JewelryStore",
+        "name": "Style Of Life",
+        "description": "Luxury handcrafted jewelry store offering gold necklaces, diamond rings, silver bracelets, and pearl earrings.",
+        "url": "https://styleoflife987-hub.github.io/jewelry-store/",
+        "logo": "https://styleoflife987-hub.github.io/jewelry-store/logo.png",
+        "priceRange": "₹₹₹",
+        "telephone": "+91-98765-43210",
+        "email": "support@styleoflife.com",
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "IN"
+        },
+        "sameAs": [
+            "https://www.instagram.com/styleoflife",
+            "https://www.facebook.com/styleoflife"
+        ]
+    }
+    </script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -375,12 +429,10 @@
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
-            console.log('New session created:', sessionId);
         }
         
         let autoPlayIntervals = {};
         
-        // Helper function for Supabase requests
         async function supabaseFetch(endpoint, options = {}) {
             const defaultHeaders = {
                 'apikey': SUPABASE_ANON_KEY,
@@ -401,7 +453,6 @@
             return await response.json();
         }
         
-        // Load cart count from Supabase
         async function loadCartCount() {
             try {
                 const data = await supabaseFetch(`carts?session_id=eq.${sessionId}&select=items`);
@@ -412,18 +463,15 @@
                     document.getElementById('cartCount').textContent = '0';
                 }
             } catch (error) {
-                console.error('Error loading cart count:', error);
                 document.getElementById('cartCount').textContent = '0';
             }
         }
         
-        // Load products from Supabase
         async function loadProducts() {
             try {
                 const products = await supabaseFetch('products?select=*&order=id.asc');
                 displayProducts(products);
             } catch (error) {
-                console.error('Error loading products:', error);
                 document.getElementById('products').innerHTML = '<div class="loading"><p>Unable to load collection. Please refresh.</p></div>';
             }
         }
@@ -458,7 +506,7 @@
                                 <div class="gallery-slider" id="slider-${p.id}">
                                     ${validImages.map((img, idx) => `
                                         <div class="gallery-slide">
-                                            <img src="${img}" alt="${p.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x380?text=Style+Of+Life'">
+                                            <img src="${img}" alt="${p.name} - ${p.category} from Style Of Life" loading="lazy" onerror="this.src='https://via.placeholder.com/400x380?text=Style+Of+Life'">
                                         </div>
                                     `).join('')}
                                 </div>
@@ -468,11 +516,11 @@
                                 </div>
                                 <div class="gallery-thumbnails" id="thumbnails-${p.id}">
                                     ${validImages.map((img, idx) => `
-                                        <img src="${img}" class="gallery-thumbnail ${idx === 0 ? 'active' : ''}" onclick="goToImage('${p.id}', ${idx})" loading="lazy" onerror="this.style.display='none'">
+                                        <img src="${img}" class="gallery-thumbnail ${idx === 0 ? 'active' : ''}" onclick="goToImage('${p.id}', ${idx})" loading="lazy" alt="${p.name} thumbnail" onerror="this.style.display='none'">
                                     `).join('')}
                                 </div>
                             ` : `
-                                <img src="https://via.placeholder.com/400x380?text=Style+Of+Life" style="width:100%; height:100%; object-fit:cover;">
+                                <img src="https://via.placeholder.com/400x380?text=Style+Of+Life" style="width:100%; height:100%; object-fit:cover;" alt="${p.name}">
                             `}
                         </div>
                         <div class="product-info">
@@ -488,7 +536,6 @@
             }
             container.innerHTML = html;
             
-            // Start auto-play for galleries
             for (let p of products) {
                 const images = p.images || [];
                 const validImages = images.filter(img => img && img.trim() !== '');
@@ -530,12 +577,8 @@
             thumbnails.forEach((thumb, idx) => { if (idx === index) thumb.classList.add('active'); else thumb.classList.remove('active'); });
         };
         
-        // Add to Cart function - COMPLETELY FIXED
         window.addToCart = async function(id, sku, name, price, image) {
             try {
-                console.log('Adding to cart:', { id, sku, name, price });
-                
-                // Get current cart items
                 let cartItems = [];
                 try {
                     const response = await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}&select=items`, {
@@ -556,7 +599,6 @@
                     console.log('No existing cart, creating new one');
                 }
                 
-                // Check if item exists
                 const existingIndex = cartItems.findIndex(i => i.id === id);
                 if (existingIndex >= 0) {
                     cartItems[existingIndex].quantity += 1;
@@ -571,10 +613,8 @@
                     });
                 }
                 
-                // Calculate total
                 const total = cartItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
                 
-                // First delete existing cart
                 await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}`, {
                     method: 'DELETE',
                     headers: {
@@ -583,8 +623,7 @@
                     }
                 });
                 
-                // Insert new cart
-                const insertResponse = await fetch(`${SUPABASE_URL}/rest/v1/carts`, {
+                await fetch(`${SUPABASE_URL}/rest/v1/carts`, {
                     method: 'POST',
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
@@ -599,15 +638,9 @@
                     })
                 });
                 
-                if (!insertResponse.ok) {
-                    throw new Error(`Insert failed: ${insertResponse.status}`);
-                }
-                
-                // Update cart count display
                 const count = cartItems.reduce((sum, i) => sum + i.quantity, 0);
                 document.getElementById('cartCount').textContent = count;
                 
-                // Show notification
                 showNotification(`✨ ${name} added to cart!`);
                 
             } catch (error) {
@@ -631,11 +664,48 @@
             });
         }
         
-        // Initialize
+        // Product Schema for SEO
+        async function addProductSchema() {
+            try {
+                const products = await supabaseFetch('products?select=*');
+                const productSchema = {
+                    "@context": "https://schema.org",
+                    "@type": "ItemList",
+                    "name": "Style Of Life Jewelry Collection",
+                    "description": "Exquisite handcrafted gold, diamond, and silver jewelry",
+                    "itemListElement": products.map((product, index) => ({
+                        "@type": "ListItem",
+                        "position": index + 1,
+                        "item": {
+                            "@type": "Product",
+                            "name": product.name,
+                            "description": product.description || "Exquisite handcrafted jewelry",
+                            "sku": product.sku,
+                            "category": product.category,
+                            "offers": {
+                                "@type": "Offer",
+                                "price": product.price,
+                                "priceCurrency": "INR",
+                                "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+                            },
+                            "image": product.images?.[0] || ""
+                        }
+                    }))
+                };
+                
+                const script = document.createElement('script');
+                script.type = 'application/ld+json';
+                script.textContent = JSON.stringify(productSchema);
+                document.head.appendChild(script);
+            } catch (error) {
+                console.error('Error adding product schema:', error);
+            }
+        }
+        
         loadProducts();
         loadCartCount();
+        addProductSchema();
         
-        // Refresh cart count when page becomes visible
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {
                 loadCartCount();
