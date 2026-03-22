@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Style Of Life - Luxury Jewelry</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -381,7 +380,7 @@
         let autoPlayIntervals = {};
         
         // Helper function for Supabase requests
-        async function supabaseRequest(endpoint, options = {}) {
+        async function supabaseFetch(endpoint, options = {}) {
             const defaultHeaders = {
                 'apikey': SUPABASE_ANON_KEY,
                 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
@@ -403,20 +402,23 @@
         // Load cart count
         async function loadCartCount() {
             try {
-                const data = await supabaseRequest(`carts?session_id=eq.${sessionId}&select=items`);
+                const data = await supabaseFetch(`carts?session_id=eq.${sessionId}&select=items`);
                 if (data && data.length > 0 && data[0].items) {
                     const count = data[0].items.reduce((sum, item) => sum + item.quantity, 0);
                     document.getElementById('cartCount').textContent = count;
+                } else {
+                    document.getElementById('cartCount').textContent = '0';
                 }
             } catch (error) {
                 console.error('Error loading cart count:', error);
+                document.getElementById('cartCount').textContent = '0';
             }
         }
         
         // Load products
         async function loadProducts() {
             try {
-                const products = await supabaseRequest('products?select=*&order=id.asc');
+                const products = await supabaseFetch('products?select=*&order=id.asc');
                 displayProducts(products);
             } catch (error) {
                 console.error('Error loading products:', error);
@@ -532,15 +534,15 @@
                 console.log('Adding to cart:', { id, sku, name, price });
                 
                 // Get current cart
-                let cartData = [];
+                let cartItems = [];
                 try {
-                    const data = await supabaseRequest(`carts?session_id=eq.${sessionId}&select=items`);
-                    cartData = data;
+                    const data = await supabaseFetch(`carts?session_id=eq.${sessionId}&select=items`);
+                    if (data && data.length > 0 && data[0].items) {
+                        cartItems = data[0].items;
+                    }
                 } catch (e) {
                     console.log('No existing cart, creating new one');
                 }
-                
-                let cartItems = (cartData && cartData.length > 0 && cartData[0].items) ? cartData[0].items : [];
                 
                 // Check if item exists
                 const existingIndex = cartItems.findIndex(i => i.id === id);
@@ -560,14 +562,21 @@
                 // Calculate total
                 const total = cartItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
                 
-                // Save cart
+                // Save cart - using DELETE then INSERT to ensure clean save
+                await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
                 await fetch(`${SUPABASE_URL}/rest/v1/carts`, {
                     method: 'POST',
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'resolution=merge-duplicates'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         session_id: sessionId,
