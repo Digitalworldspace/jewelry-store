@@ -6,10 +6,7 @@ const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 // ==================== PRODUCTS ====================
 export async function getProducts() {
     const { data, error } = await supabase.from('products').select('*').order('id');
-    if (error) {
-        console.error('Error fetching products:', error);
-        return [];
-    }
+    if (error) return [];
     return data || [];
 }
 
@@ -38,6 +35,36 @@ export async function deleteProduct(id) {
     const { error } = await supabase.from('products').delete().eq('id', id);
     if (error) return { success: false, error: error.message };
     return { success: true };
+}
+
+// ==================== IMAGE UPLOAD ====================
+export async function uploadImage(file, productId, imageIndex) {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${productId}_${imageIndex}_${Date.now()}.${fileExt}`;
+    const filePath = `products/${fileName}`;
+    
+    const { data, error } = await supabase.storage
+        .from('product-images')
+        .upload(filePath, file);
+    
+    if (error) return { success: false, error: error.message };
+    
+    // Get public URL
+    const { data: urlData } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(filePath);
+    
+    return { success: true, url: urlData.publicUrl };
+}
+
+export async function deleteImage(imageUrl) {
+    const filePath = imageUrl.split('/').pop();
+    const { error } = await supabase.storage
+        .from('product-images')
+        .remove([`products/${filePath}`]);
+    
+    if (error) return false;
+    return true;
 }
 
 // ==================== ORDERS ====================
