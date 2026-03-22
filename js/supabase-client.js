@@ -34,7 +34,8 @@ export async function getProductById(id) {
     }
 }
 
-// ==================== CART ====================
+// ==================== CART FUNCTIONS ====================
+
 export async function getCart() {
     try {
         const { data, error } = await supabase
@@ -60,7 +61,10 @@ export async function saveCart(items, total) {
             updated_at: new Date().toISOString()
         });
         
-        if (error) throw error;
+        if (error) {
+            console.error('Supabase upsert error:', error);
+            return false;
+        }
         return true;
     } catch (err) {
         console.error('Error saving cart:', err);
@@ -98,10 +102,22 @@ export async function addToCart(product, quantity = 1) {
 
 export async function removeFromCart(productId) {
     try {
+        console.log('Removing item with ID:', productId);
+        
         const { items } = await getCart();
-        const cartItems = items.filter(i => i.id !== productId);
+        console.log('Current cart items:', items);
+        
+        const cartItems = items.filter(i => {
+            console.log('Comparing:', i.id, 'with', productId);
+            return i.id !== productId;
+        });
+        
+        console.log('New cart items:', cartItems);
+        
         const total = cartItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
         const success = await saveCart(cartItems, total);
+        
+        console.log('Save successful:', success);
         return { success, items: cartItems, total };
     } catch (err) {
         console.error('Remove from cart error:', err);
@@ -111,6 +127,8 @@ export async function removeFromCart(productId) {
 
 export async function updateCartQuantity(productId, quantity) {
     try {
+        console.log('Updating quantity for ID:', productId, 'to:', quantity);
+        
         const { items } = await getCart();
         const cartItems = [...items];
         const index = cartItems.findIndex(i => i.id === productId);
