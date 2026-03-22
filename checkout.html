@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- No SEO - Transactional Page -->
     <title>Checkout - Style Of Life</title>
+    <meta name="robots" content="noindex, nofollow">
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --primary: #d4af37; --primary-dark: #b8962e; --light: #ffffff; --gray-200: #e9ecef; --gray-600: #6c757d; --success: #28a745; }
@@ -100,35 +103,44 @@
         <p style="margin-top: 10px; font-size: 12px;">100% Secure Checkout</p>
     </footer>
 
-    <script type="importmap">
-        {
-            "imports": {
-                "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
-            }
-        }
-    </script>
-    <script type="module">
-        import { createClient } from '@supabase/supabase-js';
-        import { getCart, placeOrder } from './js/supabase-client.js';
+    <script>
+        const SUPABASE_URL = "https://tbopyyocuvlsjvtdogcp.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRib3B5eW9jdXZsc2p2dGRvZ2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYxNzcsImV4cCI6MjA4OTYxMjE3N30.TfEtU1NBHCGnZqZzm4LuI1iw22lSPav0OrUskhDw5wc";
         
-        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-        let cart = [];
         let sessionId = localStorage.getItem('sessionId');
-        
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
         }
         
+        let cart = [];
+        
         async function loadCart() {
-            const cartData = await getCart();
-            cart = cartData.items;
-            if (cart.length === 0) {
-                alert('Your cart is empty. Please add items before checkout.');
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}&select=items`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                const data = await response.json();
+                if (data && data.length > 0 && data[0].items) {
+                    cart = data[0].items;
+                }
+                
+                if (cart.length === 0) {
+                    alert('Your cart is empty. Please add items before checkout.');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                updateSummary();
+            } catch (error) {
+                console.error('Error loading cart:', error);
+                alert('Error loading cart. Please try again.');
                 window.location.href = 'index.html';
-                return;
             }
-            updateSummary();
         }
         
         function updateSummary() {
@@ -208,13 +220,43 @@
             btn.textContent = 'Processing...';
             
             try {
-                const result = await placeOrder(orderData);
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        order_id: 'ORD' + Date.now(),
+                        customer_name: orderData.name,
+                        phone: orderData.phone,
+                        email: orderData.email,
+                        address: orderData.address,
+                        items: orderData.items,
+                        subtotal: orderData.subtotal,
+                        tax: orderData.tax,
+                        shipping: orderData.shipping,
+                        total: orderData.total,
+                        status: 'Pending'
+                    })
+                });
                 
-                if (result.success) {
-                    alert(`✅ Order placed successfully!\nOrder ID: ${result.orderId}\nTotal Amount: ₹${total.toLocaleString()}`);
-                    window.location.href = `track.html?order=${result.orderId}`;
+                const result = await response.json();
+                
+                if (response.ok) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    });
+                    
+                    alert(`✅ Order placed successfully!\nOrder ID: ORD${Date.now()}\nTotal Amount: ₹${total.toLocaleString()}`);
+                    window.location.href = `track.html?order=ORD${Date.now()}`;
                 } else {
-                    alert('Error placing order: ' + (result.error || 'Unknown error'));
+                    alert('Error placing order: ' + (result.message || 'Unknown error'));
                     btn.disabled = false;
                     btn.textContent = 'Place Order';
                 }
