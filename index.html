@@ -375,6 +375,7 @@
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
+            console.log('New session created:', sessionId);
         }
         
         let autoPlayIntervals = {};
@@ -392,14 +393,15 @@
                 headers: { ...defaultHeaders, ...options.headers }
             });
             
-            if (!response.ok) {
+            if (!response.ok && options.method !== 'DELETE') {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
+            if (options.method === 'DELETE') return true;
             return await response.json();
         }
         
-        // Load cart count
+        // Load cart count from Supabase
         async function loadCartCount() {
             try {
                 const data = await supabaseFetch(`carts?session_id=eq.${sessionId}&select=items`);
@@ -415,7 +417,7 @@
             }
         }
         
-        // Load products
+        // Load products from Supabase
         async function loadProducts() {
             try {
                 const products = await supabaseFetch('products?select=*&order=id.asc');
@@ -528,17 +530,27 @@
             thumbnails.forEach((thumb, idx) => { if (idx === index) thumb.classList.add('active'); else thumb.classList.remove('active'); });
         };
         
-        // Add to Cart function
+        // Add to Cart function - COMPLETELY FIXED
         window.addToCart = async function(id, sku, name, price, image) {
             try {
                 console.log('Adding to cart:', { id, sku, name, price });
                 
-                // Get current cart
+                // Get current cart items
                 let cartItems = [];
                 try {
-                    const data = await supabaseFetch(`carts?session_id=eq.${sessionId}&select=items`);
-                    if (data && data.length > 0 && data[0].items) {
-                        cartItems = data[0].items;
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}&select=items`, {
+                        method: 'GET',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data && data.length > 0 && data[0].items) {
+                            cartItems = data[0].items;
+                        }
                     }
                 } catch (e) {
                     console.log('No existing cart, creating new one');
@@ -562,7 +574,7 @@
                 // Calculate total
                 const total = cartItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
                 
-                // Save cart - using DELETE then INSERT to ensure clean save
+                // First delete existing cart
                 await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}`, {
                     method: 'DELETE',
                     headers: {
@@ -571,7 +583,8 @@
                     }
                 });
                 
-                await fetch(`${SUPABASE_URL}/rest/v1/carts`, {
+                // Insert new cart
+                const insertResponse = await fetch(`${SUPABASE_URL}/rest/v1/carts`, {
                     method: 'POST',
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
@@ -585,6 +598,10 @@
                         updated_at: new Date().toISOString()
                     })
                 });
+                
+                if (!insertResponse.ok) {
+                    throw new Error(`Insert failed: ${insertResponse.status}`);
+                }
                 
                 // Update cart count display
                 const count = cartItems.reduce((sum, i) => sum + i.quantity, 0);
@@ -617,6 +634,13 @@
         // Initialize
         loadProducts();
         loadCartCount();
+        
+        // Refresh cart count when page becomes visible
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                loadCartCount();
+            }
+        });
     </script>
 </body>
 </html>
