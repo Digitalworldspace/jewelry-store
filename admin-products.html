@@ -113,6 +113,31 @@
         .toast-warning { background: var(--warning); color: #856404; }
         .toast-info { background: var(--info); color: white; }
         
+        .upload-progress {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 10000;
+            min-width: 250px;
+        }
+        .upload-progress .progress-bar {
+            height: 6px;
+            background: var(--gray-200);
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .upload-progress .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
         @media (max-width: 768px) {
             header { flex-direction: column; gap: 15px; padding: 15px; }
             .form-grid { grid-template-columns: 1fr; }
@@ -121,7 +146,7 @@
             .search-box input { width: 100%; }
             .modal-content { margin: 20px; padding: 20px; }
             .product-grid { grid-template-columns: 1fr; }
-            .toast { bottom: 10px; right: 10px; left: 10px; text-align: center; border-radius: 30px; }
+            .toast, .upload-progress { bottom: 10px; right: 10px; left: 10px; text-align: center; border-radius: 30px; }
         }
     </style>
 </head>
@@ -214,7 +239,7 @@
             <div><label>Description</label><textarea id="editDescription" rows="3"></textarea></div>
             <h3 style="margin: 20px 0 10px;">📸 Product Images</h3>
             <div class="image-upload-grid" id="editImageGrid"></div>
-            <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">💡 Tip: Upload new images to replace existing ones. Old images will be removed automatically.</p>
+            <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">💡 Tip: Upload new images to replace existing ones. Images are stored securely in Supabase Storage.</p>
             <div class="modal-actions">
                 <button class="btn btn-success" onclick="updateProduct()" id="updateProductBtn" style="flex: 1;">💾 Save Changes</button>
                 <button class="btn btn-danger" onclick="closeEditModal()" style="flex: 1;">Cancel</button>
@@ -234,77 +259,82 @@
         
         let allProducts = [];
         let editProductOriginal = null;
-        let editNewImages = {};
-        let editRemovedSlots = {};
-        let addNewImages = {};
-        let addRemovedSlots = {};
+        let editNewImages = {};     // Stores file objects for new images in edit mode
+        let editRemovedSlots = {};  // Stores slots to be removed
+        let addNewImages = {};      // Stores file objects for new images in add mode
+        let addRemovedSlots = {};    // Stores slots to be removed in add mode
         
-        // Toast notification function with different types
+        // Toast notification function
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
-            
-            // Add icon based on type
             let icon = '';
             if (type === 'success') icon = '✅ ';
             else if (type === 'error') icon = '❌ ';
             else if (type === 'warning') icon = '⚠️ ';
             else if (type === 'info') icon = 'ℹ️ ';
-            
             toast.innerHTML = icon + message;
             document.body.appendChild(toast);
-            
-            // Auto remove after 3 seconds
             setTimeout(() => {
                 toast.style.animation = 'slideIn 0.3s reverse';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
         
-        // Helper function for Supabase requests
-        async function supabaseRequest(endpoint, options = {}) {
-            const defaultHeaders = {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                'Content-Type': 'application/json'
-            };
-            
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
-                ...options,
-                headers: { ...defaultHeaders, ...options.headers }
-            });
-            
-            if (!response.ok && options.method !== 'DELETE') {
-                const error = await response.text();
-                throw new Error(error);
+        // Show upload progress
+        function showUploadProgress(current, total, fileName) {
+            let progressDiv = document.getElementById('uploadProgress');
+            if (!progressDiv) {
+                progressDiv = document.createElement('div');
+                progressDiv.id = 'uploadProgress';
+                progressDiv.className = 'upload-progress';
+                progressDiv.innerHTML = `
+                    <div style="font-weight: 500;">📤 Uploading Images</div>
+                    <div id="uploadProgressText"></div>
+                    <div class="progress-bar"><div class="progress-fill" id="uploadProgressFill"></div></div>
+                `;
+                document.body.appendChild(progressDiv);
             }
             
-            if (options.method === 'DELETE') return true;
-            return await response.json();
-        }
-        
-        // Create upload slot HTML
-        function createUploadSlot(slotIndex, existingImage = null, isEdit = false) {
-            const hasImage = existingImage && existingImage !== '';
-            const previewStyle = hasImage ? 'display: block;' : 'display: none;';
-            const iconStyle = hasImage ? 'display: none;' : 'display: block;';
+            const percent = (current / total) * 100;
+            document.getElementById('uploadProgressFill').style.width = percent + '%';
+            document.getElementById('uploadProgressText').innerHTML = `${current}/${total} images uploaded (${Math.round(percent)}%)`;
             
-            return `
-                <div class="upload-slot" data-slot="${slotIndex}" onclick="document.getElementById('${isEdit ? 'edit' : 'add'}_img_${slotIndex}').click()">
-                    <div class="slot-label">Image ${slotIndex + 1} ${slotIndex === 0 ? '★ Main' : ''}</div>
-                    ${hasImage ? `<img src="${existingImage}" class="slot-preview" style="${previewStyle}">` : '<img class="slot-preview" style="display: none;">'}
-                    <div class="upload-icon" style="${iconStyle}">📷</div>
-                    <input type="file" id="${isEdit ? 'edit' : 'add'}_img_${slotIndex}" accept="image/jpeg,image/png,image/gif,image/webp" onchange="handleImageUpload(this, ${slotIndex}, ${isEdit})">
-                    <div>
-                        <button class="upload-btn" onclick="event.stopPropagation(); document.getElementById('${isEdit ? 'edit' : 'add'}_img_${slotIndex}').click()">Choose File</button>
-                        ${hasImage ? `<button class="remove-btn" onclick="event.stopPropagation(); removeImage(${slotIndex}, ${isEdit})">Remove</button>` : ''}
-                    </div>
-                </div>
-            `;
+            if (current === total) {
+                setTimeout(() => {
+                    progressDiv.remove();
+                }, 1500);
+            }
         }
         
-        // Handle image upload
-        window.handleImageUpload = function(input, slotIndex, isEdit) {
+        // Upload image to Supabase Storage
+        async function uploadImageToStorage(file, productId, imageIndex) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${productId}_${imageIndex}_${Date.now()}.${fileExt}`;
+            const filePath = `products/${fileName}`;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const response = await fetch(`${SUPABASE_URL}/storage/v1/object/product-images/${filePath}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                },
+                body: file
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Upload failed: ${response.status}`);
+            }
+            
+            // Get public URL
+            const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/product-images/${filePath}`;
+            return publicUrl;
+        }
+        
+        // Handle file selection - store file object for later upload
+        window.handleImageSelect = function(input, slotIndex, isEdit) {
             const file = input.files[0];
             if (!file) return;
             
@@ -320,10 +350,10 @@
                 return;
             }
             
+            // Preview the image
             const reader = new FileReader();
             reader.onload = function(e) {
                 const imageData = e.target.result;
-                
                 const slot = document.querySelector(`.upload-slot[data-slot="${slotIndex}"]`);
                 if (slot) {
                     const preview = slot.querySelector('.slot-preview');
@@ -346,18 +376,19 @@
                         if (btnDiv) btnDiv.appendChild(removeBtn);
                     }
                 }
-                
-                if (isEdit) {
-                    editNewImages[slotIndex] = imageData;
-                    delete editRemovedSlots[slotIndex];
-                    showToast(`Image ${slotIndex + 1} uploaded - will replace old image when saved`, 'info');
-                } else {
-                    addNewImages[slotIndex] = imageData;
-                    delete addRemovedSlots[slotIndex];
-                    showToast(`Image ${slotIndex + 1} added`, 'success');
-                }
             };
             reader.readAsDataURL(file);
+            
+            // Store the FILE OBJECT for later upload (not base64)
+            if (isEdit) {
+                editNewImages[slotIndex] = file;
+                delete editRemovedSlots[slotIndex];
+                showToast(`Image ${slotIndex + 1} selected - will upload when saving`, 'info');
+            } else {
+                addNewImages[slotIndex] = file;
+                delete addRemovedSlots[slotIndex];
+                showToast(`Image ${slotIndex + 1} selected - will upload when saving`, 'info');
+            }
         };
         
         // Remove image
@@ -365,7 +396,7 @@
             if (isEdit) {
                 delete editNewImages[slotIndex];
                 editRemovedSlots[slotIndex] = true;
-                showToast(`Image ${slotIndex + 1} removed - will be deleted when saved`, 'warning');
+                showToast(`Image ${slotIndex + 1} marked for removal`, 'warning');
             } else {
                 delete addNewImages[slotIndex];
                 addRemovedSlots[slotIndex] = true;
@@ -390,6 +421,26 @@
             if (input) input.value = '';
         };
         
+        // Create upload slot HTML
+        function createUploadSlot(slotIndex, existingImageUrl = null, isEdit = false) {
+            const hasImage = existingImageUrl && existingImageUrl !== '';
+            const previewStyle = hasImage ? 'display: block;' : 'display: none;';
+            const iconStyle = hasImage ? 'display: none;' : 'display: block;';
+            
+            return `
+                <div class="upload-slot" data-slot="${slotIndex}" onclick="document.getElementById('${isEdit ? 'edit' : 'add'}_img_${slotIndex}').click()">
+                    <div class="slot-label">Image ${slotIndex + 1} ${slotIndex === 0 ? '★ Main' : ''}</div>
+                    ${hasImage ? `<img src="${existingImageUrl}" class="slot-preview" style="${previewStyle}">` : '<img class="slot-preview" style="display: none;">'}
+                    <div class="upload-icon" style="${iconStyle}">📷</div>
+                    <input type="file" id="${isEdit ? 'edit' : 'add'}_img_${slotIndex}" accept="image/jpeg,image/png,image/gif,image/webp" onchange="handleImageSelect(this, ${slotIndex}, ${isEdit})">
+                    <div>
+                        <button class="upload-btn" onclick="event.stopPropagation(); document.getElementById('${isEdit ? 'edit' : 'add'}_img_${slotIndex}').click()">Choose File</button>
+                        ${hasImage ? `<button class="remove-btn" onclick="event.stopPropagation(); removeImage(${slotIndex}, ${isEdit})">Remove</button>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
         // Initialize upload grids
         function initUploadGrids(isEdit = false) {
             const gridId = isEdit ? 'editImageGrid' : 'imageUploadGrid';
@@ -406,23 +457,67 @@
             }
         }
         
-        // Build final images array
-        function buildImagesArray(isEdit = false) {
+        // Upload all pending images for a product
+        async function uploadPendingImages(productId, pendingImages, isEdit = false) {
+            const uploadedUrls = {};
+            const imageEntries = Object.entries(pendingImages);
+            const totalImages = imageEntries.length;
+            
+            for (let i = 0; i < imageEntries.length; i++) {
+                const [slotIndex, file] = imageEntries[i];
+                showUploadProgress(i + 1, totalImages, file.name);
+                const url = await uploadImageToStorage(file, productId, slotIndex);
+                uploadedUrls[parseInt(slotIndex)] = url;
+            }
+            
+            return uploadedUrls;
+        }
+        
+        // Build final images array for product
+        async function buildImagesArray(isEdit = false, productId = null) {
             const images = [];
             const originalImages = isEdit && editProductOriginal ? editProductOriginal.images || [] : [];
+            const pendingNewImages = isEdit ? editNewImages : addNewImages;
+            const removedSlots = isEdit ? editRemovedSlots : addRemovedSlots;
+            
+            // Upload new images first if we have a product ID
+            let uploadedUrls = {};
+            if (productId && Object.keys(pendingNewImages).length > 0) {
+                uploadedUrls = await uploadPendingImages(productId, pendingNewImages, isEdit);
+            }
             
             for (let i = 0; i < 5; i++) {
-                if (isEdit && editNewImages[i]) {
-                    images.push(editNewImages[i]);
+                if (uploadedUrls[i]) {
+                    images.push(uploadedUrls[i]);
                 }
-                else if (isEdit && !editRemovedSlots[i] && originalImages[i]) {
+                else if (!removedSlots[i] && originalImages[i]) {
                     images.push(originalImages[i]);
                 }
-                else if (!isEdit && addNewImages[i]) {
-                    images.push(addNewImages[i]);
-                }
             }
+            
             return images;
+        }
+        
+        // Helper for database requests
+        async function supabaseRequest(endpoint, options = {}) {
+            const defaultHeaders = {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            };
+            
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
+                ...options,
+                headers: { ...defaultHeaders, ...options.headers }
+            });
+            
+            if (!response.ok && options.method !== 'DELETE') {
+                const error = await response.text();
+                throw new Error(error);
+            }
+            
+            if (options.method === 'DELETE') return true;
+            return await response.json();
         }
         
         // Load products
@@ -540,23 +635,37 @@
             
             const saveBtn = document.getElementById('saveProductBtn');
             saveBtn.disabled = true;
-            saveBtn.textContent = '⏳ Saving...';
-            
-            const images = [];
-            for (let i = 0; i < 5; i++) {
-                if (addNewImages[i]) {
-                    images.push(addNewImages[i]);
-                }
-            }
+            saveBtn.textContent = '⏳ Creating product...';
             
             try {
-                await supabaseRequest('products', {
+                // First create product without images
+                const result = await supabaseRequest('products', {
                     method: 'POST',
                     body: JSON.stringify({
                         sku, name, category, price, stock, description,
-                        images: images
+                        images: []
                     })
                 });
+                
+                const newProductId = result[0]?.id || result.id;
+                
+                // Then upload images and update product
+                if (Object.keys(addNewImages).length > 0 && newProductId) {
+                    saveBtn.textContent = '📤 Uploading images...';
+                    const uploadedUrls = await uploadPendingImages(newProductId, addNewImages, false);
+                    
+                    const imagesArray = [];
+                    for (let i = 0; i < 5; i++) {
+                        if (uploadedUrls[i]) {
+                            imagesArray.push(uploadedUrls[i]);
+                        }
+                    }
+                    
+                    await supabaseRequest(`products?id=eq.${newProductId}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ images: imagesArray })
+                    });
+                }
                 
                 showToast(`✅ Product "${name}" added successfully!`, 'success');
                 hideAddForm();
@@ -626,9 +735,28 @@
             updateBtn.disabled = true;
             updateBtn.textContent = '⏳ Updating...';
             
-            const images = buildImagesArray(true);
-            
             try {
+                // Upload new images first
+                let uploadedUrls = {};
+                if (Object.keys(editNewImages).length > 0) {
+                    updateBtn.textContent = '📤 Uploading new images...';
+                    uploadedUrls = await uploadPendingImages(id, editNewImages, true);
+                }
+                
+                // Build final images array
+                const images = [];
+                const originalImages = editProductOriginal ? editProductOriginal.images || [] : [];
+                
+                for (let i = 0; i < 5; i++) {
+                    if (uploadedUrls[i]) {
+                        images.push(uploadedUrls[i]);
+                    }
+                    else if (!editRemovedSlots[i] && originalImages[i]) {
+                        images.push(originalImages[i]);
+                    }
+                }
+                
+                updateBtn.textContent = '💾 Saving changes...';
                 await supabaseRequest(`products?id=eq.${id}`, {
                     method: 'PATCH',
                     body: JSON.stringify({ 
