@@ -42,6 +42,9 @@
         .empty-cart h3 { color: var(--primary); margin-bottom: 15px; }
         .continue-shopping { display: inline-block; margin-top: 20px; padding: 12px 30px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; }
         footer { background: #0a0a0a; color: white; text-align: center; padding: 40px; margin-top: 60px; }
+        .loading { text-align: center; padding: 60px; }
+        .spinner { width: 40px; height: 40px; border: 3px solid #e9ecef; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 768px) { 
             header { flex-direction: column; gap: 15px; padding: 15px; }
             .cart-item { grid-template-columns: 80px 1fr; gap: 10px; }
@@ -62,7 +65,7 @@
     <div class="container">
         <h1 style="color: var(--primary); margin-bottom: 30px;">Shopping Cart</h1>
         <div id="cartItems">
-            <div class="loading" style="text-align:center; padding:40px;"><div style="width:40px; height:40px; border:3px solid #e9ecef; border-top-color: var(--primary); border-radius:50%; animation: spin 1s linear infinite; margin:0 auto 15px;"></div><p>Loading cart...</p></div>
+            <div class="loading"><div class="spinner"></div><p>Loading cart...</p></div>
         </div>
         <div class="cart-summary" id="cartSummary" style="display: none;">
             <div class="summary-row"><span>Subtotal:</span><span>₹<span id="subtotal">0</span></span></div>
@@ -80,6 +83,7 @@
     </footer>
 
     <script>
+        // Supabase Configuration
         const SUPABASE_URL = "https://tbopyyocuvlsjvtdogcp.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRib3B5eW9jdXZsc2p2dGRvZ2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYxNzcsImV4cCI6MjA4OTYxMjE3N30.TfEtU1NBHCGnZqZzm4LuI1iw22lSPav0OrUskhDw5wc";
         
@@ -244,10 +248,10 @@
             if (cartCountElement) cartCountElement.textContent = count;
         }
         
-        function showNotification(message) {
+        function showNotification(message, type = 'info') {
             const notif = document.createElement('div');
             notif.textContent = message;
-            notif.style.cssText = 'position:fixed; bottom:20px; right:20px; background:#28a745; color:white; padding:12px 24px; border-radius:50px; z-index:9999; font-weight:500; box-shadow:0 4px 12px rgba(0,0,0,0.2);';
+            notif.style.cssText = `position:fixed; bottom:20px; right:20px; background:${type === 'success' ? '#28a745' : '#d4af37'}; color:white; padding:12px 24px; border-radius:50px; z-index:9999; font-weight:500; box-shadow:0 4px 12px rgba(0,0,0,0.2);`;
             document.body.appendChild(notif);
             setTimeout(() => notif.remove(), 3000);
         }
