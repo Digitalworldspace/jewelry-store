@@ -6,8 +6,8 @@ const CONFIG = {
     
     RAZORPAY_KEY: "rzp_live_STwZarJ6EyJUPg",
     
-    SUPABASE_URL: "https://tbopyyocuvlsjvtdogcp.supabase.co",
-    SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRib3B5eW9jdXZsc2p2dGRvZ2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYxNzcsImV4cCI6MjA4OTYxMjE3N30.TfEtU1NBHCGnZqZzm4LuI1iw22lSPav0OrUskhDw5wc"
+    SUPABASE_URL: "https://qlrhgzsgoowzjcgmramp.supabase.co",
+    SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFscmhnenNnb293empjZ21yYW1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTY2NzAsImV4cCI6MjA4OTkzMjY3MH0.j5HXJCaESTQcdAIiI0oM5U9qnQcWEHZ1EusrkyaexUs"
 };
 
 // IMPORTANT: Make CONFIG globally available
