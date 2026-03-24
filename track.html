@@ -53,6 +53,9 @@
         .timeline-content p { color: var(--gray-600); font-size: 12px; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         footer { background: #0a0a0a; color: white; text-align: center; padding: 40px; margin-top: 60px; }
+        .loading { text-align: center; padding: 40px; }
+        .spinner { width: 40px; height: 40px; border: 3px solid #e9ecef; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 768px) { 
             header { flex-direction: column; gap: 15px; padding: 15px; }
             .track-form { flex-direction: column; }
@@ -109,7 +112,7 @@
             }
             
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = '<div style="text-align:center; padding:40px;"><div style="width:40px; height:40px; border:3px solid #e9ecef; border-top-color: #d4af37; border-radius:50%; animation: spin 1s linear infinite; margin:0 auto 15px;"></div><p>Searching for your order...</p></div>';
+            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Searching for your order...</p></div>';
             
             const response = await fetch(`${SUPABASE_URL}/rest/v1/orders?order_id=eq.${orderId}&select=*`, {
                 method: 'GET',
