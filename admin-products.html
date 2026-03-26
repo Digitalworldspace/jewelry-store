@@ -8,36 +8,69 @@
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --primary: #d4af37; --primary-dark: #b8962e; --dark: #1a1a1a; --darker: #0a0a0a; --light: #ffffff; --gray-100: #f8f9fa; --gray-200: #e9ecef; --gray-600: #6c757d; --danger: #dc3545; --success: #28a745; }
+        :root { --primary: #d4af37; --primary-dark: #b8962e; --dark: #1a1a1a; --darker: #0a0a0a; --light: #ffffff; --gray-100: #f8f9fa; --gray-200: #e9ecef; --gray-600: #6c757d; --danger: #dc3545; --success: #28a745; --info: #17a2b8; }
         body { font-family: 'Inter', sans-serif; background: var(--gray-100); }
-        header { background: var(--darker); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+        header { background: var(--darker); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
         .logo { font-size: 24px; font-weight: 600; color: var(--primary); }
         .logo span { background: var(--primary); color: var(--darker); padding: 4px 8px; border-radius: 4px; }
-        nav a { color: #aaa; text-decoration: none; margin-left: 20px; padding: 8px 15px; border-radius: 6px; }
+        nav a { color: #aaa; text-decoration: none; margin-left: 20px; padding: 8px 15px; border-radius: 6px; transition: all 0.3s; }
         nav a:hover, nav a.active { background: rgba(212,175,55,0.1); color: var(--primary); }
         .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
         h1 { color: var(--primary); margin-bottom: 30px; }
-        .toolbar { display: flex; justify-content: flex-end; margin-bottom: 30px; }
-        .btn { background: var(--primary); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; }
-        .form-card { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--gray-200); }
-        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px; }
-        .form-group { margin-bottom: 15px; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; }
-        .image-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 15px 0; }
-        .image-slot { background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 6px; padding: 8px; text-align: center; }
-        .image-slot input { width: 100%; padding: 5px; font-size: 11px; margin-top: 5px; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .product-card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--gray-200); }
-        .product-card img { width: 100%; height: 180px; object-fit: cover; }
-        .product-info { padding: 15px; }
-        .product-info h4 { margin-bottom: 5px; }
-        .product-price { color: var(--primary); font-weight: bold; margin: 10px 0; }
-        .edit-btn, .delete-btn { width: 48%; padding: 8px; margin-top: 10px; border: none; border-radius: 4px; cursor: pointer; }
-        .edit-btn { background: #2196f3; color: white; }
+        .toolbar { display: flex; justify-content: flex-end; margin-bottom: 30px; gap: 15px; }
+        .btn { background: var(--primary); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-secondary { background: var(--gray-600); }
+        .form-card { background: white; border-radius: 16px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--gray-200); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--gray-600); }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; transition: all 0.3s; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
+        
+        /* Image Upload Styles */
+        .image-upload-section { margin: 20px 0; }
+        .image-upload-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; margin-top: 15px; }
+        .upload-card { border: 2px dashed var(--gray-200); border-radius: 12px; padding: 15px; text-align: center; transition: all 0.3s; background: var(--gray-100); }
+        .upload-card:hover { border-color: var(--primary); background: rgba(212,175,55,0.05); }
+        .upload-preview { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; display: none; }
+        .upload-preview.active { display: block; }
+        .upload-placeholder { width: 100%; height: 120px; background: linear-gradient(135deg, #f5f5f5, #e0e0e0); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px; margin-bottom: 10px; }
+        .file-input { display: none; }
+        .upload-btn { background: var(--primary); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; display: inline-block; margin-top: 8px; border: none; }
+        .upload-btn:hover { background: var(--primary-dark); }
+        .remove-img { background: var(--danger); color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-top: 5px; display: inline-block; }
+        .upload-progress { width: 100%; height: 2px; background: var(--gray-200); margin-top: 8px; display: none; }
+        .upload-progress.active { display: block; }
+        .upload-progress-bar { width: 0%; height: 100%; background: var(--primary); transition: width 0.3s; }
+        
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
+        .product-card { background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; }
+        .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .product-image-container { position: relative; height: 250px; overflow: hidden; background: #f5f5f5; }
+        .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .product-card:hover .product-image { transform: scale(1.05); }
+        .image-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 20px; font-size: 11px; }
+        .product-info { padding: 20px; }
+        .product-name { font-size: 18px; font-weight: 600; margin-bottom: 5px; }
+        .product-sku { font-size: 12px; color: var(--gray-600); margin-bottom: 8px; }
+        .product-price { font-size: 24px; font-weight: 700; color: var(--primary); margin: 10px 0; }
+        .product-stock { font-size: 13px; margin-bottom: 15px; }
+        .in-stock { color: var(--success); }
+        .low-stock { color: #ff9800; }
+        .out-of-stock { color: var(--danger); }
+        .card-actions { display: flex; gap: 10px; margin-top: 15px; }
+        .edit-btn, .delete-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.3s; }
+        .edit-btn { background: var(--info); color: white; }
+        .edit-btn:hover { background: #138496; }
         .delete-btn { background: var(--danger); color: white; }
-        .empty-state { text-align: center; padding: 50px; color: var(--gray-600); }
+        .delete-btn:hover { background: #c82333; }
+        .empty-state { text-align: center; padding: 60px; color: var(--gray-600); }
+        .loading-spinner { text-align: center; padding: 60px; }
+        .spinner { width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         footer { background: var(--darker); color: white; text-align: center; padding: 30px; margin-top: 60px; }
-        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .image-grid { grid-template-columns: repeat(2, 1fr); } header { flex-direction: column; gap: 15px; padding: 15px; } }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } header { flex-direction: column; gap: 15px; padding: 15px; } .image-upload-grid { grid-template-columns: repeat(2, 1fr); } }
     </style>
 </head>
 <body>
@@ -52,41 +85,71 @@
     </header>
 
     <div class="container">
-        <h1>Product Management</h1>
-        <div class="toolbar"><button class="btn" onclick="toggleForm()">+ Add New Product</button></div>
+        <h1>✨ Product Management</h1>
+        <div class="toolbar">
+            <button class="btn" onclick="toggleForm()">➕ Add New Product</button>
+            <button class="btn btn-secondary" onclick="loadProducts()">🔄 Refresh</button>
+        </div>
         
-        <div id="addForm" class="form-card" style="display: none;">
-            <h2 style="margin-bottom: 20px;">Add New Product</h2>
+        <!-- Add/Edit Product Form -->
+        <div id="productForm" class="form-card" style="display: none;">
+            <h2 style="margin-bottom: 20px; color: var(--primary);" id="formTitle">Add New Product</h2>
+            <input type="hidden" id="productId">
+            
             <div class="form-grid">
-                <input type="text" id="sku" placeholder="SKU *">
-                <input type="text" id="name" placeholder="Product Name *">
-                <input type="text" id="category" placeholder="Category *">
+                <div class="form-group">
+                    <label>SKU *</label>
+                    <input type="text" id="sku" placeholder="e.g., NECK-001">
+                </div>
+                <div class="form-group">
+                    <label>Product Name *</label>
+                    <input type="text" id="name" placeholder="e.g., Diamond Necklace">
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <input type="text" id="category" placeholder="e.g., Necklaces, Rings, Earrings">
+                </div>
             </div>
+            
             <div class="form-grid">
-                <input type="number" id="price" placeholder="Price *">
-                <input type="number" id="stock" placeholder="Stock *">
+                <div class="form-group">
+                    <label>Price (₹) *</label>
+                    <input type="number" id="price" step="0.01" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>Stock Quantity *</label>
+                    <input type="number" id="stock" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description" rows="2" placeholder="Product description..."></textarea>
+                </div>
             </div>
-            <textarea id="description" rows="2" placeholder="Description"></textarea>
-            <h3 style="margin: 15px 0;">Image URLs (5 images)</h3>
-            <div class="image-grid">
-                <div class="image-slot">Image 1<br><input type="url" id="img1" placeholder="https://..."></div>
-                <div class="image-slot">Image 2<br><input type="url" id="img2" placeholder="https://..."></div>
-                <div class="image-slot">Image 3<br><input type="url" id="img3" placeholder="https://..."></div>
-                <div class="image-slot">Image 4<br><input type="url" id="img4" placeholder="https://..."></div>
-                <div class="image-slot">Image 5<br><input type="url" id="img5" placeholder="https://..."></div>
+            
+            <!-- Image Upload Section -->
+            <div class="image-upload-section">
+                <label>📸 Product Images (JPEG, PNG - Max 5 images)</label>
+                <div class="image-upload-grid" id="imageUploadGrid">
+                    <!-- Dynamic upload cards will be added here -->
+                </div>
+                <p style="font-size: 12px; color: var(--gray-600); margin-top: 10px;">
+                    ⚡ Supported: JPG, JPEG, PNG | Max size: 5MB per image | First image is main product image
+                </p>
             </div>
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="btn" onclick="saveProduct()">Save Product</button>
-                <button class="btn" onclick="toggleForm()" style="background: #6c757d;">Cancel</button>
+            
+            <div style="display: flex; gap: 15px; margin-top: 25px;">
+                <button class="btn" onclick="saveProduct()">💾 Save Product</button>
+                <button class="btn btn-secondary" onclick="toggleForm()">❌ Cancel</button>
             </div>
         </div>
         
+        <!-- Products Grid -->
         <div id="productsGrid" class="product-grid">
-            <div class="empty-state">Loading products...</div>
+            <div class="loading-spinner"><div class="spinner"></div><p>Loading products...</p></div>
         </div>
     </div>
 
-    <footer><p>© 2026 STYLE OF LIFE</p></footer>
+    <footer><p>© 2026 STYLE OF LIFE | Timeless Elegance</p></footer>
 
     <script type="importmap">
         { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
@@ -97,34 +160,268 @@
         if (!sessionStorage.getItem('adminLoggedIn')) window.location.href = 'login.html';
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        let currentImages = []; // Store current image URLs/placeholders
+        let imageFiles = []; // Store File objects for upload
         
-        async function loadProducts() {
-            const { data, error } = await supabase.from('products').select('*').order('id');
-            if (error) { console.error(error); return; }
-            displayProducts(data || []);
+        // Initialize image upload grid
+        function initImageUploadGrid(existingImages = []) {
+            const grid = document.getElementById('imageUploadGrid');
+            currentImages = existingImages.slice(0, 5);
+            imageFiles = new Array(5).fill(null);
+            
+            let html = '';
+            for (let i = 0; i < 5; i++) {
+                const existing = currentImages[i] || '';
+                html += `
+                    <div class="upload-card" id="uploadCard${i}">
+                        ${existing ? `<img class="upload-preview active" id="preview${i}" src="${existing}" alt="Image ${i+1}">` : 
+                                    `<div class="upload-placeholder" id="placeholder${i}">📷 Image ${i+1}</div>`}
+                        <div class="upload-progress" id="progress${i}">
+                            <div class="upload-progress-bar" id="progressBar${i}"></div>
+                        </div>
+                        <input type="file" class="file-input" id="fileInput${i}" accept="image/jpeg,image/png,image/jpg" onchange="handleFileSelect(${i}, this)">
+                        <button class="upload-btn" onclick="document.getElementById('fileInput${i}').click()">Choose Image</button>
+                        ${existing ? `<button class="remove-img" onclick="removeImage(${i})">Remove</button>` : ''}
+                    </div>
+                `;
+            }
+            grid.innerHTML = html;
         }
         
-        function displayProducts(products) {
+        // Handle file selection
+        window.handleFileSelect = async function(index, input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            // Validate file type
+            if (!file.type.match('image/jpeg') && !file.type.match('image/png') && !file.type.match('image/jpg')) {
+                alert('Only JPEG, JPG, and PNG files are allowed');
+                input.value = '';
+                return;
+            }
+            
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB');
+                input.value = '';
+                return;
+            }
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById(`preview${index}`);
+                const placeholder = document.getElementById(`placeholder${index}`);
+                if (preview) {
+                    preview.src = e.target.result;
+                    preview.classList.add('active');
+                }
+                if (placeholder) placeholder.style.display = 'none';
+                
+                // Create preview element if it doesn't exist
+                if (!preview) {
+                    const newPreview = document.createElement('img');
+                    newPreview.className = 'upload-preview active';
+                    newPreview.id = `preview${index}`;
+                    newPreview.src = e.target.result;
+                    const uploadCard = document.getElementById(`uploadCard${index}`);
+                    uploadCard.insertBefore(newPreview, uploadCard.firstChild);
+                    if (placeholder) placeholder.style.display = 'none';
+                }
+            };
+            reader.readAsDataURL(file);
+            
+            // Store file for later upload
+            imageFiles[index] = file;
+            
+            // Add remove button if not exists
+            const uploadCard = document.getElementById(`uploadCard${index}`);
+            if (!uploadCard.querySelector('.remove-img')) {
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-img';
+                removeBtn.textContent = 'Remove';
+                removeBtn.onclick = () => removeImage(index);
+                uploadCard.appendChild(removeBtn);
+            }
+        };
+        
+        // Remove image
+        window.removeImage = function(index) {
+            imageFiles[index] = null;
+            currentImages[index] = '';
+            
+            const preview = document.getElementById(`preview${index}`);
+            const placeholder = document.getElementById(`placeholder${index}`);
+            const fileInput = document.getElementById(`fileInput${index}`);
+            
+            if (preview) {
+                preview.classList.remove('active');
+                preview.src = '';
+            }
+            if (placeholder) placeholder.style.display = 'flex';
+            
+            if (fileInput) fileInput.value = '';
+            
+            // Remove remove button
+            const removeBtn = document.querySelector(`#uploadCard${index} .remove-img`);
+            if (removeBtn) removeBtn.remove();
+        };
+        
+        // Upload images to Supabase Storage
+        async function uploadImages(productId) {
+            const uploadedUrls = [];
+            
+            for (let i = 0; i < imageFiles.length; i++) {
+                const file = imageFiles[i];
+                if (file) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `${productId}/${Date.now()}_${i}.${fileExt}`;
+                    
+                    // Show progress bar
+                    const progressDiv = document.getElementById(`progress${i}`);
+                    const progressBar = document.getElementById(`progressBar${i}`);
+                    if (progressDiv) progressDiv.classList.add('active');
+                    
+                    try {
+                        const { data, error } = await supabase.storage
+                            .from('product-images')
+                            .upload(fileName, file, {
+                                cacheControl: '3600',
+                                upsert: false
+                            });
+                        
+                        if (error) throw error;
+                        
+                        // Get public URL
+                        const { data: urlData } = supabase.storage
+                            .from('product-images')
+                            .getPublicUrl(fileName);
+                        
+                        uploadedUrls.push(urlData.publicUrl);
+                        currentImages[i] = urlData.publicUrl;
+                        
+                        if (progressBar) progressBar.style.width = '100%';
+                        setTimeout(() => {
+                            if (progressDiv) progressDiv.classList.remove('active');
+                            if (progressBar) progressBar.style.width = '0%';
+                        }, 500);
+                        
+                    } catch (error) {
+                        console.error('Upload error:', error);
+                        alert(`Failed to upload image ${i + 1}: ${error.message}`);
+                    }
+                } else if (currentImages[i]) {
+                    uploadedUrls.push(currentImages[i]);
+                }
+            }
+            
+            return uploadedUrls;
+        }
+        
+        // Save product
+        window.saveProduct = async function() {
+            const productId = document.getElementById('productId').value;
+            const sku = document.getElementById('sku').value.trim();
+            const name = document.getElementById('name').value.trim();
+            const category = document.getElementById('category').value.trim();
+            const price = parseFloat(document.getElementById('price').value);
+            const stock = parseInt(document.getElementById('stock').value);
+            const description = document.getElementById('description').value.trim();
+            
+            if (!sku || !name || !category || isNaN(price) || isNaN(stock)) {
+                alert('Please fill all required fields');
+                return;
+            }
+            
+            const productData = {
+                sku, name, category, price, stock, description
+            };
+            
+            try {
+                let result;
+                
+                if (productId) {
+                    // Update existing product
+                    result = await supabase.from('products').update(productData).eq('id', parseInt(productId));
+                    
+                    // Upload new images
+                    const newImages = await uploadImages(productId);
+                    if (newImages.length > 0) {
+                        await supabase.from('products').update({ images: newImages }).eq('id', parseInt(productId));
+                    }
+                    
+                } else {
+                    // Create new product
+                    result = await supabase.from('products').insert([productData]).select();
+                    
+                    if (result.data && result.data[0]) {
+                        const newProductId = result.data[0].id;
+                        const uploadedImages = await uploadImages(newProductId);
+                        await supabase.from('products').update({ images: uploadedImages }).eq('id', newProductId);
+                    }
+                }
+                
+                if (result.error) throw result.error;
+                
+                alert(productId ? '✅ Product updated successfully!' : '✅ Product added successfully!');
+                toggleForm();
+                loadProducts();
+                
+                // Reset form
+                document.getElementById('productId').value = '';
+                document.getElementById('sku').value = '';
+                document.getElementById('name').value = '';
+                document.getElementById('category').value = '';
+                document.getElementById('price').value = '';
+                document.getElementById('stock').value = '';
+                document.getElementById('description').value = '';
+                imageFiles = new Array(5).fill(null);
+                currentImages = [];
+                
+            } catch (error) {
+                console.error('Save error:', error);
+                alert('Error saving product: ' + error.message);
+            }
+        };
+        
+        // Load products
+        async function loadProducts() {
             const grid = document.getElementById('productsGrid');
-            if (products.length === 0) {
-                grid.innerHTML = '<div class="empty-state">No products found. Click "Add New Product" to get started.</div>';
+            grid.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>Loading products...</p></div>';
+            
+            const { data, error } = await supabase.from('products').select('*').order('id');
+            
+            if (error) {
+                grid.innerHTML = '<div class="empty-state">Error loading products</div>';
+                return;
+            }
+            
+            if (!data || data.length === 0) {
+                grid.innerHTML = '<div class="empty-state">✨ No products yet. Click "Add New Product" to get started.</div>';
                 return;
             }
             
             let html = '';
-            products.forEach(p => {
-                const img = p.images?.[0] || 'https://via.placeholder.com/300x200?text=No+Image';
+            data.forEach(p => {
+                const mainImage = p.images && p.images[0] ? p.images[0] : 'https://via.placeholder.com/300x250?text=No+Image';
+                const imageCount = p.images ? p.images.length : 0;
+                const stockClass = p.stock <= 0 ? 'out-of-stock' : (p.stock < 10 ? 'low-stock' : 'in-stock');
+                const stockText = p.stock <= 0 ? 'Out of Stock' : (p.stock < 10 ? `Low Stock (${p.stock})` : `In Stock (${p.stock})`);
+                
                 html += `
                     <div class="product-card">
-                        <img src="${img}" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                        <div class="product-image-container">
+                            <img class="product-image" src="${mainImage}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300x250?text=No+Image'">
+                            ${imageCount > 0 ? `<div class="image-badge">📸 ${imageCount} image${imageCount > 1 ? 's' : ''}</div>` : ''}
+                        </div>
                         <div class="product-info">
-                            <h4>${p.name}</h4>
-                            <div style="color:#6c757d;">${p.sku} | ${p.category}</div>
-                            <div class="product-price">₹${Number(p.price).toLocaleString()}</div>
-                            <div>Stock: ${p.stock}</div>
-                            <div style="display: flex; gap: 5px;">
-                                <button class="edit-btn" onclick="editProduct(${p.id})">Edit</button>
-                                <button class="delete-btn" onclick="deleteProduct(${p.id})">Delete</button>
+                            <div class="product-name">${escapeHtml(p.name)}</div>
+                            <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
+                            <div class="product-price">₹${(p.price || 0).toLocaleString()}</div>
+                            <div class="product-stock ${stockClass}">${stockText}</div>
+                            <div class="card-actions">
+                                <button class="edit-btn" onclick="editProduct(${p.id})">✏️ Edit</button>
+                                <button class="delete-btn" onclick="deleteProduct(${p.id})">🗑️ Delete</button>
                             </div>
                         </div>
                     </div>
@@ -133,65 +430,90 @@
             grid.innerHTML = html;
         }
         
-        window.toggleForm = function() {
-            const form = document.getElementById('addForm');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        };
-        
-        window.saveProduct = async function() {
-            const sku = document.getElementById('sku').value.trim();
-            const name = document.getElementById('name').value.trim();
-            const category = document.getElementById('category').value.trim();
-            const price = document.getElementById('price').value.trim();
-            const stock = document.getElementById('stock').value.trim();
-            
-            if (!sku || !name || !category || !price || !stock) {
-                alert('Please fill all required fields');
-                return;
-            }
-            
-            const images = [1,2,3,4,5].map(i => document.getElementById(`img${i}`).value.trim());
-            
-            const { error } = await supabase.from('products').insert([{
-                sku, name, category, price: Number(price), stock: Number(stock),
-                description: document.getElementById('description').value.trim(),
-                images: images
-            }]);
-            
-            if (error) {
-                alert('Error: ' + error.message);
-                return;
-            }
-            
-            alert('✅ Product added successfully! Customers can now see it.');
-            toggleForm();
-            await loadProducts();
-            ['sku','name','category','price','stock','description','img1','img2','img3','img4','img5'].forEach(id => document.getElementById(id).value = '');
-        };
-        
+        // Edit product
         window.editProduct = async function(id) {
-            const { data } = await supabase.from('products').select('*').eq('id', id);
-            const product = data?.[0];
-            if (!product) return;
+            const { data, error } = await supabase.from('products').select('*').eq('id', id);
+            if (error || !data || data.length === 0) return;
             
-            const newName = prompt('Edit product name:', product.name);
-            if (newName && newName !== product.name) {
-                const { error } = await supabase.from('products').update({ name: newName }).eq('id', id);
-                if (error) alert('Error: ' + error.message);
-                else await loadProducts();
+            const product = data[0];
+            document.getElementById('productId').value = product.id;
+            document.getElementById('sku').value = product.sku;
+            document.getElementById('name').value = product.name;
+            document.getElementById('category').value = product.category || '';
+            document.getElementById('price').value = product.price;
+            document.getElementById('stock').value = product.stock;
+            document.getElementById('description').value = product.description || '';
+            
+            currentImages = product.images || [];
+            imageFiles = new Array(5).fill(null);
+            initImageUploadGrid(currentImages);
+            
+            document.getElementById('formTitle').textContent = 'Edit Product';
+            document.getElementById('productForm').style.display = 'block';
+            document.getElementById('productForm').scrollIntoView({ behavior: 'smooth' });
+        };
+        
+        // Delete product
+        window.deleteProduct = async function(id) {
+            if (!confirm('Delete this product? This action cannot be undone.')) return;
+            
+            // Get product images to delete from storage
+            const { data } = await supabase.from('products').select('images').eq('id', id);
+            if (data && data[0] && data[0].images) {
+                const images = data[0].images;
+                for (const imageUrl of images) {
+                    const path = imageUrl.split('/').pop();
+                    await supabase.storage.from('product-images').remove([path]);
+                }
+            }
+            
+            const { error } = await supabase.from('products').delete().eq('id', id);
+            if (error) {
+                alert('Error deleting product: ' + error.message);
+                return;
+            }
+            
+            alert('✅ Product deleted successfully');
+            loadProducts();
+        };
+        
+        window.toggleForm = function() {
+            const form = document.getElementById('productForm');
+            if (form.style.display === 'none') {
+                document.getElementById('productId').value = '';
+                document.getElementById('sku').value = '';
+                document.getElementById('name').value = '';
+                document.getElementById('category').value = '';
+                document.getElementById('price').value = '';
+                document.getElementById('stock').value = '';
+                document.getElementById('description').value = '';
+                currentImages = [];
+                imageFiles = new Array(5).fill(null);
+                initImageUploadGrid([]);
+                document.getElementById('formTitle').textContent = 'Add New Product';
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
             }
         };
         
-        window.deleteProduct = async function(id) {
-            if (!confirm('Delete this product? This will remove it from customer view.')) return;
-            const { error } = await supabase.from('products').delete().eq('id', id);
-            if (error) { alert('Error: ' + error.message); return; }
-            alert('✅ Product deleted. No longer visible to customers.');
-            await loadProducts();
+        window.logout = function() {
+            sessionStorage.removeItem('adminLoggedIn');
+            window.location.href = 'login.html';
         };
         
-        window.logout = function() { sessionStorage.removeItem('adminLoggedIn'); window.location.href = 'login.html'; };
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
         
+        // Initialize
+        initImageUploadGrid([]);
         loadProducts();
     </script>
 </body>
