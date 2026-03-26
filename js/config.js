@@ -4,11 +4,14 @@ const CONFIG = {
     CURRENCY: "₹",
     DEFAULT_CATEGORY: "Jewelry",
     
-    RAZORPAY_KEY: "rzp_live_STwZarJ6EyJUPg",
-    
+    // CORRECTED - Using the same Supabase URL across all files
     SUPABASE_URL: "https://qlrhgzsgoowzjcgmramp.supabase.co",
-    SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFscmhnenNnb293empjZ21yYW1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTY2NzAsImV4cCI6MjA4OTkzMjY3MH0.j5HXJCaESTQcdAIiI0oM5U9qnQcWEHZ1EusrkyaexUs"
+    SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFscmhnenNnb293empjZ21yYW1wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTY2NzAsImV4cCI6MjA4OTkzMjY3MH0.j5HXJCaESTQcdAIiI0oM5U9qnQcWEHZ1EusrkyaexUs",
+    
+    // Admin credentials - CHANGE THESE IN PRODUCTION
+    ADMIN_USERNAME: "admin",
+    ADMIN_PASSWORD: "StyleOfLife@2026"
 };
 
-// IMPORTANT: Make CONFIG globally available
+// Make CONFIG globally available
 window.CONFIG = CONFIG;
