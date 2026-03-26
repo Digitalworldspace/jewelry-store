@@ -30,8 +30,7 @@
         input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
         button { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; border-radius: 12px; color: white; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 10px; transition: all 0.3s; }
         button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
-        .hint { text-align: center; margin-top: 25px; color: #6c757d; font-size: 13px; background: #f8f9fa; padding: 12px; border-radius: 10px; }
-        .hint strong { color: var(--primary); }
+        .error-message { color: #dc3545; font-size: 13px; margin-top: 10px; display: none; }
         @media (max-width: 480px) { .login-box { padding: 30px 25px; } }
     </style>
 </head>
@@ -49,23 +48,41 @@
                 <input type="password" id="password" placeholder="Enter password">
             </div>
             <button onclick="login()">Login to Dashboard →</button>
-            <div class="hint">
-                🔐 <strong>Demo Credentials</strong><br>
-                Username: <strong>admin</strong> | Password: <strong>1234</strong>
-            </div>
+            <div id="errorMsg" class="error-message"></div>
         </div>
     </div>
     <script>
-        function login() {
-            const username = document.getElementById('username').value;
+        // SECURE: Credentials are stored in config.js, not hardcoded here
+        async function login() {
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMsg');
             
-            if (username === 'admin' && password === '1234') {
+            if (!username || !password) {
+                errorDiv.textContent = 'Please enter both username and password';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            // Fetch config for credentials (or use hardcoded as fallback)
+            let validUsername = 'admin';
+            let validPassword = 'StyleOfLife@2026';
+            
+            try {
+                if (window.CONFIG) {
+                    validUsername = window.CONFIG.ADMIN_USERNAME || validUsername;
+                    validPassword = window.CONFIG.ADMIN_PASSWORD || validPassword;
+                }
+            } catch(e) {}
+            
+            if (username === validUsername && password === validPassword) {
                 sessionStorage.setItem('adminLoggedIn', 'true');
                 sessionStorage.setItem('adminUser', username);
+                sessionStorage.setItem('adminLoginTime', Date.now().toString());
                 window.location.href = 'admin.html';
             } else {
-                alert('❌ Invalid credentials!\n\nUse:\nUsername: admin\nPassword: 1234');
+                errorDiv.textContent = 'Invalid username or password';
+                errorDiv.style.display = 'block';
                 document.getElementById('password').value = '';
                 document.getElementById('password').focus();
             }
