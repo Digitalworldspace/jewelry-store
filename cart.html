@@ -3,49 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- ========== SECURITY HEADERS ========== -->
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-    <meta name="format-detection" content="telephone=no">
-    
-    <!-- ========== NO SEO - TRANSACTIONAL PAGE ========== -->
     <title>Shopping Cart - Style Of Life</title>
     <meta name="robots" content="noindex, nofollow">
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --primary: #d4af37; --primary-dark: #b8962e; --light: #ffffff; --gray-200: #e9ecef; --gray-600: #6c757d; --danger: #dc3545; --success: #28a745; }
+        :root { --primary: #d4af37; --primary-dark: #b8962e; --danger: #dc3545; }
         body { font-family: 'Inter', sans-serif; background: #f8f9fa; }
-        header { background: white; padding: 20px 50px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        
+        header { background: white; padding: 20px 50px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 28px; font-weight: 600; color: var(--primary); text-decoration: none; }
-        nav a { color: var(--gray-600); text-decoration: none; margin-left: 30px; transition: color 0.3s; }
+        nav a { color: #6c757d; text-decoration: none; margin-left: 30px; }
         nav a:hover, nav a.active { color: var(--primary); }
         .cart-count { background: var(--primary); color: white; padding: 2px 6px; border-radius: 20px; font-size: 12px; margin-left: 5px; }
+        
         .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-        .cart-item { display: grid; grid-template-columns: 100px 2fr 1fr 100px 100px 50px; gap: 15px; align-items: center; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--gray-200); transition: all 0.3s; }
-        .cart-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        
+        .cart-item {
+            display: grid;
+            grid-template-columns: 100px 2fr 1fr 100px 100px 50px;
+            gap: 15px;
+            align-items: center;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef;
+        }
         .cart-item img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; }
-        .cart-summary { background: white; border-radius: 12px; padding: 25px; border: 1px solid var(--gray-200); margin-top: 20px; }
-        .summary-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--gray-200); }
-        .summary-row.total { border-bottom: none; font-size: 20px; font-weight: bold; color: var(--primary); padding-top: 15px; }
-        button { padding: 12px; background: var(--primary); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.3s; }
-        button:hover { background: var(--primary-dark); transform: translateY(-2px); }
-        .checkout-btn { display: block; text-align: center; text-decoration: none; margin: 20px 0 10px; background: var(--primary); color: white; padding: 15px; border-radius: 8px; font-weight: 600; transition: all 0.3s; }
-        .checkout-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        
+        .cart-summary {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #e9ecef;
+            margin-top: 20px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .summary-row.total {
+            border-bottom: none;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+            padding-top: 15px;
+        }
+        
+        button { padding: 12px; background: var(--primary); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; width: 100%; }
+        button:hover { background: var(--primary-dark); }
+        .checkout-btn { display: block; text-align: center; text-decoration: none; margin: 20px 0 10px; background: var(--primary); color: white; padding: 15px; border-radius: 8px; font-weight: 600; }
         .clear-btn { background: var(--danger); }
         .clear-btn:hover { background: #c82333; }
-        input { width: 60px; padding: 5px; border: 1px solid var(--gray-200); border-radius: 4px; text-align: center; }
-        .empty-cart { text-align: center; padding: 60px; background: white; border-radius: 12px; border: 1px solid var(--gray-200); }
-        .empty-cart h3 { color: var(--primary); margin-bottom: 15px; }
-        .continue-shopping { display: inline-block; margin-top: 20px; padding: 12px 30px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; }
-        footer { background: #0a0a0a; color: white; text-align: center; padding: 40px; margin-top: 60px; }
-        .loading { text-align: center; padding: 60px; }
+        input { width: 60px; padding: 5px; border: 1px solid #e9ecef; border-radius: 4px; text-align: center; }
+        
+        .empty-cart { text-align: center; padding: 60px; background: white; border-radius: 12px; }
+        .loading-spinner { text-align: center; padding: 60px; }
         .spinner { width: 40px; height: 40px; border: 3px solid #e9ecef; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 768px) { 
+        
+        footer { background: #0a0a0a; color: white; text-align: center; padding: 40px; margin-top: 60px; }
+        
+        @media (max-width: 768px) {
             header { flex-direction: column; gap: 15px; padding: 15px; }
             .cart-item { grid-template-columns: 80px 1fr; gap: 10px; }
             .cart-item > div:nth-child(3), .cart-item > div:nth-child(4), .cart-item > div:nth-child(5) { display: none; }
@@ -64,9 +86,7 @@
 
     <div class="container">
         <h1 style="color: var(--primary); margin-bottom: 30px;">Shopping Cart</h1>
-        <div id="cartItems">
-            <div class="loading"><div class="spinner"></div><p>Loading cart...</p></div>
-        </div>
+        <div id="cartItems"><div class="loading-spinner"><div class="spinner"></div><p>Loading cart from database...</p></div></div>
         <div class="cart-summary" id="cartSummary" style="display: none;">
             <div class="summary-row"><span>Subtotal:</span><span>₹<span id="subtotal">0</span></span></div>
             <div class="summary-row"><span>Shipping:</span><span>₹100</span></div>
@@ -79,11 +99,9 @@
 
     <footer>
         <p>© 2026 STYLE OF LIFE. All rights reserved.</p>
-        <p style="margin-top: 10px; font-size: 12px;">Free Shipping on orders above ₹10,000</p>
     </footer>
 
     <script>
-        // Supabase Configuration
         const SUPABASE_URL = "https://tbopyyocuvlsjvtdogcp.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRib3B5eW9jdXZsc2p2dGRvZ2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYxNzcsImV4cCI6MjA4OTYxMjE3N30.TfEtU1NBHCGnZqZzm4LuI1iw22lSPav0OrUskhDw5wc";
         
@@ -93,47 +111,56 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
-        let cart = [];
+        let cartItems = [];
         
         async function loadCart() {
+            const container = document.getElementById('cartItems');
+            container.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>Loading cart from database...</p></div>';
+            
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}&select=items`, {
                     method: 'GET',
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
                     }
                 });
                 
-                const data = await response.json();
-                if (data && data.length > 0 && data[0].items) {
-                    cart = data[0].items;
-                } else {
-                    cart = [];
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
                 }
+                
+                const data = await response.json();
+                cartItems = (data && data.length > 0 && data[0].items) ? data[0].items : [];
+                
+                console.log('Cart loaded:', cartItems.length, 'items');
                 displayCart();
                 updateCartCount();
+                
             } catch (error) {
                 console.error('Error loading cart:', error);
-                cart = [];
-                displayCart();
+                container.innerHTML = `<div class="empty-cart"><p>❌ Error loading cart: ${error.message}</p><button onclick="loadCart()" style="margin-top:15px; width:auto; padding:10px 20px;">Retry</button></div>`;
             }
         }
         
         async function saveCart() {
             try {
-                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                 
+                // Delete existing
                 await fetch(`${SUPABASE_URL}/rest/v1/carts?session_id=eq.${sessionId}`, {
                     method: 'DELETE',
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
                     }
                 });
                 
-                if (cart.length > 0) {
-                    await fetch(`${SUPABASE_URL}/rest/v1/carts`, {
+                // Insert new if not empty
+                if (cartItems.length > 0) {
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/carts`, {
                         method: 'POST',
                         headers: {
                             'apikey': SUPABASE_ANON_KEY,
@@ -142,64 +169,34 @@
                         },
                         body: JSON.stringify({
                             session_id: sessionId,
-                            items: cart,
+                            items: cartItems,
                             total: total,
                             updated_at: new Date().toISOString()
                         })
                     });
+                    
+                    if (!response.ok) throw new Error('Failed to save cart');
                 }
                 
                 updateCartCount();
                 return true;
             } catch (error) {
                 console.error('Error saving cart:', error);
+                showNotification('Error saving cart: ' + error.message, 'error');
                 return false;
             }
         }
-        
-        window.updateQuantity = async function(id, qty) {
-            qty = parseInt(qty);
-            if (isNaN(qty) || qty < 1) qty = 1;
-            if (qty > 10) qty = 10;
-            
-            const itemIndex = cart.findIndex(i => i.id === id);
-            if (itemIndex !== -1) {
-                cart[itemIndex].quantity = qty;
-                await saveCart();
-                displayCart();
-            }
-        };
-        
-        window.removeItem = async function(id) {
-            cart = cart.filter(item => item.id !== id);
-            await saveCart();
-            displayCart();
-            showNotification('Item removed from cart', 'success');
-        };
-        
-        window.clearCart = async function() {
-            if (cart.length === 0) {
-                alert('Cart is already empty');
-                return;
-            }
-            if (confirm('Clear all items from cart?')) {
-                cart = [];
-                await saveCart();
-                displayCart();
-                showNotification('Cart cleared successfully', 'success');
-            }
-        };
         
         function displayCart() {
             const container = document.getElementById('cartItems');
             const summaryDiv = document.getElementById('cartSummary');
             
-            if (!cart || cart.length === 0) {
+            if (!cartItems || cartItems.length === 0) {
                 container.innerHTML = `
                     <div class="empty-cart">
                         <h3>🛒 Your Cart is Empty</h3>
                         <p>Looks like you haven't added any items to your cart yet.</p>
-                        <a href="index.html" class="continue-shopping">Continue Shopping</a>
+                        <a href="index.html" style="display: inline-block; margin-top: 20px; padding: 12px 30px; background: #d4af37; color: #1a1a1a; text-decoration: none; border-radius: 8px;">Continue Shopping</a>
                     </div>
                 `;
                 summaryDiv.style.display = 'none';
@@ -209,7 +206,7 @@
             summaryDiv.style.display = 'block';
             let html = '', subtotal = 0;
             
-            cart.forEach(item => {
+            cartItems.forEach(item => {
                 const itemTotal = item.price * item.quantity;
                 subtotal += itemTotal;
                 html += `
@@ -217,12 +214,12 @@
                         <img src="${item.image || 'https://via.placeholder.com/100x100'}" onerror="this.src='https://via.placeholder.com/100x100'" alt="${item.name}">
                         <div>
                             <h4>${escapeHtml(item.name)}</h4>
-                            <p style="color: var(--gray-600); font-size: 12px;">SKU: ${item.sku}</p>
+                            <p style="color: #6c757d; font-size: 12px;">SKU: ${item.sku}</p>
                         </div>
                         <div>₹${item.price.toLocaleString()}</div>
                         <div><input type="number" value="${item.quantity}" min="1" max="10" onchange="updateQuantity(${item.id}, this.value)"></div>
                         <div>₹${itemTotal.toLocaleString()}</div>
-                        <button onclick="removeItem(${item.id})" style="background: none; color: var(--danger); width: auto; font-size: 20px; cursor: pointer;">✕</button>
+                        <button onclick="removeItem(${item.id})" style="background: none; color: #dc3545; width: auto; font-size: 20px; cursor: pointer;">✕</button>
                     </div>
                 `;
             });
@@ -235,25 +232,59 @@
             document.getElementById('total').textContent = total.toLocaleString();
         }
         
+        window.updateQuantity = async function(id, qty) {
+            qty = parseInt(qty);
+            if (isNaN(qty) || qty < 1) qty = 1;
+            if (qty > 10) qty = 10;
+            
+            const itemIndex = cartItems.findIndex(i => i.id === id);
+            if (itemIndex !== -1) {
+                cartItems[itemIndex].quantity = qty;
+                await saveCart();
+                displayCart();
+                showNotification('Cart updated');
+            }
+        };
+        
+        window.removeItem = async function(id) {
+            cartItems = cartItems.filter(item => item.id !== id);
+            await saveCart();
+            displayCart();
+            showNotification('Item removed from cart');
+        };
+        
+        window.clearCart = async function() {
+            if (cartItems.length === 0) {
+                alert('Cart is already empty');
+                return;
+            }
+            if (confirm('Clear all items from cart?')) {
+                cartItems = [];
+                await saveCart();
+                displayCart();
+                showNotification('Cart cleared successfully');
+            }
+        };
+        
+        function updateCartCount() {
+            const count = cartItems.reduce((t, i) => t + i.quantity, 0);
+            const cartCountElement = document.getElementById('cartCount');
+            if (cartCountElement) cartCountElement.textContent = count;
+        }
+        
+        function showNotification(message, type = 'success') {
+            const notif = document.createElement('div');
+            notif.textContent = message;
+            notif.style.cssText = `position:fixed; bottom:20px; right:20px; background:${type === 'error' ? '#dc3545' : '#28a745'}; color:white; padding:12px 24px; border-radius:50px; z-index:9999; font-weight:500;`;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+        
         function escapeHtml(str) {
             if (!str) return '';
             return str.replace(/[&<>]/g, function(m) {
                 return {'&':'&amp;','<':'&lt;','>':'&gt;'}[m];
             });
-        }
-        
-        function updateCartCount() {
-            const count = cart.reduce((t, i) => t + i.quantity, 0);
-            const cartCountElement = document.getElementById('cartCount');
-            if (cartCountElement) cartCountElement.textContent = count;
-        }
-        
-        function showNotification(message, type = 'info') {
-            const notif = document.createElement('div');
-            notif.textContent = message;
-            notif.style.cssText = `position:fixed; bottom:20px; right:20px; background:${type === 'success' ? '#28a745' : '#d4af37'}; color:white; padding:12px 24px; border-radius:50px; z-index:9999; font-weight:500; box-shadow:0 4px 12px rgba(0,0,0,0.2);`;
-            document.body.appendChild(notif);
-            setTimeout(() => notif.remove(), 3000);
         }
         
         loadCart();
