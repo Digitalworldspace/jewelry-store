@@ -3,35 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- ========== SECURITY HEADERS ========== -->
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-    <meta name="format-detection" content="telephone=no">
-    
-    <!-- ========== COMPLETELY HIDDEN FROM SEARCH ENGINES ========== -->
     <title>Admin Login - Style Of Life</title>
     <meta name="robots" content="noindex, nofollow">
-    <meta name="googlebot" content="noindex, nofollow">
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --primary: #d4af37; --primary-dark: #b8962e; --dark: #1a1a1a; --darker: #0a0a0a; }
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .login-container { width: 100%; max-width: 420px; padding: 20px; }
-        .login-box { background: white; padding: 50px 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; }
-        .logo { font-size: 32px; font-weight: 700; color: var(--primary); margin-bottom: 10px; font-family: 'Playfair Display', serif; }
-        .subtitle { color: #6c757d; margin-bottom: 30px; font-size: 14px; }
-        .form-group { margin-bottom: 20px; text-align: left; }
-        label { display: block; color: #495057; margin-bottom: 8px; font-weight: 500; font-size: 14px; }
-        input { width: 100%; padding: 12px 15px; border: 2px solid #e9ecef; border-radius: 12px; font-size: 14px; transition: all 0.3s; }
-        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
-        button { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; border-radius: 12px; color: white; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 10px; transition: all 0.3s; }
-        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
-        .error-message { color: #dc3545; font-size: 13px; margin-top: 10px; display: none; }
-        @media (max-width: 480px) { .login-box { padding: 30px 25px; } }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --dark: #1a1a1a;
+            --darker: #0a0a0a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .subtitle {
+            color: #6c757d;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            color: #495057;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .login-box {
+                padding: 30px 25px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -51,31 +135,21 @@
             <div id="errorMsg" class="error-message"></div>
         </div>
     </div>
+
     <script>
-        // SECURE: Credentials are stored in config.js, not hardcoded here
-        async function login() {
+        function login() {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('errorMsg');
-            
+
             if (!username || !password) {
                 errorDiv.textContent = 'Please enter both username and password';
                 errorDiv.style.display = 'block';
                 return;
             }
-            
-            // Fetch config for credentials (or use hardcoded as fallback)
-            let validUsername = 'admin';
-            let validPassword = 'StyleOfLife@2026';
-            
-            try {
-                if (window.CONFIG) {
-                    validUsername = window.CONFIG.ADMIN_USERNAME || validUsername;
-                    validPassword = window.CONFIG.ADMIN_PASSWORD || validPassword;
-                }
-            } catch(e) {}
-            
-            if (username === validUsername && password === validPassword) {
+
+            // Admin credentials
+            if (username === 'admin' && password === 'StyleOfLife@2026') {
                 sessionStorage.setItem('adminLoggedIn', 'true');
                 sessionStorage.setItem('adminUser', username);
                 sessionStorage.setItem('adminLoginTime', Date.now().toString());
@@ -87,7 +161,7 @@
                 document.getElementById('password').focus();
             }
         }
-        
+
         document.getElementById('username').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') login();
         });
