@@ -1,8 +1,72 @@
 // js/supabase-client.js
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+// NOTE: This file is now self-contained without ES module imports
 
-// Initialize Supabase
-const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+// Initialize Supabase client manually (since we can't import ES modules in all contexts)
+class SupabaseClient {
+    constructor(url, key) {
+        this.url = url;
+        this.key = key;
+    }
+
+    async request(endpoint, options = {}) {
+        const headers = {
+            'apikey': this.key,
+            'Authorization': `Bearer ${this.key}`,
+            'Content-Type': 'application/json',
+            ...options.headers
+        };
+
+        const response = await fetch(`${this.url}/rest/v1/${endpoint}`, {
+            ...options,
+            headers
+        });
+
+        if (!response.ok && options.method !== 'DELETE') {
+            const error = await response.text();
+            throw new Error(error);
+        }
+
+        if (options.method === 'DELETE') return true;
+        return await response.json();
+    }
+
+    from(table) {
+        return {
+            select: (columns = '*') => ({
+                eq: async (column, value) => {
+                    return this.request(`${table}?${column}=eq.${value}&select=${columns}`);
+                },
+                order: async (column, { ascending = true } = {}) => {
+                    const orderDir = ascending ? 'asc' : 'desc';
+                    return this.request(`${table}?select=${columns}&order=${column}.${orderDir}`);
+                },
+                maybeSingle: async () => {
+                    const data = await this.request(`${table}?select=${columns}&limit=1`);
+                    return { data: data?.[0] || null, error: null };
+                }
+            }),
+            insert: async (data) => {
+                return this.request(table, { method: 'POST', body: JSON.stringify(data) });
+            },
+            update: async (updates) => ({
+                eq: async (column, value) => {
+                    return this.request(`${table}?${column}=eq.${value}`, { method: 'PATCH', body: JSON.stringify(updates) });
+                }
+            }),
+            delete: () => ({
+                eq: async (column, value) => {
+                    return this.request(`${table}?${column}=eq.${value}`, { method: 'DELETE' });
+                }
+            })
+        };
+    }
+}
+
+// Get config from window
+const SUPABASE_URL = window.CONFIG?.SUPABASE_URL || "https://tbopyyocuvlsjvtdogcp.supabase.co";
+const SUPABASE_ANON_KEY = window.CONFIG?.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRib3B5eW9jdXZsc2p2dGRvZ2NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzYxNzcsImV4cCI6MjA4OTYxMjE3N30.TfEtU1NBHCGnZqZzm4LuI1iw22lSPav0OrUskhDw5wc";
+
+const supabase = new SupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Session management
 let sessionId = localStorage.getItem('sessionId');
@@ -12,10 +76,9 @@ if (!sessionId) {
 }
 
 // ==================== PRODUCTS ====================
-export async function getProducts() {
+async function getProducts() {
     try {
-        const { data, error } = await supabase.from('products').select('*').order('id');
-        if (error) throw error;
+        const data = await supabase.from('products').select('*').order('id', { ascending: true });
         return data || [];
     } catch (err) {
         console.error('Error fetching products:', err);
@@ -23,11 +86,10 @@ export async function getProducts() {
     }
 }
 
-export async function getProductById(id) {
+async function getProductById(id) {
     try {
-        const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
-        if (error) throw error;
-        return data;
+        const data = await supabase.from('products').select('*').eq('id', id);
+        return data?.[0] || null;
     } catch (err) {
         console.error('Error fetching product:', err);
         return null;
@@ -35,35 +97,26 @@ export async function getProductById(id) {
 }
 
 // ==================== CART FUNCTIONS ====================
-
-export async function getCart() {
+async function getCart() {
     try {
-        const { data, error } = await supabase
-            .from('carts')
-            .select('items, total')
-            .eq('session_id', sessionId)
-            .maybeSingle();
-        
-        if (error) throw error;
-        return { items: data?.items || [], total: data?.total || 0 };
+        const data = await supabase.from('carts').select('items, total').eq('session_id', sessionId);
+        return { items: data?.[0]?.items || [], total: data?.[0]?.total || 0 };
     } catch (err) {
         console.error('Error fetching cart:', err);
         return { items: [], total: 0 };
     }
 }
 
-export async function saveCart(items, total) {
+async function saveCart(items, total) {
     try {
-        const { error } = await supabase.from('carts').upsert({
-            session_id: sessionId,
-            items: items,
-            total: total,
-            updated_at: new Date().toISOString()
-        });
-        
-        if (error) {
-            console.error('Supabase upsert error:', error);
-            return false;
+        await supabase.from('carts').delete().eq('session_id', sessionId);
+        if (items.length > 0) {
+            await supabase.from('carts').insert({
+                session_id: sessionId,
+                items: items,
+                total: total,
+                updated_at: new Date().toISOString()
+            });
         }
         return true;
     } catch (err) {
@@ -72,7 +125,7 @@ export async function saveCart(items, total) {
     }
 }
 
-export async function addToCart(product, quantity = 1) {
+async function addToCart(product, quantity = 1) {
     try {
         const { items: currentItems } = await getCart();
         let cartItems = [...currentItems];
@@ -100,24 +153,12 @@ export async function addToCart(product, quantity = 1) {
     }
 }
 
-export async function removeFromCart(productId) {
+async function removeFromCart(productId) {
     try {
-        console.log('Removing item with ID:', productId);
-        
         const { items } = await getCart();
-        console.log('Current cart items:', items);
-        
-        const cartItems = items.filter(i => {
-            console.log('Comparing:', i.id, 'with', productId);
-            return i.id !== productId;
-        });
-        
-        console.log('New cart items:', cartItems);
-        
+        const cartItems = items.filter(i => i.id !== productId);
         const total = cartItems.reduce((sum, i) => sum + (i.price * i.quantity), 0);
         const success = await saveCart(cartItems, total);
-        
-        console.log('Save successful:', success);
         return { success, items: cartItems, total };
     } catch (err) {
         console.error('Remove from cart error:', err);
@@ -125,10 +166,8 @@ export async function removeFromCart(productId) {
     }
 }
 
-export async function updateCartQuantity(productId, quantity) {
+async function updateCartQuantity(productId, quantity) {
     try {
-        console.log('Updating quantity for ID:', productId, 'to:', quantity);
-        
         const { items } = await getCart();
         const cartItems = [...items];
         const index = cartItems.findIndex(i => i.id === productId);
@@ -150,7 +189,7 @@ export async function updateCartQuantity(productId, quantity) {
     }
 }
 
-export async function clearCart() {
+async function clearCart() {
     try {
         const success = await saveCart([], 0);
         return { success };
@@ -161,7 +200,7 @@ export async function clearCart() {
 }
 
 // ==================== ORDERS ====================
-export async function placeOrder(orderData) {
+async function placeOrder(orderData) {
     try {
         // Check stock for each item
         for (const item of orderData.items) {
@@ -178,13 +217,13 @@ export async function placeOrder(orderData) {
         for (const item of orderData.items) {
             const product = await getProductById(item.id);
             const newStock = product.stock - item.quantity;
-            const { error } = await supabase.from('products').update({ stock: newStock }).eq('id', item.id);
-            if (error) throw error;
+            await supabase.from('products').update({ stock: newStock }).eq('id', item.id);
         }
         
         // Create order
-        const { data, error } = await supabase.from('orders').insert([{
-            order_id: 'ORD' + Date.now(),
+        const orderId = 'ORD' + Date.now();
+        await supabase.from('orders').insert({
+            order_id: orderId,
             customer_name: orderData.name,
             phone: orderData.phone,
             email: orderData.email || '',
@@ -195,24 +234,21 @@ export async function placeOrder(orderData) {
             shipping: orderData.shipping,
             total: orderData.total,
             status: 'Pending'
-        }]).select();
-        
-        if (error) throw error;
+        });
         
         // Clear cart
         await clearCart();
         
-        return { success: true, orderId: data[0].order_id };
+        return { success: true, orderId: orderId };
     } catch (err) {
         console.error('Order placement error:', err);
         return { success: false, error: err.message };
     }
 }
 
-export async function getOrders() {
+async function getOrders() {
     try {
-        const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
-        if (error) throw error;
+        const data = await supabase.from('orders').select('*').order('created_at', { ascending: false });
         return data || [];
     } catch (err) {
         console.error('Error fetching orders:', err);
@@ -220,10 +256,9 @@ export async function getOrders() {
     }
 }
 
-export async function updateOrderStatus(orderId, status) {
+async function updateOrderStatus(orderId, status) {
     try {
-        const { error } = await supabase.from('orders').update({ status }).eq('order_id', orderId);
-        if (error) throw error;
+        await supabase.from('orders').update({ status }).eq('order_id', orderId);
         return { success: true };
     } catch (err) {
         console.error('Error updating order:', err);
@@ -231,10 +266,9 @@ export async function updateOrderStatus(orderId, status) {
     }
 }
 
-export async function deleteOrder(orderId) {
+async function deleteOrder(orderId) {
     try {
-        const { error } = await supabase.from('orders').delete().eq('order_id', orderId);
-        if (error) throw error;
+        await supabase.from('orders').delete().eq('order_id', orderId);
         return { success: true };
     } catch (err) {
         console.error('Error deleting order:', err);
@@ -243,9 +277,9 @@ export async function deleteOrder(orderId) {
 }
 
 // ==================== ADMIN ====================
-export async function addProduct(product) {
+async function addProduct(product) {
     try {
-        const { data, error } = await supabase.from('products').insert([{
+        const data = await supabase.from('products').insert({
             sku: product.sku,
             name: product.name,
             category: product.category,
@@ -253,20 +287,18 @@ export async function addProduct(product) {
             stock: parseInt(product.stock),
             description: product.description || '',
             images: product.images || []
-        }]).select();
+        });
         
-        if (error) throw error;
-        return { success: true, data: data[0] };
+        return { success: true, data: data?.[0] || null };
     } catch (err) {
         console.error('Error adding product:', err);
         return { success: false, error: err.message };
     }
 }
 
-export async function updateProduct(id, updates) {
+async function updateProduct(id, updates) {
     try {
-        const { error } = await supabase.from('products').update(updates).eq('id', id);
-        if (error) throw error;
+        await supabase.from('products').update(updates).eq('id', id);
         return { success: true };
     } catch (err) {
         console.error('Error updating product:', err);
@@ -274,10 +306,9 @@ export async function updateProduct(id, updates) {
     }
 }
 
-export async function deleteProduct(id) {
+async function deleteProduct(id) {
     try {
-        const { error } = await supabase.from('products').delete().eq('id', id);
-        if (error) throw error;
+        await supabase.from('products').delete().eq('id', id);
         return { success: true };
     } catch (err) {
         console.error('Error deleting product:', err);
@@ -285,18 +316,15 @@ export async function deleteProduct(id) {
     }
 }
 
-export async function getDashboardStats() {
+async function getDashboardStats() {
     try {
-        const [products, orders] = await Promise.all([
-            supabase.from('products').select('count', { count: 'exact', head: true }),
-            supabase.from('orders').select('total, status')
-        ]);
+        const products = await supabase.from('products').select('*');
+        const orders = await supabase.from('orders').select('*');
         
-        const totalProducts = products.count || 0;
-        const orderData = orders.data || [];
-        const totalOrders = orderData.length;
-        const totalRevenue = orderData.reduce((sum, o) => sum + (o.total || 0), 0);
-        const pendingOrders = orderData.filter(o => o.status === 'Pending').length;
+        const totalProducts = products?.length || 0;
+        const totalOrders = orders?.length || 0;
+        const totalRevenue = orders?.reduce((sum, o) => sum + (o.total || 0), 0) || 0;
+        const pendingOrders = orders?.filter(o => o.status === 'Pending').length || 0;
         
         return { totalProducts, totalOrders, totalRevenue, pendingOrders };
     } catch (err) {
@@ -304,3 +332,22 @@ export async function getDashboardStats() {
         return { totalProducts: 0, totalOrders: 0, totalRevenue: 0, pendingOrders: 0 };
     }
 }
+
+// Export functions to window for global access
+window.supabaseClient = {
+    getProducts,
+    getProductById,
+    getCart,
+    addToCart,
+    removeFromCart,
+    updateCartQuantity,
+    clearCart,
+    placeOrder,
+    getOrders,
+    updateOrderStatus,
+    deleteOrder,
+    addProduct,
+    updateProduct,
+    deleteProduct,
+    getDashboardStats
+};
