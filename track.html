@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order - Style Of Life</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/config.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --primary: #d4af37; --primary-dark: #b8962e; --light: #ffffff; --gray-200: #e9ecef; --gray-600: #6c757d; --danger: #dc3545; --success: #28a745; --warning: #ffc107; --info: #17a2b8; }
+        body { font-family: 'Inter', sans-serif; background: var(--light); }
+        header { background: white; padding: 20px 50px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 28px; font-weight: 600; color: var(--primary); text-decoration: none; }
+        nav a { color: var(--gray-600); text-decoration: none; margin-left: 30px; transition: color 0.3s; }
+        nav a:hover, nav a.active { color: var(--primary); }
+        .container { max-width: 700px; margin: 60px auto; padding: 0 20px; }
+        .track-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--gray-200); }
+        .track-form { display: flex; gap: 12px; margin: 30px 0; }
+        .track-input { flex: 1; padding: 14px 18px; border: 2px solid var(--gray-200); border-radius: 12px; font-size: 16px; transition: all 0.3s; }
+        .track-input:focus { outline: none; border-color: var(--primary); }
+        .track-btn { padding: 14px 32px; background: var(--primary); border: none; border-radius: 12px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 16px; }
+        .track-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .order-details { background: #f8f9fa; padding: 25px; border-radius: 16px; margin-top: 20px; }
+        .status-badge { display: inline-block; padding: 6px 16px; border-radius: 30px; font-size: 13px; font-weight: 600; }
+        .status-Pending { background: var(--warning); color: #856404; }
+        .status-Processing { background: var(--info); color: white; }
+        .status-Shipped { background: var(--success); color: white; }
+        .status-Delivered { background: #20c997; color: white; }
+        .status-Cancelled { background: var(--danger); color: white; }
+        .tracking-timeline { margin: 30px 0; position: relative; }
+        .timeline-step { display: flex; align-items: center; margin-bottom: 20px; position: relative; }
+        .timeline-dot { width: 40px; height: 40px; border-radius: 50%; background: var(--gray-200); display: flex; align-items: center; justify-content: center; margin-right: 15px; z-index: 2; background: white; border: 2px solid var(--gray-200); }
+        .timeline-dot.completed { background: var(--success); border-color: var(--success); color: white; }
+        .timeline-dot.active { background: var(--primary); border-color: var(--primary); color: white; animation: pulse 1.5s infinite; }
+        .timeline-content { flex: 1; }
+        .timeline-content h4 { margin-bottom: 5px; }
+        .timeline-content p { color: var(--gray-600); font-size: 12px; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        footer { background: #0a0a0a; color: white; text-align: center; padding: 40px; margin-top: 60px; }
+        @media (max-width: 768px) { 
+            header { flex-direction: column; gap: 15px; padding: 15px; }
+            .track-form { flex-direction: column; }
+            .track-box { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo">STYLE OF LIFE</a>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="cart.html">Cart</a>
+            <a href="track.html" class="active">Track Order</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="track-box">
+            <h1 style="color: var(--primary); margin-bottom: 10px; text-align: center;">Track Your Order</h1>
+            <p style="text-align: center; color: var(--gray-600); margin-bottom: 20px;">Enter your Order ID to check status</p>
+            <div class="track-form">
+                <input type="text" id="orderId" class="track-input" placeholder="e.g., ORD1234567890">
+                <button class="track-btn" onclick="trackOrder()">Track Order →</button>
+            </div>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 STYLE OF LIFE. All rights reserved.</p>
+        <p style="margin-top: 10px; font-size: 12px;">Questions? Call us at +91 98765 43210</p>
+    </footer>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
+            }
+        }
+    </script>
+    <script type="module">
+        import { createClient } from '@supabase/supabase-js';
+        
+        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        
+        function getStatusStep(status) {
+            const steps = ['Pending', 'Processing', 'Shipped', 'Delivered'];
+            const currentIndex = steps.indexOf(status);
+            return steps.map((step, index) => ({
+                step,
+                completed: index < currentIndex,
+                active: index === currentIndex
+            }));
+        }
+        
+        window.trackOrder = async function() {
+            const orderId = document.getElementById('orderId').value.trim();
+            if (!orderId) {
+                alert('Please enter your Order ID');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div style="text-align:center; padding:40px;"><div style="width:40px; height:40px; border:3px solid var(--gray-200); border-top-color: var(--primary); border-radius:50%; animation: spin 1s linear infinite; margin:0 auto 15px;"></div><p>Searching for your order...</p></div>';
+            
+            const { data, error } = await supabase.from('orders').select('*').eq('order_id', orderId);
+            
+            if (error || !data || data.length === 0) {
+                resultDiv.innerHTML = `
+                    <div style="text-align:center; padding:40px; background:#f8f9fa; border-radius:16px;">
+                        <div style="font-size:48px; margin-bottom:15px;">🔍</div>
+                        <h3 style="color: var(--danger);">Order Not Found</h3>
+                        <p style="color: var(--gray-600); margin-top:10px;">Please check your Order ID and try again.</p>
+                        <p style="font-size:12px; margin-top:15px;">Order ID format: ORD followed by numbers (e.g., ORD1234567890)</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const order = data[0];
+            const statusSteps = getStatusStep(order.status);
+            
+            let itemsHtml = '';
+            order.items.forEach(item => {
+                itemsHtml += `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #e9ecef;"><span>${escapeHtml(item.name)} x${item.quantity}</span><span>₹${(item.price * item.quantity).toLocaleString()}</span></div>`;
+            });
+            
+            let timelineHtml = '<div class="tracking-timeline">';
+            statusSteps.forEach((step, idx) => {
+                let dotClass = 'timeline-dot';
+                if (step.completed) dotClass += ' completed';
+                if (step.active) dotClass += ' active';
+                timelineHtml += `
+                    <div class="timeline-step">
+                        <div class="${dotClass}">${step.completed ? '✓' : (step.active ? '●' : '○')}</div>
+                        <div class="timeline-content">
+                            <h4>${step.step}</h4>
+                            <p>${step.completed ? 'Completed' : (step.active ? 'In Progress' : 'Pending')}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            timelineHtml += '</div>';
+            
+            resultDiv.innerHTML = `
+                <div class="order-details">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                        <h3 style="color: var(--primary);">Order #${order.order_id}</h3>
+                        <span class="status-badge status-${order.status}">${order.status}</span>
+                    </div>
+                    
+                    ${timelineHtml}
+                    
+                    <div style="margin: 20px 0; padding: 15px; background: white; border-radius: 12px;">
+                        <h4 style="margin-bottom: 10px;">📦 Order Details</h4>
+                        <p><strong>Customer:</strong> ${escapeHtml(order.customer_name)}</p>
+                        <p><strong>Phone:</strong> ${order.phone}</p>
+                        <p><strong>Email:</strong> ${order.email || 'Not provided'}</p>
+                        <p><strong>Address:</strong> ${escapeHtml(order.address)}</p>
+                        <p><strong>Date:</strong> ${new Date(order.created_at).toLocaleString()}</p>
+                    </div>
+                    
+                    <div style="margin: 20px 0; padding: 15px; background: white; border-radius: 12px;">
+                        <h4 style="margin-bottom: 10px;">🛍️ Items</h4>
+                        ${itemsHtml}
+                    </div>
+                    
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid var(--primary);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><strong>Subtotal:</strong> ₹${order.subtotal.toLocaleString()}</div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><strong>Tax (18%):</strong> ₹${order.tax.toLocaleString()}</div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><strong>Shipping:</strong> ₹${order.shipping}</div>
+                        <div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; color: var(--primary); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--gray-200);">
+                            <span>Total:</span>
+                            <span>₹${order.total.toLocaleString()}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 12px; background: #e8f5e9; border-radius: 8px; text-align: center;">
+                        <p style="color: #2e7d32; font-size: 13px;">✓ Need help? Contact our support team at support@styleoflife.com</p>
+                    </div>
+                </div>
+            `;
+        };
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                return {'&':'&amp;','<':'&lt;','>':'&gt;'}[m];
+            });
+        }
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('order');
+        if (orderId) {
+            document.getElementById('orderId').value = orderId;
+            trackOrder();
+        }
+        
+        document.getElementById('orderId').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') trackOrder();
+        });
+    </script>
+</body>
+</html>
