@@ -8,70 +8,139 @@
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --primary: #d4af37; --dark: #1a1a1a; --gray-200: #e9ecef; }
+        :root { --primary: #d4af37; --primary-dark: #b8962e; --light: #ffffff; --gray-200: #e9ecef; --gray-600: #6c757d; --dark: #1a1a1a; --danger: #dc3545; --success: #28a745; }
         body { font-family: 'Inter', sans-serif; background: #faf7f2; }
-        header { background: white; padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 28px; font-weight: 600; color: var(--primary); }
-        nav a { color: #6c757d; text-decoration: none; margin-left: 30px; }
+        
+        header { background: white; padding: 20px 50px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .logo { font-size: 28px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
+        nav a { color: var(--gray-600); text-decoration: none; margin-left: 30px; transition: color 0.3s; }
+        nav a:hover { color: var(--primary); }
+        
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        h1 { color: var(--primary); margin-bottom: 30px; }
+        h1 { color: var(--primary); margin-bottom: 30px; font-family: 'Playfair Display', serif; }
+        
         .checkout-grid { display: grid; grid-template-columns: 1fr 380px; gap: 30px; }
-        .form-box, .summary-box { background: white; padding: 30px; border-radius: 16px; border: 1px solid var(--gray-200); }
+        .form-box, .summary-box { background: white; padding: 30px; border-radius: 16px; border: 1px solid var(--gray-200); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; color: var(--primary); margin-bottom: 8px; font-weight: 500; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; }
+        .form-group label { display: block; color: var(--primary); margin-bottom: 8px; font-weight: 500; font-size: 14px; }
+        .form-group input { width: 100%; padding: 12px 16px; border: 1px solid var(--gray-200); border-radius: 12px; font-size: 14px; transition: all 0.3s; }
+        .form-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
+        
         .summary-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--gray-200); }
-        .summary-row.total { border-bottom: none; font-size: 20px; font-weight: bold; color: var(--primary); }
-        .place-order-btn { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 40px; font-weight: 600; cursor: pointer; margin-top: 20px; }
-        .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 9999; }
-        .loading-content { background: white; padding: 30px; border-radius: 24px; text-align: center; }
-        .spinner { width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        .summary-row.total { border-bottom: none; font-size: 20px; font-weight: bold; color: var(--primary); padding-top: 15px; margin-top: 10px; }
+        
+        .place-order-btn { 
+            width: 100%; padding: 15px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+            border: none; border-radius: 40px; color: var(--dark); font-weight: 600; cursor: pointer; 
+            margin-top: 20px; transition: all 0.3s; font-size: 16px;
+        }
+        .place-order-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
+        .place-order-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .cart-empty-message { text-align: center; padding: 40px; color: var(--gray-600); }
+        
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center;
+            z-index: 9999; backdrop-filter: blur(5px);
+        }
+        .loading-content { background: white; padding: 30px; border-radius: 24px; text-align: center; animation: fadeInUp 0.3s ease; }
+        .loading-spinner { width: 50px; height: 50px; border: 3px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .toast { position: fixed; bottom: 30px; right: 30px; background: #1a1a1a; color: var(--primary); padding: 12px 24px; border-radius: 50px; z-index: 10000; animation: slideIn 0.3s; }
-        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .toast-notification {
+            position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, #2C2C2C, #1A1A1A);
+            color: var(--primary); padding: 14px 24px; border-radius: 50px; z-index: 10000;
+            animation: slideInRight 0.3s ease; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .toast-error { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+        .toast-success { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
         footer { background: #0a0a0a; color: white; text-align: center; padding: 40px; margin-top: 60px; }
-        @media (max-width: 768px) { header { flex-direction: column; } .checkout-grid { grid-template-columns: 1fr; } }
+        
+        @media (max-width: 768px) {
+            header { flex-direction: column; padding: 15px; }
+            .checkout-grid { grid-template-columns: 1fr; }
+            .toast-notification { bottom: 20px; right: 20px; padding: 10px 20px; font-size: 14px; }
+        }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo">STYLE OF LIFE</div>
-        <nav><a href="index.html">Home</a><a href="cart.html">Cart</a></nav>
+        <a href="index.html" class="logo">STYLE OF LIFE</a>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="cart.html">Cart 🛒</a>
+            <a href="track.html">Track Order</a>
+        </nav>
     </header>
 
     <div class="container">
         <h1>Secure Checkout</h1>
         <div class="checkout-grid">
             <div class="form-box">
-                <h3 style="margin-bottom: 20px;">Shipping Information</h3>
-                <div class="form-group"><label>Full Name *</label><input type="text" id="name" placeholder="Enter your full name" required></div>
-                <div class="form-group"><label>Phone Number *</label><input type="tel" id="phone" maxlength="10" placeholder="10-digit mobile number" required></div>
-                <div class="form-group"><label>Email Address *</label><input type="email" id="email" placeholder="your@email.com" required></div>
-                <div class="form-group"><label>Street Address *</label><input type="text" id="address" placeholder="House number, street" required></div>
-                <div class="form-group"><label>City *</label><input type="text" id="city" placeholder="City" required></div>
-                <div class="form-group"><label>Pincode *</label><input type="text" id="pincode" maxlength="6" placeholder="6-digit pincode" required></div>
+                <h3 style="margin-bottom: 20px;">📦 Shipping Information</h3>
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number *</label>
+                    <input type="tel" id="phone" maxlength="10" placeholder="10-digit mobile number" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" id="email" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Street Address *</label>
+                    <input type="text" id="address" placeholder="House number, street" required>
+                </div>
+                <div class="form-group">
+                    <label>City *</label>
+                    <input type="text" id="city" placeholder="City" required>
+                </div>
+                <div class="form-group">
+                    <label>Pincode *</label>
+                    <input type="text" id="pincode" maxlength="6" placeholder="6-digit pincode" required>
+                </div>
             </div>
             <div class="summary-box">
-                <h3 style="margin-bottom: 20px;">Order Summary</h3>
+                <h3 style="margin-bottom: 20px;">🛒 Order Summary</h3>
                 <div id="orderItems"></div>
                 <div id="orderTotals"></div>
-                <button class="place-order-btn" onclick="initiatePayment()">Proceed to Pay →</button>
-                <p style="font-size: 11px; text-align: center; margin-top: 12px;">🔒 Secure payment by Razorpay</p>
+                <button class="place-order-btn" id="payBtn" onclick="initiatePayment()">💳 Proceed to Pay</button>
+                <p style="font-size: 11px; color: var(--gray-600); text-align: center; margin-top: 12px;">
+                    🔒 Secure payment by Razorpay | Test Mode
+                </p>
             </div>
         </div>
     </div>
 
     <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-content"><div class="spinner"></div><h3>Processing your order...</h3><p>Please don't close this window</p></div>
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3>Processing your order...</h3>
+            <p style="color: var(--gray-600); margin-top: 10px;">Please don't close this window</p>
+        </div>
     </div>
 
-    <footer><p>© 2026 STYLE OF LIFE. All rights reserved.</p></footer>
+    <footer>
+        <p>© 2026 STYLE OF LIFE. All rights reserved. | Timeless Elegance Since 2020</p>
+    </footer>
 
     <script type="importmap">
         { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
     </script>
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
+        
+        // ==================== CONFIGURATION ====================
+        // REPLACE THIS WITH YOUR ACTUAL RAZORPAY TEST KEY
+        const RAZORPAY_KEY = "rzp_test_YOUR_TEST_KEY_HERE";  // <-- PASTE YOUR KEY HERE
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let cart = [];
@@ -82,48 +151,98 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
+        // ==================== UI HELPERS ====================
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
-            toast.className = 'toast';
+            toast.className = 'toast-notification';
             toast.innerHTML = isError ? `❌ ${message}` : `✅ ${message}`;
-            toast.style.background = isError ? '#dc3545' : '#1a1a1a';
+            if (isError) toast.classList.add('toast-error');
+            else toast.classList.add('toast-success');
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+            setTimeout(() => toast.remove(), 4000);
         }
         
         function showLoading(show) {
-            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = show ? 'flex' : 'none';
+            const payBtn = document.getElementById('payBtn');
+            if (payBtn) payBtn.disabled = show;
         }
         
+        // ==================== CART FUNCTIONS ====================
         async function loadCart() {
-            const { data } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
-            cart = data?.items || [];
-            updateOrderSummary();
+            try {
+                const { data, error } = await supabase
+                    .from('carts')
+                    .select('items')
+                    .eq('session_id', sessionId)
+                    .maybeSingle();
+                
+                if (error) throw error;
+                cart = data?.items || [];
+                updateOrderSummary();
+            } catch (error) {
+                console.error('Error loading cart:', error);
+                cart = [];
+                updateOrderSummary();
+            }
         }
         
         function updateOrderSummary() {
+            const itemsContainer = document.getElementById('orderItems');
+            const totalsContainer = document.getElementById('orderTotals');
+            
             if (cart.length === 0) {
-                document.getElementById('orderItems').innerHTML = '<div style="text-align:center; padding:40px;">Your cart is empty</div>';
+                itemsContainer.innerHTML = '<div class="cart-empty-message">🛒 Your cart is empty</div>';
+                totalsContainer.innerHTML = '';
+                document.getElementById('payBtn').disabled = true;
                 return;
             }
-            let subtotal = 0, itemsHtml = '';
+            
+            document.getElementById('payBtn').disabled = false;
+            
+            let subtotal = 0;
+            let itemsHtml = '';
+            
             cart.forEach(item => {
                 const itemTotal = item.price * item.quantity;
                 subtotal += itemTotal;
-                itemsHtml += `<div class="summary-row"><span>${item.name} x ${item.quantity}</span><span>₹${itemTotal.toLocaleString()}</span></div>`;
+                itemsHtml += `
+                    <div class="summary-row">
+                        <span>${escapeHtml(item.name)} x ${item.quantity}</span>
+                        <span>₹${itemTotal.toLocaleString()}</span>
+                    </div>
+                `;
             });
+            
             const tax = Math.round(subtotal * 0.18);
-            const total = subtotal + tax + 100;
-            document.getElementById('orderItems').innerHTML = itemsHtml;
-            document.getElementById('orderTotals').innerHTML = `
-                <div class="summary-row"><span>Subtotal</span><span>₹${subtotal.toLocaleString()}</span></div>
-                <div class="summary-row"><span>Shipping</span><span>₹100</span></div>
-                <div class="summary-row"><span>GST (18%)</span><span>₹${tax.toLocaleString()}</span></div>
-                <div class="summary-row total"><span>Total</span><span>₹${total.toLocaleString()}</span></div>
+            const shipping = 100;
+            const total = subtotal + tax + shipping;
+            
+            itemsContainer.innerHTML = itemsHtml;
+            totalsContainer.innerHTML = `
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span>₹${subtotal.toLocaleString()}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span>₹${shipping.toLocaleString()}</span>
+                </div>
+                <div class="summary-row">
+                    <span>GST (18%)</span>
+                    <span>₹${tax.toLocaleString()}</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span>₹${total.toLocaleString()}</span>
+                </div>
             `;
-            window.orderTotal = total;
+            
+            window.orderData = { subtotal, tax, shipping, total };
         }
         
+        // ==================== CHECKOUT FUNCTIONS ====================
         function getShippingDetails() {
             const name = document.getElementById('name').value.trim();
             const phone = document.getElementById('phone').value.trim();
@@ -131,73 +250,204 @@
             const address = document.getElementById('address').value.trim();
             const city = document.getElementById('city').value.trim();
             const pincode = document.getElementById('pincode').value.trim();
+            
             if (!name || !phone || !email || !address || !city || !pincode) {
                 showToast('Please fill all required fields', true);
                 return null;
             }
-            if (phone.length !== 10) { showToast('Enter valid 10-digit phone', true); return null; }
-            return { name, phone, email, address: `${address}, ${city} - ${pincode}` };
+            
+            if (phone.length !== 10 || !/^\d+$/.test(phone)) {
+                showToast('Please enter a valid 10-digit phone number', true);
+                return null;
+            }
+            
+            if (!email.includes('@') || !email.includes('.')) {
+                showToast('Please enter a valid email address', true);
+                return null;
+            }
+            
+            if (pincode.length !== 6 || !/^\d+$/.test(pincode)) {
+                showToast('Please enter a valid 6-digit pincode', true);
+                return null;
+            }
+            
+            return {
+                name, phone, email,
+                address: `${address}, ${city} - ${pincode}`
+            };
         }
         
         async function createPendingOrder(orderData) {
             const orderId = 'ORD' + Date.now();
+            const { subtotal, tax, shipping, total } = window.orderData;
+            
             const order = {
                 order_id: orderId,
                 customer_name: orderData.name,
                 phone: orderData.phone,
                 email: orderData.email,
                 address: orderData.address,
-                items: cart.map(i => ({ id: i.id, sku: i.sku, name: i.name, price: i.price, quantity: i.quantity })),
-                subtotal: cart.reduce((s, i) => s + (i.price * i.quantity), 0),
-                tax: Math.round(cart.reduce((s, i) => s + (i.price * i.quantity), 0) * 0.18),
-                shipping: 100,
-                total: window.orderTotal,
+                items: cart.map(item => ({
+                    id: item.id,
+                    sku: item.sku,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity
+                })),
+                subtotal: subtotal,
+                tax: tax,
+                shipping: shipping,
+                total: total,
                 status: 'Payment Pending',
                 payment_status: 'pending',
                 created_at: new Date().toISOString()
             };
-            const { error } = await supabase.from('orders').insert([order]);
+            
+            const { data, error } = await supabase
+                .from('orders')
+                .insert([order])
+                .select();
+            
             if (error) throw error;
-            return orderId;
+            return { orderId, orderData: data[0] };
         }
         
+        // ==================== RAZORPAY PAYMENT ====================
         window.initiatePayment = async function() {
-            const shipping = getShippingDetails();
-            if (!shipping) return;
-            if (cart.length === 0) { showToast('Cart is empty', true); return; }
+            // Check if Razorpay key is configured
+            if (RAZORPAY_KEY === "rzp_test_YOUR_TEST_KEY_HERE") {
+                showToast('⚠️ Razorpay key not configured! Please add your test key in the code.', true);
+                console.error('Please replace RAZORPAY_KEY with your actual test key from Razorpay dashboard');
+                return;
+            }
+            
+            const shippingDetails = getShippingDetails();
+            if (!shippingDetails) return;
+            
+            if (cart.length === 0) {
+                showToast('Your cart is empty', true);
+                return;
+            }
             
             showLoading(true);
+            
             try {
-                const orderId = await createPendingOrder(shipping);
+                // Step 1: Create pending order in database
+                const { orderId, orderData } = await createPendingOrder(shippingDetails);
+                const { total } = window.orderData;
                 
+                console.log('Order created:', orderId);
+                console.log('Amount:', total);
+                
+                // Step 2: Razorpay payment options
                 const options = {
-                    key: "rzp_test_YourTestKeyHere", // REPLACE WITH YOUR RAZORPAY TEST KEY
-                    amount: window.orderTotal * 100,
+                    key: RAZORPAY_KEY,
+                    amount: total * 100, // Convert to paise
                     currency: "INR",
                     name: "Style Of Life",
                     description: `Order #${orderId}`,
-                    prefill: { name: shipping.name, email: shipping.email, contact: shipping.phone },
-                    notes: { order_id: orderId },
-                    theme: { color: "#d4af37" },
-                    handler: function(response) {
-                        showToast(`Payment initiated! Order ID: ${orderId}`);
-                        showLoading(false);
-                        setTimeout(() => window.location.href = `track.html?order=${orderId}`, 3000);
+                    image: "https://styleoflife987-hub.github.io/jewelry-store/logo.png",
+                    prefill: {
+                        name: shippingDetails.name,
+                        email: shippingDetails.email,
+                        contact: shippingDetails.phone
                     },
-                    modal: { ondismiss: function() { 
-                        supabase.from('orders').delete().eq('order_id', orderId);
+                    notes: {
+                        order_id: orderId,
+                        customer_name: shippingDetails.name,
+                        customer_email: shippingDetails.email
+                    },
+                    theme: {
+                        color: "#d4af37"
+                    },
+                    handler: function(response) {
+                        // Payment successful
+                        console.log('Payment success:', response);
+                        showToast(`✅ Payment successful! Order ID: ${orderId}`);
                         showLoading(false);
-                        showToast('Payment cancelled', true);
-                    }}
+                        
+                        // Clear cart
+                        supabase.from('carts').upsert({
+                            session_id: sessionId,
+                            items: [],
+                            total: 0,
+                            updated_at: new Date().toISOString()
+                        });
+                        
+                        // Redirect to tracking page
+                        setTimeout(() => {
+                            window.location.href = `track.html?order=${orderId}`;
+                        }, 2000);
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            // Payment cancelled by user
+                            console.log('Payment cancelled');
+                            showLoading(false);
+                            showToast('Payment cancelled', true);
+                            
+                            // Delete pending order
+                            supabase.from('orders').delete().eq('order_id', orderId);
+                        }
+                    }
                 };
+                
+                // Step 3: Open Razorpay modal
                 const rzp = new Razorpay(options);
+                
+                // Handle payment failure
+                rzp.on('payment.failed', function(response) {
+                    console.error('Payment failed:', response);
+                    showToast(`Payment failed: ${response.error.description || 'Please try again'}`, true);
+                    showLoading(false);
+                    
+                    // Update order status to failed
+                    supabase.from('orders')
+                        .update({ 
+                            payment_status: 'failed', 
+                            status: 'Payment Failed',
+                            payment_error: response.error.description 
+                        })
+                        .eq('order_id', orderId);
+                });
+                
                 rzp.open();
-            } catch(e) { showLoading(false); showToast('Error: ' + e.message, true); }
+                
+            } catch (error) {
+                console.error('Payment initiation error:', error);
+                showLoading(false);
+                showToast('Failed to initiate payment: ' + error.message, true);
+            }
         };
         
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // ==================== INITIALIZATION ====================
         loadCart();
-        document.getElementById('phone').addEventListener('input', e => e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0,10));
-        document.getElementById('pincode').addEventListener('input', e => e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0,6));
+        
+        // Input validation
+        document.getElementById('phone').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+        });
+        
+        document.getElementById('pincode').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
+        });
+        
+        // Log Razorpay key status
+        if (RAZORPAY_KEY === "rzp_test_YOUR_TEST_KEY_HERE") {
+            console.warn('⚠️ Razorpay test key not configured! Please add your key in the code.');
+        } else {
+            console.log('✅ Razorpay key configured:', RAZORPAY_KEY.substring(0, 15) + '...');
+        }
     </script>
 </body>
 </html>
