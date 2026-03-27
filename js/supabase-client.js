@@ -3,219 +3,369 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
-// ==================== PRODUCTS WITH IMAGE UPLOAD ====================
-export async function getProducts() {
-    const { data, error } = await supabase.from('products').select('*').order('id');
-    if (error) {
-        console.error('Error fetching products:', error);
-        return [];
-    }
-    return data || [];
-}
-
-export async function uploadProductImages(productId, files) {
-    const uploadedUrls = [];
-    
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        if (!file) continue;
-        
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${productId}/${Date.now()}_${i}.${fileExt}`;
-        
-        const { data, error } = await supabase.storage
-            .from('product-images')
-            .upload(fileName, file, {
-                cacheControl: '3600',
-                upsert: false
-            });
-        
-        if (error) {
-            console.error('Upload error:', error);
-            continue;
-        }
-        
-        const { data: urlData } = supabase.storage
-            .from('product-images')
-            .getPublicUrl(fileName);
-        
-        uploadedUrls.push(urlData.publicUrl);
-    }
-    
-    return uploadedUrls;
-}
-
-export async function addProduct(product, imageFiles = []) {
-    // First insert product
-    const { data, error } = await supabase.from('products').insert([{
-        sku: product.sku,
-        name: product.name,
-        category: product.category,
-        price: product.price,
-        stock: product.stock,
-        description: product.description,
-        images: []
-    }]).select();
-    
+// ==================== AUTHENTICATION ====================
+export async function signUp(email, password, userData) {
+    const { data, error } = await supabase.auth.signUp({
+        email, password,
+        options: { data: userData }
+    });
     if (error) return { success: false, error: error.message };
     
-    const productId = data[0].id;
-    
-    // Upload images if any
-    let uploadedImages = [];
-    if (imageFiles.length > 0) {
-        uploadedImages = await uploadProductImages(productId, imageFiles);
-        
-        // Update product with image URLs
-        await supabase.from('products')
-            .update({ images: uploadedImages })
-            .eq('id', productId);
+    // Create profile
+    if (data.user) {
+        await supabase.from('profiles').insert([{
+            id: data.user.id,
+            email: email,
+            full_name: userData.full_name,
+            phone: userData.phone
+        }]);
     }
-    
-    return { success: true, data: { ...data[0], images: uploadedImages } };
+    return { success: true, data };
 }
 
-export async function updateProductWithImages(id, updates, newImageFiles = []) {
-    // Update product details
-    const { error: updateError } = await supabase.from('products')
-        .update(updates)
-        .eq('id', id);
-    
-    if (updateError) return { success: false, error: updateError.message };
-    
-    // Upload new images if any
-    if (newImageFiles.length > 0) {
-        const newImages = await uploadProductImages(id, newImageFiles);
-        
-        // Get existing images
-        const { data: product } = await supabase.from('products')
-            .select('images')
-            .eq('id', id)
+export async function signIn(email, password) {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { success: false, error: error.message };
+    return { success: true, data };
+}
+
+export async function signOut() {
+    const { error } = await supabase.auth.signOut();
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+}
+
+export async function getCurrentUser() {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error) return null;
+    if (user) {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
             .single();
-        
-        const allImages = [...(product?.images || []), ...newImages].slice(0, 5);
-        
-        await supabase.from('products')
-            .update({ images: allImages })
-            .eq('id', id);
+        return { ...user, profile };
+    }
+    return null;
+}
+
+// ==================== PRODUCTS ====================
+export async function getProducts(filters = {}) {
+    let query = supabase.from('products').select('*').eq('is_active', true);
+    
+    if (filters.category) query = query.eq('category', filters.category);
+    if (filters.minPrice) query = query.gte('price', filters.minPrice);
+    if (filters.maxPrice) query = query.lte('price', filters.maxPrice);
+    if (filters.search) query = query.ilike('name', `%${filters.search}%`);
+    if (filters.sort) {
+        if (filters.sort === 'price_asc') query = query.order('price', { ascending: true });
+        if (filters.sort === 'price_desc') query = query.order('price', { ascending: false });
+        if (filters.sort === 'newest') query = query.order('created_at', { ascending: false });
+    } else {
+        query = query.order('id');
     }
     
-    return { success: true };
-}
-
-export async function deleteProductWithImages(id) {
-    // Get product images first
-    const { data: product } = await supabase.from('products')
-        .select('images')
-        .eq('id', id)
-        .single();
-    
-    // Delete images from storage
-    if (product?.images) {
-        for (const imageUrl of product.images) {
-            const path = imageUrl.split('/').pop();
-            await supabase.storage
-                .from('product-images')
-                .remove([path]);
-        }
-    }
-    
-    // Delete product from database
-    const { error } = await supabase.from('products').delete().eq('id', id);
-    
-    if (error) return { success: false, error: error.message };
-    return { success: true };
-}
-
-export async function deleteProductImage(productId, imageUrl) {
-    const path = imageUrl.split('/').pop();
-    
-    // Delete from storage
-    await supabase.storage.from('product-images').remove([path]);
-    
-    // Update product images array
-    const { data: product } = await supabase.from('products')
-        .select('images')
-        .eq('id', productId)
-        .single();
-    
-    const updatedImages = (product?.images || []).filter(img => img !== imageUrl);
-    
-    const { error } = await supabase.from('products')
-        .update({ images: updatedImages })
-        .eq('id', productId);
-    
-    return { success: !error, error: error?.message };
-}
-
-// ==================== ORDERS (unchanged) ====================
-export async function getOrders() {
-    const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+    const { data, error } = await query;
     if (error) return [];
     return data || [];
 }
 
-export async function placeOrder(order) {
-    const { data, error } = await supabase.from('orders').insert([{
-        order_id: 'ORD' + Date.now(),
-        customer_name: order.name,
-        phone: order.phone,
-        email: order.email || '',
-        address: order.address,
-        items: order.items,
-        subtotal: order.subtotal,
-        tax: order.tax,
-        shipping: order.shipping,
-        total: order.total,
-        status: 'Pending'
-    }]).select();
-    
-    if (error) return { success: false, error: error.message };
-    return { success: true, orderId: data[0].order_id };
+export async function getProductById(id) {
+    const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single();
+    if (error) return null;
+    return data;
 }
 
-export async function updateOrderStatus(orderId, status) {
-    const { error } = await supabase.from('orders').update({ status }).eq('order_id', orderId);
-    if (error) return { success: false, error: error.message };
-    return { success: true };
+export async function getFeaturedProducts() {
+    const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_featured', true)
+        .eq('is_active', true)
+        .limit(8);
+    if (error) return [];
+    return data || [];
 }
 
-// ==================== CART (unchanged) ====================
+// ==================== CART ====================
 let sessionId = localStorage.getItem('sessionId');
 if (!sessionId) {
     sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     localStorage.setItem('sessionId', sessionId);
 }
 
-export async function getCart() {
-    const { data, error } = await supabase.from('carts').select('items, total').eq('session_id', sessionId).maybeSingle();
+export async function getCart(userId = null) {
+    let query = supabase.from('carts').select('*');
+    if (userId) {
+        query = query.eq('user_id', userId);
+    } else {
+        query = query.eq('session_id', sessionId);
+    }
+    
+    const { data, error } = await query.maybeSingle();
     if (error) return { items: [], total: 0 };
-    return { items: data?.items || [], total: data?.total || 0 };
+    return { items: data?.items || [], total: data?.total || 0, coupon: data?.coupon_code };
 }
 
-export async function saveCart(items, total) {
-    const { error } = await supabase.from('carts').upsert({
-        session_id: sessionId,
-        items: items,
-        total: total,
-        updated_at: new Date().toISOString()
-    });
+export async function addToCart(product, quantity = 1, userId = null) {
+    const { items } = await getCart(userId);
+    const existingItem = items.find(i => i.id === product.id);
+    
+    if (existingItem) {
+        existingItem.quantity += quantity;
+    } else {
+        items.push({
+            id: product.id,
+            sku: product.sku,
+            name: product.name,
+            price: product.price,
+            quantity: quantity,
+            image: product.images?.[0] || null
+        });
+    }
+    
+    const total = items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    const cartData = { items, total, updated_at: new Date().toISOString() };
+    
+    if (userId) cartData.user_id = userId;
+    else cartData.session_id = sessionId;
+    
+    const { error } = await supabase.from('carts').upsert(cartData);
+    if (error) return { success: false, error: error.message };
+    return { success: true, items, total };
+}
+
+export async function updateCartItem(productId, quantity, userId = null) {
+    const { items } = await getCart(userId);
+    const item = items.find(i => i.id === productId);
+    if (item) {
+        if (quantity <= 0) {
+            const index = items.indexOf(item);
+            items.splice(index, 1);
+        } else {
+            item.quantity = quantity;
+        }
+    }
+    
+    const total = items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    const cartData = { items, total, updated_at: new Date().toISOString() };
+    
+    if (userId) cartData.user_id = userId;
+    else cartData.session_id = sessionId;
+    
+    const { error } = await supabase.from('carts').upsert(cartData);
+    if (error) return { success: false, error: error.message };
+    return { success: true, items, total };
+}
+
+export async function clearCart(userId = null) {
+    const cartData = { items: [], total: 0, updated_at: new Date().toISOString() };
+    if (userId) cartData.user_id = userId;
+    else cartData.session_id = sessionId;
+    
+    const { error } = await supabase.from('carts').upsert(cartData);
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+}
+
+export async function getCartCount(userId = null) {
+    const { items } = await getCart(userId);
+    return items.reduce((sum, i) => sum + i.quantity, 0);
+}
+
+// ==================== WISHLIST ====================
+export async function getWishlist(userId) {
+    if (!userId) return [];
+    const { data, error } = await supabase
+        .from('wishlist')
+        .select('*, products(*)')
+        .eq('user_id', userId);
+    if (error) return [];
+    return data || [];
+}
+
+export async function addToWishlist(userId, productId) {
+    const { error } = await supabase
+        .from('wishlist')
+        .insert([{ user_id: userId, product_id: productId }]);
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+}
+
+export async function removeFromWishlist(userId, productId) {
+    const { error } = await supabase
+        .from('wishlist')
+        .delete()
+        .eq('user_id', userId)
+        .eq('product_id', productId);
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+}
+
+export async function isInWishlist(userId, productId) {
+    if (!userId) return false;
+    const { data, error } = await supabase
+        .from('wishlist')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('product_id', productId)
+        .maybeSingle();
     if (error) return false;
-    return true;
+    return !!data;
 }
 
-// ==================== DASHBOARD STATS (unchanged) ====================
-export async function getDashboardStats() {
-    const [products, orders] = await Promise.all([
-        supabase.from('products').select('count', { count: 'exact', head: true }),
-        supabase.from('orders').select('total, status')
-    ]);
+// ==================== ORDERS ====================
+export async function createOrder(orderData) {
+    const orderId = 'ORD' + Date.now();
+    const order = {
+        order_id: orderId,
+        user_id: orderData.user_id || null,
+        customer_name: orderData.customer_name,
+        customer_email: orderData.customer_email,
+        customer_phone: orderData.customer_phone,
+        shipping_address: orderData.shipping_address,
+        billing_address: orderData.billing_address || orderData.shipping_address,
+        items: orderData.items,
+        subtotal: orderData.subtotal,
+        discount: orderData.discount || 0,
+        tax: orderData.tax,
+        shipping_charge: orderData.shipping_charge,
+        total: orderData.total,
+        payment_method: orderData.payment_method,
+        notes: orderData.notes || null
+    };
     
-    const totalProducts = products.count || 0;
-    const orderData = orders.data || [];
-    const totalOrders = orderData.length;
-    const totalRevenue = orderData.reduce((sum, o) => sum + (o.total || 0), 0);
-    const pendingOrders = orderData.filter(o => o.status === 'Pending').length;
+    const { data, error } = await supabase
+        .from('orders')
+        .insert([order])
+        .select();
     
-    return { totalProducts, totalOrders, totalRevenue, pendingOrders };
+    if (error) return { success: false, error: error.message };
+    return { success: true, orderId, orderData: data[0] };
+}
+
+export async function getUserOrders(userId) {
+    const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+    if (error) return [];
+    return data || [];
+}
+
+export async function getOrderById(orderId) {
+    const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('order_id', orderId)
+        .maybeSingle();
+    if (error) return null;
+    return data;
+}
+
+// ==================== REVIEWS ====================
+export async function getProductReviews(productId) {
+    const { data, error } = await supabase
+        .from('reviews')
+        .select('*, profiles(full_name)')
+        .eq('product_id', productId)
+        .eq('is_approved', true)
+        .order('created_at', { ascending: false });
+    if (error) return [];
+    return data || [];
+}
+
+export async function addReview(productId, userId, rating, title, comment) {
+    const { error } = await supabase
+        .from('reviews')
+        .insert([{
+            product_id: productId,
+            user_id: userId,
+            rating: rating,
+            title: title,
+            comment: comment,
+            is_approved: false
+        }]);
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+}
+
+// ==================== ADDRESSES ====================
+export async function getUserAddresses(userId) {
+    const { data, error } = await supabase
+        .from('addresses')
+        .select('*')
+        .eq('user_id', userId)
+        .order('is_default', { ascending: false });
+    if (error) return [];
+    return data || [];
+}
+
+export async function addAddress(userId, address) {
+    const { error } = await supabase
+        .from('addresses')
+        .insert([{ user_id: userId, ...address }]);
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+}
+
+export async function updateAddress(addressId, address) {
+    const { error } = await supabase
+        .from('addresses')
+        .update(address)
+        .eq('id', addressId);
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+}
+
+export async function deleteAddress(addressId) {
+    const { error } = await supabase
+        .from('addresses')
+        .delete()
+        .eq('id', addressId);
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+}
+
+// ==================== COUPONS ====================
+export async function validateCoupon(code, subtotal) {
+    const { data, error } = await supabase
+        .from('coupons')
+        .select('*')
+        .eq('code', code.toUpperCase())
+        .eq('is_active', true)
+        .maybeSingle();
+    
+    if (error || !data) return { success: false, error: 'Invalid coupon code' };
+    
+    const now = new Date();
+    if (data.valid_from && new Date(data.valid_from) > now) {
+        return { success: false, error: 'Coupon not yet valid' };
+    }
+    if (data.valid_until && new Date(data.valid_until) < now) {
+        return { success: false, error: 'Coupon expired' };
+    }
+    if (subtotal < data.minimum_order) {
+        return { success: false, error: `Minimum order of ₹${data.minimum_order} required` };
+    }
+    if (data.usage_limit && data.used_count >= data.usage_limit) {
+        return { success: false, error: 'Coupon usage limit reached' };
+    }
+    
+    let discount = 0;
+    if (data.type === 'percentage') {
+        discount = (subtotal * data.value) / 100;
+        if (data.maximum_discount && discount > data.maximum_discount) {
+            discount = data.maximum_discount;
+        }
+    } else {
+        discount = data.value;
+    }
+    
+    return { success: true, discount, coupon: data };
 }
