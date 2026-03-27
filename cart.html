@@ -273,6 +273,7 @@
         
         async function loadCart() {
             try {
+                console.log('Loading cart for session:', sessionId);
                 const { data, error } = await supabase
                     .from('carts')
                     .select('items')
@@ -280,7 +281,9 @@
                     .maybeSingle();
                 
                 if (error) throw error;
+                
                 cart = data?.items || [];
+                console.log('Cart loaded:', cart.length, 'items');
                 updateCartCount();
                 renderCart();
             } catch (error) {
@@ -294,6 +297,8 @@
         async function saveCart() {
             try {
                 const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                console.log('Saving cart:', cart.length, 'items, total:', total);
+                
                 const { error } = await supabase
                     .from('carts')
                     .upsert({
@@ -304,6 +309,7 @@
                     });
                 
                 if (error) throw error;
+                
                 updateCartCount();
                 renderCart();
                 return true;
@@ -369,20 +375,31 @@
             
             if (confirm('Are you sure you want to remove all items from your cart?')) {
                 try {
+                    console.log('Clearing cart...');
+                    
                     // Clear the cart array
                     cart = [];
                     
-                    // Save empty cart to Supabase
+                    // Save empty cart to Supabase - Using upsert with empty items
                     const { error } = await supabase
                         .from('carts')
                         .upsert({
                             session_id: sessionId,
-                            items: [],
-                            total: 0,
+                            items: [],  // Empty array
+                            total: 0,   // Zero total
                             updated_at: new Date().toISOString()
                         });
                     
                     if (error) throw error;
+                    
+                    // Force reload from database to confirm
+                    const { data: verifyData } = await supabase
+                        .from('carts')
+                        .select('items')
+                        .eq('session_id', sessionId)
+                        .maybeSingle();
+                    
+                    console.log('Verification after clear:', verifyData?.items?.length || 0, 'items');
                     
                     // Update UI
                     updateCartCount();
@@ -392,6 +409,8 @@
                 } catch (error) {
                     console.error('Error clearing cart:', error);
                     showToast('Failed to clear cart', true);
+                    // Reload cart to revert any partial changes
+                    await loadCart();
                 }
             }
         };
@@ -462,11 +481,19 @@
                         <span>Total</span>
                         <span>₹${total.toLocaleString()}</span>
                     </div>
-                    <a href="checkout.html" class="checkout-btn">Proceed to Checkout →</a>
+                    <a href="checkout.html" class="checkout-btn" onclick="return validateCartBeforeCheckout()">Proceed to Checkout →</a>
                     <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
                 </div>
             `;
         }
+        
+        window.validateCartBeforeCheckout = function() {
+            if (cart.length === 0) {
+                showToast('Your cart is empty!', true);
+                return false;
+            }
+            return true;
+        };
         
         function escapeHtml(str) {
             if (!str) return '';
@@ -494,6 +521,13 @@
                 loadCart();
             }
         });
+        
+        // Expose functions to global scope
+        window.cartFunctions = {
+            clearCart: clearCart,
+            removeItem: removeItem,
+            updateQuantity: updateQuantity
+        };
     </script>
 </body>
 </html>
