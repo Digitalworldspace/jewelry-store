@@ -19,6 +19,19 @@
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
         h1 { color: var(--primary); margin-bottom: 30px; font-family: 'Playfair Display', serif; }
         
+        /* Live Mode Badge */
+        .live-badge {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        
         .checkout-grid { display: grid; grid-template-columns: 1fr 380px; gap: 30px; }
         .form-box, .summary-box { background: white; padding: 30px; border-radius: 16px; border: 1px solid var(--gray-200); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         
@@ -59,6 +72,18 @@
         .toast-success { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; }
         @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--gray-200);
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+        
         footer { background: #0a0a0a; color: white; text-align: center; padding: 40px; margin-top: 60px; }
         
         @media (max-width: 768px) {
@@ -70,7 +95,7 @@
 </head>
 <body>
     <header>
-        <a href="index.html" class="logo">STYLE OF LIFE</a>
+        <a href="index.html" class="logo">STYLE OF LIFE <span class="live-badge">🔴 LIVE</span></a>
         <nav>
             <a href="index.html">Home</a>
             <a href="cart.html">Cart 🛒</a>
@@ -112,9 +137,14 @@
                 <h3 style="margin-bottom: 20px;">🛒 Order Summary</h3>
                 <div id="orderItems"></div>
                 <div id="orderTotals"></div>
-                <button class="place-order-btn" id="payBtn" onclick="initiatePayment()">💳 Proceed to Pay</button>
+                <button class="place-order-btn" id="payBtn" onclick="initiatePayment()">💳 Pay with Razorpay</button>
+                <div class="secure-badge">
+                    <span>🔒 100% Secure Payment</span>
+                    <span>💳 All Major Cards</span>
+                    <span>📱 UPI / NetBanking</span>
+                </div>
                 <p style="font-size: 11px; color: var(--gray-600); text-align: center; margin-top: 12px;">
-                    🔒 Secure payment by Razorpay | Test Mode
+                    🔴 LIVE MODE - Real transactions
                 </p>
             </div>
         </div>
@@ -139,8 +169,9 @@
         import { createClient } from '@supabase/supabase-js';
         
         // ==================== CONFIGURATION ====================
-        // REPLACE THIS WITH YOUR ACTUAL RAZORPAY TEST KEY
-        const RAZORPAY_KEY = "rzp_test_YOUR_TEST_KEY_HERE";  // <-- PASTE YOUR KEY HERE
+        // 🔴 IMPORTANT: Replace with your LIVE Razorpay Key from Dashboard
+        // Get it from: Settings → API Keys → Live Mode
+        const RAZORPAY_KEY = "rzp_live_YOUR_LIVE_KEY_HERE";  // <-- PASTE YOUR LIVE KEY HERE
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let cart = [];
@@ -312,12 +343,18 @@
             return { orderId, orderData: data[0] };
         }
         
-        // ==================== RAZORPAY PAYMENT ====================
+        // ==================== RAZORPAY LIVE PAYMENT ====================
         window.initiatePayment = async function() {
-            // Check if Razorpay key is configured
-            if (RAZORPAY_KEY === "rzp_test_YOUR_TEST_KEY_HERE") {
-                showToast('⚠️ Razorpay key not configured! Please add your test key in the code.', true);
-                console.error('Please replace RAZORPAY_KEY with your actual test key from Razorpay dashboard');
+            // Check if Razorpay key is configured for live mode
+            if (RAZORPAY_KEY === "rzp_live_YOUR_LIVE_KEY_HERE") {
+                showToast('⚠️ Please add your LIVE Razorpay key in the code', true);
+                console.error('Replace RAZORPAY_KEY with your live key from Razorpay Dashboard');
+                return;
+            }
+            
+            // Verify key is live (starts with rzp_live_)
+            if (!RAZORPAY_KEY.startsWith('rzp_live_')) {
+                showToast('⚠️ Please use LIVE mode key (starts with rzp_live_)', true);
                 return;
             }
             
@@ -336,10 +373,11 @@
                 const { orderId, orderData } = await createPendingOrder(shippingDetails);
                 const { total } = window.orderData;
                 
-                console.log('Order created:', orderId);
-                console.log('Amount:', total);
+                console.log('📦 Order created:', orderId);
+                console.log('💰 Amount:', total);
+                console.log('🔴 LIVE MODE: Real transaction');
                 
-                // Step 2: Razorpay payment options
+                // Step 2: Razorpay payment options for LIVE mode
                 const options = {
                     key: RAZORPAY_KEY,
                     amount: total * 100, // Convert to paise
@@ -362,7 +400,7 @@
                     },
                     handler: function(response) {
                         // Payment successful
-                        console.log('Payment success:', response);
+                        console.log('✅ Payment success:', response);
                         showToast(`✅ Payment successful! Order ID: ${orderId}`);
                         showLoading(false);
                         
@@ -382,7 +420,7 @@
                     modal: {
                         ondismiss: function() {
                             // Payment cancelled by user
-                            console.log('Payment cancelled');
+                            console.log('❌ Payment cancelled');
                             showLoading(false);
                             showToast('Payment cancelled', true);
                             
@@ -397,8 +435,9 @@
                 
                 // Handle payment failure
                 rzp.on('payment.failed', function(response) {
-                    console.error('Payment failed:', response);
-                    showToast(`Payment failed: ${response.error.description || 'Please try again'}`, true);
+                    console.error('💔 Payment failed:', response);
+                    const errorMsg = response.error?.description || 'Payment failed. Please try again.';
+                    showToast(`Payment failed: ${errorMsg}`, true);
                     showLoading(false);
                     
                     // Update order status to failed
@@ -406,7 +445,7 @@
                         .update({ 
                             payment_status: 'failed', 
                             status: 'Payment Failed',
-                            payment_error: response.error.description 
+                            payment_error: errorMsg
                         })
                         .eq('order_id', orderId);
                 });
@@ -442,11 +481,13 @@
             this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
         });
         
-        // Log Razorpay key status
-        if (RAZORPAY_KEY === "rzp_test_YOUR_TEST_KEY_HERE") {
-            console.warn('⚠️ Razorpay test key not configured! Please add your key in the code.');
+        // Log mode status
+        if (RAZORPAY_KEY === "rzp_live_YOUR_LIVE_KEY_HERE") {
+            console.warn('⚠️ LIVE mode key not configured! Add your live key.');
+        } else if (RAZORPAY_KEY.startsWith('rzp_live_')) {
+            console.log('🔴 LIVE MODE ACTIVE - Real transactions will be processed');
         } else {
-            console.log('✅ Razorpay key configured:', RAZORPAY_KEY.substring(0, 15) + '...');
+            console.warn('⚠️ Invalid key format. Use rzp_live_xxxxxxxx key');
         }
     </script>
 </body>
