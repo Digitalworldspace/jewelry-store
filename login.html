@@ -3,69 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Style Of Life</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Login - Style Of Life</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --primary: #d4af37; --primary-dark: #b8962e; --dark: #1a1a1a; --darker: #0a0a0a; }
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .login-container { width: 100%; max-width: 420px; padding: 20px; }
-        .login-box { background: white; padding: 50px 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; }
-        .logo { font-size: 32px; font-weight: 700; color: var(--primary); margin-bottom: 10px; font-family: 'Playfair Display', serif; }
-        .subtitle { color: #6c757d; margin-bottom: 30px; font-size: 14px; }
-        .form-group { margin-bottom: 20px; text-align: left; }
-        label { display: block; color: #495057; margin-bottom: 8px; font-weight: 500; font-size: 14px; }
-        input { width: 100%; padding: 12px 15px; border: 2px solid #e9ecef; border-radius: 12px; font-size: 14px; transition: all 0.3s; }
-        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
-        button { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border: none; border-radius: 12px; color: white; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 10px; transition: all 0.3s; }
-        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
-        .hint { text-align: center; margin-top: 25px; color: #6c757d; font-size: 13px; background: #f8f9fa; padding: 12px; border-radius: 10px; }
-        .hint strong { color: var(--primary); }
-        @media (max-width: 480px) { .login-box { padding: 30px 25px; } }
+        
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --dark: #1a1a1a;
+            --light: #ffffff;
+            --gray-200: #e9ecef;
+            --gray-600: #6c757d;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container {
+            display: flex;
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin: 20px;
+        }
+        
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, var(--dark), #2c2c2c);
+            padding: 50px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .login-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        
+        .login-left h1 span { color: var(--primary); }
+        
+        .login-left p {
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .features {
+            list-style: none;
+            margin-top: 30px;
+        }
+        .features li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .features i { color: var(--primary); font-size: 18px; }
+        
+        .login-right {
+            flex: 1;
+            padding: 50px;
+        }
+        
+        .login-right h2 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: var(--dark);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(212,175,55,0.1);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .register-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--dark);
+            color: var(--primary);
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .login-container { flex-direction: column; margin: 20px; }
+            .login-left { padding: 30px; text-align: center; }
+            .features { text-align: left; }
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <div class="login-box">
-            <div class="logo">✨ STYLE OF LIFE</div>
-            <div class="subtitle">Admin Panel Access</div>
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="username" placeholder="Enter username" autocomplete="off">
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="password" placeholder="Enter password">
-            </div>
-            <button onclick="login()">Login to Dashboard →</button>
-            <div class="hint">
-                🔐 <strong>Demo Credentials</strong><br>
-                Username: <strong>admin</strong> | Password: <strong>King@Sol63529</strong>
+        <div class="login-left">
+            <h1>Style <span>Of Life</span></h1>
+            <p>Welcome back to timeless elegance. Sign in to access your account and discover our exclusive collection.</p>
+            <ul class="features">
+                <li><i class="fas fa-check-circle"></i> Track your orders</li>
+                <li><i class="fas fa-heart"></i> Manage wishlist</li>
+                <li><i class="fas fa-truck"></i> Faster checkout</li>
+                <li><i class="fas fa-gem"></i> Exclusive offers</li>
+            </ul>
+        </div>
+        <div class="login-right">
+            <h2>Sign In</h2>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" required placeholder="Enter your password">
+                </div>
+                <button type="submit" class="login-btn">Sign In →</button>
+            </form>
+            <div class="register-link">
+                <p>Don't have an account? <a href="register.html">Create Account</a></p>
+                <p style="margin-top: 10px;"><a href="#" style="color: var(--gray-600);">Forgot Password?</a></p>
             </div>
         </div>
     </div>
-    <script>
-        function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            if (username === 'admin' && password === 'King@Sol63529') {
-                sessionStorage.setItem('adminLoggedIn', 'true');
-                sessionStorage.setItem('adminUser', username);
-                window.location.href = 'admin.html';
-            } else {
-                alert('❌ Invalid credentials!\n\nUse:\nUsername: admin\nPassword: 1234');
-                document.getElementById('password').value = '';
-                document.getElementById('password').focus();
-            }
+    
+    <script type="importmap">
+        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
+    </script>
+    <script type="module">
+        import { signIn } from './js/supabase-client.js';
+        
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.background = isError ? '#dc3545' : '#1a1a1a';
+            toast.style.color = 'white';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
         
-        document.getElementById('username').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') login();
-        });
-        document.getElementById('password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') login();
-        });
+        window.handleLogin = async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const result = await signIn(email, password);
+            if (result.success) {
+                showToast('Login successful! Redirecting...');
+                setTimeout(() => {
+                    window.location.href = 'customer-portal.html';
+                }, 1000);
+            } else {
+                showToast(result.error || 'Invalid credentials', true);
+            }
+        };
+        
+        // Check if coming from registration
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('registered') === 'true') {
+            showToast('Account created! Please login.');
+        }
     </script>
 </body>
 </html>
