@@ -27,7 +27,6 @@
             color: var(--charcoal);
         }
         
-        /* Logo Styles */
         .logo {
             display: inline-flex;
             align-items: center;
@@ -58,7 +57,6 @@
             border: 1px solid rgba(212,175,55,0.15);
         }
         
-        /* Header */
         header { 
             background: rgba(255,255,255,0.98);
             backdrop-filter: blur(20px);
@@ -108,7 +106,6 @@
             margin-left: 8px; 
         }
         
-        /* Hero Section */
         .hero { 
             height: 85vh; 
             min-height: 650px; 
@@ -159,15 +156,12 @@
         .trust-badges { display: flex; justify-content: center; gap: 25px; margin-top: 45px; flex-wrap: wrap; }
         .trust-badges span { display: flex; align-items: center; gap: 8px; font-size: 12px; background: rgba(255,255,255,0.12); backdrop-filter: blur(8px); padding: 6px 18px; border-radius: 40px; }
         
-        /* Section Titles */
         .section-title { text-align: center; margin: 70px 0 45px; }
         .section-title h2 { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 600; color: var(--charcoal); }
         .section-title h2 span { color: var(--gold-dark); }
         
-        /* Products Grid */
         .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 40px; padding: 20px 60px 60px; max-width: 1400px; margin: 0 auto; }
         
-        /* Product Card */
         .product-card { background: white; border-radius: 24px; overflow: hidden; transition: all 0.4s; box-shadow: 0 12px 30px rgba(0,0,0,0.05); border: 1px solid rgba(212,175,55,0.12); position: relative; }
         .product-card:hover { transform: translateY(-8px); box-shadow: 0 25px 45px rgba(212,175,55,0.15); }
         
@@ -209,24 +203,21 @@
             cursor: not-allowed; 
         }
         
-        /* Toast Notification */
         .toast-notification {
             position: fixed;
             bottom: 30px;
             right: 30px;
             background: linear-gradient(135deg, #2C2C2C, #1A1A1A);
             color: var(--gold);
-            padding: 16px 24px;
+            padding: 14px 24px;
             border-radius: 50px;
             z-index: 9999;
             animation: slideInRight 0.3s ease;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 12px;
             font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-        
+        .toast-error { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+        .toast-success { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; }
         @keyframes slideInRight {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -243,7 +234,7 @@
             .hero h1 { font-size: 42px; }
             .products { padding: 20px; grid-template-columns: 1fr; }
             .product-image { height: 250px; }
-            .toast-notification { bottom: 20px; right: 20px; padding: 12px 20px; font-size: 14px; }
+            .toast-notification { bottom: 20px; right: 20px; padding: 10px 20px; font-size: 14px; }
         }
     </style>
 </head>
@@ -303,7 +294,16 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
-        // Load cart from Supabase
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            if (isError) toast.classList.add('toast-error');
+            else toast.classList.add('toast-success');
+            toast.innerHTML = isError ? `❌ ${message}` : `✨ ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
         async function loadCart() {
             try {
                 const { data, error } = await supabase
@@ -321,7 +321,6 @@
             }
         }
         
-        // Save cart to Supabase
         async function saveCart() {
             try {
                 const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -336,12 +335,13 @@
                 
                 if (error) throw error;
                 updateCartCount();
+                return true;
             } catch (error) {
                 console.error('Error saving cart:', error);
+                return false;
             }
         }
         
-        // Update cart count display
         function updateCartCount() {
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             const cartCountElements = document.querySelectorAll('#cartCount');
@@ -350,22 +350,8 @@
             });
         }
         
-        // Show toast notification
-        function showToast(message, isError = false) {
-            const toast = document.createElement('div');
-            toast.className = 'toast-notification';
-            toast.innerHTML = isError ? `❌ ${message}` : `✨ ${message}`;
-            toast.style.background = isError ? 'linear-gradient(135deg, #dc3545, #c82333)' : 'linear-gradient(135deg, #2C2C2C, #1A1A1A)';
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
-        }
-        
-        // Add to cart function
         window.addToCart = async function(productId, productName, productPrice, productSku, productImage) {
             try {
-                // Get fresh product data to check stock
                 const { data: products, error } = await supabase
                     .from('products')
                     .select('stock')
@@ -379,18 +365,24 @@
                     return;
                 }
                 
-                // Check if product already in cart
-                const existingItem = cart.find(item => item.id === productId);
+                // Load current cart first
+                const { data: cartData } = await supabase
+                    .from('carts')
+                    .select('items')
+                    .eq('session_id', sessionId)
+                    .maybeSingle();
+                
+                let currentCart = cartData?.items || [];
+                const existingItem = currentCart.find(item => item.id === productId);
                 
                 if (existingItem) {
-                    // Check if adding one more exceeds stock
                     if (existingItem.quantity + 1 > products.stock) {
-                        showToast(`Only ${products.stock} items available in stock!`, true);
+                        showToast(`Only ${products.stock} items available!`, true);
                         return;
                     }
                     existingItem.quantity += 1;
                 } else {
-                    cart.push({
+                    currentCart.push({
                         id: productId,
                         sku: productSku,
                         name: productName,
@@ -400,10 +392,22 @@
                     });
                 }
                 
-                await saveCart();
+                const total = currentCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const { error: saveError } = await supabase
+                    .from('carts')
+                    .upsert({
+                        session_id: sessionId,
+                        items: currentCart,
+                        total: total,
+                        updated_at: new Date().toISOString()
+                    });
+                
+                if (saveError) throw saveError;
+                
+                cart = currentCart;
+                updateCartCount();
                 showToast(`${productName} added to cart!`);
                 
-                // Animate the cart icon
                 const cartIcon = document.querySelector('nav a[href="cart.html"]');
                 if (cartIcon) {
                     cartIcon.style.transform = 'scale(1.1)';
@@ -418,7 +422,6 @@
             }
         };
         
-        // Load and display products
         async function loadProducts() {
             const container = document.getElementById('products');
             
@@ -479,7 +482,6 @@
             });
         }
         
-        // Initialize
         await loadCart();
         await loadProducts();
     </script>
