@@ -4,7 +4,7 @@ const CONFIG = {
     CURRENCY: "₹",
     DEFAULT_CATEGORY: "Jewelry",
     
-    RAZORPAY_KEY: "rzp_live_STwZarJ6EyJUPg",
+    RAZORPAY_KEY: "rzp_live_SW3giVapYbcxHF",
     
     SUPABASE_URL: "https://kkvgdagjboxhtuyqlomq.supabase.co",
     SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrdmdkYWdqYm94aHR1eXFsb21xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzgyMTksImV4cCI6MjA5MDA1NDIxOX0.5A4UUcvwAi5UM8K81mmrN3lOTmzUYq70qRouaVqpwDA"
