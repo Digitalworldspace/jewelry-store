@@ -32,7 +32,7 @@
             top: 0;
             z-index: 100;
         }
-        .logo { font-size: 28px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; }
+        .logo { font-size: 28px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
         nav a { 
             color: var(--gray-600); 
             text-decoration: none; 
@@ -185,11 +185,29 @@
             z-index: 9999;
             animation: slideInRight 0.3s ease;
             font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
+        .toast-error { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+        .toast-success { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; }
         @keyframes slideInRight {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
+        
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
         
         footer { background: #0a0a0a; color: white; text-align: center; padding: 40px; margin-top: 60px; }
         
@@ -200,12 +218,13 @@
             .cart-item-price, .cart-item-total { font-size: 14px; }
             .quantity-input { width: 50px; }
             .cart-summary { position: static; margin-top: 20px; }
+            .toast-notification { bottom: 20px; right: 20px; padding: 10px 20px; font-size: 14px; }
         }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo">STYLE OF LIFE</div>
+        <a href="index.html" class="logo">STYLE OF LIFE</a>
         <nav>
             <a href="index.html">Home</a>
             <a href="cart.html" class="active">Cart 🛒 <span class="cart-count" id="cartCount">0</span></a>
@@ -215,7 +234,12 @@
 
     <div class="container">
         <h1>Shopping Cart</h1>
-        <div id="cartContent"></div>
+        <div id="cartContent">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Loading your cart...</p>
+            </div>
+        </div>
     </div>
 
     <footer>
@@ -240,8 +264,9 @@
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast-notification';
+            if (isError) toast.classList.add('toast-error');
+            else toast.classList.add('toast-success');
             toast.innerHTML = isError ? `❌ ${message}` : `✅ ${message}`;
-            toast.style.background = isError ? 'linear-gradient(135deg, #dc3545, #c82333)' : 'linear-gradient(135deg, #2C2C2C, #1A1A1A)';
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
@@ -262,6 +287,7 @@
                 console.error('Error loading cart:', error);
                 cart = [];
                 renderCart();
+                showToast('Error loading cart', true);
             }
         }
         
@@ -280,9 +306,11 @@
                 if (error) throw error;
                 updateCartCount();
                 renderCart();
+                return true;
             } catch (error) {
                 console.error('Error saving cart:', error);
                 showToast('Failed to save cart', true);
+                return false;
             }
         }
         
@@ -299,6 +327,7 @@
             if (isNaN(newQuantity) || newQuantity < 1) {
                 newQuantity = 1;
             }
+            if (newQuantity > 99) newQuantity = 99;
             
             // Check stock limit
             const { data: product, error } = await supabase
@@ -313,7 +342,7 @@
             }
             
             if (newQuantity > product.stock) {
-                showToast(`Only ${product.stock} items available in stock!`, true);
+                showToast(`Only ${product.stock} items available!`, true);
                 newQuantity = product.stock;
             }
             
@@ -326,8 +355,10 @@
         
         window.removeItem = async function(productId) {
             cart = cart.filter(item => item.id !== productId);
-            await saveCart();
-            showToast('Item removed from cart');
+            const saved = await saveCart();
+            if (saved) {
+                showToast('Item removed from cart');
+            }
         };
         
         window.clearCart = async function() {
@@ -335,17 +366,40 @@
                 showToast('Cart is already empty', true);
                 return;
             }
-            if (confirm('Are you sure you want to clear your entire cart?')) {
-                cart = [];
-                await saveCart();
-                showToast('Cart cleared');
+            
+            if (confirm('Are you sure you want to remove all items from your cart?')) {
+                try {
+                    // Clear the cart array
+                    cart = [];
+                    
+                    // Save empty cart to Supabase
+                    const { error } = await supabase
+                        .from('carts')
+                        .upsert({
+                            session_id: sessionId,
+                            items: [],
+                            total: 0,
+                            updated_at: new Date().toISOString()
+                        });
+                    
+                    if (error) throw error;
+                    
+                    // Update UI
+                    updateCartCount();
+                    renderCart();
+                    showToast('Cart cleared successfully!');
+                    
+                } catch (error) {
+                    console.error('Error clearing cart:', error);
+                    showToast('Failed to clear cart', true);
+                }
             }
         };
         
         function renderCart() {
             const container = document.getElementById('cartContent');
             
-            if (cart.length === 0) {
+            if (!cart || cart.length === 0) {
                 container.innerHTML = `
                     <div class="cart-empty">
                         <h2>🛒 Your cart is empty</h2>
@@ -364,8 +418,8 @@
                 subtotal += itemTotal;
                 
                 itemsHtml += `
-                    <div class="cart-item">
-                        <img class="cart-item-image" src="${item.image || 'https://via.placeholder.com/100x100'}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/100x100'">
+                    <div class="cart-item" data-id="${item.id}">
+                        <img class="cart-item-image" src="${item.image || 'https://via.placeholder.com/100x100?text=Style+Of+Life'}" alt="${escapeHtml(item.name)}" onerror="this.src='https://via.placeholder.com/100x100?text=Style+Of+Life'">
                         <div>
                             <div class="cart-item-name">${escapeHtml(item.name)}</div>
                             <div class="cart-item-sku">SKU: ${item.sku}</div>
@@ -377,7 +431,7 @@
                         </div>
                         <div class="cart-item-total">₹${itemTotal.toLocaleString()}</div>
                         <div>
-                            <button class="remove-btn" onclick="removeItem(${item.id})">🗑️</button>
+                            <button class="remove-btn" onclick="removeItem(${item.id})" title="Remove item">🗑️</button>
                         </div>
                     </div>
                 `;
@@ -429,7 +483,14 @@
         
         // Listen for storage events (sync across tabs)
         window.addEventListener('storage', function(e) {
-            if (e.key === 'sessionId' || e.key?.includes('supabase')) {
+            if (e.key === 'sessionId') {
+                loadCart();
+            }
+        });
+        
+        // Refresh cart when page becomes visible again
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
                 loadCart();
             }
         });
