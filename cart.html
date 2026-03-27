@@ -28,9 +28,8 @@
             display: flex; 
             justify-content: space-between; 
             align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         .logo { font-size: 28px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
         nav a { 
@@ -194,31 +193,29 @@
             to { transform: translateX(0); opacity: 1; }
         }
         
-        .loading-spinner {
-            text-align: center;
-            padding: 40px;
+        .debug-panel {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 12px;
+            display: none;
         }
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--gray-200);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 15px;
+        .debug-panel.show {
+            display: block;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
         
         footer { background: #0a0a0a; color: white; text-align: center; padding: 40px; margin-top: 60px; }
         
         @media (max-width: 768px) {
-            header { flex-direction: column; gap: 15px; padding: 15px; }
+            header { flex-direction: column; padding: 15px; }
             .cart-item { grid-template-columns: 80px 1fr; gap: 12px; }
             .cart-item-image { width: 70px; height: 70px; }
             .cart-item-price, .cart-item-total { font-size: 14px; }
             .quantity-input { width: 50px; }
             .cart-summary { position: static; margin-top: 20px; }
-            .toast-notification { bottom: 20px; right: 20px; padding: 10px 20px; font-size: 14px; }
         }
     </style>
 </head>
@@ -235,10 +232,17 @@
     <div class="container">
         <h1>Shopping Cart</h1>
         <div id="cartContent">
-            <div class="loading-spinner">
-                <div class="spinner"></div>
+            <div class="loading-spinner" style="text-align: center; padding: 40px;">
+                <div class="spinner" style="width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px;"></div>
                 <p>Loading your cart...</p>
             </div>
+        </div>
+        
+        <!-- Debug Panel - Click to show/hide -->
+        <button onclick="toggleDebug()" style="margin-top: 20px; background: #6c757d; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">🔧 Show Debug Info</button>
+        <div id="debugPanel" class="debug-panel">
+            <strong>Debug Information:</strong><br>
+            <div id="debugLog"></div>
         </div>
     </div>
 
@@ -261,6 +265,18 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
+        function addDebugLog(message) {
+            const debugLog = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            debugLog.innerHTML = `[${timestamp}] ${message}<br>` + debugLog.innerHTML;
+            console.log(`[DEBUG] ${message}`);
+        }
+        
+        window.toggleDebug = function() {
+            const panel = document.getElementById('debugPanel');
+            panel.classList.toggle('show');
+        };
+        
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast-notification';
@@ -268,12 +284,12 @@
             else toast.classList.add('toast-success');
             toast.innerHTML = isError ? `❌ ${message}` : `✅ ${message}`;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+            setTimeout(() => toast.remove(), 4000);
         }
         
         async function loadCart() {
             try {
-                console.log('Loading cart for session:', sessionId);
+                addDebugLog(`Loading cart for session: ${sessionId}`);
                 const { data, error } = await supabase
                     .from('carts')
                     .select('items')
@@ -283,10 +299,11 @@
                 if (error) throw error;
                 
                 cart = data?.items || [];
-                console.log('Cart loaded:', cart.length, 'items');
+                addDebugLog(`Cart loaded: ${cart.length} items`);
                 updateCartCount();
                 renderCart();
             } catch (error) {
+                addDebugLog(`ERROR loading cart: ${error.message}`);
                 console.error('Error loading cart:', error);
                 cart = [];
                 renderCart();
@@ -297,25 +314,30 @@
         async function saveCart() {
             try {
                 const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                console.log('Saving cart:', cart.length, 'items, total:', total);
+                addDebugLog(`Saving cart: ${cart.length} items, total: ₹${total}`);
                 
-                const { error } = await supabase
+                const { data, error } = await supabase
                     .from('carts')
                     .upsert({
                         session_id: sessionId,
                         items: cart,
                         total: total,
                         updated_at: new Date().toISOString()
-                    });
+                    })
+                    .select();
                 
-                if (error) throw error;
+                if (error) {
+                    addDebugLog(`ERROR saving cart: ${error.message}`);
+                    throw error;
+                }
                 
+                addDebugLog(`Cart saved successfully`);
                 updateCartCount();
                 renderCart();
                 return true;
             } catch (error) {
                 console.error('Error saving cart:', error);
-                showToast('Failed to save cart', true);
+                showToast('Failed to save cart: ' + error.message, true);
                 return false;
             }
         }
@@ -326,6 +348,7 @@
             cartCountElements.forEach(el => {
                 if (el) el.textContent = totalItems;
             });
+            addDebugLog(`Cart count updated: ${totalItems}`);
         }
         
         window.updateQuantity = async function(productId, newQuantity) {
@@ -334,6 +357,8 @@
                 newQuantity = 1;
             }
             if (newQuantity > 99) newQuantity = 99;
+            
+            addDebugLog(`Updating quantity for product ${productId} to ${newQuantity}`);
             
             // Check stock limit
             const { data: product, error } = await supabase
@@ -360,58 +385,101 @@
         };
         
         window.removeItem = async function(productId) {
+            addDebugLog(`Removing item ${productId} from cart`);
             cart = cart.filter(item => item.id !== productId);
             const saved = await saveCart();
             if (saved) {
                 showToast('Item removed from cart');
+                addDebugLog(`Item removed, cart now has ${cart.length} items`);
+            } else {
+                showToast('Failed to remove item', true);
             }
         };
         
         window.clearCart = async function() {
             if (cart.length === 0) {
                 showToast('Cart is already empty', true);
+                addDebugLog(`Clear cart called but cart already empty`);
                 return;
             }
             
-            if (confirm('Are you sure you want to remove all items from your cart?')) {
-                try {
-                    console.log('Clearing cart...');
-                    
-                    // Clear the cart array
-                    cart = [];
-                    
-                    // Save empty cart to Supabase - Using upsert with empty items
-                    const { error } = await supabase
+            if (!confirm('Are you sure you want to remove all items from your cart?')) {
+                addDebugLog(`Clear cart cancelled by user`);
+                return;
+            }
+            
+            addDebugLog(`Starting clear cart process...`);
+            showToast('Clearing cart...');
+            
+            try {
+                // Method 1: Try to delete the record
+                addDebugLog(`Attempting to delete cart record for session: ${sessionId}`);
+                const { error: deleteError } = await supabase
+                    .from('carts')
+                    .delete()
+                    .eq('session_id', sessionId);
+                
+                if (deleteError) {
+                    addDebugLog(`Delete failed: ${deleteError.message}, trying upsert method`);
+                    // Method 2: Try upsert with empty array
+                    const { error: upsertError } = await supabase
                         .from('carts')
                         .upsert({
                             session_id: sessionId,
-                            items: [],  // Empty array
-                            total: 0,   // Zero total
+                            items: [],
+                            total: 0,
                             updated_at: new Date().toISOString()
                         });
                     
-                    if (error) throw error;
-                    
-                    // Force reload from database to confirm
-                    const { data: verifyData } = await supabase
+                    if (upsertError) throw upsertError;
+                    addDebugLog(`Upsert with empty cart succeeded`);
+                } else {
+                    addDebugLog(`Delete succeeded`);
+                    // Re-insert empty cart to ensure record exists
+                    await supabase
                         .from('carts')
-                        .select('items')
-                        .eq('session_id', sessionId)
-                        .maybeSingle();
-                    
-                    console.log('Verification after clear:', verifyData?.items?.length || 0, 'items');
-                    
-                    // Update UI
-                    updateCartCount();
-                    renderCart();
-                    showToast('Cart cleared successfully!');
-                    
-                } catch (error) {
-                    console.error('Error clearing cart:', error);
-                    showToast('Failed to clear cart', true);
-                    // Reload cart to revert any partial changes
-                    await loadCart();
+                        .upsert({
+                            session_id: sessionId,
+                            items: [],
+                            total: 0,
+                            updated_at: new Date().toISOString()
+                        });
                 }
+                
+                // Clear local cart array
+                cart = [];
+                
+                // Verify cart is empty in database
+                const { data: verifyData, error: verifyError } = await supabase
+                    .from('carts')
+                    .select('items')
+                    .eq('session_id', sessionId)
+                    .maybeSingle();
+                
+                if (verifyError) {
+                    addDebugLog(`Verification error: ${verifyError.message}`);
+                } else {
+                    const itemsCount = verifyData?.items?.length || 0;
+                    addDebugLog(`Verification: Cart now has ${itemsCount} items in database`);
+                }
+                
+                // Update UI
+                updateCartCount();
+                renderCart();
+                
+                // Signal other tabs that cart was cleared
+                localStorage.setItem('cartCleared', Date.now().toString());
+                
+                showToast('Cart cleared successfully!');
+                addDebugLog(`Cart clear completed successfully`);
+                
+            } catch (error) {
+                addDebugLog(`ERROR clearing cart: ${error.message}`);
+                console.error('Error clearing cart:', error);
+                showToast('Failed to clear cart: ' + error.message, true);
+                
+                // Reload cart to revert any partial changes
+                await loadCart();
             }
         };
         
@@ -510,7 +578,8 @@
         
         // Listen for storage events (sync across tabs)
         window.addEventListener('storage', function(e) {
-            if (e.key === 'sessionId') {
+            if (e.key === 'cartCleared') {
+                addDebugLog(`Storage event: cartCleared detected`);
                 loadCart();
             }
         });
@@ -518,6 +587,7 @@
         // Refresh cart when page becomes visible again
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {
+                addDebugLog(`Page became visible, reloading cart`);
                 loadCart();
             }
         });
@@ -526,8 +596,29 @@
         window.cartFunctions = {
             clearCart: clearCart,
             removeItem: removeItem,
-            updateQuantity: updateQuantity
+            updateQuantity: updateQuantity,
+            loadCart: loadCart
         };
+        
+        addDebugLog(`Cart page initialized. Session ID: ${sessionId}`);
+        
+        // Add CSS for spinner
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+            .spinner {
+                width: 40px;
+                height: 40px;
+                border: 3px solid #e9ecef;
+                border-top-color: #d4af37;
+                border-radius: 50%;
+                animation: spin 0.8s linear infinite;
+                margin: 0 auto 15px;
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
