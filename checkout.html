@@ -8,72 +8,106 @@
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { 
-            --primary: #d4af37; 
-            --primary-dark: #b8962e; 
-            --light: #ffffff; 
-            --gray-200: #e9ecef; 
-            --gray-600: #6c757d; 
-            --success: #28a745; 
-            --danger: #dc3545;
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
             --dark: #1a1a1a;
+            --light: #ffffff;
+            --gray-200: #e9ecef;
+            --gray-600: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
         }
         body { font-family: 'Inter', sans-serif; background: #faf7f2; }
         
-        header { background: white; padding: 20px 50px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        header {
+            background: white;
+            padding: 20px 50px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
         .logo { font-size: 28px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
-        nav a { color: var(--gray-600); text-decoration: none; margin-left: 30px; transition: color 0.3s; }
+        nav a { color: var(--gray-600); text-decoration: none; margin-left: 30px; font-weight: 500; }
         nav a:hover { color: var(--primary); }
         
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        h1 { color: var(--primary); margin-bottom: 30px; font-family: 'Playfair Display', serif; }
+        h1 { color: var(--primary); margin-bottom: 30px; }
         
         .checkout-grid { display: grid; grid-template-columns: 1fr 380px; gap: 30px; }
-        .form-box, .summary-box { background: white; padding: 30px; border-radius: 16px; border: 1px solid var(--gray-200); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .form-box, .summary-box { background: white; padding: 30px; border-radius: 16px; border: 1px solid var(--gray-200); }
         
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; color: var(--primary); margin-bottom: 8px; font-weight: 500; font-size: 14px; }
-        .form-group input { width: 100%; padding: 12px 16px; border: 1px solid var(--gray-200); border-radius: 12px; font-size: 14px; transition: all 0.3s; }
-        .form-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
+        .form-group label { display: block; color: var(--primary); margin-bottom: 8px; font-weight: 500; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; }
+        .form-group input:focus { outline: none; border-color: var(--primary); }
         
         .summary-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--gray-200); }
-        .summary-row.total { border-bottom: none; font-size: 20px; font-weight: bold; color: var(--primary); padding-top: 15px; margin-top: 10px; }
+        .summary-row.total { border-bottom: none; font-size: 20px; font-weight: bold; color: var(--primary); padding-top: 15px; }
         
-        .place-order-btn { 
-            width: 100%; padding: 15px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
-            border: none; border-radius: 40px; color: var(--dark); font-weight: 600; cursor: pointer; 
-            margin-top: 20px; transition: all 0.3s; font-size: 16px;
+        .place-order-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
         }
-        .place-order-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
+        .place-order-btn:hover { background: var(--primary-dark); }
         .place-order-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
-        .cart-empty-message { text-align: center; padding: 40px; color: var(--gray-600); }
-        
         .loading-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center;
-            z-index: 9999; backdrop-filter: blur(5px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
         }
-        .loading-content { background: white; padding: 30px; border-radius: 24px; text-align: center; animation: fadeInUp 0.3s ease; }
-        .loading-spinner { width: 50px; height: 50px; border: 3px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+        .loading-content { background: white; padding: 30px; border-radius: 16px; text-align: center; }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        .toast-notification {
-            position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, #2C2C2C, #1A1A1A);
-            color: var(--primary); padding: 14px 24px; border-radius: 50px; z-index: 10000;
-            animation: slideInRight 0.3s ease; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--dark);
+            color: var(--primary);
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
         }
-        .toast-error { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
-        .toast-success { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; }
-        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .toast-error { background: var(--danger); color: white; }
+        .toast-success { background: var(--success); color: white; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
         
-        footer { background: #0a0a0a; color: white; text-align: center; padding: 40px; margin-top: 60px; }
+        footer { background: var(--dark); color: white; text-align: center; padding: 40px; margin-top: 60px; }
         
         @media (max-width: 768px) {
             header { flex-direction: column; padding: 15px; }
             .checkout-grid { grid-template-columns: 1fr; }
-            .toast-notification { bottom: 20px; right: 20px; padding: 10px 20px; font-size: 14px; }
         }
     </style>
 </head>
@@ -91,54 +125,52 @@
         <h1>Secure Checkout</h1>
         <div class="checkout-grid">
             <div class="form-box">
-                <h3 style="margin-bottom: 20px;">📦 Shipping Information</h3>
+                <h3>Shipping Information</h3>
                 <div class="form-group">
                     <label>Full Name *</label>
-                    <input type="text" id="name" placeholder="Enter your full name" required>
+                    <input type="text" id="name" placeholder="Enter your full name">
                 </div>
                 <div class="form-group">
                     <label>Phone Number *</label>
-                    <input type="tel" id="phone" maxlength="10" placeholder="10-digit mobile number" required>
+                    <input type="tel" id="phone" maxlength="10" placeholder="10-digit mobile number">
                 </div>
                 <div class="form-group">
                     <label>Email Address *</label>
-                    <input type="email" id="email" placeholder="your@email.com" required>
+                    <input type="email" id="email" placeholder="your@email.com">
                 </div>
                 <div class="form-group">
                     <label>Street Address *</label>
-                    <input type="text" id="address" placeholder="House number, street" required>
+                    <input type="text" id="address" placeholder="House number, street">
                 </div>
                 <div class="form-group">
                     <label>City *</label>
-                    <input type="text" id="city" placeholder="City" required>
+                    <input type="text" id="city" placeholder="City">
                 </div>
                 <div class="form-group">
                     <label>Pincode *</label>
-                    <input type="text" id="pincode" maxlength="6" placeholder="6-digit pincode" required>
+                    <input type="text" id="pincode" maxlength="6" placeholder="6-digit pincode">
                 </div>
             </div>
             <div class="summary-box">
-                <h3 style="margin-bottom: 20px;">🛒 Order Summary</h3>
+                <h3>Order Summary</h3>
                 <div id="orderItems"></div>
                 <div id="orderTotals"></div>
-                <button class="place-order-btn" id="payBtn" onclick="initiatePayment()">💳 Proceed to Pay</button>
-                <p style="font-size: 11px; color: var(--gray-600); text-align: center; margin-top: 12px;">
-                    🔒 Secure payment by Razorpay
-                </p>
+                <button class="place-order-btn" id="payBtn" onclick="initiatePayment()">Proceed to Pay</button>
+                <p style="font-size: 11px; text-align: center; margin-top: 12px;">🔒 Secure payment by Razorpay</p>
             </div>
         </div>
     </div>
 
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
-            <div class="loading-spinner"></div>
+            <div class="spinner"></div>
             <h3>Processing your order...</h3>
-            <p style="color: var(--gray-600); margin-top: 10px;">Please don't close this window</p>
+            <p>Please don't close this window</p>
         </div>
     </div>
 
     <footer>
-        <p>© 2026 STYLE OF LIFE. All rights reserved. | Timeless Elegance Since 2020</p>
+        <p>© 2026 STYLE OF LIFE. All rights reserved.</p>
     </footer>
 
     <script type="importmap">
@@ -147,8 +179,8 @@
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
-        // 🔴 IMPORTANT: Replace with your Razorpay key
-        const RAZORPAY_KEY = "rzp_test_YourTestKeyHere"; // Change to your actual key
+        // 🔴 REPLACE WITH YOUR RAZORPAY KEY
+        const RAZORPAY_KEY = "rzp_test_YourTestKeyHere";
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let cart = [];
@@ -161,24 +193,21 @@
         
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
-            toast.className = 'toast-notification';
+            toast.className = 'toast';
             if (isError) toast.classList.add('toast-error');
             else toast.classList.add('toast-success');
-            toast.innerHTML = isError ? `❌ ${message}` : `✅ ${message}`;
+            toast.textContent = message;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
+            setTimeout(() => toast.remove(), 3000);
         }
         
         function showLoading(show) {
-            const overlay = document.getElementById('loadingOverlay');
-            overlay.style.display = show ? 'flex' : 'none';
-            const payBtn = document.getElementById('payBtn');
-            if (payBtn) payBtn.disabled = show;
+            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+            document.getElementById('payBtn').disabled = show;
         }
         
         async function loadCart() {
             try {
-                console.log('Checkout: Loading cart for session:', sessionId);
                 const { data, error } = await supabase
                     .from('carts')
                     .select('items')
@@ -186,9 +215,7 @@
                     .maybeSingle();
                 
                 if (error) throw error;
-                
                 cart = data?.items || [];
-                console.log('Checkout: Cart loaded with', cart.length, 'items');
                 updateOrderSummary();
             } catch (error) {
                 console.error('Error loading cart:', error);
@@ -198,12 +225,9 @@
         }
         
         function updateOrderSummary() {
-            const itemsContainer = document.getElementById('orderItems');
-            const totalsContainer = document.getElementById('orderTotals');
-            
             if (!cart || cart.length === 0) {
-                itemsContainer.innerHTML = '<div class="cart-empty-message">🛒 Your cart is empty</div>';
-                totalsContainer.innerHTML = '';
+                document.getElementById('orderItems').innerHTML = '<div style="text-align:center; padding:40px;">Your cart is empty</div>';
+                document.getElementById('orderTotals').innerHTML = '';
                 document.getElementById('payBtn').disabled = true;
                 return;
             }
@@ -216,39 +240,22 @@
             cart.forEach(item => {
                 const itemTotal = item.price * item.quantity;
                 subtotal += itemTotal;
-                itemsHtml += `
-                    <div class="summary-row">
-                        <span>${escapeHtml(item.name)} x ${item.quantity}</span>
-                        <span>₹${itemTotal.toLocaleString()}</span>
-                    </div>
-                `;
+                itemsHtml += `<div class="summary-row"><span>${escapeHtml(item.name)} x ${item.quantity}</span><span>₹${itemTotal.toLocaleString()}</span></div>`;
             });
             
             const tax = Math.round(subtotal * 0.18);
             const shipping = 100;
             const total = subtotal + tax + shipping;
             
-            itemsContainer.innerHTML = itemsHtml;
-            totalsContainer.innerHTML = `
-                <div class="summary-row">
-                    <span>Subtotal</span>
-                    <span>₹${subtotal.toLocaleString()}</span>
-                </div>
-                <div class="summary-row">
-                    <span>Shipping</span>
-                    <span>₹${shipping.toLocaleString()}</span>
-                </div>
-                <div class="summary-row">
-                    <span>GST (18%)</span>
-                    <span>₹${tax.toLocaleString()}</span>
-                </div>
-                <div class="summary-row total">
-                    <span>Total</span>
-                    <span>₹${total.toLocaleString()}</span>
-                </div>
+            document.getElementById('orderItems').innerHTML = itemsHtml;
+            document.getElementById('orderTotals').innerHTML = `
+                <div class="summary-row"><span>Subtotal</span><span>₹${subtotal.toLocaleString()}</span></div>
+                <div class="summary-row"><span>Shipping</span><span>₹${shipping.toLocaleString()}</span></div>
+                <div class="summary-row"><span>GST (18%)</span><span>₹${tax.toLocaleString()}</span></div>
+                <div class="summary-row total"><span>Total</span><span>₹${total.toLocaleString()}</span></div>
             `;
             
-            window.orderData = { subtotal, tax, shipping, total };
+            window.orderTotal = total;
         }
         
         function getShippingDetails() {
@@ -260,34 +267,29 @@
             const pincode = document.getElementById('pincode').value.trim();
             
             if (!name || !phone || !email || !address || !city || !pincode) {
-                showToast('Please fill all required fields', true);
+                showToast('Please fill all fields', true);
                 return null;
             }
-            
             if (phone.length !== 10 || !/^\d+$/.test(phone)) {
-                showToast('Please enter a valid 10-digit phone number', true);
+                showToast('Enter valid 10-digit phone', true);
                 return null;
             }
-            
-            if (!email.includes('@') || !email.includes('.')) {
-                showToast('Please enter a valid email address', true);
-                return null;
-            }
-            
             if (pincode.length !== 6 || !/^\d+$/.test(pincode)) {
-                showToast('Please enter a valid 6-digit pincode', true);
+                showToast('Enter valid 6-digit pincode', true);
                 return null;
             }
             
-            return {
-                name, phone, email,
-                address: `${address}, ${city} - ${pincode}`
-            };
+            return { name, phone, email, address: `${address}, ${city} - ${pincode}` };
         }
         
-        async function createPendingOrder(orderData) {
+        async function createOrder(orderData) {
             const orderId = 'ORD' + Date.now();
-            const { subtotal, tax, shipping, total } = window.orderData;
+            const items = cart.map(item => ({
+                id: item.id, sku: item.sku, name: item.name, price: item.price, quantity: item.quantity
+            }));
+            const subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+            const tax = Math.round(subtotal * 0.18);
+            const total = subtotal + tax + 100;
             
             const order = {
                 order_id: orderId,
@@ -295,36 +297,23 @@
                 phone: orderData.phone,
                 email: orderData.email,
                 address: orderData.address,
-                items: cart.map(item => ({
-                    id: item.id,
-                    sku: item.sku,
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity
-                })),
+                items: items,
                 subtotal: subtotal,
                 tax: tax,
-                shipping: shipping,
+                shipping: 100,
                 total: total,
-                status: 'Payment Pending',
+                status: 'Pending',
                 payment_status: 'pending',
                 created_at: new Date().toISOString()
             };
             
-            const { data, error } = await supabase
-                .from('orders')
-                .insert([order])
-                .select();
-            
+            const { error } = await supabase.from('orders').insert([order]);
             if (error) throw error;
-            return { orderId, orderData: data[0] };
+            return orderId;
         }
         
         async function clearCartAfterOrder() {
             try {
-                console.log('Clearing cart after successful order...');
-                
-                // Clear the cart in Supabase
                 const { error } = await supabase
                     .from('carts')
                     .upsert({
@@ -335,14 +324,8 @@
                     });
                 
                 if (error) throw error;
-                
-                // Clear local cart array
                 cart = [];
-                
-                // Update local storage session ID to ensure fresh start
                 localStorage.setItem('cartCleared', Date.now().toString());
-                
-                console.log('Cart cleared successfully');
                 return true;
             } catch (error) {
                 console.error('Error clearing cart:', error);
@@ -352,13 +335,12 @@
         
         window.initiatePayment = async function() {
             if (RAZORPAY_KEY === "rzp_test_YourTestKeyHere") {
-                showToast('Please add your Razorpay key in the code', true);
+                showToast('Please add your Razorpay key', true);
                 return;
             }
             
-            const shippingDetails = getShippingDetails();
-            if (!shippingDetails) return;
-            
+            const shipping = getShippingDetails();
+            if (!shipping) return;
             if (!cart || cart.length === 0) {
                 showToast('Your cart is empty', true);
                 return;
@@ -367,12 +349,8 @@
             showLoading(true);
             
             try {
-                // Create pending order
-                const { orderId, orderData } = await createPendingOrder(shippingDetails);
-                const { total } = window.orderData;
-                
-                console.log('Order created:', orderId);
-                console.log('Amount:', total);
+                const orderId = await createOrder(shipping);
+                const total = window.orderTotal;
                 
                 const options = {
                     key: RAZORPAY_KEY,
@@ -380,73 +358,38 @@
                     currency: "INR",
                     name: "Style Of Life",
                     description: `Order #${orderId}`,
-                    prefill: {
-                        name: shippingDetails.name,
-                        email: shippingDetails.email,
-                        contact: shippingDetails.phone
-                    },
-                    notes: {
-                        order_id: orderId,
-                        customer_name: shippingDetails.name,
-                        customer_email: shippingDetails.email
-                    },
-                    theme: {
-                        color: "#d4af37"
-                    },
+                    prefill: { name: shipping.name, email: shipping.email, contact: shipping.phone },
+                    notes: { order_id: orderId },
+                    theme: { color: "#d4af37" },
                     handler: async function(response) {
-                        console.log('Payment success:', response);
-                        
-                        // Clear cart after successful payment
-                        const cleared = await clearCartAfterOrder();
-                        
-                        if (cleared) {
-                            showToast(`✅ Payment successful! Order ID: ${orderId}`);
-                        } else {
-                            showToast(`✅ Payment successful! But cart may need manual clear. Order ID: ${orderId}`);
-                        }
-                        
+                        await clearCartAfterOrder();
+                        showToast(`✅ Payment successful! Order ID: ${orderId}`);
                         showLoading(false);
-                        
-                        // Force redirect to tracking page
                         setTimeout(() => {
-                            window.location.href = `track.html?order=${orderId}&cleared=${Date.now()}`;
+                            window.location.href = `track.html?order=${orderId}`;
                         }, 2000);
                     },
                     modal: {
                         ondismiss: function() {
-                            console.log('Payment cancelled');
                             showLoading(false);
                             showToast('Payment cancelled', true);
-                            
-                            // Delete pending order
                             supabase.from('orders').delete().eq('order_id', orderId);
                         }
                     }
                 };
                 
                 const rzp = new Razorpay(options);
-                
                 rzp.on('payment.failed', function(response) {
-                    console.error('Payment failed:', response);
-                    showToast(`Payment failed: ${response.error?.description || 'Please try again'}`, true);
+                    showToast(`Payment failed: ${response.error?.description}`, true);
                     showLoading(false);
-                    
-                    // Update order status
-                    supabase.from('orders')
-                        .update({ 
-                            payment_status: 'failed', 
-                            status: 'Payment Failed',
-                            payment_error: response.error?.description 
-                        })
-                        .eq('order_id', orderId);
+                    supabase.from('orders').update({ payment_status: 'failed' }).eq('order_id', orderId);
                 });
-                
                 rzp.open();
                 
             } catch (error) {
-                console.error('Payment initiation error:', error);
+                console.error('Error:', error);
                 showLoading(false);
-                showToast('Failed to initiate payment: ' + error.message, true);
+                showToast('Failed to initiate payment', true);
             }
         };
         
@@ -460,30 +403,10 @@
             });
         }
         
-        // Load cart on page load
-        await loadCart();
+        loadCart();
         
-        // Input validation
-        document.getElementById('phone').addEventListener('input', function(e) {
-            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
-        });
-        
-        document.getElementById('pincode').addEventListener('input', function(e) {
-            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
-        });
-        
-        // Check if returning from payment with cleared flag
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('cleared')) {
-            console.log('Returning from cleared cart, reloading...');
-            loadCart();
-        }
-        
-        if (RAZORPAY_KEY === "rzp_test_YourTestKeyHere") {
-            console.warn('⚠️ Razorpay key not configured! Add your key in checkout.html');
-        } else {
-            console.log('✅ Razorpay key configured');
-        }
+        document.getElementById('phone').addEventListener('input', e => e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0,10));
+        document.getElementById('pincode').addEventListener('input', e => e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0,6));
     </script>
 </body>
 </html>
