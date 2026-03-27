@@ -8,59 +8,51 @@
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { 
-            --primary: #d4af37; 
-            --primary-dark: #b8962e; 
-            --light: #ffffff; 
-            --gray-100: #f8f9fa;
-            --gray-200: #e9ecef; 
-            --gray-600: #6c757d; 
-            --danger: #dc3545; 
-            --success: #28a745;
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
             --dark: #1a1a1a;
+            --light: #ffffff;
+            --gray-200: #e9ecef;
+            --gray-600: #6c757d;
+            --danger: #dc3545;
+            --success: #28a745;
         }
         body { font-family: 'Inter', sans-serif; background: #faf7f2; }
         
-        header { 
-            background: white; 
-            padding: 20px 50px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
-            display: flex; 
-            justify-content: space-between; 
+        header {
+            background: white;
+            padding: 20px 50px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
         }
         .logo { font-size: 28px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
-        nav a { 
-            color: var(--gray-600); 
-            text-decoration: none; 
-            margin-left: 30px;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
+        nav a { color: var(--gray-600); text-decoration: none; margin-left: 30px; font-weight: 500; transition: color 0.3s; }
         nav a:hover, nav a.active { color: var(--primary); }
-        .cart-count { 
-            background: var(--primary); 
-            color: white; 
-            padding: 2px 8px; 
-            border-radius: 20px; 
-            font-size: 12px; 
+        .cart-count {
+            background: var(--primary);
+            color: var(--dark);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 12px;
             margin-left: 5px;
         }
         
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        h1 { color: var(--primary); margin-bottom: 30px; font-family: 'Playfair Display', serif; }
+        h1 { color: var(--primary); margin-bottom: 30px; }
         
         .cart-empty {
             text-align: center;
             padding: 80px 20px;
             background: white;
-            border-radius: 24px;
+            border-radius: 16px;
             border: 1px solid var(--gray-200);
         }
         .cart-empty h2 { color: var(--gray-600); margin-bottom: 15px; }
-        .cart-empty p { color: var(--gray-600); margin-bottom: 25px; }
         .continue-shopping {
             display: inline-block;
             background: var(--primary);
@@ -69,14 +61,12 @@
             border-radius: 40px;
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s;
+            margin-top: 20px;
         }
-        .continue-shopping:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
         
-        .cart-items { margin-bottom: 30px; }
         .cart-item {
             display: grid;
-            grid-template-columns: 120px 2fr 1fr 120px 100px 60px;
+            grid-template-columns: 100px 2fr 1fr 120px 100px 50px;
             gap: 20px;
             align-items: center;
             background: white;
@@ -84,51 +74,21 @@
             border-radius: 16px;
             margin-bottom: 15px;
             border: 1px solid var(--gray-200);
-            transition: all 0.3s;
         }
-        .cart-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        
-        .cart-item-image {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 12px;
-        }
-        
-        .cart-item-name { font-weight: 600; font-size: 16px; margin-bottom: 5px; }
+        .cart-item-image { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; }
+        .cart-item-name { font-weight: 600; }
         .cart-item-sku { font-size: 12px; color: var(--gray-600); }
-        
-        .cart-item-price { font-weight: 600; color: var(--primary); font-size: 18px; }
-        
-        .quantity-input {
-            width: 70px;
-            padding: 8px 12px;
-            border: 1px solid var(--gray-200);
-            border-radius: 8px;
-            text-align: center;
-            font-size: 14px;
-        }
-        
-        .cart-item-total { font-weight: 700; font-size: 18px; color: var(--dark); }
-        
-        .remove-btn {
-            background: none;
-            border: none;
-            color: var(--danger);
-            cursor: pointer;
-            font-size: 20px;
-            padding: 5px;
-            transition: all 0.3s;
-        }
-        .remove-btn:hover { transform: scale(1.1); }
+        .cart-item-price { font-weight: 600; color: var(--primary); }
+        .quantity-input { width: 70px; padding: 8px; border: 1px solid var(--gray-200); border-radius: 8px; text-align: center; }
+        .cart-item-total { font-weight: 700; }
+        .remove-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 20px; }
         
         .cart-summary {
             background: white;
             border-radius: 16px;
-            padding: 30px;
+            padding: 25px;
             border: 1px solid var(--gray-200);
-            position: sticky;
-            top: 100px;
+            margin-top: 20px;
         }
         .summary-row {
             display: flex;
@@ -142,24 +102,19 @@
             font-weight: bold;
             color: var(--primary);
             padding-top: 15px;
-            margin-top: 10px;
         }
         .checkout-btn {
             display: block;
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 14px;
+            background: var(--primary);
             color: var(--dark);
             text-align: center;
             text-decoration: none;
             border-radius: 40px;
             font-weight: 600;
             margin: 20px 0 10px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
         }
-        .checkout-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
         .clear-cart-btn {
             width: 100%;
             padding: 12px;
@@ -169,53 +124,45 @@
             border-radius: 40px;
             cursor: pointer;
             font-weight: 500;
-            transition: all 0.3s;
         }
         .clear-cart-btn:hover { background: var(--danger); color: white; }
         
-        .toast-notification {
+        .toast {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: linear-gradient(135deg, #2C2C2C, #1A1A1A);
+            bottom: 20px;
+            right: 20px;
+            background: var(--dark);
             color: var(--primary);
-            padding: 14px 24px;
-            border-radius: 50px;
-            z-index: 9999;
-            animation: slideInRight 0.3s ease;
-            font-weight: 500;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
         }
-        .toast-error { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
-        .toast-success { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; }
-        @keyframes slideInRight {
+        .toast-error { background: var(--danger); color: white; }
+        .toast-success { background: var(--success); color: white; }
+        @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
         
-        .debug-panel {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 20px;
-            font-family: monospace;
-            font-size: 12px;
-            display: none;
+        .loading { text-align: center; padding: 60px; }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
         }
-        .debug-panel.show {
-            display: block;
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
         
-        footer { background: #0a0a0a; color: white; text-align: center; padding: 40px; margin-top: 60px; }
+        footer { background: var(--dark); color: white; text-align: center; padding: 40px; margin-top: 60px; }
         
         @media (max-width: 768px) {
             header { flex-direction: column; padding: 15px; }
-            .cart-item { grid-template-columns: 80px 1fr; gap: 12px; }
-            .cart-item-image { width: 70px; height: 70px; }
-            .cart-item-price, .cart-item-total { font-size: 14px; }
-            .quantity-input { width: 50px; }
-            .cart-summary { position: static; margin-top: 20px; }
+            .cart-item { grid-template-columns: 70px 1fr; gap: 10px; }
+            .cart-item-image { width: 60px; height: 60px; }
         }
     </style>
 </head>
@@ -232,17 +179,7 @@
     <div class="container">
         <h1>Shopping Cart</h1>
         <div id="cartContent">
-            <div class="loading-spinner" style="text-align: center; padding: 40px;">
-                <div class="spinner" style="width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px;"></div>
-                <p>Loading your cart...</p>
-            </div>
-        </div>
-        
-        <!-- Debug Panel - Click to show/hide -->
-        <button onclick="toggleDebug()" style="margin-top: 20px; background: #6c757d; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">🔧 Show Debug Info</button>
-        <div id="debugPanel" class="debug-panel">
-            <strong>Debug Information:</strong><br>
-            <div id="debugLog"></div>
+            <div class="loading"><div class="spinner"></div><p>Loading your cart...</p></div>
         </div>
     </div>
 
@@ -265,31 +202,18 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
-        function addDebugLog(message) {
-            const debugLog = document.getElementById('debugLog');
-            const timestamp = new Date().toLocaleTimeString();
-            debugLog.innerHTML = `[${timestamp}] ${message}<br>` + debugLog.innerHTML;
-            console.log(`[DEBUG] ${message}`);
-        }
-        
-        window.toggleDebug = function() {
-            const panel = document.getElementById('debugPanel');
-            panel.classList.toggle('show');
-        };
-        
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
-            toast.className = 'toast-notification';
+            toast.className = 'toast';
             if (isError) toast.classList.add('toast-error');
             else toast.classList.add('toast-success');
-            toast.innerHTML = isError ? `❌ ${message}` : `✅ ${message}`;
+            toast.textContent = message;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
+            setTimeout(() => toast.remove(), 3000);
         }
         
         async function loadCart() {
             try {
-                addDebugLog(`Loading cart for session: ${sessionId}`);
                 const { data, error } = await supabase
                     .from('carts')
                     .select('items')
@@ -297,82 +221,55 @@
                     .maybeSingle();
                 
                 if (error) throw error;
-                
                 cart = data?.items || [];
-                addDebugLog(`Cart loaded: ${cart.length} items`);
                 updateCartCount();
                 renderCart();
             } catch (error) {
-                addDebugLog(`ERROR loading cart: ${error.message}`);
                 console.error('Error loading cart:', error);
                 cart = [];
                 renderCart();
-                showToast('Error loading cart', true);
             }
         }
         
         async function saveCart() {
             try {
                 const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                addDebugLog(`Saving cart: ${cart.length} items, total: ₹${total}`);
-                
-                const { data, error } = await supabase
+                const { error } = await supabase
                     .from('carts')
                     .upsert({
                         session_id: sessionId,
                         items: cart,
                         total: total,
                         updated_at: new Date().toISOString()
-                    })
-                    .select();
+                    });
                 
-                if (error) {
-                    addDebugLog(`ERROR saving cart: ${error.message}`);
-                    throw error;
-                }
-                
-                addDebugLog(`Cart saved successfully`);
+                if (error) throw error;
                 updateCartCount();
                 renderCart();
                 return true;
             } catch (error) {
                 console.error('Error saving cart:', error);
-                showToast('Failed to save cart: ' + error.message, true);
+                showToast('Failed to save cart', true);
                 return false;
             }
         }
         
         function updateCartCount() {
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            const cartCountElements = document.querySelectorAll('#cartCount');
-            cartCountElements.forEach(el => {
-                if (el) el.textContent = totalItems;
-            });
-            addDebugLog(`Cart count updated: ${totalItems}`);
+            document.getElementById('cartCount').textContent = totalItems;
         }
         
         window.updateQuantity = async function(productId, newQuantity) {
             newQuantity = parseInt(newQuantity);
-            if (isNaN(newQuantity) || newQuantity < 1) {
-                newQuantity = 1;
-            }
-            if (newQuantity > 99) newQuantity = 99;
+            if (isNaN(newQuantity) || newQuantity < 1) newQuantity = 1;
             
-            addDebugLog(`Updating quantity for product ${productId} to ${newQuantity}`);
-            
-            // Check stock limit
-            const { data: product, error } = await supabase
+            const { data: product } = await supabase
                 .from('products')
                 .select('stock')
                 .eq('id', productId)
                 .single();
             
-            if (error) {
-                showToast('Error checking stock', true);
-                return;
-            }
-            
-            if (newQuantity > product.stock) {
+            if (product && newQuantity > product.stock) {
                 showToast(`Only ${product.stock} items available!`, true);
                 newQuantity = product.stock;
             }
@@ -385,57 +282,28 @@
         };
         
         window.removeItem = async function(productId) {
-            addDebugLog(`Removing item ${productId} from cart`);
             cart = cart.filter(item => item.id !== productId);
-            const saved = await saveCart();
-            if (saved) {
-                showToast('Item removed from cart');
-                addDebugLog(`Item removed, cart now has ${cart.length} items`);
-            } else {
-                showToast('Failed to remove item', true);
-            }
+            await saveCart();
+            showToast('Item removed from cart');
         };
         
         window.clearCart = async function() {
             if (cart.length === 0) {
                 showToast('Cart is already empty', true);
-                addDebugLog(`Clear cart called but cart already empty`);
                 return;
             }
             
-            if (!confirm('Are you sure you want to remove all items from your cart?')) {
-                addDebugLog(`Clear cart cancelled by user`);
-                return;
-            }
-            
-            addDebugLog(`Starting clear cart process...`);
-            showToast('Clearing cart...');
+            if (!confirm('Remove all items from cart?')) return;
             
             try {
-                // Method 1: Try to delete the record
-                addDebugLog(`Attempting to delete cart record for session: ${sessionId}`);
+                // Direct delete approach
                 const { error: deleteError } = await supabase
                     .from('carts')
                     .delete()
                     .eq('session_id', sessionId);
                 
                 if (deleteError) {
-                    addDebugLog(`Delete failed: ${deleteError.message}, trying upsert method`);
-                    // Method 2: Try upsert with empty array
-                    const { error: upsertError } = await supabase
-                        .from('carts')
-                        .upsert({
-                            session_id: sessionId,
-                            items: [],
-                            total: 0,
-                            updated_at: new Date().toISOString()
-                        });
-                    
-                    if (upsertError) throw upsertError;
-                    addDebugLog(`Upsert with empty cart succeeded`);
-                } else {
-                    addDebugLog(`Delete succeeded`);
-                    // Re-insert empty cart to ensure record exists
+                    // If delete fails, try upsert with empty cart
                     await supabase
                         .from('carts')
                         .upsert({
@@ -446,40 +314,17 @@
                         });
                 }
                 
-                // Clear local cart array
                 cart = [];
-                
-                // Verify cart is empty in database
-                const { data: verifyData, error: verifyError } = await supabase
-                    .from('carts')
-                    .select('items')
-                    .eq('session_id', sessionId)
-                    .maybeSingle();
-                
-                if (verifyError) {
-                    addDebugLog(`Verification error: ${verifyError.message}`);
-                } else {
-                    const itemsCount = verifyData?.items?.length || 0;
-                    addDebugLog(`Verification: Cart now has ${itemsCount} items in database`);
-                }
-                
-                // Update UI
                 updateCartCount();
                 renderCart();
+                showToast('Cart cleared successfully!');
                 
-                // Signal other tabs that cart was cleared
+                // Notify other tabs
                 localStorage.setItem('cartCleared', Date.now().toString());
                 
-                showToast('Cart cleared successfully!');
-                addDebugLog(`Cart clear completed successfully`);
-                
             } catch (error) {
-                addDebugLog(`ERROR clearing cart: ${error.message}`);
                 console.error('Error clearing cart:', error);
-                showToast('Failed to clear cart: ' + error.message, true);
-                
-                // Reload cart to revert any partial changes
-                await loadCart();
+                showToast('Failed to clear cart', true);
             }
         };
         
@@ -490,7 +335,7 @@
                 container.innerHTML = `
                     <div class="cart-empty">
                         <h2>🛒 Your cart is empty</h2>
-                        <p>Looks like you haven't added any jewelry to your cart yet.</p>
+                        <p>Add some beautiful jewelry to your cart</p>
                         <a href="index.html" class="continue-shopping">Continue Shopping</a>
                     </div>
                 `;
@@ -505,27 +350,27 @@
                 subtotal += itemTotal;
                 
                 itemsHtml += `
-                    <div class="cart-item" data-id="${item.id}">
-                        <img class="cart-item-image" src="${item.image || 'https://via.placeholder.com/100x100?text=Style+Of+Life'}" alt="${escapeHtml(item.name)}" onerror="this.src='https://via.placeholder.com/100x100?text=Style+Of+Life'">
+                    <div class="cart-item">
+                        <img class="cart-item-image" src="${item.image || 'https://via.placeholder.com/80x80'}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/80x80'">
                         <div>
                             <div class="cart-item-name">${escapeHtml(item.name)}</div>
                             <div class="cart-item-sku">SKU: ${item.sku}</div>
                         </div>
                         <div class="cart-item-price">₹${item.price.toLocaleString()}</div>
                         <div>
-                            <input type="number" class="quantity-input" value="${item.quantity}" min="1" max="99" 
+                            <input type="number" class="quantity-input" value="${item.quantity}" min="1" 
                                    onchange="updateQuantity(${item.id}, this.value)">
                         </div>
                         <div class="cart-item-total">₹${itemTotal.toLocaleString()}</div>
                         <div>
-                            <button class="remove-btn" onclick="removeItem(${item.id})" title="Remove item">🗑️</button>
+                            <button class="remove-btn" onclick="removeItem(${item.id})">🗑️</button>
                         </div>
                     </div>
                 `;
             });
             
             const tax = Math.round(subtotal * 0.18);
-            const shipping = subtotal > 0 ? 100 : 0;
+            const shipping = 100;
             const total = subtotal + tax + shipping;
             
             container.innerHTML = `
@@ -549,19 +394,11 @@
                         <span>Total</span>
                         <span>₹${total.toLocaleString()}</span>
                     </div>
-                    <a href="checkout.html" class="checkout-btn" onclick="return validateCartBeforeCheckout()">Proceed to Checkout →</a>
+                    <a href="checkout.html" class="checkout-btn">Proceed to Checkout →</a>
                     <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
                 </div>
             `;
         }
-        
-        window.validateCartBeforeCheckout = function() {
-            if (cart.length === 0) {
-                showToast('Your cart is empty!', true);
-                return false;
-            }
-            return true;
-        };
         
         function escapeHtml(str) {
             if (!str) return '';
@@ -573,52 +410,15 @@
             });
         }
         
-        // Initial load
         loadCart();
         
-        // Listen for storage events (sync across tabs)
         window.addEventListener('storage', function(e) {
-            if (e.key === 'cartCleared') {
-                addDebugLog(`Storage event: cartCleared detected`);
-                loadCart();
-            }
+            if (e.key === 'cartCleared') loadCart();
         });
         
-        // Refresh cart when page becomes visible again
         document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                addDebugLog(`Page became visible, reloading cart`);
-                loadCart();
-            }
+            if (!document.hidden) loadCart();
         });
-        
-        // Expose functions to global scope
-        window.cartFunctions = {
-            clearCart: clearCart,
-            removeItem: removeItem,
-            updateQuantity: updateQuantity,
-            loadCart: loadCart
-        };
-        
-        addDebugLog(`Cart page initialized. Session ID: ${sessionId}`);
-        
-        // Add CSS for spinner
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes spin {
-                to { transform: rotate(360deg); }
-            }
-            .spinner {
-                width: 40px;
-                height: 40px;
-                border: 3px solid #e9ecef;
-                border-top-color: #d4af37;
-                border-radius: 50%;
-                animation: spin 0.8s linear infinite;
-                margin: 0 auto 15px;
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
