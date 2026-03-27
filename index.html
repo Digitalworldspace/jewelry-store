@@ -294,6 +294,7 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
+        // Show toast notification
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast-notification';
@@ -304,6 +305,7 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
+        // Load cart from Supabase
         async function loadCart() {
             try {
                 const { data, error } = await supabase
@@ -315,12 +317,14 @@
                 if (error) throw error;
                 cart = data?.items || [];
                 updateCartCount();
+                console.log('Cart loaded:', cart.length, 'items');
             } catch (error) {
                 console.error('Error loading cart:', error);
                 cart = [];
             }
         }
         
+        // Save cart to Supabase
         async function saveCart() {
             try {
                 const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -342,6 +346,7 @@
             }
         }
         
+        // Update cart count display
         function updateCartCount() {
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             const cartCountElements = document.querySelectorAll('#cartCount');
@@ -350,9 +355,11 @@
             });
         }
         
+        // Add to cart function
         window.addToCart = async function(productId, productName, productPrice, productSku, productImage) {
             try {
-                const { data: products, error } = await supabase
+                // Get fresh product data to check stock
+                const { data: product, error } = await supabase
                     .from('products')
                     .select('stock')
                     .eq('id', productId)
@@ -360,12 +367,12 @@
                 
                 if (error) throw error;
                 
-                if (products.stock <= 0) {
+                if (product.stock <= 0) {
                     showToast(`${productName} is out of stock!`, true);
                     return;
                 }
                 
-                // Load current cart first
+                // Load current cart from database to ensure we have latest
                 const { data: cartData } = await supabase
                     .from('carts')
                     .select('items')
@@ -373,11 +380,14 @@
                     .maybeSingle();
                 
                 let currentCart = cartData?.items || [];
+                
+                // Check if product already in cart
                 const existingItem = currentCart.find(item => item.id === productId);
                 
                 if (existingItem) {
-                    if (existingItem.quantity + 1 > products.stock) {
-                        showToast(`Only ${products.stock} items available!`, true);
+                    // Check if adding one more exceeds stock
+                    if (existingItem.quantity + 1 > product.stock) {
+                        showToast(`Only ${product.stock} items available!`, true);
                         return;
                     }
                     existingItem.quantity += 1;
@@ -392,7 +402,10 @@
                     });
                 }
                 
+                // Calculate total
                 const total = currentCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                
+                // Save to Supabase
                 const { error: saveError } = await supabase
                     .from('carts')
                     .upsert({
@@ -404,10 +417,12 @@
                 
                 if (saveError) throw saveError;
                 
+                // Update local cart
                 cart = currentCart;
                 updateCartCount();
                 showToast(`${productName} added to cart!`);
                 
+                // Animate the cart icon
                 const cartIcon = document.querySelector('nav a[href="cart.html"]');
                 if (cartIcon) {
                     cartIcon.style.transform = 'scale(1.1)';
@@ -422,6 +437,7 @@
             }
         };
         
+        // Load and display products
         async function loadProducts() {
             const container = document.getElementById('products');
             
@@ -448,7 +464,7 @@
                     html += `
                         <div class="product-card">
                             ${badge}
-                            <img class="product-image" src="${mainImage}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400x300?text=Style+Of+Life'">
+                            <img class="product-image" src="${mainImage}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/400x300?text=Style+Of+Life'">
                             <div class="product-info">
                                 <div class="product-sku">${p.sku}</div>
                                 <div class="product-name">${escapeHtml(p.name)}</div>
@@ -482,8 +498,31 @@
             });
         }
         
+        // Listen for cart cleared events from checkout page
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'cartCleared') {
+                console.log('Cart cleared detected, reloading cart...');
+                loadCart();
+            }
+        });
+        
+        // Check if returning from checkout with cleared flag
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('cleared')) {
+            console.log('Returning from checkout, reloading cart...');
+            loadCart();
+        }
+        
+        // Initial load
         await loadCart();
         await loadProducts();
+        
+        // Refresh cart when page becomes visible
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                loadCart();
+            }
+        });
     </script>
 </body>
 </html>
