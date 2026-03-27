@@ -178,6 +178,7 @@
         
         async function loadCart() {
             try {
+                console.log('Checkout: Loading cart for session:', sessionId);
                 const { data, error } = await supabase
                     .from('carts')
                     .select('items')
@@ -185,7 +186,9 @@
                     .maybeSingle();
                 
                 if (error) throw error;
+                
                 cart = data?.items || [];
+                console.log('Checkout: Cart loaded with', cart.length, 'items');
                 updateOrderSummary();
             } catch (error) {
                 console.error('Error loading cart:', error);
@@ -319,6 +322,9 @@
         
         async function clearCartAfterOrder() {
             try {
+                console.log('Clearing cart after successful order...');
+                
+                // Clear the cart in Supabase
                 const { error } = await supabase
                     .from('carts')
                     .upsert({
@@ -329,7 +335,13 @@
                     });
                 
                 if (error) throw error;
+                
+                // Clear local cart array
                 cart = [];
+                
+                // Update local storage session ID to ensure fresh start
+                localStorage.setItem('cartCleared', Date.now().toString());
+                
                 console.log('Cart cleared successfully');
                 return true;
             } catch (error) {
@@ -383,14 +395,21 @@
                     },
                     handler: async function(response) {
                         console.log('Payment success:', response);
-                        showToast(`✅ Payment successful! Order ID: ${orderId}`);
                         
                         // Clear cart after successful payment
-                        await clearCartAfterOrder();
+                        const cleared = await clearCartAfterOrder();
+                        
+                        if (cleared) {
+                            showToast(`✅ Payment successful! Order ID: ${orderId}`);
+                        } else {
+                            showToast(`✅ Payment successful! But cart may need manual clear. Order ID: ${orderId}`);
+                        }
                         
                         showLoading(false);
+                        
+                        // Force redirect to tracking page
                         setTimeout(() => {
-                            window.location.href = `track.html?order=${orderId}`;
+                            window.location.href = `track.html?order=${orderId}&cleared=${Date.now()}`;
                         }, 2000);
                     },
                     modal: {
@@ -441,8 +460,10 @@
             });
         }
         
-        loadCart();
+        // Load cart on page load
+        await loadCart();
         
+        // Input validation
         document.getElementById('phone').addEventListener('input', function(e) {
             this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
         });
@@ -450,6 +471,13 @@
         document.getElementById('pincode').addEventListener('input', function(e) {
             this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
         });
+        
+        // Check if returning from payment with cleared flag
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('cleared')) {
+            console.log('Returning from cleared cart, reloading...');
+            loadCart();
+        }
         
         if (RAZORPAY_KEY === "rzp_test_YourTestKeyHere") {
             console.warn('⚠️ Razorpay key not configured! Add your key in checkout.html');
