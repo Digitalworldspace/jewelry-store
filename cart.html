@@ -163,13 +163,14 @@
         }
         
         .quantity-btn {
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             background: var(--gray-100);
             border: 1px solid var(--gray-200);
             border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: bold;
             transition: all 0.3s;
         }
         
@@ -181,7 +182,7 @@
         
         .quantity-input {
             width: 50px;
-            height: 30px;
+            height: 32px;
             text-align: center;
             border: 1px solid var(--gray-200);
             border-radius: 8px;
@@ -201,10 +202,15 @@
             cursor: pointer;
             font-size: 18px;
             transition: all 0.3s;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
         }
         
         .remove-item:hover {
-            transform: scale(1.1);
+            background: var(--danger);
+            color: white;
+            transform: scale(1.05);
         }
         
         /* Empty Cart */
@@ -337,35 +343,6 @@
             color: white;
         }
         
-        /* Coupon Section */
-        .coupon-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--gray-200);
-        }
-        
-        .coupon-input {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .coupon-input input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid var(--gray-200);
-            border-radius: 40px;
-            font-size: 13px;
-        }
-        
-        .apply-coupon {
-            padding: 10px 20px;
-            background: var(--gray-100);
-            border: 1px solid var(--gray-200);
-            border-radius: 40px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
         /* Toast Notification */
         .toast {
             position: fixed;
@@ -378,6 +355,7 @@
             z-index: 9999;
             animation: slideIn 0.3s ease;
             font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
         .toast-error {
@@ -496,7 +474,7 @@
         <h1><i class="fas fa-shopping-cart"></i> Your Shopping Cart</h1>
         
         <div class="cart-layout">
-            <div class="cart-items-section" id="cartItemsSection">
+            <div class="cart-items-section">
                 <div class="cart-header">
                     <span>Product</span>
                     <span>Details</span>
@@ -510,7 +488,7 @@
                 </div>
             </div>
             
-            <div class="cart-summary" id="cartSummary">
+            <div class="cart-summary">
                 <h3>Order Summary</h3>
                 <div class="summary-row">
                     <span>Subtotal</span>
@@ -520,7 +498,7 @@
                     <span>Shipping</span>
                     <span id="shipping">₹100</span>
                 </div>
-                <div class="shipping-info" id="shippingInfo">
+                <div class="shipping-info">
                     <i class="fas fa-truck"></i> 
                     <span id="shippingMessage">Add ₹3,000 more to get FREE shipping</span>
                     <div class="shipping-progress">
@@ -534,14 +512,6 @@
                 <div class="summary-row total">
                     <span>Total</span>
                     <span id="total">₹0</span>
-                </div>
-                
-                <div class="coupon-section">
-                    <div class="coupon-input">
-                        <input type="text" id="couponCode" placeholder="Enter coupon code">
-                        <button class="apply-coupon" onclick="applyCoupon()">Apply</button>
-                    </div>
-                    <div id="couponMessage" style="font-size: 11px; margin-top: 8px; color: var(--gray-600);"></div>
                 </div>
                 
                 <a href="checkout.html" class="checkout-btn" id="checkoutBtn">Proceed to Checkout →</a>
@@ -564,9 +534,11 @@
         let cart = [];
         let sessionId = localStorage.getItem('sessionId');
         
+        // Create unique session ID if not exists
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
+            console.log('New session created:', sessionId);
         }
         
         const FREE_SHIPPING_THRESHOLD = 3000;
@@ -583,6 +555,7 @@
         
         async function loadCart() {
             try {
+                console.log('Loading cart for session:', sessionId);
                 const { data, error } = await supabase
                     .from('carts')
                     .select('items')
@@ -590,7 +563,10 @@
                     .maybeSingle();
                 
                 if (error) throw error;
+                
                 cart = data?.items || [];
+                console.log('Cart loaded:', cart.length, 'items');
+                
                 updateCartCount();
                 renderCart();
                 updateSummary();
@@ -598,12 +574,15 @@
                 console.error('Error loading cart:', error);
                 cart = [];
                 renderCart();
+                showToast('Error loading cart', true);
             }
         }
         
         async function saveCart() {
             try {
                 const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                console.log('Saving cart:', cart.length, 'items, total:', total);
+                
                 const { error } = await supabase
                     .from('carts')
                     .upsert({
@@ -614,6 +593,7 @@
                     });
                 
                 if (error) throw error;
+                
                 updateCartCount();
                 renderCart();
                 updateSummary();
@@ -682,6 +662,7 @@
             if (isNaN(newQuantity) || newQuantity < 1) newQuantity = 1;
             if (newQuantity > 99) newQuantity = 99;
             
+            // Check stock limit
             const { data: product, error } = await supabase
                 .from('products')
                 .select('stock')
@@ -698,9 +679,9 @@
                 newQuantity = product.stock;
             }
             
-            const item = cart.find(i => i.id === productId);
-            if (item) {
-                item.quantity = newQuantity;
+            const itemIndex = cart.findIndex(i => i.id === productId);
+            if (itemIndex !== -1) {
+                cart[itemIndex].quantity = newQuantity;
                 await saveCart();
             }
         };
@@ -734,47 +715,6 @@
             }
         };
         
-        window.applyCoupon = async function() {
-            const couponCode = document.getElementById('couponCode').value.trim().toUpperCase();
-            if (!couponCode) {
-                showToast('Please enter a coupon code', true);
-                return;
-            }
-            
-            try {
-                const { data, error } = await supabase
-                    .from('coupons')
-                    .select('*')
-                    .eq('code', couponCode)
-                    .eq('is_active', true)
-                    .maybeSingle();
-                
-                if (error || !data) {
-                    showToast('Invalid coupon code', true);
-                    document.getElementById('couponMessage').innerHTML = '❌ Invalid coupon code';
-                    return;
-                }
-                
-                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                let discount = 0;
-                
-                if (data.type === 'percentage') {
-                    discount = (subtotal * data.value) / 100;
-                    if (data.maximum_discount && discount > data.maximum_discount) {
-                        discount = data.maximum_discount;
-                    }
-                } else {
-                    discount = data.value;
-                }
-                
-                document.getElementById('couponMessage').innerHTML = `✅ Coupon applied! You saved ₹${discount.toLocaleString()}`;
-                showToast(`Coupon applied! Saved ₹${discount.toLocaleString()}`);
-                
-            } catch (error) {
-                showToast('Error applying coupon', true);
-            }
-        };
-        
         function renderCart() {
             const container = document.getElementById('cartItems');
             
@@ -795,7 +735,7 @@
                 const itemTotal = item.price * item.quantity;
                 
                 itemsHtml += `
-                    <div class="cart-item">
+                    <div class="cart-item" data-id="${item.id}">
                         <img class="cart-item-image" src="${item.image || 'https://via.placeholder.com/80x80?text=Style+Of+Life'}" alt="${escapeHtml(item.name)}" onerror="this.src='https://via.placeholder.com/80x80?text=Style+Of+Life'">
                         <div class="cart-item-details">
                             <h4>${escapeHtml(item.name)}</h4>
@@ -836,7 +776,8 @@
         
         // Listen for cart updates from other tabs
         window.addEventListener('storage', function(e) {
-            if (e.key === 'sessionId') {
+            if (e.key === 'sessionId' || e.key === 'cartCleared') {
+                console.log('Storage event detected, reloading cart');
                 loadCart();
             }
         });
