@@ -772,10 +772,10 @@
                 console.log('Fetching products from Supabase...');
                 console.log('Supabase URL:', CONFIG.SUPABASE_URL);
                 
+                // Fetch all products without is_active filter (since column might not exist)
                 const { data: products, error } = await supabase
                     .from('products')
                     .select('*')
-                    .eq('is_active', true)
                     .order('id');
                 
                 if (error) {
@@ -791,6 +791,7 @@
                         <div class="loading">
                             <p>✨ Our new collection is arriving soon...</p>
                             <p style="font-size: 13px; margin-top: 10px;">Please check back later for exquisite jewelry pieces.</p>
+                            <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: var(--gold); border: none; border-radius: 30px; cursor: pointer;">Refresh</button>
                         </div>
                     `;
                     return;
