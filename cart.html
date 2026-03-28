@@ -218,7 +218,7 @@
                 <div class="cart-header">
                     <span>Product</span><span>Details</span><span>Price</span><span>Quantity</span><span>Total</span><span></span>
                 </div>
-                <div id="cartItems"><div class="loading"><div class="spinner"></div><p>Loading your cart...</p></div></div>
+                <div id="cartItems"></div>
             </div>
             <div class="cart-summary">
                 <h3>Order Summary</h3>
@@ -275,11 +275,13 @@
                 
                 if (error) throw error;
                 cart = data?.items || [];
-                updateUI();
+                renderCart();
+                updateSummary();
+                updateCartCount();
             } catch (error) {
                 console.error('Error loading cart:', error);
                 cart = [];
-                updateUI();
+                renderCart();
             }
         }
         
@@ -296,19 +298,15 @@
                     });
                 
                 if (error) throw error;
-                updateUI();
+                renderCart();
+                updateSummary();
+                updateCartCount();
                 return true;
             } catch (error) {
                 console.error('Error saving cart:', error);
                 showToast('Failed to save cart', true);
                 return false;
             }
-        }
-        
-        function updateUI() {
-            updateCartCount();
-            renderCart();
-            updateSummary();
         }
         
         function updateCartCount() {
@@ -393,7 +391,9 @@
         };
         
         window.removeItem = async function(productId) {
+            // Filter out the item
             cart = cart.filter(item => item.id !== productId);
+            // Save to database
             await saveCart();
             showToast('Item removed from cart');
         };
@@ -405,7 +405,9 @@
             }
             
             if (confirm('Are you sure you want to remove all items from your cart?')) {
+                // Clear the cart array
                 cart = [];
+                // Save empty cart to database
                 await saveCart();
                 showToast('Cart cleared successfully!');
             }
@@ -435,10 +437,11 @@
             }
             
             let itemsHtml = '';
-            cart.forEach(item => {
+            for (let i = 0; i < cart.length; i++) {
+                const item = cart[i];
                 const itemTotal = item.price * item.quantity;
                 itemsHtml += `
-                    <div class="cart-item">
+                    <div class="cart-item" data-id="${item.id}">
                         <img class="cart-item-image" src="${item.image || 'https://via.placeholder.com/80x80?text=Style+Of+Life'}" alt="${escapeHtml(item.name)}" onerror="this.src='https://via.placeholder.com/80x80?text=Style+Of+Life'">
                         <div class="cart-item-details">
                             <h4>${escapeHtml(item.name)}</h4>
@@ -459,7 +462,7 @@
                         </div>
                     </div>
                 `;
-            });
+            }
             container.innerHTML = itemsHtml;
         }
         
@@ -473,6 +476,7 @@
             });
         }
         
+        // Load cart on page load
         loadCart();
     </script>
 </body>
