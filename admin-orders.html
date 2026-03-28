@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Management - Style Of Life</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21,6 +22,7 @@
             --success: #28a745;
             --warning: #ffc107;
             --info: #17a2b8;
+            --purple: #6f42c1;
         }
         body { font-family: 'Inter', sans-serif; background: var(--gray-100); }
         
@@ -54,8 +56,9 @@
         }
         
         .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
-        h1 { color: var(--primary); margin-bottom: 30px; }
+        h1 { color: var(--primary); margin-bottom: 20px; }
         
+        /* Stats Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -68,43 +71,154 @@
             border-radius: 12px;
             text-align: center;
             border: 1px solid var(--gray-200);
+            transition: all 0.3s;
         }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .stat-icon { font-size: 32px; margin-bottom: 10px; }
         .stat-number { font-size: 28px; font-weight: 700; color: var(--primary); }
+        .stat-label { font-size: 12px; color: var(--gray-600); margin-top: 5px; }
         
-        table { width: 100%; background: white; border-radius: 12px; overflow: hidden; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--gray-200); }
-        th { background: var(--gray-100); color: var(--gray-600); font-weight: 600; }
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            border: 1px solid var(--gray-200);
+        }
+        .filter-bar select, .filter-bar input {
+            padding: 8px 15px;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .filter-bar button {
+            padding: 8px 20px;
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .refresh-btn {
+            background: var(--gray-600);
+            color: white;
+            margin-left: auto;
+        }
         
+        /* Orders Table */
+        .orders-table-container {
+            background: white;
+            border-radius: 12px;
+            overflow-x: auto;
+            border: 1px solid var(--gray-200);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        th {
+            background: var(--gray-100);
+            font-weight: 600;
+            color: var(--gray-600);
+            font-size: 13px;
+        }
+        tr:hover { background: var(--gray-100); }
+        
+        /* Status Badges */
         .status-badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
         }
-        .status-pending { background: var(--warning); color: #856404; }
-        .status-processing { background: var(--info); color: white; }
-        .status-shipped { background: var(--success); color: white; }
-        .status-delivered { background: #20c997; color: white; }
-        .status-cancelled { background: var(--danger); color: white; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-processing { background: #d1ecf1; color: #0c5460; }
+        .status-shipped { background: #d4edda; color: #155724; }
+        .status-delivered { background: #c3e6cb; color: #155724; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
         
-        .status-select {
-            padding: 6px 12px;
-            border-radius: 20px;
-            border: 1px solid var(--gray-200);
-            cursor: pointer;
-            font-weight: 500;
-        }
-        .delete-btn {
-            background: var(--danger);
-            color: white;
+        /* Payment Badges */
+        .payment-badge {
+            display: inline-block;
             padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .payment-success { background: #d4edda; color: #155724; }
+        .payment-pending { background: #fff3cd; color: #856404; }
+        .payment-cod { background: #d1ecf1; color: #0c5460; }
+        .payment-failed { background: #f8d7da; color: #721c24; }
+        .payment-refunded { background: #e2d5f5; color: #4a1d96; }
+        
+        /* Select Dropdown */
+        .status-select, .payment-select {
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        /* Action Buttons */
+        .action-btn {
+            padding: 6px 12px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
+            font-size: 12px;
+            margin: 0 3px;
+        }
+        .view-btn { background: var(--info); color: white; }
+        .delete-btn { background: var(--danger); color: white; }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 25px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
         }
         
-        .empty-state { text-align: center; padding: 60px; color: var(--gray-600); }
         .loading { text-align: center; padding: 60px; }
         .spinner {
             width: 40px;
@@ -117,12 +231,15 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         
+        .empty-state { text-align: center; padding: 60px; color: var(--gray-600); }
+        
         footer { background: var(--darker); color: white; text-align: center; padding: 30px; margin-top: 60px; }
         
         @media (max-width: 768px) {
             .admin-header { flex-direction: column; gap: 15px; padding: 15px; }
-            table { font-size: 12px; }
-            th, td { padding: 8px; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .refresh-btn { margin-left: 0; }
+            th, td { font-size: 12px; padding: 8px; }
         }
     </style>
 </head>
@@ -133,25 +250,92 @@
             <a href="admin.html">Dashboard</a>
             <a href="admin-products.html">Products</a>
             <a href="admin-orders.html" class="active">Orders</a>
+            <a href="admin-customers.html">Customers</a>
         </div>
         <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 
     <div class="container">
-        <h1>Order Management</h1>
+        <h1>📋 Order Management</h1>
         
+        <!-- Stats Cards -->
         <div class="stats-grid" id="statsGrid">
-            <div class="stat-card"><h3>Total Orders</h3><div class="stat-number" id="totalOrders">--</div></div>
-            <div class="stat-card"><h3>Revenue</h3><div class="stat-number" id="totalRevenue">--</div></div>
-            <div class="stat-card"><h3>Pending</h3><div class="stat-number" id="pendingOrders">--</div></div>
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-number" id="totalOrders">--</div>
+                <div class="stat-label">Total Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-number" id="totalRevenue">--</div>
+                <div class="stat-label">Total Revenue</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-number" id="paidOrders">--</div>
+                <div class="stat-label">Paid Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-number" id="pendingPayment">--</div>
+                <div class="stat-label">Pending Payment</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💵</div>
+                <div class="stat-number" id="codOrders">--</div>
+                <div class="stat-label">COD Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">❌</div>
+                <div class="stat-number" id="failedPayments">--</div>
+                <div class="stat-label">Failed Payments</div>
+            </div>
         </div>
         
-        <div id="ordersList">
-            <div class="loading"><div class="spinner"></div><p>Loading orders...</p></div>
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <select id="statusFilter">
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+            <select id="paymentFilter">
+                <option value="all">All Payments</option>
+                <option value="success">Paid</option>
+                <option value="pending">Pending</option>
+                <option value="cod">Cash on Delivery</option>
+                <option value="failed">Failed</option>
+            </select>
+            <input type="text" id="searchInput" placeholder="Search by Order ID or Customer" style="width: 250px;">
+            <button onclick="applyFilters()">🔍 Apply Filters</button>
+            <button onclick="loadOrders()" class="refresh-btn">🔄 Refresh</button>
+        </div>
+        
+        <!-- Orders Table -->
+        <div class="orders-table-container">
+            <div id="ordersList">
+                <div class="loading"><div class="spinner"></div><p>Loading orders...</p></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Order Details Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Order Details</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalContent"></div>
         </div>
     </div>
 
-    <footer><p>© 2026 STYLE OF LIFE</p></footer>
+    <footer>
+        <p>© 2026 STYLE OF LIFE | Order Management System</p>
+    </footer>
 
     <script type="importmap">
         { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
@@ -164,6 +348,18 @@
         }
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        let allOrders = [];
+        
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed; bottom: 20px; right: 20px; background: ${isError ? '#dc3545' : '#28a745'}; 
+                color: white; padding: 12px 20px; border-radius: 8px; z-index: 9999; animation: fadeIn 0.3s;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
         
         async function loadOrders() {
             const container = document.getElementById('ordersList');
@@ -177,54 +373,9 @@
                 
                 if (error) throw error;
                 
-                const orders = data || [];
-                const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
-                const pendingCount = orders.filter(o => o.status === 'Pending' || o.status === 'pending').length;
-                
-                document.getElementById('totalOrders').textContent = orders.length;
-                document.getElementById('totalRevenue').textContent = `₹${totalRevenue.toLocaleString()}`;
-                document.getElementById('pendingOrders').textContent = pendingCount;
-                
-                if (orders.length === 0) {
-                    container.innerHTML = '<div class="empty-state">📦 No orders yet</div>';
-                    return;
-                }
-                
-                let html = `
-                    <table>
-                        <thead>
-                            <tr><th>Order ID</th><th>Customer</th><th>Phone</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Actions</th></tr>
-                        </thead>
-                        <tbody>
-                `;
-                
-                for (const o of orders) {
-                    const itemsList = o.items?.map(i => `${i.name} x${i.quantity}`).join('<br>') || 'N/A';
-                    const statusClass = o.status?.toLowerCase() || 'pending';
-                    
-                    html += `
-                        <tr>
-                            <td><strong>${o.order_id}</strong></td>
-                            <td>${escapeHtml(o.customer_name)}</td>
-                            <td>${o.customer_phone || o.phone || 'N/A'}</td>
-                            <td><small>${itemsList}</small></td>
-                            <td>₹${(o.total || 0).toLocaleString()}</td>
-                            <td>
-                                <select class="status-select" onchange="updateStatus('${o.order_id}', this.value)">
-                                    <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                                    <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
-                                    <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
-                                    <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-                                    <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
-                                </select>
-                            </td>
-                            <td>${new Date(o.created_at).toLocaleDateString()}</td>
-                            <td><button class="delete-btn" onclick="deleteOrder('${o.order_id}')">Delete</button></td>
-                        </tr>
-                    `;
-                }
-                html += '</tbody></table>';
-                container.innerHTML = html;
+                allOrders = data || [];
+                updateStats();
+                renderOrders();
                 
             } catch (error) {
                 console.error('Error loading orders:', error);
@@ -232,23 +383,238 @@
             }
         }
         
-        window.updateStatus = async function(orderId, status) {
+        function updateStats() {
+            const orders = allOrders;
+            const totalOrders = orders.length;
+            const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+            const paidOrders = orders.filter(o => o.payment_status === 'success').length;
+            const pendingPayment = orders.filter(o => o.payment_status === 'pending').length;
+            const codOrders = orders.filter(o => o.payment_status === 'cod').length;
+            const failedPayments = orders.filter(o => o.payment_status === 'failed').length;
+            
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('totalRevenue').textContent = `₹${totalRevenue.toLocaleString()}`;
+            document.getElementById('paidOrders').textContent = paidOrders;
+            document.getElementById('pendingPayment').textContent = pendingPayment;
+            document.getElementById('codOrders').textContent = codOrders;
+            document.getElementById('failedPayments').textContent = failedPayments;
+        }
+        
+        function getPaymentStatusIcon(status) {
+            const icons = {
+                'success': '<span class="payment-badge payment-success">✅ Paid</span>',
+                'pending': '<span class="payment-badge payment-pending">⏳ Pending</span>',
+                'cod': '<span class="payment-badge payment-cod">💵 COD</span>',
+                'failed': '<span class="payment-badge payment-failed">❌ Failed</span>',
+                'refunded': '<span class="payment-badge payment-refunded">🔄 Refunded</span>'
+            };
+            return icons[status] || '<span class="payment-badge payment-pending">⏳ Pending</span>';
+        }
+        
+        function getOrderStatusIcon(status) {
+            const icons = {
+                'pending': '<span class="status-badge status-pending">⏳ Pending</span>',
+                'processing': '<span class="status-badge status-processing">⚙️ Processing</span>',
+                'shipped': '<span class="status-badge status-shipped">🚚 Shipped</span>',
+                'delivered': '<span class="status-badge status-delivered">🎁 Delivered</span>',
+                'cancelled': '<span class="status-badge status-cancelled">❌ Cancelled</span>'
+            };
+            return icons[status] || icons.pending;
+        }
+        
+        function applyFilters() {
+            renderOrders();
+        }
+        
+        function renderOrders() {
+            const container = document.getElementById('ordersList');
+            const statusFilter = document.getElementById('statusFilter').value;
+            const paymentFilter = document.getElementById('paymentFilter').value;
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filteredOrders = [...allOrders];
+            
+            if (statusFilter !== 'all') {
+                filteredOrders = filteredOrders.filter(o => o.status?.toLowerCase() === statusFilter);
+            }
+            if (paymentFilter !== 'all') {
+                filteredOrders = filteredOrders.filter(o => o.payment_status === paymentFilter);
+            }
+            if (searchTerm) {
+                filteredOrders = filteredOrders.filter(o => 
+                    o.order_id?.toLowerCase().includes(searchTerm) || 
+                    o.customer_name?.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (filteredOrders.length === 0) {
+                container.innerHTML = '<div class="empty-state">📭 No orders found</div>';
+                return;
+            }
+            
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Amount</th>
+                            <th>Payment</th>
+                            <th>Order Status</th>
+                            <th>Actions</th>
+                        </thead>
+                        <tbody>
+            `;
+            
+            for (const o of filteredOrders) {
+                const itemsCount = o.items?.length || 0;
+                const date = new Date(o.created_at).toLocaleDateString('en-IN');
+                
+                html += `
+                    <tr>
+                        <td><strong>${o.order_id}</strong></td>
+                        <td>${date}</td>
+                        <td>${escapeHtml(o.customer_name)}</td>
+                        <td>${o.phone || o.customer_phone || 'N/A'}</td>
+                        <td><strong>₹${(o.total || 0).toLocaleString()}</strong></td>
+                        <td>${getPaymentStatusIcon(o.payment_status)}</td>
+                        <td>
+                            <select class="status-select" onchange="updateOrderStatus('${o.order_id}', this.value)">
+                                <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="processing" ${o.status === 'processing' ? 'selected' : ''}>Processing</option>
+                                <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                                <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                                <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button class="action-btn view-btn" onclick="viewOrderDetails('${o.order_id}')">👁️ View</button>
+                            <button class="action-btn delete-btn" onclick="deleteOrder('${o.order_id}')">🗑️ Delete</button>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+        
+        window.updateOrderStatus = async function(orderId, status) {
             try {
                 const { error } = await supabase
                     .from('orders')
-                    .update({ status: status })
+                    .update({ status: status, updated_at: new Date().toISOString() })
                     .eq('order_id', orderId);
                 
                 if (error) throw error;
-                alert(`✅ Order ${orderId} updated to ${status}`);
+                
+                showToast(`✅ Order ${orderId} updated to ${status}`);
                 loadOrders();
+                
             } catch (error) {
-                alert('Error: ' + error.message);
+                showToast('Error: ' + error.message, true);
             }
         };
         
+        window.updatePaymentStatus = async function(orderId, paymentStatus) {
+            try {
+                const { error } = await supabase
+                    .from('orders')
+                    .update({ payment_status: paymentStatus, updated_at: new Date().toISOString() })
+                    .eq('order_id', orderId);
+                
+                if (error) throw error;
+                
+                showToast(`✅ Payment status for ${orderId} updated to ${paymentStatus}`);
+                loadOrders();
+                
+            } catch (error) {
+                showToast('Error: ' + error.message, true);
+            }
+        };
+        
+        window.viewOrderDetails = async function(orderId) {
+            const order = allOrders.find(o => o.order_id === orderId);
+            if (!order) return;
+            
+            let itemsHtml = '';
+            if (order.items && order.items.length > 0) {
+                itemsHtml = `
+                    <table style="width:100%; margin-top:15px; border-collapse:collapse;">
+                        <thead>
+                            <tr style="background:#f8f9fa;">
+                                <th style="padding:8px; text-align:left;">Product</th>
+                                <th style="padding:8px; text-align:center;">Qty</th>
+                                <th style="padding:8px; text-align:right;">Price</th>
+                                <th style="padding:8px; text-align:right;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${order.items.map(item => `
+                                <tr style="border-bottom:1px solid #eee;">
+                                    <td style="padding:8px;">${escapeHtml(item.name)}</td>
+                                    <td style="padding:8px; text-align:center;">${item.quantity}</td>
+                                    <td style="padding:8px; text-align:right;">₹${(item.price || 0).toLocaleString()}</td>
+                                    <td style="padding:8px; text-align:right;">₹${((item.price || 0) * item.quantity).toLocaleString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+            
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div style="margin-bottom:15px;">
+                    <p><strong>Order ID:</strong> ${order.order_id}</p>
+                    <p><strong>Date:</strong> ${new Date(order.created_at).toLocaleString()}</p>
+                    <p><strong>Customer:</strong> ${escapeHtml(order.customer_name)}</p>
+                    <p><strong>Phone:</strong> ${order.phone || order.customer_phone}</p>
+                    <p><strong>Email:</strong> ${order.email || order.customer_email || 'N/A'}</p>
+                    <p><strong>Address:</strong> ${escapeHtml(order.address || 'N/A')}</p>
+                </div>
+                <div style="background:#f8f9fa; padding:12px; border-radius:8px; margin:15px 0;">
+                    <p><strong>Order Status:</strong> ${getOrderStatusIcon(order.status)}</p>
+                    <p><strong>Payment Status:</strong> ${getPaymentStatusIcon(order.payment_status)}</p>
+                    ${order.payment_id ? `<p><strong>Payment ID:</strong> ${order.payment_id}</p>` : ''}
+                    ${order.payment_error ? `<p><strong>Payment Error:</strong> <span style="color:red;">${order.payment_error}</span></p>` : ''}
+                </div>
+                <div>
+                    <h4>Order Items (${order.items?.length || 0})</h4>
+                    ${itemsHtml || '<p>No items found</p>'}
+                </div>
+                <div style="background:#f8f9fa; padding:12px; border-radius:8px; margin-top:15px;">
+                    <p><strong>Subtotal:</strong> ₹${(order.subtotal || 0).toLocaleString()}</p>
+                    <p><strong>Shipping:</strong> ₹${(order.shipping || order.shipping_charge || 0).toLocaleString()}</p>
+                    <p><strong>Tax (18%):</strong> ₹${(order.tax || 0).toLocaleString()}</p>
+                    <p style="font-size:18px; font-weight:bold; color:var(--primary); margin-top:10px;">
+                        <strong>Total:</strong> ₹${(order.total || 0).toLocaleString()}
+                    </p>
+                </div>
+                <div style="margin-top:20px; display:flex; gap:10px;">
+                    <select id="modalPaymentStatus" class="payment-select">
+                        <option value="success" ${order.payment_status === 'success' ? 'selected' : ''}>✅ Paid</option>
+                        <option value="pending" ${order.payment_status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+                        <option value="cod" ${order.payment_status === 'cod' ? 'selected' : ''}>💵 Cash on Delivery</option>
+                        <option value="failed" ${order.payment_status === 'failed' ? 'selected' : ''}>❌ Failed</option>
+                    </select>
+                    <button class="action-btn" style="background:var(--primary);" onclick="updatePaymentFromModal('${order.order_id}')">Update Payment</button>
+                </div>
+            `;
+            
+            document.getElementById('orderModal').style.display = 'flex';
+        };
+        
+        window.updatePaymentFromModal = async function(orderId) {
+            const newStatus = document.getElementById('modalPaymentStatus').value;
+            await updatePaymentStatus(orderId, newStatus);
+            closeModal();
+        };
+        
         window.deleteOrder = async function(orderId) {
-            if (!confirm('Delete this order?')) return;
+            if (!confirm(`Delete order ${orderId}? This action cannot be undone.`)) return;
             
             try {
                 const { error } = await supabase
@@ -257,11 +623,21 @@
                     .eq('order_id', orderId);
                 
                 if (error) throw error;
-                alert('✅ Order deleted');
+                
+                showToast(`✅ Order ${orderId} deleted`);
                 loadOrders();
+                
             } catch (error) {
-                alert('Error: ' + error.message);
+                showToast('Error: ' + error.message, true);
             }
+        };
+        
+        window.closeModal = function() {
+            document.getElementById('orderModal').style.display = 'none';
+        };
+        
+        window.applyFilters = function() {
+            renderOrders();
         };
         
         window.logout = function() {
@@ -279,8 +655,17 @@
             });
         }
         
+        // Auto-refresh every 30 seconds
         loadOrders();
         setInterval(loadOrders, 30000);
+        
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('orderModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
     </script>
 </body>
 </html>
