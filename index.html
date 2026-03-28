@@ -176,7 +176,7 @@
             font-weight: 500;
         }
         
-        /* Features Section - 4 Features */
+        /* Features Section */
         .features {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -371,7 +371,7 @@
             transform: translateY(-2px);
         }
         
-        /* Testimonials Section */
+        /* Testimonials */
         .testimonials {
             background: linear-gradient(135deg, var(--cream), #F4E9E0);
             padding: 60px 40px;
@@ -400,7 +400,7 @@
         .testimonial-card p { font-size: 14px; line-height: 1.5; margin-bottom: 15px; font-style: italic; color: #555; }
         .testimonial-card .customer-name { font-weight: 600; color: var(--dark); }
         
-        /* Newsletter Section */
+        /* Newsletter */
         .newsletter {
             background: linear-gradient(135deg, var(--dark), #2C2C2C);
             padding: 60px 40px;
@@ -433,7 +433,7 @@
         }
         .newsletter-form button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
         
-        /* Toast Notification */
+        /* Toast */
         .toast-notification {
             position: fixed;
             bottom: 30px;
@@ -455,10 +455,17 @@
         }
         
         .loading { text-align: center; padding: 80px; }
-        .spinner { width: 45px; height: 45px; border: 2px solid rgba(212,175,55,0.2); border-top: 2px solid var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+        .spinner {
+            width: 45px;
+            height: 45px;
+            border: 2px solid rgba(212,175,55,0.2);
+            border-top: 2px solid var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        /* Footer */
         footer { 
             background: #1A1A1A; 
             color: #aaa; 
@@ -531,21 +538,7 @@
         </div>
     </div>
 
-    <!-- Products Section -->
-    <div class="section-title" id="products-section">
-        <h2>Our <span>Collection</span></h2>
-        <div class="subtitle">Discover timeless pieces crafted for life's most precious moments</div>
-    </div>
-
-    <div class="products" id="products">
-        <div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div>
-    </div>
-    
-    <div class="view-all-btn">
-        <button onclick="window.location.href='shop.html'">View All Products →</button>
-    </div>
-
-    <!-- Features Section - Positioned above Customer Reviews -->
+    <!-- Features Section -->
     <div class="features">
         <div class="feature">
             <i class="fas fa-gem"></i>
@@ -567,6 +560,20 @@
             <h3>Luxury Gift Box</h3>
             <p>Every purchase comes in an elegant branded jewelry box</p>
         </div>
+    </div>
+
+    <!-- Products Section -->
+    <div class="section-title" id="products-section">
+        <h2>Our <span>Collection</span></h2>
+        <div class="subtitle">Discover timeless pieces crafted for life's most precious moments</div>
+    </div>
+
+    <div class="products" id="products">
+        <div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div>
+    </div>
+    
+    <div class="view-all-btn">
+        <button onclick="window.location.href='shop.html'">View All Products →</button>
     </div>
 
     <!-- Testimonials Section -->
@@ -762,17 +769,30 @@
             const container = document.getElementById('products');
             
             try {
+                console.log('Fetching products from Supabase...');
+                console.log('Supabase URL:', CONFIG.SUPABASE_URL);
+                
                 const { data: products, error } = await supabase
                     .from('products')
                     .select('*')
                     .eq('is_active', true)
-                    .order('id')
-                    .limit(8);
+                    .order('id');
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('Supabase error:', error);
+                    container.innerHTML = `<div class="loading"><p>❌ Error loading products: ${error.message}</p><button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: var(--gold); border: none; border-radius: 30px; cursor: pointer;">Retry</button></div>`;
+                    return;
+                }
+                
+                console.log('Products loaded:', products?.length || 0);
                 
                 if (!products || products.length === 0) {
-                    container.innerHTML = '<div class="loading"><p>✨ New collection arriving soon...</p></div>';
+                    container.innerHTML = `
+                        <div class="loading">
+                            <p>✨ Our new collection is arriving soon...</p>
+                            <p style="font-size: 13px; margin-top: 10px;">Please check back later for exquisite jewelry pieces.</p>
+                        </div>
+                    `;
                     return;
                 }
                 
@@ -786,7 +806,7 @@
                     html += `
                         <div class="product-card">
                             ${badge}
-                            <img class="product-image" src="${mainImage}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400x300?text=Style+Of+Life'">
+                            <img class="product-image" src="${mainImage}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/400x300?text=Style+Of+Life'">
                             <div class="product-info">
                                 <div class="product-sku">${p.sku}</div>
                                 <div class="product-name">${escapeHtml(p.name)}</div>
@@ -806,7 +826,7 @@
                 
             } catch (error) {
                 console.error('Error loading products:', error);
-                container.innerHTML = '<div class="loading"><p>Unable to load collection. Please refresh.</p></div>';
+                container.innerHTML = `<div class="loading"><p>❌ Unable to load collection. Please refresh.</p><button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: var(--gold); border: none; border-radius: 30px; cursor: pointer;">Retry</button></div>`;
             }
         }
         
@@ -820,6 +840,22 @@
             });
         }
         
+        // Test Supabase connection
+        async function testConnection() {
+            try {
+                console.log('Testing Supabase connection...');
+                const { data, error } = await supabase.from('products').select('count', { count: 'exact', head: true });
+                if (error) {
+                    console.error('Connection test failed:', error);
+                } else {
+                    console.log('✅ Supabase connection successful!');
+                }
+            } catch (e) {
+                console.error('Connection test error:', e);
+            }
+        }
+        
+        await testConnection();
         await loadCart();
         await loadProducts();
     </script>
