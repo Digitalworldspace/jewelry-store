@@ -65,9 +65,14 @@
             padding: 20px;
             border-bottom: 1px solid var(--gray-200);
             transition: all 0.3s;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .cart-item:hover { background: var(--gray-100); }
-        .cart-item-image { width: 60px; height: 60px; object-fit: cover; border-radius: 10px; }
+        .cart-item-image { width: 60px; height: 60px; object-fit: cover; border-radius: 10px; background: #f5f5f5; }
         .cart-item-details h4 { font-size: 16px; font-weight: 600; margin-bottom: 5px; }
         .cart-item-sku { font-size: 11px; color: var(--gray-600); }
         .cart-item-price { font-weight: 600; color: var(--primary); font-size: 16px; }
@@ -101,7 +106,7 @@
             align-items: center;
             justify-content: center;
         }
-        .remove-item:hover { background: var(--danger); color: white; }
+        .remove-item:hover { background: var(--danger); color: white; transform: scale(1.05); }
         
         .empty-cart { text-align: center; padding: 80px 40px; }
         .empty-cart i { font-size: 80px; color: var(--gray-200); margin-bottom: 20px; }
@@ -254,6 +259,7 @@
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
+            console.log('New session created:', sessionId);
         }
         
         const FREE_SHIPPING_THRESHOLD = 3000;
@@ -268,8 +274,10 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
+        // Load cart from database
         async function loadCart() {
             try {
+                console.log('Loading cart for session:', sessionId);
                 const { data, error } = await supabase
                     .from('carts')
                     .select('items')
@@ -277,7 +285,9 @@
                     .maybeSingle();
                 
                 if (error) throw error;
+                
                 cart = data?.items || [];
+                console.log('Cart loaded:', cart.length, 'items');
                 renderCart();
                 updateSummary();
                 updateCartCount();
@@ -285,12 +295,16 @@
                 console.error('Error loading cart:', error);
                 cart = [];
                 renderCart();
+                showToast('Error loading cart', true);
             }
         }
         
+        // Save cart to database
         async function saveCart() {
             try {
                 const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                console.log('Saving cart:', cart.length, 'items, total:', total);
+                
                 const { error } = await supabase
                     .from('carts')
                     .upsert({
@@ -298,9 +312,11 @@
                         items: cart,
                         total: total,
                         updated_at: new Date().toISOString()
-                    });
+                    }, { onConflict: 'session_id' });
                 
                 if (error) throw error;
+                
+                console.log('Cart saved successfully');
                 renderCart();
                 updateSummary();
                 updateCartCount();
@@ -355,6 +371,7 @@
             }
         }
         
+        // Update product quantity
         window.updateQuantity = async function(productId, newQuantity) {
             newQuantity = parseInt(newQuantity);
             if (isNaN(newQuantity) || newQuantity < 1) newQuantity = 1;
@@ -393,15 +410,16 @@
             }
         };
         
+        // Remove single item
         window.removeItem = async function(productId) {
-            // Filter out the item
+            console.log('Removing item:', productId);
             const newCart = cart.filter(item => item.id !== productId);
             cart = newCart;
-            // Save to database
             await saveCart();
             showToast('Item removed from cart');
         };
         
+        // Clear entire cart
         window.clearCart = async function() {
             if (cart.length === 0) {
                 showToast('Cart is already empty', true);
@@ -409,9 +427,8 @@
             }
             
             if (confirm('Are you sure you want to remove all items from your cart?')) {
-                // Clear the cart array
+                console.log('Clearing cart...');
                 cart = [];
-                // Save empty cart to database
                 await saveCart();
                 showToast('Cart cleared successfully!');
             }
@@ -486,6 +503,7 @@
         // Listen for cart updates from other tabs
         window.addEventListener('storage', function(e) {
             if (e.key === 'sessionId' || e.key === 'cartCleared') {
+                console.log('Storage event detected, reloading cart');
                 loadCart();
             }
         });
