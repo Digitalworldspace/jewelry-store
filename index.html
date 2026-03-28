@@ -666,6 +666,9 @@
         
         window.addToCart = async function(productId, productName, productPrice, productSku, productImage) {
             try {
+                console.log('Adding to cart:', productName);
+                
+                // Check stock first
                 const { data: product, error: stockError } = await supabase
                     .from('products')
                     .select('stock')
@@ -679,6 +682,7 @@
                     return;
                 }
                 
+                // Get current cart
                 const { data: cartData, error: cartError } = await supabase
                     .from('carts')
                     .select('items')
@@ -696,6 +700,7 @@
                         return;
                     }
                     existingItem.quantity += 1;
+                    console.log('Updated existing item quantity:', existingItem.quantity);
                 } else {
                     currentItems.push({
                         id: productId,
@@ -705,10 +710,12 @@
                         quantity: 1,
                         image: productImage
                     });
+                    console.log('Added new item to cart');
                 }
                 
                 const total = currentItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                 
+                // Save to Supabase
                 const { error: saveError } = await supabase
                     .from('carts')
                     .upsert({
@@ -723,6 +730,7 @@
                 showToast(`${productName} added to cart!`);
                 await updateCartCount();
                 
+                // Animate cart icon
                 const cartIcon = document.querySelector('nav a[href="cart.html"]');
                 if (cartIcon) {
                     cartIcon.style.transform = 'scale(1.1)';
