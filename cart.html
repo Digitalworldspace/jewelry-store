@@ -97,6 +97,9 @@
             width: 32px;
             height: 32px;
             border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .remove-item:hover { background: var(--danger); color: white; }
         
@@ -392,7 +395,8 @@
         
         window.removeItem = async function(productId) {
             // Filter out the item
-            cart = cart.filter(item => item.id !== productId);
+            const newCart = cart.filter(item => item.id !== productId);
+            cart = newCart;
             // Save to database
             await saveCart();
             showToast('Item removed from cart');
@@ -478,6 +482,20 @@
         
         // Load cart on page load
         loadCart();
+        
+        // Listen for cart updates from other tabs
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'sessionId' || e.key === 'cartCleared') {
+                loadCart();
+            }
+        });
+        
+        // Refresh cart when page becomes visible
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                loadCart();
+            }
+        });
     </script>
 </body>
 </html>
