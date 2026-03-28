@@ -29,7 +29,6 @@
             color: var(--charcoal);
         }
         
-        /* Header Styles */
         .logo {
             display: inline-flex;
             align-items: center;
@@ -641,7 +640,6 @@
         import { createClient } from '@supabase/supabase-js';
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-        let cart = [];
         let sessionId = localStorage.getItem('sessionId');
         
         if (!sessionId) {
@@ -659,7 +657,7 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
-        async function loadCart() {
+        async function updateCartCount() {
             try {
                 const { data, error } = await supabase
                     .from('carts')
@@ -668,54 +666,53 @@
                     .maybeSingle();
                 
                 if (error) throw error;
-                cart = data?.items || [];
-                updateCartCount();
+                const items = data?.items || [];
+                const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+                const cartCountElements = document.querySelectorAll('#cartCount');
+                cartCountElements.forEach(el => {
+                    if (el) el.textContent = totalItems;
+                });
             } catch (error) {
-                console.error('Error loading cart:', error);
-                cart = [];
+                console.error('Error updating cart count:', error);
             }
-        }
-        
-        function updateCartCount() {
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            const cartCountElements = document.querySelectorAll('#cartCount');
-            cartCountElements.forEach(el => {
-                if (el) el.textContent = totalItems;
-            });
         }
         
         window.addToCart = async function(productId, productName, productPrice, productSku, productImage) {
             try {
-                const { data: products, error } = await supabase
+                // Check stock first
+                const { data: product, error: stockError } = await supabase
                     .from('products')
                     .select('stock')
                     .eq('id', productId)
                     .single();
                 
-                if (error) throw error;
+                if (stockError) throw stockError;
                 
-                if (products.stock <= 0) {
+                if (product.stock <= 0) {
                     showToast(`${productName} is out of stock!`, true);
                     return;
                 }
                 
-                const { data: cartData } = await supabase
+                // Get current cart
+                const { data: cartData, error: cartError } = await supabase
                     .from('carts')
                     .select('items')
                     .eq('session_id', sessionId)
                     .maybeSingle();
                 
-                let currentCart = cartData?.items || [];
-                const existingItem = currentCart.find(item => item.id === productId);
+                if (cartError) throw cartError;
+                
+                let currentItems = cartData?.items || [];
+                const existingItem = currentItems.find(item => item.id === productId);
                 
                 if (existingItem) {
-                    if (existingItem.quantity + 1 > products.stock) {
-                        showToast(`Only ${products.stock} items available!`, true);
+                    if (existingItem.quantity + 1 > product.stock) {
+                        showToast(`Only ${product.stock} items available!`, true);
                         return;
                     }
                     existingItem.quantity += 1;
                 } else {
-                    currentCart.push({
+                    currentItems.push({
                         id: productId,
                         sku: productSku,
                         name: productName,
@@ -725,22 +722,24 @@
                     });
                 }
                 
-                const total = currentCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const total = currentItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                
+                // Save to Supabase
                 const { error: saveError } = await supabase
                     .from('carts')
                     .upsert({
                         session_id: sessionId,
-                        items: currentCart,
+                        items: currentItems,
                         total: total,
                         updated_at: new Date().toISOString()
                     });
                 
                 if (saveError) throw saveError;
                 
-                cart = currentCart;
-                updateCartCount();
                 showToast(`${productName} added to cart!`);
+                await updateCartCount();
                 
+                // Animate cart icon
                 const cartIcon = document.querySelector('nav a[href="cart.html"]');
                 if (cartIcon) {
                     cartIcon.style.transform = 'scale(1.1)';
@@ -769,31 +768,15 @@
             const container = document.getElementById('products');
             
             try {
-                console.log('Fetching products from Supabase...');
-                console.log('Supabase URL:', CONFIG.SUPABASE_URL);
-                
-                // Fetch all products without is_active filter (since column might not exist)
                 const { data: products, error } = await supabase
                     .from('products')
                     .select('*')
                     .order('id');
                 
-                if (error) {
-                    console.error('Supabase error:', error);
-                    container.innerHTML = `<div class="loading"><p>❌ Error loading products: ${error.message}</p><button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: var(--gold); border: none; border-radius: 30px; cursor: pointer;">Retry</button></div>`;
-                    return;
-                }
-                
-                console.log('Products loaded:', products?.length || 0);
+                if (error) throw error;
                 
                 if (!products || products.length === 0) {
-                    container.innerHTML = `
-                        <div class="loading">
-                            <p>✨ Our new collection is arriving soon...</p>
-                            <p style="font-size: 13px; margin-top: 10px;">Please check back later for exquisite jewelry pieces.</p>
-                            <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: var(--gold); border: none; border-radius: 30px; cursor: pointer;">Refresh</button>
-                        </div>
-                    `;
+                    container.innerHTML = '<div class="loading"><p>✨ Our new collection is arriving soon...</p></div>';
                     return;
                 }
                 
@@ -807,7 +790,7 @@
                     html += `
                         <div class="product-card">
                             ${badge}
-                            <img class="product-image" src="${mainImage}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/400x300?text=Style+Of+Life'">
+                            <img class="product-image" src="${mainImage}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400x300?text=Style+Of+Life'">
                             <div class="product-info">
                                 <div class="product-sku">${p.sku}</div>
                                 <div class="product-name">${escapeHtml(p.name)}</div>
@@ -827,7 +810,7 @@
                 
             } catch (error) {
                 console.error('Error loading products:', error);
-                container.innerHTML = `<div class="loading"><p>❌ Unable to load collection. Please refresh.</p><button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: var(--gold); border: none; border-radius: 30px; cursor: pointer;">Retry</button></div>`;
+                container.innerHTML = '<div class="loading"><p>Unable to load collection. Please refresh.</p></div>';
             }
         }
         
@@ -841,23 +824,7 @@
             });
         }
         
-        // Test Supabase connection
-        async function testConnection() {
-            try {
-                console.log('Testing Supabase connection...');
-                const { data, error } = await supabase.from('products').select('count', { count: 'exact', head: true });
-                if (error) {
-                    console.error('Connection test failed:', error);
-                } else {
-                    console.log('✅ Supabase connection successful!');
-                }
-            } catch (e) {
-                console.error('Connection test error:', e);
-            }
-        }
-        
-        await testConnection();
-        await loadCart();
+        await updateCartCount();
         await loadProducts();
     </script>
 </body>
