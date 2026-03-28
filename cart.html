@@ -28,7 +28,6 @@
             background: #faf7f2;
         }
         
-        /* Header Styles */
         header {
             background: white;
             padding: 20px 50px;
@@ -77,7 +76,6 @@
             margin-left: 5px;
         }
         
-        /* Container */
         .container {
             max-width: 1200px;
             margin: 40px auto;
@@ -93,14 +91,12 @@
             gap: 10px;
         }
         
-        /* Cart Layout */
         .cart-layout {
             display: grid;
             grid-template-columns: 1fr 380px;
             gap: 30px;
         }
         
-        /* Cart Items Section */
         .cart-items-section {
             background: white;
             border-radius: 20px;
@@ -210,10 +206,8 @@
         .remove-item:hover {
             background: var(--danger);
             color: white;
-            transform: scale(1.05);
         }
         
-        /* Empty Cart */
         .empty-cart {
             text-align: center;
             padding: 80px 40px;
@@ -247,7 +241,6 @@
             box-shadow: 0 5px 15px rgba(212,175,55,0.3);
         }
         
-        /* Cart Summary */
         .cart-summary {
             background: white;
             border-radius: 20px;
@@ -343,7 +336,6 @@
             color: white;
         }
         
-        /* Toast Notification */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -379,7 +371,6 @@
             }
         }
         
-        /* Loading */
         .loading {
             text-align: center;
             padding: 60px;
@@ -534,11 +525,9 @@
         let cart = [];
         let sessionId = localStorage.getItem('sessionId');
         
-        // Create unique session ID if not exists
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
-            console.log('New session created:', sessionId);
         }
         
         const FREE_SHIPPING_THRESHOLD = 3000;
@@ -555,7 +544,6 @@
         
         async function loadCart() {
             try {
-                console.log('Loading cart for session:', sessionId);
                 const { data, error } = await supabase
                     .from('carts')
                     .select('items')
@@ -565,8 +553,6 @@
                 if (error) throw error;
                 
                 cart = data?.items || [];
-                console.log('Cart loaded:', cart.length, 'items');
-                
                 updateCartCount();
                 renderCart();
                 updateSummary();
@@ -574,14 +560,12 @@
                 console.error('Error loading cart:', error);
                 cart = [];
                 renderCart();
-                showToast('Error loading cart', true);
             }
         }
         
         async function saveCart() {
             try {
                 const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                console.log('Saving cart:', cart.length, 'items, total:', total);
                 
                 const { error } = await supabase
                     .from('carts')
@@ -662,7 +646,6 @@
             if (isNaN(newQuantity) || newQuantity < 1) newQuantity = 1;
             if (newQuantity > 99) newQuantity = 99;
             
-            // Check stock limit
             const { data: product, error } = await supabase
                 .from('products')
                 .select('stock')
@@ -697,9 +680,15 @@
         };
         
         window.removeItem = async function(productId) {
+            // Filter out the item
             cart = cart.filter(item => item.id !== productId);
-            await saveCart();
-            showToast('Item removed from cart');
+            // Save the updated cart
+            const saved = await saveCart();
+            if (saved) {
+                showToast('Item removed from cart');
+                // Force refresh
+                await loadCart();
+            }
         };
         
         window.clearCart = async function() {
@@ -712,6 +701,7 @@
                 cart = [];
                 await saveCart();
                 showToast('Cart cleared successfully!');
+                await loadCart();
             }
         };
         
@@ -777,7 +767,6 @@
         // Listen for cart updates from other tabs
         window.addEventListener('storage', function(e) {
             if (e.key === 'sessionId' || e.key === 'cartCleared') {
-                console.log('Storage event detected, reloading cart');
                 loadCart();
             }
         });
