@@ -305,7 +305,6 @@
                     .maybeSingle();
                 if (error) throw error;
                 cart = data?.items || [];
-                console.log('Cart loaded:', cart.length, 'items');
                 renderCart();
                 updateCartBadge();
             } catch (error) {
@@ -318,14 +317,36 @@
         async function saveCart() {
             try {
                 const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-                await supabase
+                // Check if cart exists
+                const { data: existing } = await supabase
                     .from('carts')
-                    .upsert({
-                        session_id: sessionId,
-                        items: cart,
-                        total: total,
-                        updated_at: new Date().toISOString()
-                    });
+                    .select('id')
+                    .eq('session_id', sessionId)
+                    .maybeSingle();
+                
+                if (existing) {
+                    // Update existing
+                    const { error } = await supabase
+                        .from('carts')
+                        .update({
+                            items: cart,
+                            total: total,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('session_id', sessionId);
+                    if (error) throw error;
+                } else {
+                    // Insert new
+                    const { error } = await supabase
+                        .from('carts')
+                        .insert({
+                            session_id: sessionId,
+                            items: cart,
+                            total: total,
+                            updated_at: new Date().toISOString()
+                        });
+                    if (error) throw error;
+                }
                 renderCart();
                 updateCartBadge();
                 return true;
