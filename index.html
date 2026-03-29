@@ -314,7 +314,7 @@
             try {
                 console.log('Adding to cart:', name);
                 
-                // Step 1: Check if cart exists for this session
+                // Step 1: Try to update existing cart first
                 let { data: existingCart, error: fetchError } = await supabase
                     .from('carts')
                     .select('*')
@@ -324,51 +324,68 @@
                 if (fetchError) throw fetchError;
                 
                 let items = [];
-                let currentTotal = 0;
+                let newTotal = 0;
                 
                 if (existingCart) {
-                    // Cart exists, get existing items
+                    // Cart exists - update it
                     items = existingCart.items || [];
-                    currentTotal = existingCart.total || 0;
-                    console.log('Existing cart found, items:', items.length);
+                    const existingItem = items.find(i => i.id === id);
+                    
+                    if (existingItem) {
+                        existingItem.quantity += 1;
+                        console.log('Updated existing item, new quantity:', existingItem.quantity);
+                    } else {
+                        items.push({ 
+                            id: id, 
+                            sku: sku, 
+                            name: name, 
+                            price: price, 
+                            quantity: 1, 
+                            image: img 
+                        });
+                        console.log('Added new item, total items:', items.length);
+                    }
+                    
+                    newTotal = items.reduce((s, i) => s + (i.price * i.quantity), 0);
+                    
+                    // UPDATE existing cart
+                    const { error: updateError } = await supabase
+                        .from('carts')
+                        .update({
+                            items: items,
+                            total: newTotal,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('session_id', sessionId);
+                    
+                    if (updateError) throw updateError;
+                    console.log('Cart updated successfully');
+                    
                 } else {
-                    // No cart exists, create new one
-                    console.log('No existing cart, creating new');
-                }
-                
-                // Step 2: Check if product already in cart
-                const existingItem = items.find(i => i.id === id);
-                
-                if (existingItem) {
-                    existingItem.quantity += 1;
-                    console.log('Updated existing item, new quantity:', existingItem.quantity);
-                } else {
-                    items.push({ 
+                    // No cart exists - create new one
+                    items = [{ 
                         id: id, 
                         sku: sku, 
                         name: name, 
                         price: price, 
                         quantity: 1, 
                         image: img 
-                    });
-                    console.log('Added new item, total items:', items.length);
+                    }];
+                    newTotal = price;
+                    
+                    // INSERT new cart
+                    const { error: insertError } = await supabase
+                        .from('carts')
+                        .insert({
+                            session_id: sessionId,
+                            items: items,
+                            total: newTotal,
+                            updated_at: new Date().toISOString()
+                        });
+                    
+                    if (insertError) throw insertError;
+                    console.log('New cart created successfully');
                 }
-                
-                // Step 3: Calculate new total
-                const newTotal = items.reduce((s, i) => s + (i.price * i.quantity), 0);
-                console.log('New total:', newTotal);
-                
-                // Step 4: Save or update cart
-                const { error: saveError } = await supabase
-                    .from('carts')
-                    .upsert({
-                        session_id: sessionId,
-                        items: items,
-                        total: newTotal,
-                        updated_at: new Date().toISOString()
-                    });
-                
-                if (saveError) throw saveError;
                 
                 showToast(`${name} added to cart!`);
                 await updateCartCount();
