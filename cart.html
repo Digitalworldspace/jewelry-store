@@ -19,7 +19,6 @@
             --gray-600: #6c757d;
             --danger: #dc3545;
             --success: #28a745;
-            --warning: #ffc107;
         }
         body { font-family: 'Inter', sans-serif; background: #faf7f2; padding-bottom: 70px; }
         
@@ -36,15 +35,10 @@
         }
         .logo { font-size: 20px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
         .back-btn { font-size: 20px; color: var(--gray-600); text-decoration: none; padding: 5px; }
-        .cart-header-icon { font-size: 20px; color: var(--gray-600); }
         
         .container { padding: 20px; max-width: 600px; margin: 0 auto; }
         h1 { font-size: 24px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         
-        /* Cart Items */
-        .cart-items-list {
-            margin-bottom: 20px;
-        }
         .cart-item {
             background: white;
             border-radius: 16px;
@@ -55,17 +49,6 @@
             position: relative;
             border: 1px solid var(--gray-200);
             transition: all 0.3s ease;
-            animation: slideIn 0.3s ease;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        .cart-item-removing {
-            animation: slideOut 0.3s ease forwards;
-        }
-        @keyframes slideOut {
-            to { opacity: 0; transform: translateX(20px); }
         }
         .cart-item-image {
             width: 80px;
@@ -75,7 +58,7 @@
             background: var(--gray-100);
         }
         .cart-item-details { flex: 1; }
-        .cart-item-details h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; color: var(--dark); }
+        .cart-item-details h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
         .cart-item-sku { font-size: 10px; color: var(--gray-600); margin-bottom: 6px; }
         .cart-item-price { font-weight: 600; color: var(--primary); font-size: 14px; margin-bottom: 8px; }
         
@@ -96,15 +79,7 @@
             font-weight: bold;
             transition: all 0.2s;
         }
-        .quantity-btn:hover:not(:disabled) {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        .quantity-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .quantity-btn:hover { background: var(--primary); color: white; }
         .quantity-input {
             width: 45px;
             height: 28px;
@@ -117,7 +92,6 @@
             font-weight: 700;
             font-size: 14px;
             margin-top: 8px;
-            color: var(--dark);
         }
         .remove-item {
             position: absolute;
@@ -130,19 +104,14 @@
             cursor: pointer;
             padding: 5px;
             border-radius: 50%;
-            transition: all 0.2s;
             width: 30px;
             height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .remove-item:hover {
-            background: var(--danger);
-            color: white;
-        }
+        .remove-item:hover { background: var(--danger); color: white; }
         
-        /* Empty Cart */
         .empty-cart {
             text-align: center;
             padding: 60px 20px;
@@ -151,8 +120,7 @@
             border: 1px solid var(--gray-200);
         }
         .empty-cart i { font-size: 60px; color: var(--gray-200); margin-bottom: 15px; }
-        .empty-cart h3 { color: var(--gray-600); margin-bottom: 10px; font-size: 18px; }
-        .empty-cart p { color: var(--gray-600); font-size: 13px; margin-bottom: 20px; }
+        .empty-cart h3 { color: var(--gray-600); margin-bottom: 10px; }
         .continue-shopping {
             display: inline-block;
             background: var(--primary);
@@ -161,19 +129,15 @@
             border-radius: 40px;
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s;
+            margin-top: 15px;
         }
-        .continue-shopping:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
         
-        /* Cart Summary */
         .cart-summary {
             background: white;
             border-radius: 16px;
             padding: 20px;
             margin-top: 20px;
             border: 1px solid var(--gray-200);
-            position: sticky;
-            bottom: 70px;
         }
         .summary-row {
             display: flex;
@@ -187,7 +151,6 @@
             font-weight: bold;
             color: var(--primary);
             padding-top: 15px;
-            margin-top: 5px;
         }
         .shipping-info {
             background: var(--gray-100);
@@ -220,12 +183,9 @@
             font-weight: 600;
             margin: 15px 0 10px;
             text-decoration: none;
-            transition: all 0.3s;
             border: none;
             cursor: pointer;
         }
-        .checkout-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
-        .checkout-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .clear-cart-btn {
             width: 100%;
             padding: 12px;
@@ -235,11 +195,9 @@
             border-radius: 40px;
             cursor: pointer;
             font-weight: 500;
-            transition: all 0.3s;
         }
         .clear-cart-btn:hover { background: var(--danger); color: white; }
         
-        /* Toast Notification */
         .toast {
             position: fixed;
             bottom: 80px;
@@ -252,12 +210,11 @@
             z-index: 9999;
             font-size: 13px;
             white-space: nowrap;
-            animation: toastFade 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: fadeUp 0.3s ease;
         }
         .toast-error { background: #dc3545; }
         .toast-success { background: #28a745; }
-        @keyframes toastFade {
+        @keyframes fadeUp {
             from { opacity: 0; transform: translateX(-50%) translateY(20px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
@@ -286,15 +243,13 @@
             color: var(--gray-600);
             text-decoration: none;
             font-size: 10px;
-            transition: color 0.3s;
         }
         .bottom-nav a i { font-size: 20px; }
-        .bottom-nav a.active, .bottom-nav a:hover { color: var(--primary); }
+        .bottom-nav a.active { color: var(--primary); }
         
         @media (min-width: 768px) {
             .container { max-width: 1000px; }
             .cart-item-image { width: 100px; height: 100px; }
-            .cart-summary { position: sticky; top: 20px; bottom: auto; }
         }
     </style>
 </head>
@@ -302,12 +257,12 @@
     <header>
         <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
         <a href="index.html" class="logo">STYLE·OF·LIFE</a>
-        <a href="customer-portal.html" class="cart-header-icon"><i class="fas fa-user"></i></a>
+        <div style="width: 28px;"></div>
     </header>
 
     <div class="container">
         <h1><i class="fas fa-shopping-cart"></i> Shopping Cart</h1>
-        <div id="cartItems" class="cart-items-list"></div>
+        <div id="cartItems"></div>
         <div id="cartSummary"></div>
     </div>
 
@@ -332,14 +287,14 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
-        const FREE_SHIPPING_THRESHOLD = 3000;
+        const FREE_SHIPPING = 3000;
         
-        function showToast(message, isError = false) {
+        function showToast(msg, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast';
             if (isError) toast.classList.add('toast-error');
             else toast.classList.add('toast-success');
-            toast.textContent = message;
+            toast.textContent = msg;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
@@ -351,24 +306,21 @@
                     .select('items')
                     .eq('session_id', sessionId)
                     .maybeSingle();
-                
                 if (error) throw error;
                 cart = data?.items || [];
                 renderCart();
                 updateSummary();
                 updateCartCount();
             } catch (error) {
-                console.error('Error loading cart:', error);
                 cart = [];
                 renderCart();
-                showToast('Error loading cart', true);
             }
         }
         
         async function saveCart() {
             try {
-                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                const { error } = await supabase
+                const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+                await supabase
                     .from('carts')
                     .upsert({
                         session_id: sessionId,
@@ -376,152 +328,100 @@
                         total: total,
                         updated_at: new Date().toISOString()
                     });
-                
-                if (error) throw error;
                 renderCart();
                 updateSummary();
                 updateCartCount();
                 return true;
             } catch (error) {
-                console.error('Error saving cart:', error);
-                showToast('Failed to save cart', true);
+                showToast('Failed to save', true);
                 return false;
             }
         }
         
         function updateCartCount() {
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            const cartBadges = document.querySelectorAll('.cart-count');
-            cartBadges.forEach(badge => {
-                if (badge) badge.textContent = totalItems;
-            });
+            const total = cart.reduce((s, i) => s + i.quantity, 0);
+            const badges = document.querySelectorAll('.cart-count');
+            badges.forEach(b => { if (b) b.textContent = total; });
         }
         
         function updateSummary() {
-            const summaryDiv = document.getElementById('cartSummary');
-            if (!cart.length) {
-                summaryDiv.innerHTML = '';
-                return;
-            }
+            const div = document.getElementById('cartSummary');
+            if (!cart.length) { div.innerHTML = ''; return; }
             
-            let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            let subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
             const tax = Math.round(subtotal * 0.18);
-            let shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 100;
+            let shipping = subtotal >= FREE_SHIPPING ? 0 : 100;
             const total = subtotal + tax + shipping;
-            const remaining = FREE_SHIPPING_THRESHOLD - subtotal;
-            const progress = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
+            const remaining = FREE_SHIPPING - subtotal;
+            const progress = Math.min(100, (subtotal / FREE_SHIPPING) * 100);
             
-            summaryDiv.innerHTML = `
+            div.innerHTML = `
                 <div class="cart-summary">
-                    <div class="summary-row">
-                        <span>Subtotal</span>
-                        <span>₹${subtotal.toLocaleString()}</span>
-                    </div>
+                    <div class="summary-row"><span>Subtotal</span><span>₹${subtotal.toLocaleString()}</span></div>
                     <div class="shipping-info">
                         <i class="fas fa-truck"></i> 
-                        ${subtotal >= FREE_SHIPPING_THRESHOLD ? 
-                            '🎉 Congratulations! You get FREE shipping!' : 
-                            `Add ₹${remaining.toLocaleString()} more to get FREE shipping`}
-                        <div class="shipping-progress">
-                            <div class="shipping-progress-fill" style="width: ${progress}%"></div>
-                        </div>
+                        ${subtotal >= FREE_SHIPPING ? '🎉 FREE Shipping!' : `Add ₹${remaining.toLocaleString()} more for FREE shipping`}
+                        <div class="shipping-progress"><div class="shipping-progress-fill" style="width: ${progress}%"></div></div>
                     </div>
-                    <div class="summary-row">
-                        <span>Shipping</span>
-                        <span>₹${shipping}</span>
-                    </div>
-                    <div class="summary-row">
-                        <span>GST (18%)</span>
-                        <span>₹${tax.toLocaleString()}</span>
-                    </div>
-                    <div class="summary-row total">
-                        <span>Total</span>
-                        <span>₹${total.toLocaleString()}</span>
-                    </div>
-                    <button class="checkout-btn" onclick="goToCheckout()" ${cart.length === 0 ? 'disabled' : ''}>Proceed to Checkout →</button>
+                    <div class="summary-row"><span>Shipping</span><span>₹${shipping}</span></div>
+                    <div class="summary-row"><span>GST (18%)</span><span>₹${tax.toLocaleString()}</span></div>
+                    <div class="summary-row total"><span>Total</span><span>₹${total.toLocaleString()}</span></div>
+                    <button class="checkout-btn" onclick="goToCheckout()">Proceed to Checkout →</button>
                     <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
                 </div>
             `;
         }
         
-        window.updateQuantity = async function(productId, newQuantity) {
-            newQuantity = parseInt(newQuantity);
-            if (isNaN(newQuantity) || newQuantity < 1) newQuantity = 1;
-            if (newQuantity > 99) newQuantity = 99;
+        window.updateQuantity = async function(id, qty) {
+            qty = parseInt(qty);
+            if (isNaN(qty) || qty < 1) qty = 1;
+            if (qty > 99) qty = 99;
             
-            const { data: product, error } = await supabase
-                .from('products')
-                .select('stock')
-                .eq('id', productId)
-                .single();
-            
-            if (error) {
-                showToast('Error checking stock', true);
-                return;
+            const { data: p } = await supabase.from('products').select('stock').eq('id', id).single();
+            if (p && qty > p.stock) {
+                showToast(`Only ${p.stock} available!`, true);
+                qty = p.stock;
             }
             
-            if (newQuantity > product.stock) {
-                showToast(`Only ${product.stock} items available!`, true);
-                newQuantity = product.stock;
-            }
-            
-            const itemIndex = cart.findIndex(i => i.id === productId);
-            if (itemIndex !== -1) {
-                cart[itemIndex].quantity = newQuantity;
+            const idx = cart.findIndex(i => i.id === id);
+            if (idx !== -1) {
+                cart[idx].quantity = qty;
                 await saveCart();
                 showToast('Quantity updated');
             }
         };
         
-        window.increaseQuantity = async function(productId, currentQty) {
-            await updateQuantity(productId, currentQty + 1);
-        };
+        window.increase = async (id, cur) => { await updateQuantity(id, cur + 1); };
+        window.decrease = async (id, cur) => { if (cur > 1) await updateQuantity(id, cur - 1); else await removeItem(id); };
         
-        window.decreaseQuantity = async function(productId, currentQty) {
-            if (currentQty > 1) {
-                await updateQuantity(productId, currentQty - 1);
-            } else {
-                await removeItem(productId);
-            }
-        };
-        
-        window.removeItem = async function(productId) {
-            const newCart = cart.filter(item => item.id !== productId);
-            cart = newCart;
+        window.removeItem = async (id) => {
+            cart = cart.filter(i => i.id !== id);
             await saveCart();
-            showToast('Item removed from cart');
+            showToast('Item removed');
         };
         
-        window.clearCart = async function() {
-            if (cart.length === 0) {
-                showToast('Cart is already empty', true);
-                return;
-            }
-            
-            if (confirm('Are you sure you want to remove all items from your cart?')) {
+        window.clearCart = async () => {
+            if (!cart.length) { showToast('Cart empty', true); return; }
+            if (confirm('Remove all items?')) {
                 cart = [];
                 await saveCart();
-                showToast('Cart cleared successfully!');
+                showToast('Cart cleared');
             }
         };
         
-        window.goToCheckout = function() {
-            if (cart.length === 0) {
-                showToast('Your cart is empty!', true);
-                return;
-            }
+        window.goToCheckout = () => {
+            if (!cart.length) { showToast('Cart empty!', true); return; }
             window.location.href = 'checkout.html';
         };
         
         function renderCart() {
             const container = document.getElementById('cartItems');
-            
-            if (!cart || cart.length === 0) {
+            if (!cart.length) {
                 container.innerHTML = `
                     <div class="empty-cart">
                         <i class="fas fa-shopping-cart"></i>
                         <h3>Your cart is empty</h3>
-                        <p>Looks like you haven't added any items yet.</p>
+                        <p>Add some beautiful jewelry to get started</p>
                         <a href="shop.html" class="continue-shopping">Continue Shopping →</a>
                     </div>
                 `;
@@ -529,28 +429,22 @@
             }
             
             let html = '';
-            cart.forEach((item, index) => {
-                const itemTotal = item.price * item.quantity;
+            cart.forEach(item => {
                 html += `
-                    <div class="cart-item" data-id="${item.id}">
-                        <img class="cart-item-image" src="${item.image || 'https://via.placeholder.com/80x80?text=Style+Of+Life'}" 
-                             alt="${escapeHtml(item.name)}" 
-                             onerror="this.src='https://via.placeholder.com/80x80?text=Style+Of+Life'">
+                    <div class="cart-item">
+                        <img class="cart-item-image" src="${item.image || 'https://via.placeholder.com/80x80'}" onerror="this.src='https://via.placeholder.com/80x80'">
                         <div class="cart-item-details">
                             <h4>${escapeHtml(item.name)}</h4>
-                            <div class="cart-item-sku">SKU: ${item.sku}</div>
+                            <div class="cart-item-sku">${item.sku}</div>
                             <div class="cart-item-price">₹${item.price.toLocaleString()}</div>
                             <div class="quantity-control">
-                                <button class="quantity-btn" onclick="decreaseQuantity(${item.id}, ${item.quantity})">−</button>
-                                <input type="number" class="quantity-input" value="${item.quantity}" min="1" max="99" 
-                                       onchange="updateQuantity(${item.id}, this.value)">
-                                <button class="quantity-btn" onclick="increaseQuantity(${item.id}, ${item.quantity})">+</button>
+                                <button class="quantity-btn" onclick="decrease(${item.id}, ${item.quantity})">−</button>
+                                <input type="number" class="quantity-input" value="${item.quantity}" onchange="updateQuantity(${item.id}, this.value)">
+                                <button class="quantity-btn" onclick="increase(${item.id}, ${item.quantity})">+</button>
                             </div>
-                            <div class="cart-item-total">Total: ₹${itemTotal.toLocaleString()}</div>
+                            <div class="cart-item-total">Total: ₹${(item.price * item.quantity).toLocaleString()}</div>
                         </div>
-                        <button class="remove-item" onclick="removeItem(${item.id})" title="Remove item">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+                        <button class="remove-item" onclick="removeItem(${item.id})"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 `;
             });
@@ -559,23 +453,10 @@
         
         function escapeHtml(str) {
             if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
+            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
         }
         
         loadCart();
-        
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) loadCart();
-        });
-        
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'sessionId') loadCart();
-        });
     </script>
 </body>
 </html>
