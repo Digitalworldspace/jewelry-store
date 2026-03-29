@@ -11,9 +11,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary: #d4af37;
-            --primary-dark: #b8962e;
             --dark: #1a1a1a;
-            --light: #ffffff;
             --gray-100: #f8f9fa;
             --gray-200: #e9ecef;
             --gray-600: #6c757d;
@@ -48,7 +46,6 @@
         
         .hero {
             height: 45vh;
-            min-height: 350px;
             background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338');
             background-size: cover;
             background-position: center;
@@ -112,9 +109,7 @@
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid var(--gray-200);
-            transition: transform 0.2s;
         }
-        .product-card:hover { transform: translateY(-2px); }
         .product-image { width: 100%; height: 160px; object-fit: cover; }
         .product-info { padding: 10px; }
         .product-sku { font-size: 9px; color: var(--primary); }
@@ -122,7 +117,6 @@
         .product-price { font-size: 14px; font-weight: 700; color: var(--primary); margin: 6px 0; }
         .product-stock { font-size: 9px; margin-bottom: 8px; }
         .in-stock { color: #28a745; }
-        .low-stock { color: #ff9800; }
         .out-of-stock { color: #dc3545; }
         .add-to-cart-btn {
             width: 100%;
@@ -133,9 +127,7 @@
             font-size: 11px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
         }
-        .add-to-cart-btn:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-1px); }
         .add-to-cart-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .view-all-btn { text-align: center; margin: 20px 0 40px; }
@@ -161,7 +153,6 @@
             text-align: center;
         }
         .testimonial-card .quote { font-size: 28px; color: var(--primary); }
-        .testimonial-card .rating { color: var(--primary); margin: 5px 0; }
         
         .newsletter {
             background: linear-gradient(135deg, var(--dark), #2c2c2c);
@@ -281,9 +272,9 @@
     <div class="testimonials">
         <div class="section-title"><h2>Customer <span>Love</span></h2></div>
         <div class="testimonials-grid">
-            <div class="testimonial-card"><div class="quote">"</div><div class="rating">★★★★★</div><p>Absolutely stunning!</p><strong>— Priya S.</strong></div>
-            <div class="testimonial-card"><div class="quote">"</div><div class="rating">★★★★★</div><p>Quality unmatched!</p><strong>— Rajesh K.</strong></div>
-            <div class="testimonial-card"><div class="quote">"</div><div class="rating">★★★★★</div><p>Highly recommend!</p><strong>— Anjali M.</strong></div>
+            <div class="testimonial-card"><div class="quote">"</div><p>Absolutely stunning!</p><strong>— Priya S.</strong></div>
+            <div class="testimonial-card"><div class="quote">"</div><p>Quality unmatched!</p><strong>— Rajesh K.</strong></div>
+            <div class="testimonial-card"><div class="quote">"</div><p>Highly recommend!</p><strong>— Anjali M.</strong></div>
         </div>
     </div>
 
@@ -320,89 +311,45 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
-        function showToast(message, isError = false) {
+        function showToast(msg, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast';
             if (isError) toast.classList.add('toast-error');
             else toast.classList.add('toast-success');
-            toast.textContent = message;
+            toast.textContent = msg;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
         
         async function updateCartCount() {
             try {
-                const { data, error } = await supabase
-                    .from('carts')
-                    .select('items')
-                    .eq('session_id', sessionId)
-                    .maybeSingle();
-                
-                if (error) throw error;
+                const { data } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
                 const items = data?.items || [];
-                const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-                document.getElementById('cartCount').textContent = totalItems;
-            } catch (error) {
-                console.error('Error updating cart count:', error);
-            }
+                const total = items.reduce((s, i) => s + i.quantity, 0);
+                document.getElementById('cartCount').textContent = total;
+            } catch (e) {}
         }
         
-        window.addToCart = async function(productId, productName, productPrice, productSku, productImage) {
+        window.addToCart = async (id, name, price, sku, img) => {
             try {
-                const { data: product, error: stockError } = await supabase
-                    .from('products')
-                    .select('stock')
-                    .eq('id', productId)
-                    .single();
+                const { data: p } = await supabase.from('products').select('stock').eq('id', id).single();
+                if (p?.stock <= 0) { showToast(`${name} out of stock!`, true); return; }
                 
-                if (stockError) throw stockError;
-                if (product.stock <= 0) {
-                    showToast(`${productName} is out of stock!`, true);
-                    return;
-                }
+                const { data: cartData } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
+                let items = cartData?.items || [];
+                const existing = items.find(i => i.id === id);
                 
-                const { data: cartData, error: cartError } = await supabase
-                    .from('carts')
-                    .select('items')
-                    .eq('session_id', sessionId)
-                    .maybeSingle();
-                
-                if (cartError) throw cartError;
-                
-                let currentItems = cartData?.items || [];
-                const existingItem = currentItems.find(item => item.id === productId);
-                
-                if (existingItem) {
-                    if (existingItem.quantity + 1 > product.stock) {
-                        showToast(`Only ${product.stock} items available!`, true);
-                        return;
-                    }
-                    existingItem.quantity += 1;
+                if (existing) {
+                    if (existing.quantity + 1 > p.stock) { showToast(`Only ${p.stock} left!`, true); return; }
+                    existing.quantity++;
                 } else {
-                    currentItems.push({
-                        id: productId,
-                        sku: productSku,
-                        name: productName,
-                        price: productPrice,
-                        quantity: 1,
-                        image: productImage
-                    });
+                    items.push({ id, sku, name, price, quantity: 1, image: img });
                 }
                 
-                const total = currentItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
+                await supabase.from('carts').upsert({ session_id: sessionId, items, total, updated_at: new Date().toISOString() });
                 
-                const { error: saveError } = await supabase
-                    .from('carts')
-                    .upsert({
-                        session_id: sessionId,
-                        items: currentItems,
-                        total: total,
-                        updated_at: new Date().toISOString()
-                    });
-                
-                if (saveError) throw saveError;
-                
-                showToast(`${productName} added to cart!`);
+                showToast(`${name} added!`);
                 await updateCartCount();
                 
                 const cartIcon = document.querySelector('.mobile-nav a[href="cart.html"]');
@@ -410,55 +357,35 @@
                     cartIcon.style.transform = 'scale(1.1)';
                     setTimeout(() => cartIcon.style.transform = 'scale(1)', 200);
                 }
-                
-            } catch (error) {
-                console.error('Error adding to cart:', error);
-                showToast('Failed to add to cart', true);
-            }
+            } catch (e) { showToast('Failed to add', true); }
         };
         
-        window.subscribeNewsletter = function() {
+        window.subscribeNewsletter = () => {
             const email = document.getElementById('newsletterEmail').value;
             if (email && email.includes('@')) {
-                showToast('Thank you for subscribing!');
+                showToast('Subscribed!');
                 document.getElementById('newsletterEmail').value = '';
-            } else {
-                showToast('Please enter a valid email', true);
-            }
+            } else { showToast('Enter valid email', true); }
         };
         
         async function loadProducts() {
             const container = document.getElementById('products');
             try {
-                const { data: products, error } = await supabase
-                    .from('products')
-                    .select('*')
-                    .order('id');
-                
-                if (error) throw error;
-                
-                if (!products || products.length === 0) {
-                    container.innerHTML = '<div class="loading"><p>Coming soon...</p></div>';
-                    return;
-                }
+                const { data: products } = await supabase.from('products').select('*').order('id');
+                if (!products?.length) { container.innerHTML = '<div class="loading"><p>Coming soon...</p></div>'; return; }
                 
                 let html = '';
                 for (const p of products) {
-                    const mainImage = p.images && p.images[0] ? p.images[0] : 'https://via.placeholder.com/400x280?text=Style+Of+Life';
-                    const stockClass = p.stock <= 0 ? 'out-of-stock' : (p.stock < 10 ? 'low-stock' : 'in-stock');
-                    const stockText = p.stock <= 0 ? 'Out of Stock' : (p.stock < 10 ? `Only ${p.stock} left!` : 'In Stock');
-                    
+                    const img = p.images?.[0] || 'https://via.placeholder.com/400x280';
                     html += `
                         <div class="product-card">
-                            <img class="product-image" src="${mainImage}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400x280?text=Style+Of+Life'">
+                            <img class="product-image" src="${img}" onerror="this.src='https://via.placeholder.com/400x280'">
                             <div class="product-info">
                                 <div class="product-sku">${p.sku}</div>
                                 <div class="product-name">${escapeHtml(p.name)}</div>
                                 <div class="product-price">₹${(p.price || 0).toLocaleString()}</div>
-                                <div class="product-stock ${stockClass}">${stockText}</div>
-                                <button class="add-to-cart-btn" 
-                                    onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${mainImage}')"
-                                    ${p.stock <= 0 ? 'disabled' : ''}>
+                                <div class="product-stock ${p.stock > 0 ? 'in-stock' : 'out-of-stock'}">${p.stock > 0 ? 'In Stock' : 'Out of Stock'}</div>
+                                <button class="add-to-cart-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')" ${p.stock <= 0 ? 'disabled' : ''}>
                                     ${p.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
                                 </button>
                             </div>
@@ -466,21 +393,10 @@
                     `;
                 }
                 container.innerHTML = html;
-            } catch (error) {
-                console.error('Error loading products:', error);
-                container.innerHTML = '<div class="loading"><p>Error loading products</p></div>';
-            }
+            } catch (e) { container.innerHTML = '<div class="loading"><p>Error loading</p></div>'; }
         }
         
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m))); }
         
         await updateCartCount();
         await loadProducts();
