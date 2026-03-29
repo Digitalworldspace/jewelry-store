@@ -314,78 +314,48 @@
             try {
                 console.log('Adding to cart:', name);
                 
-                // Step 1: Try to update existing cart first
-                let { data: existingCart, error: fetchError } = await supabase
+                // Get current cart items
+                let { data: cart, error: fetchError } = await supabase
                     .from('carts')
-                    .select('*')
+                    .select('items')
                     .eq('session_id', sessionId)
                     .maybeSingle();
                 
-                if (fetchError) throw fetchError;
+                if (fetchError && fetchError.code !== 'PGRST116') {
+                    throw fetchError;
+                }
                 
-                let items = [];
-                let newTotal = 0;
+                let items = cart?.items || [];
+                const existingItem = items.find(i => i.id === id);
                 
-                if (existingCart) {
-                    // Cart exists - update it
-                    items = existingCart.items || [];
-                    const existingItem = items.find(i => i.id === id);
-                    
-                    if (existingItem) {
-                        existingItem.quantity += 1;
-                        console.log('Updated existing item, new quantity:', existingItem.quantity);
-                    } else {
-                        items.push({ 
-                            id: id, 
-                            sku: sku, 
-                            name: name, 
-                            price: price, 
-                            quantity: 1, 
-                            image: img 
-                        });
-                        console.log('Added new item, total items:', items.length);
-                    }
-                    
-                    newTotal = items.reduce((s, i) => s + (i.price * i.quantity), 0);
-                    
-                    // UPDATE existing cart
-                    const { error: updateError } = await supabase
-                        .from('carts')
-                        .update({
-                            items: items,
-                            total: newTotal,
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq('session_id', sessionId);
-                    
-                    if (updateError) throw updateError;
-                    console.log('Cart updated successfully');
-                    
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                    console.log('Updated existing item, new quantity:', existingItem.quantity);
                 } else {
-                    // No cart exists - create new one
-                    items = [{ 
+                    items.push({ 
                         id: id, 
                         sku: sku, 
                         name: name, 
                         price: price, 
                         quantity: 1, 
                         image: img 
-                    }];
-                    newTotal = price;
-                    
-                    // INSERT new cart
-                    const { error: insertError } = await supabase
-                        .from('carts')
-                        .insert({
-                            session_id: sessionId,
-                            items: items,
-                            total: newTotal,
-                            updated_at: new Date().toISOString()
-                        });
-                    
-                    if (insertError) throw insertError;
-                    console.log('New cart created successfully');
+                    });
+                    console.log('Added new item, total items:', items.length);
                 }
+                
+                const newTotal = items.reduce((s, i) => s + (i.price * i.quantity), 0);
+                
+                // Use the correct upsert syntax with onConflict
+                const { error: saveError } = await supabase
+                    .from('carts')
+                    .upsert({
+                        session_id: sessionId,
+                        items: items,
+                        total: newTotal,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'session_id' });
+                
+                if (saveError) throw saveError;
                 
                 showToast(`${name} added to cart!`);
                 await updateCartCount();
