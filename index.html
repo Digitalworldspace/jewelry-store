@@ -35,8 +35,8 @@
             overflow-x: hidden;
         }
         
-        /* Hero Logo Section - New Engaging Header */
-        .hero-logo-section {
+        /* Premium Luxury Hero Section */
+        .luxury-hero {
             position: relative;
             height: 100vh;
             min-height: 700px;
@@ -45,142 +45,496 @@
             justify-content: center;
             text-align: center;
             overflow: hidden;
-            margin-top: 0;
         }
         
-        .hero-bg-video {
+        /* Premium Background Image with Overlay */
+        .hero-background {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            opacity: 0.4;
-            z-index: 0;
-        }
-        
-        .hero-bg-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=2000');
+            background-image: url('https://images.pexels.com/photos/1444448/pexels-photo-1444448.jpeg?auto=compress&cs=tinysrgb&w=1600');
             background-size: cover;
             background-position: center;
-            z-index: 0;
+            filter: brightness(0.6) contrast(1.2);
+            transform: scale(1);
+            transition: transform 8s ease;
+            animation: slowZoom 20s ease-in-out infinite;
         }
         
-        .hero-content-centered {
-            position: relative;
+        @keyframes slowZoom {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Gradient Overlay for Depth */
+        .hero-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(0,0,0,0.7) 0%, 
+                rgba(0,0,0,0.5) 50%,
+                rgba(0,0,0,0.7) 100%);
+            z-index: 1;
+        }
+        
+        /* Gold Sparkle Effect */
+        .sparkle-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 40%, rgba(212,175,55,0.1) 0%, transparent 50%);
+            pointer-events: none;
             z-index: 2;
+        }
+        
+        /* Content Container */
+        .hero-content {
+            position: relative;
+            z-index: 10;
             max-width: 90%;
             padding: 20px;
-            animation: fadeInUp 1s ease;
+            animation: fadeInUp 1.2s ease;
         }
         
-        /* Logo Animation */
-        .luxury-logo {
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Premium Logo */
+        .premium-logo {
             margin-bottom: 30px;
         }
         
         .gold-logo {
             font-family: 'Playfair Display', serif;
-            font-size: 64px;
+            font-size: 68px;
             font-weight: 800;
-            letter-spacing: 8px;
-            background: linear-gradient(135deg, #D4AF37 0%, #F5E6B3 50%, #D4AF37 100%);
+            letter-spacing: 12px;
+            background: linear-gradient(135deg, #D4AF37 0%, #F5E6B3 40%, #D4AF37 70%, #B8962E 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 0 30px rgba(212,175,55,0.3);
-            animation: goldShine 3s ease-in-out infinite;
+            text-shadow: 0 0 40px rgba(212,175,55,0.4);
+            animation: goldPulse 3s ease-in-out infinite;
+            position: relative;
         }
         
-        @keyframes goldShine {
-            0%, 100% { text-shadow: 0 0 20px rgba(212,175,55,0.3); letter-spacing: 8px; }
-            50% { text-shadow: 0 0 40px rgba(212,175,55,0.6); letter-spacing: 10px; }
+        @keyframes goldPulse {
+            0%, 100% {
+                text-shadow: 0 0 30px rgba(212,175,55,0.3);
+                letter-spacing: 12px;
+            }
+            50% {
+                text-shadow: 0 0 60px rgba(212,175,55,0.6);
+                letter-spacing: 14px;
+            }
         }
         
-        .logo-divider {
-            width: 80px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            margin: 20px auto;
+        .logo-ornament {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .ornament-line {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+        }
+        
+        .ornament-diamond {
+            font-size: 20px;
+            color: var(--gold);
+            animation: rotateDiamond 4s linear infinite;
+        }
+        
+        @keyframes rotateDiamond {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         .tagline {
             font-size: 14px;
-            letter-spacing: 3px;
+            letter-spacing: 6px;
             text-transform: uppercase;
             color: var(--gold-light);
-            margin-bottom: 30px;
+            margin: 20px 0;
+            font-weight: 300;
         }
         
-        /* Stat Cards */
-        .stats-row {
+        /* Premium Stats */
+        .premium-stats {
             display: flex;
             justify-content: center;
-            gap: 40px;
+            gap: 50px;
             margin: 40px 0;
             flex-wrap: wrap;
         }
         
         .stat-item {
             text-align: center;
+            position: relative;
         }
         
         .stat-number {
-            font-size: 32px;
-            font-weight: 700;
+            font-size: 36px;
+            font-weight: 800;
             color: var(--gold);
             font-family: 'Playfair Display', serif;
+            line-height: 1;
         }
         
         .stat-label {
             font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.7;
+            letter-spacing: 2px;
+            opacity: 0.8;
+            margin-top: 8px;
         }
         
-        /* CTA Buttons */
-        .cta-buttons {
+        .stat-divider {
+            width: 1px;
+            height: 40px;
+            background: rgba(212,175,55,0.3);
+            margin: 0 10px;
+        }
+        
+        /* Premium CTA Buttons */
+        .premium-cta {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             justify-content: center;
-            margin: 30px 0;
+            margin: 40px 0;
             flex-wrap: wrap;
         }
         
-        .btn-primary {
+        .btn-gold {
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             color: var(--black);
-            padding: 14px 32px;
+            padding: 16px 42px;
             border-radius: 50px;
             text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: inline-block;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.4s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
         }
         
-        .btn-secondary {
+        .btn-outline-gold {
+            background: transparent;
             border: 2px solid var(--gold);
             color: var(--gold);
-            padding: 14px 32px;
+            padding: 16px 42px;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s;
+            letter-spacing: 1px;
+            transition: all 0.4s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-gold:hover, .btn-outline-gold:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(212,175,55,0.3);
+        }
+        
+        .btn-outline-gold:hover {
+            background: var(--gold);
+            color: var(--black);
+        }
+        
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            text-align: center;
+            animation: bounce 2s infinite;
+        }
+        
+        .scroll-indicator span {
+            display: block;
+            width: 24px;
+            height: 40px;
+            border: 2px solid var(--gold);
+            border-radius: 30px;
+            position: relative;
+        }
+        
+        .scroll-indicator span::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 2px;
+            animation: scrollWheel 1.5s infinite;
+        }
+        
+        @keyframes scrollWheel {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(15px); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+        
+        /* Floating Elements */
+        .floating-element {
+            position: absolute;
+            z-index: 5;
+            pointer-events: none;
+        }
+        
+        .floating-diamond {
+            top: 15%;
+            right: 8%;
+            font-size: 40px;
+            color: rgba(212,175,55,0.3);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-ring {
+            bottom: 20%;
+            left: 5%;
+            font-size: 35px;
+            color: rgba(212,175,55,0.3);
+            animation: float 7s ease-in-out infinite reverse;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        
+        /* Why Choose Us Section */
+        .why-choose-us {
+            background: var(--black-light);
+            padding: 80px 20px;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 38px;
+            position: relative;
             display: inline-block;
         }
         
-        .btn-primary:hover, .btn-secondary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(212,175,55,0.3);
+        .section-header h2 span {
+            color: var(--gold);
         }
         
-        /* Floating Cart Icon */
+        .section-header h2::before,
+        .section-header h2::after {
+            content: '✦';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: var(--gold);
+        }
+        
+        .section-header h2::before {
+            left: -40px;
+        }
+        
+        .section-header h2::after {
+            right: -40px;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .benefit-card {
+            background: var(--gray);
+            padding: 35px 25px;
+            border-radius: 24px;
+            text-align: center;
+            transition: all 0.4s;
+            border: 1px solid rgba(212,175,55,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .benefit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.1), transparent);
+            transition: left 0.6s;
+        }
+        
+        .benefit-card:hover::before {
+            left: 100%;
+        }
+        
+        .benefit-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--gold);
+        }
+        
+        .benefit-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(212,175,55,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            transition: all 0.3s;
+        }
+        
+        .benefit-card:hover .benefit-icon {
+            background: var(--gold);
+        }
+        
+        .benefit-icon i {
+            font-size: 36px;
+            color: var(--gold);
+            transition: all 0.3s;
+        }
+        
+        .benefit-card:hover .benefit-icon i {
+            color: var(--black);
+        }
+        
+        .benefit-card h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        
+        .benefit-card p {
+            font-size: 13px;
+            opacity: 0.7;
+            line-height: 1.6;
+        }
+        
+        /* Featured Products */
+        .featured-products {
+            padding: 80px 20px;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .product-card {
+            background: var(--black-light);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(212,175,55,0.2);
+            transition: all 0.4s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--gold);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            transition: transform 0.6s;
+        }
+        
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-sku {
+            font-size: 11px;
+            color: var(--gold);
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .product-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .product-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 12px 0;
+        }
+        
+        .add-to-cart-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--black);
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .add-to-cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212,175,55,0.4);
+        }
+        
+        /* Floating Cart */
         .floating-cart {
             position: fixed;
             bottom: 80px;
@@ -195,7 +549,7 @@
             color: var(--black);
             font-size: 24px;
             text-decoration: none;
-            box-shadow: 0 5px 20px rgba(212,175,55,0.3);
+            box-shadow: 0 5px 20px rgba(212,175,55,0.4);
             z-index: 1000;
             transition: all 0.3s;
         }
@@ -220,7 +574,6 @@
             font-weight: bold;
         }
         
-        /* Floating User Icon */
         .floating-user {
             position: fixed;
             bottom: 150px;
@@ -238,232 +591,6 @@
             text-decoration: none;
             border: 1px solid rgba(212,175,55,0.3);
             z-index: 1000;
-        }
-        
-        /* Why Choose Us Section */
-        .why-choose-us {
-            background: var(--black-light);
-            padding: 60px 20px;
-        }
-        
-        .section-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .section-header h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 32px;
-            position: relative;
-            display: inline-block;
-        }
-        
-        .section-header h2 span {
-            color: var(--gold);
-        }
-        
-        .section-header h2::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 2px;
-            background: var(--gold);
-        }
-        
-        .benefits-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .benefit-card {
-            background: var(--gray);
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            transition: all 0.3s;
-            border: 1px solid rgba(212,175,55,0.1);
-        }
-        
-        .benefit-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--gold);
-        }
-        
-        .benefit-icon {
-            width: 70px;
-            height: 70px;
-            background: rgba(212,175,55,0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-        }
-        
-        .benefit-icon i {
-            font-size: 32px;
-            color: var(--gold);
-        }
-        
-        .benefit-card h3 {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        
-        .benefit-card p {
-            font-size: 13px;
-            opacity: 0.7;
-            line-height: 1.5;
-        }
-        
-        /* Featured Products */
-        .featured-products {
-            padding: 60px 20px;
-        }
-        
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .product-card {
-            background: var(--black-light);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid rgba(212,175,55,0.2);
-            transition: all 0.3s;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--gold);
-        }
-        
-        .product-image {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-        }
-        
-        .product-info {
-            padding: 20px;
-        }
-        
-        .product-sku {
-            font-size: 11px;
-            color: var(--gold);
-            margin-bottom: 5px;
-        }
-        
-        .product-name {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .product-price {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--gold);
-            margin: 10px 0;
-        }
-        
-        .add-to-cart-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: var(--black);
-            border: none;
-            border-radius: 40px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        /* Testimonials */
-        .testimonials {
-            background: var(--black-light);
-            padding: 60px 20px;
-        }
-        
-        .testimonials-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .testimonial-card {
-            background: var(--gray);
-            padding: 25px;
-            border-radius: 20px;
-            text-align: center;
-        }
-        
-        .testimonial-card i {
-            font-size: 32px;
-            color: var(--gold);
-            margin-bottom: 15px;
-        }
-        
-        .testimonial-card p {
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-        
-        .customer-name {
-            font-weight: 600;
-            color: var(--gold);
-        }
-        
-        /* Newsletter */
-        .newsletter {
-            background: linear-gradient(135deg, var(--black-dark), var(--black-light));
-            padding: 60px 20px;
-            text-align: center;
-        }
-        
-        .newsletter h3 {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-        
-        .newsletter-form {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 25px;
-            flex-wrap: wrap;
-        }
-        
-        .newsletter-form input {
-            padding: 14px 24px;
-            width: 300px;
-            background: var(--gray);
-            border: 1px solid rgba(212,175,55,0.3);
-            border-radius: 50px;
-            color: var(--white);
-        }
-        
-        .newsletter-form button {
-            padding: 14px 32px;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: var(--black);
-            border: none;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
         }
         
         /* Bottom Navigation */
@@ -509,7 +636,7 @@
             transform: translateX(-50%);
             background: var(--gold);
             color: var(--black);
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 40px;
             z-index: 9999;
             font-size: 13px;
@@ -530,17 +657,6 @@
             to {
                 opacity: 1;
                 transform: translateX(-50%) translateY(0);
-            }
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
             }
         }
         
@@ -565,53 +681,81 @@
         
         footer {
             background: var(--black-dark);
-            padding: 40px 20px;
+            padding: 50px 20px;
             text-align: center;
             font-size: 12px;
             opacity: 0.7;
         }
         
         @media (max-width: 768px) {
-            .gold-logo { font-size: 40px; letter-spacing: 4px; }
-            .stats-row { gap: 20px; }
-            .stat-number { font-size: 24px; }
-            .cta-buttons { flex-direction: column; align-items: center; }
-            .btn-primary, .btn-secondary { width: 200px; text-align: center; }
+            .gold-logo { font-size: 36px; letter-spacing: 6px; }
+            .premium-stats { gap: 25px; }
+            .stat-number { font-size: 28px; }
+            .premium-cta { gap: 15px; flex-direction: column; align-items: center; }
+            .btn-gold, .btn-outline-gold { width: 220px; justify-content: center; }
+            .section-header h2::before,
+            .section-header h2::after { display: none; }
             .floating-cart { bottom: 80px; right: 15px; width: 50px; height: 50px; }
             .floating-user { bottom: 145px; right: 15px; }
+            .floating-diamond, .floating-ring { display: none; }
         }
     </style>
 </head>
 <body>
-    <!-- Hero Section with Logo -->
-    <div class="hero-logo-section">
-        <div class="hero-bg-image"></div>
-        <div class="hero-content-centered">
-            <div class="luxury-logo">
+    <!-- Premium Luxury Hero Section -->
+    <div class="luxury-hero">
+        <div class="hero-background"></div>
+        <div class="hero-gradient"></div>
+        <div class="sparkle-overlay"></div>
+        
+        <!-- Floating Luxury Elements -->
+        <div class="floating-element floating-diamond">
+            <i class="fas fa-gem"></i>
+        </div>
+        <div class="floating-element floating-ring">
+            <i class="fas fa-ring"></i>
+        </div>
+        
+        <div class="hero-content">
+            <div class="premium-logo">
                 <div class="gold-logo">STYLE OF LIFE</div>
-                <div class="logo-divider"></div>
-                <div class="tagline">TIMELESS ELEGANCE</div>
+                <div class="logo-ornament">
+                    <div class="ornament-line"></div>
+                    <i class="fas fa-gem ornament-diamond"></i>
+                    <div class="ornament-line"></div>
+                </div>
+                <div class="tagline">LUXURY JEWELRY SINCE 2020</div>
             </div>
             
-            <div class="stats-row">
+            <div class="premium-stats">
                 <div class="stat-item">
                     <div class="stat-number">5000+</div>
-                    <div class="stat-label">Happy Customers</div>
+                    <div class="stat-label">HAPPY CLIENTS</div>
                 </div>
+                <div class="stat-divider"></div>
                 <div class="stat-item">
                     <div class="stat-number">20+</div>
-                    <div class="stat-label">Years of Excellence</div>
+                    <div class="stat-label">YEARS OF EXCELLENCE</div>
                 </div>
+                <div class="stat-divider"></div>
                 <div class="stat-item">
                     <div class="stat-number">100%</div>
-                    <div class="stat-label">Authentic</div>
+                    <div class="stat-label">AUTHENTIC</div>
                 </div>
             </div>
             
-            <div class="cta-buttons">
-                <a href="#products" class="btn-primary">✨ Explore Collection</a>
-                <a href="#why-us" class="btn-secondary">💎 Why Choose Us</a>
+            <div class="premium-cta">
+                <button class="btn-gold" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+                    <i class="fas fa-gem"></i> EXPLORE COLLECTION
+                </button>
+                <button class="btn-outline-gold" onclick="document.getElementById('why-us').scrollIntoView({behavior:'smooth'})">
+                    <i class="fas fa-crown"></i> WHY CHOOSE US
+                </button>
             </div>
+        </div>
+        
+        <div class="scroll-indicator" onclick="document.getElementById('why-us').scrollIntoView({behavior:'smooth'})">
+            <span></span>
         </div>
     </div>
     
@@ -624,22 +768,22 @@
             <div class="benefit-card">
                 <div class="benefit-icon"><i class="fas fa-gem"></i></div>
                 <h3>Handcrafted Excellence</h3>
-                <p>Each piece is meticulously crafted by master artisans with over 20 years of experience, ensuring unmatched quality and attention to detail.</p>
+                <p>Each masterpiece is meticulously crafted by master artisans with over 20 years of experience, ensuring unparalleled quality and attention to every detail.</p>
             </div>
             <div class="benefit-card">
                 <div class="benefit-icon"><i class="fas fa-certificate"></i></div>
                 <h3>100% Authentic</h3>
-                <p>Every jewelry piece comes with a certificate of authenticity. BIS hallmarked gold and lab-certified gemstones.</p>
+                <p>Every piece comes with a certificate of authenticity. BIS hallmarked gold and lab-certified gemstones for your complete peace of mind.</p>
             </div>
             <div class="benefit-card">
                 <div class="benefit-icon"><i class="fas fa-truck-fast"></i></div>
                 <h3>Free Shipping</h3>
-                <p>Enjoy complimentary shipping on all orders above ₹3,000. Fast and secure delivery across India.</p>
+                <p>Enjoy complimentary express shipping on all orders above ₹3,000. Secure, insured, and beautifully packaged delivery across India.</p>
             </div>
             <div class="benefit-card">
                 <div class="benefit-icon"><i class="fas fa-gift"></i></div>
                 <h3>Luxury Gift Box</h3>
-                <p>Every purchase comes beautifully packaged in our signature luxury gift box, perfect for gifting.</p>
+                <p>Every purchase arrives in our signature premium gift box, making it perfect for gifting or treating yourself to something extraordinary.</p>
             </div>
         </div>
     </div>
@@ -652,42 +796,10 @@
         <div class="products-grid" id="productsGrid">
             <div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div>
         </div>
-        <div style="text-align: center; margin-top: 40px;">
-            <a href="shop.html" class="btn-secondary">View All Products →</a>
-        </div>
-    </div>
-    
-    <!-- Testimonials -->
-    <div class="testimonials">
-        <div class="section-header">
-            <h2>What Our <span>Customers Say</span></h2>
-        </div>
-        <div class="testimonials-grid">
-            <div class="testimonial-card">
-                <i class="fas fa-quote-left"></i>
-                <p>"Absolutely stunning piece! The craftsmanship is exceptional and the packaging was beautiful. Truly a luxury experience."</p>
-                <div class="customer-name">— Priya Sharma</div>
-            </div>
-            <div class="testimonial-card">
-                <i class="fas fa-quote-left"></i>
-                <p>"The diamond ring exceeded my expectations. Quality is unmatched and the customer service was wonderful."</p>
-                <div class="customer-name">— Rajesh Kumar</div>
-            </div>
-            <div class="testimonial-card">
-                <i class="fas fa-quote-left"></i>
-                <p>"Received my necklace today and I'm speechless. The design is exquisite. Highly recommend Style Of Life!"</p>
-                <div class="customer-name">— Anjali Mehta</div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Newsletter -->
-    <div class="newsletter">
-        <h3>Join the Inner Circle</h3>
-        <p>Be the first to discover new arrivals, exclusive offers, and jewelry styling tips.</p>
-        <div class="newsletter-form">
-            <input type="email" id="newsletterEmail" placeholder="Enter your email address">
-            <button onclick="subscribeNewsletter()">Subscribe →</button>
+        <div style="text-align: center; margin-top: 50px;">
+            <button class="btn-outline-gold" onclick="window.location.href='shop.html'" style="padding: 14px 35px;">
+                VIEW ALL PRODUCTS <i class="fas fa-arrow-right"></i>
+            </button>
         </div>
     </div>
     
@@ -711,7 +823,7 @@
     
     <footer>
         <p>© 2026 STYLE OF LIFE. All rights reserved.</p>
-        <p style="margin-top: 10px;">✨ Timeless Elegance Since 2020 ✨</p>
+        <p style="margin-top: 10px;">✨ Crafting Timeless Elegance Since 2020 ✨</p>
     </footer>
     
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
@@ -788,16 +900,6 @@
             }
         };
         
-        window.subscribeNewsletter = function() {
-            const email = document.getElementById('newsletterEmail').value;
-            if (email && email.includes('@')) {
-                showToast('Thank you for subscribing!');
-                document.getElementById('newsletterEmail').value = '';
-            } else {
-                showToast('Enter valid email', true);
-            }
-        };
-        
         async function loadProducts() {
             const container = document.getElementById('productsGrid');
             try {
@@ -816,10 +918,10 @@
                 
                 let html = '';
                 for (const p of products) {
-                    const img = p.images?.[0] || 'https://via.placeholder.com/400x250?text=Style+Of+Life';
+                    const img = p.images?.[0] || 'https://via.placeholder.com/400x280?text=Style+Of+Life';
                     html += `
                         <div class="product-card">
-                            <img class="product-image" src="${img}" onerror="this.src='https://via.placeholder.com/400x250?text=Style+Of+Life'">
+                            <img class="product-image" src="${img}" onerror="this.src='https://via.placeholder.com/400x280?text=Style+Of+Life'">
                             <div class="product-info">
                                 <div class="product-sku">${p.sku}</div>
                                 <div class="product-name">${escapeHtml(p.name)}</div>
