@@ -49,7 +49,31 @@
             background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
         }
         
-        /* Stories Section - Instagram Style */
+        /* Floating Particles */
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, var(--gold), transparent);
+            border-radius: 50%;
+            opacity: 0.15;
+            animation: floatParticle 15s infinite;
+        }
+        
+        @keyframes floatParticle {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.05; }
+            50% { transform: translateY(-50px) translateX(30px); opacity: 0.2; }
+        }
+        
+        /* Stories Section */
         .stories-section {
             padding: 15px 0;
             background: var(--white);
@@ -105,7 +129,7 @@
             font-weight: 500;
         }
         
-        /* Header */
+        /* Header with Black & Gold Logo */
         .instagram-header {
             display: flex;
             justify-content: space-between;
@@ -115,15 +139,52 @@
             border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         
+        .animated-logo {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
         .logo-main {
             font-family: 'Playfair Display', serif;
             font-size: 22px;
             font-weight: 800;
-            letter-spacing: 3px;
-            background: linear-gradient(135deg, #D4AF37 0%, #B8962E 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            letter-spacing: 2px;
+            color: var(--black);
+        }
+        
+        .logo-gold {
+            color: var(--gold);
+            font-weight: 900;
+            margin: 0 2px;
+        }
+        
+        .logo-sub {
+            font-size: 8px;
+            letter-spacing: 4px;
+            color: var(--gold);
+            margin-top: -2px;
+            opacity: 0.8;
+        }
+        
+        .logo-diamond {
+            position: absolute;
+            top: -12px;
+            right: -20px;
+            font-size: 14px;
+            color: var(--gold);
+            animation: diamondSpin 3s linear infinite;
+        }
+        
+        @keyframes diamondSpin {
+            0% { transform: rotate(0deg) scale(1); opacity: 0.6; }
+            50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
+            100% { transform: rotate(360deg) scale(1); opacity: 0.6; }
         }
         
         .header-icons {
@@ -214,6 +275,7 @@
             font-size: 20px;
             font-weight: 700;
             margin-bottom: 5px;
+            color: var(--black);
         }
         
         .story-product-sku {
@@ -598,6 +660,7 @@
 <body>
     <!-- Light Background -->
     <div class="light-bg"></div>
+    <div class="floating-particles" id="particles"></div>
     
     <!-- Stories Section -->
     <div class="stories-section">
@@ -606,9 +669,15 @@
         </div>
     </div>
     
-    <!-- Header -->
+    <!-- Header with Black & Gold Logo -->
     <div class="instagram-header">
-        <div class="logo-main">STYLE OF LIFE</div>
+        <div class="animated-logo">
+            <div class="logo-container">
+                <div class="logo-main">STYLE<span class="logo-gold">OF</span>LIFE</div>
+                <div class="logo-sub">LUXURY JEWELRY</div>
+            </div>
+            <i class="fas fa-gem logo-diamond"></i>
+        </div>
         <div class="header-icons">
             <a href="cart.html"><i class="fas fa-shopping-bag"></i><span class="cart-badge" id="cartCount">0</span></a>
             <a href="customer-portal.html"><i class="fas fa-user-circle"></i></a>
@@ -671,6 +740,24 @@
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
         }
+        
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
         
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
