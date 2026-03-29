@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Shopping Cart - Style Of Life</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/config.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary: #d4af37;
             --primary-dark: #b8962e;
@@ -34,10 +34,10 @@
             border-bottom: 1px solid var(--gray-200);
         }
         .logo { font-size: 20px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
-        .back-btn { font-size: 20px; color: var(--gray-600); text-decoration: none; padding: 5px; }
+        .back-btn { font-size: 20px; color: var(--gray-600); text-decoration: none; }
         
         .container { padding: 20px; max-width: 600px; margin: 0 auto; }
-        h1 { font-size: 24px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        h1 { font-size: 24px; margin-bottom: 20px; }
         
         .cart-item {
             background: white;
@@ -48,57 +48,26 @@
             gap: 15px;
             position: relative;
             border: 1px solid var(--gray-200);
-            animation: fadeIn 0.3s ease;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .cart-item-image {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 12px;
-            background: var(--gray-100);
-        }
+        .cart-item-image { width: 80px; height: 80px; object-fit: cover; border-radius: 12px; }
         .cart-item-details { flex: 1; }
         .cart-item-details h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-        .cart-item-sku { font-size: 10px; color: var(--gray-600); margin-bottom: 6px; }
-        .cart-item-price { font-weight: 600; color: var(--primary); font-size: 14px; margin-bottom: 8px; }
+        .cart-item-sku { font-size: 10px; color: var(--gray-600); }
+        .cart-item-price { font-weight: 600; color: var(--primary); margin: 8px 0; }
         
-        .quantity-control {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 5px;
-        }
+        .quantity-control { display: flex; align-items: center; gap: 8px; }
         .quantity-btn {
-            width: 32px;
-            height: 32px;
+            width: 32px; height: 32px;
             background: var(--gray-100);
             border: 1px solid var(--gray-200);
             border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
-            transition: all 0.2s;
         }
-        .quantity-btn:hover:not(:disabled) { background: var(--primary); color: white; border-color: var(--primary); }
-        .quantity-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .quantity-input {
-            width: 55px;
-            height: 32px;
-            text-align: center;
-            border: 1px solid var(--gray-200);
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        .cart-item-total {
-            font-weight: 700;
-            font-size: 14px;
-            margin-top: 8px;
-            color: var(--dark);
-        }
+        .quantity-btn:hover { background: var(--primary); color: white; }
+        .quantity-input { width: 50px; height: 32px; text-align: center; border: 1px solid var(--gray-200); border-radius: 8px; }
+        .cart-item-total { font-weight: 700; margin-top: 8px; }
         .remove-item {
             position: absolute;
             top: 15px;
@@ -109,37 +78,20 @@
             font-size: 16px;
             cursor: pointer;
             padding: 5px;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
         }
-        .remove-item:hover { background: var(--danger); color: white; transform: scale(1.05); }
+        .remove-item:hover { background: var(--danger); color: white; border-radius: 50%; }
         
-        .empty-cart {
-            text-align: center;
-            padding: 60px 20px;
-            background: white;
-            border-radius: 16px;
-            border: 1px solid var(--gray-200);
-        }
+        .empty-cart { text-align: center; padding: 60px 20px; background: white; border-radius: 16px; }
         .empty-cart i { font-size: 60px; color: var(--gray-200); margin-bottom: 15px; }
-        .empty-cart h3 { color: var(--gray-600); margin-bottom: 10px; font-size: 18px; }
-        .empty-cart p { color: var(--gray-600); font-size: 13px; margin-bottom: 20px; }
         .continue-shopping {
             display: inline-block;
             background: var(--primary);
             color: var(--dark);
-            padding: 10px 28px;
+            padding: 10px 25px;
             border-radius: 40px;
             text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
+            margin-top: 15px;
         }
-        .continue-shopping:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
         
         .cart-summary {
             background: white;
@@ -160,7 +112,6 @@
             font-weight: bold;
             color: var(--primary);
             padding-top: 15px;
-            margin-top: 5px;
         }
         .shipping-info {
             background: var(--gray-100);
@@ -186,19 +137,16 @@
             display: block;
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--primary);
             color: var(--dark);
             text-align: center;
             border-radius: 40px;
             font-weight: 600;
             margin: 15px 0 10px;
             text-decoration: none;
-            border: none;
             cursor: pointer;
-            transition: all 0.3s;
+            border: none;
         }
-        .checkout-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
-        .checkout-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .clear-cart-btn {
             width: 100%;
             padding: 12px;
@@ -207,8 +155,6 @@
             color: var(--danger);
             border-radius: 40px;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
         }
         .clear-cart-btn:hover { background: var(--danger); color: white; }
         
@@ -223,16 +169,9 @@
             border-radius: 40px;
             z-index: 9999;
             font-size: 13px;
-            white-space: nowrap;
-            animation: toastUp 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         .toast-error { background: #dc3545; }
         .toast-success { background: #28a745; }
-        @keyframes toastUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
         
         .loading { text-align: center; padding: 40px; }
         .spinner { width: 30px; height: 30px; border: 2px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px; }
@@ -258,15 +197,13 @@
             color: var(--gray-600);
             text-decoration: none;
             font-size: 10px;
-            transition: color 0.2s;
         }
         .bottom-nav a i { font-size: 20px; }
-        .bottom-nav a.active, .bottom-nav a:hover { color: var(--primary); }
+        .bottom-nav a.active { color: var(--primary); }
         
         @media (min-width: 768px) {
             .container { max-width: 1000px; }
             .cart-item-image { width: 100px; height: 100px; }
-            .cart-summary { position: sticky; top: 20px; }
         }
     </style>
 </head>
@@ -278,7 +215,7 @@
     </header>
 
     <div class="container">
-        <h1><i class="fas fa-shopping-cart"></i> Shopping Cart</h1>
+        <h1>Shopping Cart</h1>
         <div id="cartItems"></div>
         <div id="cartSummary"></div>
     </div>
@@ -296,23 +233,22 @@
         import { createClient } from '@supabase/supabase-js';
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-        
-        // Session management
+        let cart = [];
         let sessionId = localStorage.getItem('sessionId');
+        
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
         }
         
-        let cart = [];
-        const FREE_SHIPPING_LIMIT = 3000;
+        const FREE_SHIPPING = 3000;
         
-        function showToast(message, isError = false) {
+        function showToast(msg, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast';
             if (isError) toast.classList.add('toast-error');
             else toast.classList.add('toast-success');
-            toast.textContent = message;
+            toast.textContent = msg;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
@@ -324,15 +260,12 @@
                     .select('items')
                     .eq('session_id', sessionId)
                     .maybeSingle();
-                
                 if (error) throw error;
                 cart = data?.items || [];
-                console.log('Cart loaded:', cart.length, 'items');
                 renderCart();
                 updateSummary();
-                updateCartBadge();
+                updateCartCount();
             } catch (error) {
-                console.error('Load error:', error);
                 cart = [];
                 renderCart();
             }
@@ -340,8 +273,8 @@
         
         async function saveCart() {
             try {
-                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                const { error } = await supabase
+                const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+                await supabase
                     .from('carts')
                     .upsert({
                         session_id: sessionId,
@@ -349,212 +282,117 @@
                         total: total,
                         updated_at: new Date().toISOString()
                     });
-                
-                if (error) throw error;
-                console.log('Cart saved:', cart.length, 'items');
                 renderCart();
                 updateSummary();
-                updateCartBadge();
+                updateCartCount();
                 return true;
             } catch (error) {
-                console.error('Save error:', error);
-                showToast('Failed to save cart', true);
+                showToast('Failed to save', true);
                 return false;
             }
         }
         
-        function updateCartBadge() {
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        function updateCartCount() {
+            const total = cart.reduce((s, i) => s + i.quantity, 0);
             const badges = document.querySelectorAll('.cart-count');
-            badges.forEach(badge => {
-                if (badge) badge.textContent = totalItems;
-            });
+            badges.forEach(b => { if (b) b.textContent = total; });
         }
         
         function updateSummary() {
-            const summaryDiv = document.getElementById('cartSummary');
-            if (!cart.length) {
-                summaryDiv.innerHTML = '';
-                return;
-            }
+            const div = document.getElementById('cartSummary');
+            if (!cart.length) { div.innerHTML = ''; return; }
             
-            let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            let subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
             const tax = Math.round(subtotal * 0.18);
-            let shipping = subtotal >= FREE_SHIPPING_LIMIT ? 0 : 100;
+            let shipping = subtotal >= FREE_SHIPPING ? 0 : 100;
             const total = subtotal + tax + shipping;
-            const remaining = FREE_SHIPPING_LIMIT - subtotal;
-            const progress = Math.min(100, (subtotal / FREE_SHIPPING_LIMIT) * 100);
+            const remaining = FREE_SHIPPING - subtotal;
+            const progress = Math.min(100, (subtotal / FREE_SHIPPING) * 100);
             
-            summaryDiv.innerHTML = `
+            div.innerHTML = `
                 <div class="cart-summary">
-                    <div class="summary-row">
-                        <span>Subtotal</span>
-                        <span>₹${subtotal.toLocaleString()}</span>
-                    </div>
+                    <div class="summary-row"><span>Subtotal</span><span>₹${subtotal.toLocaleString()}</span></div>
                     <div class="shipping-info">
                         <i class="fas fa-truck"></i> 
-                        ${subtotal >= FREE_SHIPPING_LIMIT ? 
-                            '🎉 Congratulations! You get FREE shipping!' : 
-                            `Add ₹${remaining.toLocaleString()} more to get FREE shipping`}
-                        <div class="shipping-progress">
-                            <div class="shipping-progress-fill" style="width: ${progress}%"></div>
-                        </div>
+                        ${subtotal >= FREE_SHIPPING ? '🎉 FREE Shipping!' : `Add ₹${remaining} more for FREE shipping`}
+                        <div class="shipping-progress"><div class="shipping-progress-fill" style="width: ${progress}%"></div></div>
                     </div>
-                    <div class="summary-row">
-                        <span>Shipping</span>
-                        <span>₹${shipping}</span>
-                    </div>
-                    <div class="summary-row">
-                        <span>GST (18%)</span>
-                        <span>₹${tax.toLocaleString()}</span>
-                    </div>
-                    <div class="summary-row total">
-                        <span>Total</span>
-                        <span>₹${total.toLocaleString()}</span>
-                    </div>
-                    <button class="checkout-btn" onclick="goToCheckout()" ${cart.length === 0 ? 'disabled' : ''}>Proceed to Checkout →</button>
+                    <div class="summary-row"><span>Shipping</span><span>₹${shipping}</span></div>
+                    <div class="summary-row"><span>GST (18%)</span><span>₹${tax.toLocaleString()}</span></div>
+                    <div class="summary-row total"><span>Total</span><span>₹${total.toLocaleString()}</span></div>
+                    <button class="checkout-btn" onclick="goToCheckout()">Checkout →</button>
                     <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
                 </div>
             `;
         }
         
-        window.updateQuantity = async function(productId, newQuantity) {
-            newQuantity = parseInt(newQuantity);
-            if (isNaN(newQuantity) || newQuantity < 1) newQuantity = 1;
-            if (newQuantity > 99) newQuantity = 99;
-            
-            const { data: product, error } = await supabase
-                .from('products')
-                .select('stock')
-                .eq('id', productId)
-                .single();
-            
-            if (error) {
-                showToast('Error checking stock', true);
-                return;
-            }
-            
-            if (newQuantity > product.stock) {
-                showToast(`Only ${product.stock} items available!`, true);
-                newQuantity = product.stock;
-            }
-            
-            const itemIndex = cart.findIndex(item => item.id === productId);
-            if (itemIndex !== -1) {
-                cart[itemIndex].quantity = newQuantity;
+        window.updateQty = async (id, qty) => {
+            qty = parseInt(qty);
+            if (qty < 1) qty = 1;
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.quantity = qty;
                 await saveCart();
                 showToast('Quantity updated');
             }
         };
         
-        window.increaseQuantity = async function(productId, currentQty) {
-            console.log('Increasing quantity for:', productId, 'current:', currentQty);
-            await updateQuantity(productId, currentQty + 1);
-        };
+        window.incQty = async (id, cur) => { await updateQty(id, cur + 1); };
+        window.decQty = async (id, cur) => { if (cur > 1) await updateQty(id, cur - 1); else await removeItem(id); };
         
-        window.decreaseQuantity = async function(productId, currentQty) {
-            console.log('Decreasing quantity for:', productId, 'current:', currentQty);
-            if (currentQty > 1) {
-                await updateQuantity(productId, currentQty - 1);
-            } else {
-                await removeItem(productId);
-            }
-        };
-        
-        window.removeItem = async function(productId) {
-            console.log('Removing item:', productId);
-            const newCart = cart.filter(item => item.id !== productId);
-            cart = newCart;
+        window.removeItem = async (id) => {
+            cart = cart.filter(i => i.id !== id);
             await saveCart();
-            showToast('Item removed from cart');
+            showToast('Item removed');
         };
         
-        window.clearCart = async function() {
-            if (cart.length === 0) {
-                showToast('Cart is already empty', true);
-                return;
-            }
-            
-            if (confirm('Are you sure you want to remove all items from your cart?')) {
+        window.clearCart = async () => {
+            if (!cart.length) { showToast('Cart empty', true); return; }
+            if (confirm('Remove all items?')) {
                 cart = [];
                 await saveCart();
-                showToast('Cart cleared successfully!');
+                showToast('Cart cleared');
             }
         };
         
-        window.goToCheckout = function() {
-            if (cart.length === 0) {
-                showToast('Your cart is empty!', true);
-                return;
-            }
+        window.goToCheckout = () => {
+            if (!cart.length) { showToast('Cart empty!', true); return; }
             window.location.href = 'checkout.html';
         };
         
         function renderCart() {
             const container = document.getElementById('cartItems');
-            
-            if (!cart || cart.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-cart">
-                        <i class="fas fa-shopping-cart"></i>
-                        <h3>Your cart is empty</h3>
-                        <p>Looks like you haven't added any items yet.</p>
-                        <a href="shop.html" class="continue-shopping">Continue Shopping →</a>
-                    </div>
-                `;
+            if (!cart.length) {
+                container.innerHTML = `<div class="empty-cart"><i class="fas fa-shopping-cart"></i><h3>Cart empty</h3><a href="shop.html" class="continue-shopping">Shop Now →</a></div>`;
                 return;
             }
             
             let html = '';
-            for (let i = 0; i < cart.length; i++) {
-                const item = cart[i];
-                const itemTotal = item.price * item.quantity;
+            cart.forEach(item => {
                 html += `
                     <div class="cart-item">
-                        <img class="cart-item-image" src="${item.image || 'https://via.placeholder.com/80x80?text=Style+Of+Life'}" 
-                             alt="${escapeHtml(item.name)}" 
-                             onerror="this.src='https://via.placeholder.com/80x80?text=Style+Of+Life'">
+                        <img class="cart-item-image" src="${item.image || 'https://via.placeholder.com/80x80'}" onerror="this.src='https://via.placeholder.com/80x80'">
                         <div class="cart-item-details">
                             <h4>${escapeHtml(item.name)}</h4>
-                            <div class="cart-item-sku">SKU: ${item.sku}</div>
+                            <div class="cart-item-sku">${item.sku}</div>
                             <div class="cart-item-price">₹${item.price.toLocaleString()}</div>
                             <div class="quantity-control">
-                                <button class="quantity-btn" onclick="decreaseQuantity(${item.id}, ${item.quantity})">−</button>
-                                <input type="number" class="quantity-input" value="${item.quantity}" min="1" max="99" 
-                                       onchange="updateQuantity(${item.id}, this.value)">
-                                <button class="quantity-btn" onclick="increaseQuantity(${item.id}, ${item.quantity})">+</button>
+                                <button class="quantity-btn" onclick="decQty(${item.id}, ${item.quantity})">−</button>
+                                <input type="number" class="quantity-input" value="${item.quantity}" onchange="updateQty(${item.id}, this.value)">
+                                <button class="quantity-btn" onclick="incQty(${item.id}, ${item.quantity})">+</button>
                             </div>
-                            <div class="cart-item-total">Total: ₹${itemTotal.toLocaleString()}</div>
+                            <div class="cart-item-total">Total: ₹${(item.price * item.quantity).toLocaleString()}</div>
                         </div>
-                        <button class="remove-item" onclick="removeItem(${item.id})" title="Remove item">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+                        <button class="remove-item" onclick="removeItem(${item.id})"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 `;
-            }
+            });
             container.innerHTML = html;
         }
         
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m))); }
         
-        // Initial load
         loadCart();
-        
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) loadCart();
-        });
-        
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'sessionId' || e.key === 'cartCleared') loadCart();
-        });
     </script>
 </body>
 </html>
