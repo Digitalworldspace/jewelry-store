@@ -49,31 +49,7 @@
             background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
         }
         
-        /* Floating Particles */
-        .floating-particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-        
-        .particle {
-            position: absolute;
-            background: radial-gradient(circle, var(--gold), transparent);
-            border-radius: 50%;
-            opacity: 0.15;
-            animation: floatParticle 15s infinite;
-        }
-        
-        @keyframes floatParticle {
-            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.05; }
-            50% { transform: translateY(-50px) translateX(30px); opacity: 0.2; }
-        }
-        
-        /* Stories Section */
+        /* Stories Section - Category Toggle */
         .stories-section {
             padding: 15px 0;
             background: var(--white);
@@ -100,6 +76,15 @@
             min-width: 70px;
             cursor: pointer;
             transition: transform 0.2s;
+            opacity: 0.7;
+        }
+        
+        .story-item.active {
+            opacity: 1;
+        }
+        
+        .story-item.active .story-ring {
+            box-shadow: 0 0 0 2px var(--gold);
         }
         
         .story-item:hover {
@@ -129,7 +114,7 @@
             font-weight: 500;
         }
         
-        /* Header with Black & Gold Logo */
+        /* Header */
         .instagram-header {
             display: flex;
             justify-content: space-between;
@@ -211,141 +196,27 @@
             font-weight: bold;
         }
         
-        /* Story Modal */
-        .story-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 1000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
+        /* Featured Section */
+        .featured-section {
+            padding: 20px 15px;
+            background: linear-gradient(135deg, rgba(212,175,55,0.05), rgba(212,175,55,0.02));
+            margin-bottom: 20px;
         }
         
-        .story-modal.active {
-            display: flex;
-        }
-        
-        .story-modal-content {
-            max-width: 90%;
-            width: 400px;
-            background: var(--white);
-            border-radius: 24px;
-            overflow: hidden;
-            animation: slideUp 0.3s ease;
-        }
-        
-        .story-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: var(--white);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        
-        .story-modal-header h3 {
+        .featured-title {
             font-size: 18px;
-            color: var(--black);
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--gold-dark);
         }
         
-        .close-story {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--gray);
+        .random-products {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
         }
         
-        .story-modal-image {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-        }
-        
-        .story-modal-info {
-            padding: 20px;
-        }
-        
-        .story-product-name {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--black);
-        }
-        
-        .story-product-sku {
-            font-size: 12px;
-            color: var(--gray);
-            margin-bottom: 10px;
-        }
-        
-        .story-product-price {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--gold);
-            margin: 15px 0;
-        }
-        
-        .story-product-description {
-            font-size: 14px;
-            color: var(--gray);
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-        
-        .story-buttons {
-            display: flex;
-            gap: 12px;
-        }
-        
-        .story-buy-btn {
-            flex: 1;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: var(--white);
-            padding: 14px;
-            border: none;
-            border-radius: 40px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .story-cart-btn {
-            flex: 1;
-            background: var(--white-light);
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            padding: 14px;
-            border-radius: 40px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        /* Post Card */
-        .post-card {
-            margin-bottom: 20px;
+        .random-product-card {
             background: var(--white);
             border-radius: 16px;
             overflow: hidden;
@@ -353,177 +224,71 @@
             transition: all 0.3s;
         }
         
-        .post-card:hover {
+        .random-product-card:hover {
             transform: translateY(-3px);
             box-shadow: var(--shadow-hover);
         }
         
-        .post-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 15px;
-        }
-        
-        .post-user {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .post-avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--gold);
-            padding: 2px;
-        }
-        
-        .post-user-info h4 {
-            font-size: 14px;
-            font-weight: 600;
-        }
-        
-        .post-user-info p {
-            font-size: 10px;
-            color: var(--gray);
-        }
-        
-        .post-image {
+        .random-product-image {
             width: 100%;
-            aspect-ratio: 1 / 1;
+            height: 150px;
             object-fit: cover;
         }
         
-        .post-actions {
-            padding: 12px 15px;
+        .random-product-info {
+            padding: 12px;
         }
         
-        .action-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--white-light);
-            padding: 8px 18px;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid rgba(212,175,55,0.15);
-        }
-        
-        .action-btn i {
-            font-size: 18px;
-            color: var(--gold);
-        }
-        
-        .action-btn span {
-            font-size: 13px;
-            font-weight: 500;
-        }
-        
-        .action-btn:hover {
-            background: rgba(212,175,55,0.1);
-            transform: translateY(-2px);
-        }
-        
-        .post-caption {
-            padding: 0 15px 12px;
-            font-size: 13px;
-            line-height: 1.4;
-        }
-        
-        .post-caption span {
-            font-weight: 600;
-            color: var(--gold-dark);
-        }
-        
-        .hashtag {
-            color: var(--gold);
-            cursor: pointer;
-        }
-        
-        .post-time {
-            padding: 0 15px 15px;
-            font-size: 10px;
-            color: var(--gray);
-        }
-        
-        /* Product Tag */
-        .post-product-tag {
-            background: var(--white-light);
-            margin: 10px 15px;
-            padding: 15px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .tag-product-info {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-        
-        .tag-product-image {
-            width: 55px;
-            height: 55px;
-            border-radius: 12px;
-            object-fit: cover;
-        }
-        
-        .tag-product-name {
+        .random-product-name {
             font-size: 14px;
             font-weight: 600;
+            margin-bottom: 4px;
         }
         
-        .tag-product-price {
-            font-size: 13px;
+        .random-product-price {
+            font-size: 16px;
+            font-weight: 700;
             color: var(--gold);
-            font-weight: 700;
+            margin-bottom: 8px;
         }
         
-        .product-buttons {
-            display: flex;
-            gap: 12px;
+        .random-product-desc {
+            font-size: 11px;
+            color: var(--gray);
+            line-height: 1.4;
+            margin-bottom: 10px;
         }
         
-        .buy-now-btn {
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: var(--white);
-            padding: 10px 24px;
-            border-radius: 40px;
-            font-size: 13px;
-            font-weight: 700;
-            border: none;
-            cursor: pointer;
+        .random-buttons {
             display: flex;
-            align-items: center;
             gap: 8px;
         }
         
-        .add-to-cart-icon {
-            background: var(--white);
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .add-to-cart-icon:hover {
+        .random-buy-btn {
+            flex: 1;
             background: var(--gold);
             color: var(--white);
+            padding: 6px;
+            border: none;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
         }
         
-        /* Grid Section */
-        .grid-section {
+        .random-cart-btn {
+            background: var(--white-light);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 6px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* Product Grid with Description */
+        .products-section {
             padding: 20px 15px;
         }
         
@@ -537,30 +302,128 @@
         .section-title h3 {
             font-size: 18px;
             font-weight: 600;
+            position: relative;
         }
         
-        .section-title a {
-            color: var(--gold);
+        .section-title h3::before {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--gold);
+        }
+        
+        .current-category {
             font-size: 12px;
-            text-decoration: none;
+            color: var(--gold);
+            background: rgba(212,175,55,0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
         }
         
-        .product-grid {
+        .products-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 3px;
+            grid-template-columns: 1fr;
+            gap: 20px;
         }
         
-        .grid-product {
+        .product-item {
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .product-item-image {
+            width: 100%;
             aspect-ratio: 1 / 1;
             object-fit: cover;
-            width: 100%;
+        }
+        
+        .product-item-info {
+            padding: 15px;
+        }
+        
+        .product-item-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .product-item-sku {
+            font-size: 11px;
+            color: var(--gray-light);
+            margin-bottom: 10px;
+        }
+        
+        .product-item-desc {
+            font-size: 13px;
+            color: var(--gray);
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .product-item-price {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+        
+        .product-item-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .product-buy-btn {
+            flex: 1;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--white);
+            padding: 12px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .product-cart-btn {
+            background: var(--white-light);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             transition: all 0.3s;
         }
         
-        .grid-product:hover {
-            transform: scale(1.02);
+        .product-cart-btn:hover {
+            background: var(--gold);
+            color: var(--white);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
         }
         
         /* Bottom Navigation */
@@ -655,21 +518,28 @@
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.3); }
         }
+        
+        @media (min-width: 768px) {
+            .random-products {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Light Background -->
     <div class="light-bg"></div>
-    <div class="floating-particles" id="particles"></div>
     
-    <!-- Stories Section -->
+    <!-- Stories Section - Category Toggle -->
     <div class="stories-section">
         <div class="stories-container" id="storiesContainer">
-            <!-- Stories will be loaded here -->
+            <!-- Categories will be loaded here -->
         </div>
     </div>
     
-    <!-- Header with Black & Gold Logo -->
+    <!-- Header -->
     <div class="instagram-header">
         <div class="animated-logo">
             <div class="logo-container">
@@ -684,38 +554,22 @@
         </div>
     </div>
     
-    <!-- Story Modal -->
-    <div id="storyModal" class="story-modal">
-        <div class="story-modal-content">
-            <div class="story-modal-header">
-                <h3>Product Details</h3>
-                <button class="close-story" onclick="closeStoryModal()">&times;</button>
-            </div>
-            <img id="storyModalImage" class="story-modal-image" src="" alt="">
-            <div class="story-modal-info">
-                <div class="story-product-name" id="storyProductName"></div>
-                <div class="story-product-sku" id="storyProductSku"></div>
-                <div class="story-product-price" id="storyProductPrice"></div>
-                <div class="story-product-description" id="storyProductDesc"></div>
-                <div class="story-buttons">
-                    <button class="story-buy-btn" id="storyBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button>
-                    <button class="story-cart-btn" id="storyCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
-                </div>
-            </div>
+    <!-- Random Products Section -->
+    <div class="featured-section">
+        <div class="featured-title">✨ You May Also Like</div>
+        <div class="random-products" id="randomProducts">
+            <div class="loading"><div class="spinner"></div></div>
         </div>
     </div>
     
-    <!-- Feed Posts -->
-    <div id="feedContainer"></div>
-    
-    <!-- Grid Section -->
-    <div class="grid-section">
+    <!-- Products Section with Description -->
+    <div class="products-section">
         <div class="section-title">
-            <h3>Shop Our Collection</h3>
-            <a href="shop.html">View All →</a>
+            <h3 id="categoryTitle">All Products</h3>
+            <span class="current-category" id="currentCategory">All</span>
         </div>
-        <div class="product-grid" id="productGrid">
-            <div class="loading"><div class="spinner"></div></div>
+        <div class="products-grid" id="productsGrid">
+            <div class="loading"><div class="spinner"></div><p>Loading products...</p></div>
         </div>
     </div>
     
@@ -734,30 +588,23 @@
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let sessionId = localStorage.getItem('sessionId');
-        let currentStoryProduct = null;
+        let allProducts = [];
+        let currentCategory = 'all';
         
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
         }
         
-        // Create floating particles
-        function createParticles() {
-            const container = document.getElementById('particles');
-            for (let i = 0; i < 30; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                const size = Math.random() * 4 + 2;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 10 + 's';
-                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                container.appendChild(particle);
-            }
-        }
-        createParticles();
+        // Category mapping
+        const categories = [
+            { id: 'all', name: '✨ All', icon: 'fa-gem', filter: null },
+            { id: 'rings', name: '💍 Rings', icon: 'fa-ring', filter: 'Rings' },
+            { id: 'necklaces', name: '📿 Necklaces', icon: 'fa-link', filter: 'Necklaces' },
+            { id: 'earrings', name: '👑 Earrings', icon: 'fa-ear-deaf', filter: 'Earrings' },
+            { id: 'bracelets', name: '💫 Bracelets', icon: 'fa-hand-peace', filter: 'Bracelets' },
+            { id: 'pendants', name: '💎 Pendants', icon: 'fa-gem', filter: 'Pendants' }
+        ];
         
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
@@ -816,12 +663,6 @@
                 
                 showToast(`${name} added to cart! ✨`);
                 await updateCartCount();
-                
-                const cartIcon = document.querySelector('.header-icons a:first-child i');
-                if (cartIcon) {
-                    cartIcon.classList.add('cart-animation');
-                    setTimeout(() => cartIcon.classList.remove('cart-animation'), 500);
-                }
             } catch (error) {
                 showToast('Failed to add', true);
             }
@@ -834,208 +675,152 @@
             }, 500);
         };
         
-        window.openStoryModal = (product) => {
-            currentStoryProduct = product;
-            document.getElementById('storyModalImage').src = product.image;
-            document.getElementById('storyProductName').textContent = product.name;
-            document.getElementById('storyProductSku').textContent = `SKU: ${product.sku}`;
-            document.getElementById('storyProductPrice').textContent = `₹${product.price.toLocaleString()}`;
-            document.getElementById('storyProductDesc').textContent = product.description || 'Exquisite handcrafted jewelry piece. Made with premium quality materials and finest craftsmanship.';
-            
-            const buyBtn = document.getElementById('storyBuyBtn');
-            const cartBtn = document.getElementById('storyCartBtn');
-            
-            buyBtn.onclick = () => buyNow(product.id, product.name, product.price, product.sku, product.image);
-            cartBtn.onclick = () => addToCart(product.id, product.name, product.price, product.sku, product.image);
-            
-            document.getElementById('storyModal').classList.add('active');
-        };
-        
-        window.closeStoryModal = () => {
-            document.getElementById('storyModal').classList.remove('active');
-        };
-        
-        async function loadStories() {
+        // Load Categories/Stories
+        function loadStories() {
             const container = document.getElementById('storiesContainer');
-            const { data: products, error } = await supabase
-                .from('products')
-                .select('*')
-                .order('id')
-                .limit(8);
-            
-            if (error || !products?.length) return;
-            
-            const storyCategories = [
-                { name: '✨ New', filter: 'new' },
-                { name: '💍 Rings', filter: 'rings' },
-                { name: '📿 Necklaces', filter: 'necklaces' },
-                { name: '👑 Earrings', filter: 'earrings' },
-                { name: '💫 Bracelets', filter: 'bracelets' },
-                { name: '💎 Pendants', filter: 'pendants' },
-                { name: '⭐ Best Sellers', filter: 'bestsellers' },
-                { name: '🔥 Sale', filter: 'sale' }
-            ];
-            
             let html = '';
-            for (let i = 0; i < storyCategories.length && i < products.length; i++) {
-                const product = products[i];
-                const img = product.images?.[0] || 'https://via.placeholder.com/70x70';
+            for (const cat of categories) {
                 html += `
-                    <div class="story-item" onclick="openStoryModal({
-                        id: ${product.id},
-                        name: '${escapeHtml(product.name)}',
-                        sku: '${product.sku}',
-                        price: ${product.price},
-                        image: '${img}',
-                        description: '${escapeHtml(product.description || 'Exquisite handcrafted jewelry piece.')}'
-                    })">
+                    <div class="story-item ${cat.id === currentCategory ? 'active' : ''}" onclick="filterByCategory('${cat.id}')">
                         <div class="story-ring">
-                            <img class="story-image" src="${img}" alt="${storyCategories[i].name}">
+                            <div class="story-image" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--gold-light), var(--white));">
+                                <i class="fas ${cat.icon}" style="font-size: 28px; color: var(--gold);"></i>
+                            </div>
                         </div>
-                        <div class="story-name">${storyCategories[i].name}</div>
+                        <div class="story-name">${cat.name}</div>
                     </div>
                 `;
             }
             container.innerHTML = html;
         }
         
-        async function loadFeed() {
-            const container = document.getElementById('feedContainer');
-            const { data: products, error } = await supabase
-                .from('products')
-                .select('*')
-                .order('id')
-                .limit(5);
+        // Filter by category
+        window.filterByCategory = async (categoryId) => {
+            currentCategory = categoryId;
             
-            if (error || !products?.length) {
-                container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading feed...</p></div>';
-                return;
-            }
-            
-            const feedPosts = [
-                {
-                    id: 1,
-                    user: 'styleoflife',
-                    name: 'Style Of Life',
-                    avatar: products[0]?.images?.[0] || 'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=50&h=50&fit=crop',
-                    product: products[0],
-                    caption: 'Elevate your elegance with our stunning diamond necklace. ✨ Handcrafted with love and precision.',
-                    time: '2 hours ago',
-                    hashtags: '#LuxuryJewelry #StyleOfLife #DiamondNecklace'
-                },
-                {
-                    id: 2,
-                    user: 'styleoflife',
-                    name: 'Style Of Life',
-                    avatar: products[1]?.images?.[0] || 'https://images.pexels.com/photos/1191665/pexels-photo-1191665.jpeg?auto=compress&cs=tinysrgb&w=50&h=50&fit=crop',
-                    product: products[1] || products[0],
-                    caption: 'The perfect ring for your special moment. 💍 Our solitaire diamond ring is a timeless classic.',
-                    time: '5 hours ago',
-                    hashtags: '#DiamondRing #Proposal #EngagementRing'
-                },
-                {
-                    id: 3,
-                    user: 'styleoflife',
-                    name: 'Style Of Life',
-                    avatar: products[2]?.images?.[0] || 'https://images.pexels.com/photos/1455286/pexels-photo-1455286.jpeg?auto=compress&cs=tinysrgb&w=50&h=50&fit=crop',
-                    product: products[2] || products[0],
-                    caption: 'Pearls never go out of style. 🌟 Our pearl drop earrings add the perfect touch of elegance.',
-                    time: '1 day ago',
-                    hashtags: '#PearlJewelry #Elegance #StyleOfLife'
+            // Update active state on stories
+            document.querySelectorAll('.story-item').forEach((item, index) => {
+                if (index === categories.findIndex(c => c.id === categoryId)) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
                 }
-            ];
+            });
             
-            let html = '';
-            for (const post of feedPosts) {
-                const img = post.product?.images?.[0] || 'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop';
-                
-                html += `
-                    <div class="post-card">
-                        <div class="post-header">
-                            <div class="post-user">
-                                <img class="post-avatar" src="${post.avatar}" alt="">
-                                <div class="post-user-info">
-                                    <h4>${post.name} <i class="fas fa-check-circle" style="color: var(--gold); font-size: 12px;"></i></h4>
-                                    <p>${post.user}</p>
-                                </div>
-                            </div>
-                            <div class="post-menu"><i class="fas fa-ellipsis-h"></i></div>
-                        </div>
-                        <img class="post-image" src="${img}" alt="">
-                        <div class="post-actions">
-                            <div class="action-btn" onclick="openStoryModal({
-                                id: ${post.product?.id || 1},
-                                name: '${escapeHtml(post.product?.name || 'Jewelry')}',
-                                sku: '${post.product?.sku || 'LUX-001'}',
-                                price: ${post.product?.price || 0},
-                                image: '${img}',
-                                description: '${escapeHtml(post.product?.description || 'Exquisite handcrafted jewelry piece.')}'
-                            })">
-                                <i class="fas fa-info-circle"></i>
-                                <span>View Details</span>
-                            </div>
-                        </div>
-                        <div class="post-caption">
-                            <span>${post.user}</span> ${post.caption}<br>
-                            <span class="hashtag">${post.hashtags}</span>
-                        </div>
-                        <div class="post-product-tag">
-                            <div class="tag-product-info">
-                                <img class="tag-product-image" src="${img}" alt="">
-                                <div>
-                                    <div class="tag-product-name">${post.product?.name || 'Luxury Jewelry'}</div>
-                                    <div class="tag-product-price">₹${(post.product?.price || 0).toLocaleString()}</div>
-                                </div>
-                            </div>
-                            <div class="product-buttons">
-                                <button class="buy-now-btn" onclick="buyNow(${post.product?.id || 1}, '${escapeHtml(post.product?.name || 'Jewelry')}', ${post.product?.price || 0}, '${post.product?.sku || 'LUX-001'}', '${img}')">
-                                    <i class="fas fa-bolt"></i> Buy Now
-                                </button>
-                                <div class="add-to-cart-icon" onclick="addToCart(${post.product?.id || 1}, '${escapeHtml(post.product?.name || 'Jewelry')}', ${post.product?.price || 0}, '${post.product?.sku || 'LUX-001'}', '${img}')">
-                                    <i class="fas fa-shopping-cart"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="post-time">${post.time}</div>
-                    </div>
-                `;
-            }
-            container.innerHTML = html;
-        }
+            // Update UI
+            const category = categories.find(c => c.id === categoryId);
+            document.getElementById('categoryTitle').textContent = category?.name || 'Products';
+            document.getElementById('currentCategory').textContent = category?.name || 'All';
+            
+            // Load products for selected category
+            await loadProductsByCategory(categoryId);
+        };
         
-        async function loadProductGrid() {
-            const container = document.getElementById('productGrid');
+        // Load products by category
+        async function loadProductsByCategory(categoryId) {
+            const container = document.getElementById('productsGrid');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading products...</p></div>';
+            
             try {
-                const { data: products, error } = await supabase
-                    .from('products')
-                    .select('*')
-                    .order('id')
-                    .limit(6);
+                let query = supabase.from('products').select('*');
+                
+                if (categoryId !== 'all') {
+                    const category = categories.find(c => c.id === categoryId);
+                    if (category && category.filter) {
+                        query = query.ilike('category', `%${category.filter}%`);
+                    }
+                }
+                
+                const { data: products, error } = await query.order('id');
                 
                 if (error) throw error;
                 
                 if (!products || products.length === 0) {
-                    container.innerHTML = '<div class="loading"><p>Coming soon...</p></div>';
+                    container.innerHTML = '<div class="empty-state">✨ No products found in this category</div>';
                     return;
                 }
                 
                 let html = '';
                 for (const p of products) {
-                    const img = p.images?.[0] || 'https://via.placeholder.com/200x200?text=Style+Of+Life';
+                    const img = p.images?.[0] || 'https://via.placeholder.com/400x400?text=Style+Of+Life';
+                    const desc = p.description || 'Exquisite handcrafted jewelry piece made with premium quality materials and finest craftsmanship. Perfect for special occasions.';
+                    
                     html += `
-                        <img class="grid-product" src="${img}" alt="${p.name}" onclick="openStoryModal({
-                            id: ${p.id},
-                            name: '${escapeHtml(p.name)}',
-                            sku: '${p.sku}',
-                            price: ${p.price},
-                            image: '${img}',
-                            description: '${escapeHtml(p.description || 'Exquisite handcrafted jewelry piece.')}'
-                        })">
+                        <div class="product-item">
+                            <img class="product-item-image" src="${img}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400x400?text=Style+Of+Life'">
+                            <div class="product-item-info">
+                                <div class="product-item-name">${escapeHtml(p.name)}</div>
+                                <div class="product-item-sku">SKU: ${p.sku} | ${p.category || 'Jewelry'}</div>
+                                <div class="product-item-desc">${escapeHtml(desc.substring(0, 120))}${desc.length > 120 ? '...' : ''}</div>
+                                <div class="product-item-price">₹${(p.price || 0).toLocaleString()}</div>
+                                <div class="product-item-buttons">
+                                    <button class="product-buy-btn" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
+                                        <i class="fas fa-bolt"></i> Buy Now
+                                    </button>
+                                    <button class="product-cart-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     `;
                 }
                 container.innerHTML = html;
             } catch (error) {
-                container.innerHTML = '<div class="loading"><p>Error loading</p></div>';
+                console.error('Error loading products:', error);
+                container.innerHTML = '<div class="empty-state">Error loading products</div>';
+            }
+        }
+        
+        // Load random products for featured section
+        async function loadRandomProducts() {
+            const container = document.getElementById('randomProducts');
+            
+            try {
+                const { data: products, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .order('id');
+                
+                if (error) throw error;
+                
+                if (!products || products.length === 0) {
+                    container.innerHTML = '<div class="empty-state">✨ Coming soon</div>';
+                    return;
+                }
+                
+                // Shuffle and get 4 random products
+                const shuffled = [...products];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                const randomProducts = shuffled.slice(0, 4);
+                
+                let html = '';
+                for (const p of randomProducts) {
+                    const img = p.images?.[0] || 'https://via.placeholder.com/300x150?text=Style+Of+Life';
+                    const desc = p.description || 'Exquisite handcrafted jewelry piece.';
+                    
+                    html += `
+                        <div class="random-product-card">
+                            <img class="random-product-image" src="${img}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300x150?text=Style+Of+Life'">
+                            <div class="random-product-info">
+                                <div class="random-product-name">${escapeHtml(p.name)}</div>
+                                <div class="random-product-price">₹${(p.price || 0).toLocaleString()}</div>
+                                <div class="random-product-desc">${escapeHtml(desc.substring(0, 60))}${desc.length > 60 ? '...' : ''}</div>
+                                <div class="random-buttons">
+                                    <button class="random-buy-btn" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">Buy Now</button>
+                                    <button class="random-cart-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading random products:', error);
+                container.innerHTML = '<div class="empty-state">Unable to load recommendations</div>';
             }
         }
         
@@ -1044,17 +829,11 @@
             return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
         }
         
-        // Close modal on outside click
-        document.getElementById('storyModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeStoryModal();
-            }
-        });
-        
+        // Initialize
+        loadStories();
         await updateCartCount();
-        await loadStories();
-        await loadFeed();
-        await loadProductGrid();
+        await loadRandomProducts();
+        await loadProductsByCategory('all');
     </script>
 </body>
 </html>
