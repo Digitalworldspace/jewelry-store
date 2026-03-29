@@ -30,6 +30,7 @@
             font-size: 12px;
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
         }
         .top-bar a { color: var(--gray-600); text-decoration: none; margin-left: 20px; }
         .top-bar a:hover { color: var(--primary); }
@@ -44,9 +45,11 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+            gap: 15px;
         }
         .logo { font-size: 24px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
-        nav { display: flex; gap: 30px; }
+        nav { display: flex; gap: 30px; flex-wrap: wrap; }
         nav a { color: var(--gray-600); text-decoration: none; font-weight: 500; transition: color 0.3s; }
         nav a:hover, nav a.active { color: var(--primary); }
         .cart-icon { position: relative; }
@@ -64,7 +67,7 @@
 
         /* Container */
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
         .cart-header h1 { font-size: 28px; color: var(--dark); }
         .continue-shopping { color: var(--primary); text-decoration: none; font-weight: 500; }
 
@@ -87,7 +90,7 @@
         .cart-table tr:last-child td { border-bottom: none; }
         
         .cart-product { display: flex; gap: 15px; align-items: center; }
-        .cart-product-img { width: 80px; height: 80px; object-fit: cover; border-radius: 12px; }
+        .cart-product-img { width: 80px; height: 80px; object-fit: cover; border-radius: 12px; background: var(--gray-100); }
         .cart-product-info h4 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
         .cart-product-sku { font-size: 11px; color: var(--gray-600); }
         
@@ -95,23 +98,24 @@
         
         .cart-quantity { display: flex; align-items: center; gap: 8px; }
         .qty-btn {
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             background: var(--gray-100);
             border: 1px solid var(--gray-200);
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
             transition: all 0.2s;
         }
         .qty-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
         .qty-input {
             width: 50px;
-            height: 30px;
+            height: 32px;
             text-align: center;
             border: 1px solid var(--gray-200);
             border-radius: 8px;
+            font-size: 14px;
         }
         
         .cart-total { font-weight: 700; font-size: 16px; }
@@ -122,8 +126,12 @@
             cursor: pointer;
             font-size: 18px;
             transition: all 0.2s;
+            padding: 5px;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
         }
-        .cart-remove:hover { transform: scale(1.1); }
+        .cart-remove:hover { background: var(--danger); color: white; transform: scale(1.05); }
         
         /* Cart Summary */
         .cart-summary {
@@ -136,7 +144,7 @@
         }
         .cart-summary h3 { font-size: 18px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--gray-200); }
         .summary-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--gray-200); }
-        .summary-row.total { border-bottom: none; font-size: 20px; font-weight: bold; color: var(--primary); padding-top: 15px; }
+        .summary-row.total { border-bottom: none; font-size: 20px; font-weight: bold; color: var(--primary); padding-top: 15px; margin-top: 5px; }
         .shipping-info { background: var(--gray-100); padding: 12px; border-radius: 12px; margin: 15px 0; font-size: 13px; }
         .shipping-progress { margin-top: 8px; height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden; }
         .shipping-progress-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
@@ -144,7 +152,7 @@
             display: block;
             width: 100%;
             padding: 14px;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: var(--dark);
             text-align: center;
             border-radius: 40px;
@@ -155,7 +163,7 @@
             border: none;
             cursor: pointer;
         }
-        .checkout-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .checkout-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
         .clear-cart-btn {
             width: 100%;
             padding: 12px;
@@ -178,7 +186,8 @@
             border: 1px solid var(--gray-200);
         }
         .empty-cart i { font-size: 80px; color: var(--gray-200); margin-bottom: 20px; }
-        .empty-cart h3 { color: var(--gray-600); margin-bottom: 10px; }
+        .empty-cart h3 { color: var(--gray-600); margin-bottom: 10px; font-size: 24px; }
+        .empty-cart p { color: var(--gray-600); margin-bottom: 20px; }
         .empty-cart .btn-shop {
             display: inline-block;
             background: var(--primary);
@@ -187,8 +196,9 @@
             border-radius: 40px;
             text-decoration: none;
             font-weight: 600;
-            margin-top: 20px;
+            transition: all 0.3s;
         }
+        .empty-cart .btn-shop:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
         
         /* Toast */
         .toast {
@@ -201,6 +211,7 @@
             border-radius: 40px;
             z-index: 9999;
             animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         .toast-error { background: #dc3545; }
         .toast-success { background: #28a745; }
@@ -222,14 +233,15 @@
         }
         
         @media (max-width: 768px) {
-            .top-bar, header { padding: 12px 20px; flex-direction: column; gap: 10px; text-align: center; }
+            .top-bar, header { padding: 12px 20px; flex-direction: column; text-align: center; }
             .cart-grid { grid-template-columns: 1fr; }
             .cart-table, .cart-table thead, .cart-table tbody, .cart-table tr, .cart-table td { display: block; }
             .cart-table thead { display: none; }
-            .cart-table td { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--gray-200); }
-            .cart-table td::before { content: attr(data-label); font-weight: 600; color: var(--gray-600); }
+            .cart-table td { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--gray-200); }
+            .cart-table td::before { content: attr(data-label); font-weight: 600; color: var(--gray-600); margin-right: 15px; }
             .cart-product { flex-direction: column; text-align: center; }
             .cart-summary { position: static; }
+            .empty-cart { padding: 40px; }
         }
     </style>
 </head>
@@ -247,6 +259,10 @@
             <a href="cart.html" class="active">Cart</a>
             <a href="track.html">Track Order</a>
         </nav>
+        <div class="cart-icon">
+            <i class="fas fa-shopping-bag"></i>
+            <span class="cart-count" id="cartCount">0</span>
+        </div>
     </header>
 
     <div class="container">
@@ -297,7 +313,7 @@
                 if (error) throw error;
                 cart = data?.items || [];
                 renderCart();
-                updateCartCount();
+                updateCartBadge();
             } catch (error) {
                 console.error('Error loading cart:', error);
                 cart = [];
@@ -317,15 +333,15 @@
                         updated_at: new Date().toISOString()
                     });
                 renderCart();
-                updateCartCount();
+                updateCartBadge();
                 return true;
             } catch (error) {
-                showToast('Failed to save', true);
+                showToast('Failed to save cart', true);
                 return false;
             }
         }
         
-        function updateCartCount() {
+        function updateCartBadge() {
             const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
             const badges = document.querySelectorAll('.cart-count');
             badges.forEach(b => { if (b) b.textContent = totalItems; });
@@ -334,6 +350,8 @@
         window.updateQuantity = async (id, qty) => {
             qty = parseInt(qty);
             if (isNaN(qty) || qty < 1) qty = 1;
+            if (qty > 99) qty = 99;
+            
             const item = cart.find(i => i.id === id);
             if (item) {
                 item.quantity = qty;
@@ -350,7 +368,7 @@
         
         window.clearCart = async () => {
             if (cart.length === 0) {
-                showToast('Cart is empty', true);
+                showToast('Cart is already empty', true);
                 return;
             }
             if (confirm('Remove all items from your cart?')) {
@@ -383,7 +401,8 @@
             const progress = Math.min(100, (subtotal / FREE_SHIPPING) * 100);
             
             let itemsHtml = '';
-            cart.forEach(item => {
+            for (let i = 0; i < cart.length; i++) {
+                const item = cart[i];
                 itemsHtml += `
                     <tr>
                         <td data-label="Product">
@@ -407,7 +426,7 @@
                         <td><button class="cart-remove" onclick="removeItem(${item.id})"><i class="fas fa-trash-alt"></i></button></td>
                     </tr>
                 `;
-            });
+            }
             
             container.innerHTML = `
                 <div class="cart-grid">
