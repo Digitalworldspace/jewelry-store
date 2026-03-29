@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/config.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
             --primary: #d4af37;
             --primary-dark: #b8962e;
@@ -19,6 +19,7 @@
             --gray-600: #6c757d;
             --danger: #dc3545;
             --success: #28a745;
+            --warning: #ffc107;
         }
         body { font-family: 'Inter', sans-serif; background: #faf7f2; padding-bottom: 70px; }
         
@@ -34,12 +35,16 @@
             border-bottom: 1px solid var(--gray-200);
         }
         .logo { font-size: 20px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
-        .back-btn { font-size: 20px; color: var(--gray-600); text-decoration: none; }
+        .back-btn { font-size: 20px; color: var(--gray-600); text-decoration: none; padding: 5px; }
+        .cart-header-icon { font-size: 20px; color: var(--gray-600); }
         
         .container { padding: 20px; max-width: 600px; margin: 0 auto; }
         h1 { font-size: 24px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         
         /* Cart Items */
+        .cart-items-list {
+            margin-bottom: 20px;
+        }
         .cart-item {
             background: white;
             border-radius: 16px;
@@ -49,11 +54,18 @@
             gap: 15px;
             position: relative;
             border: 1px solid var(--gray-200);
-            animation: fadeIn 0.3s ease;
+            transition: all 0.3s ease;
+            animation: slideIn 0.3s ease;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .cart-item-removing {
+            animation: slideOut 0.3s ease forwards;
+        }
+        @keyframes slideOut {
+            to { opacity: 0; transform: translateX(20px); }
         }
         .cart-item-image {
             width: 80px;
@@ -63,7 +75,7 @@
             background: var(--gray-100);
         }
         .cart-item-details { flex: 1; }
-        .cart-item-details h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+        .cart-item-details h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; color: var(--dark); }
         .cart-item-sku { font-size: 10px; color: var(--gray-600); margin-bottom: 6px; }
         .cart-item-price { font-weight: 600; color: var(--primary); font-size: 14px; margin-bottom: 8px; }
         
@@ -84,10 +96,14 @@
             font-weight: bold;
             transition: all 0.2s;
         }
-        .quantity-btn:hover {
+        .quantity-btn:hover:not(:disabled) {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
+        }
+        .quantity-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         .quantity-input {
             width: 45px;
@@ -115,6 +131,11 @@
             padding: 5px;
             border-radius: 50%;
             transition: all 0.2s;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .remove-item:hover {
             background: var(--danger);
@@ -130,7 +151,8 @@
             border: 1px solid var(--gray-200);
         }
         .empty-cart i { font-size: 60px; color: var(--gray-200); margin-bottom: 15px; }
-        .empty-cart h3 { color: var(--gray-600); margin-bottom: 10px; }
+        .empty-cart h3 { color: var(--gray-600); margin-bottom: 10px; font-size: 18px; }
+        .empty-cart p { color: var(--gray-600); font-size: 13px; margin-bottom: 20px; }
         .continue-shopping {
             display: inline-block;
             background: var(--primary);
@@ -139,18 +161,19 @@
             border-radius: 40px;
             text-decoration: none;
             font-weight: 600;
-            margin-top: 15px;
             transition: all 0.3s;
         }
         .continue-shopping:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
         
-        /* Summary */
+        /* Cart Summary */
         .cart-summary {
             background: white;
             border-radius: 16px;
             padding: 20px;
             margin-top: 20px;
             border: 1px solid var(--gray-200);
+            position: sticky;
+            bottom: 70px;
         }
         .summary-row {
             display: flex;
@@ -198,8 +221,11 @@
             margin: 15px 0 10px;
             text-decoration: none;
             transition: all 0.3s;
+            border: none;
+            cursor: pointer;
         }
-        .checkout-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
+        .checkout-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
+        .checkout-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .clear-cart-btn {
             width: 100%;
             padding: 12px;
@@ -213,6 +239,7 @@
         }
         .clear-cart-btn:hover { background: var(--danger); color: white; }
         
+        /* Toast Notification */
         .toast {
             position: fixed;
             bottom: 80px;
@@ -225,9 +252,12 @@
             z-index: 9999;
             font-size: 13px;
             white-space: nowrap;
-            animation: slideUp 0.3s ease;
+            animation: toastFade 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-        @keyframes slideUp {
+        .toast-error { background: #dc3545; }
+        .toast-success { background: #28a745; }
+        @keyframes toastFade {
             from { opacity: 0; transform: translateX(-50%) translateY(20px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
@@ -264,6 +294,7 @@
         @media (min-width: 768px) {
             .container { max-width: 1000px; }
             .cart-item-image { width: 100px; height: 100px; }
+            .cart-summary { position: sticky; top: 20px; bottom: auto; }
         }
     </style>
 </head>
@@ -271,12 +302,12 @@
     <header>
         <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
         <a href="index.html" class="logo">STYLE·OF·LIFE</a>
-        <a href="customer-portal.html" style="color: var(--gray-600);"><i class="fas fa-user"></i></a>
+        <a href="customer-portal.html" class="cart-header-icon"><i class="fas fa-user"></i></a>
     </header>
 
     <div class="container">
         <h1><i class="fas fa-shopping-cart"></i> Shopping Cart</h1>
-        <div id="cartItems"></div>
+        <div id="cartItems" class="cart-items-list"></div>
         <div id="cartSummary"></div>
     </div>
 
@@ -296,7 +327,6 @@
         let cart = [];
         let sessionId = localStorage.getItem('sessionId');
         
-        // Create session ID if not exists
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
@@ -307,13 +337,13 @@
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast';
-            toast.style.background = isError ? '#dc3545' : '#1a1a1a';
+            if (isError) toast.classList.add('toast-error');
+            else toast.classList.add('toast-success');
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
         
-        // Load cart from database
         async function loadCart() {
             try {
                 const { data, error } = await supabase
@@ -331,10 +361,10 @@
                 console.error('Error loading cart:', error);
                 cart = [];
                 renderCart();
+                showToast('Error loading cart', true);
             }
         }
         
-        // Save cart to database
         async function saveCart() {
             try {
                 const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -359,14 +389,14 @@
             }
         }
         
-        // Update cart count in header
         function updateCartCount() {
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            const cartBadge = document.querySelector('.cart-count');
-            if (cartBadge) cartBadge.textContent = totalItems;
+            const cartBadges = document.querySelectorAll('.cart-count');
+            cartBadges.forEach(badge => {
+                if (badge) badge.textContent = totalItems;
+            });
         }
         
-        // Update order summary
         function updateSummary() {
             const summaryDiv = document.getElementById('cartSummary');
             if (!cart.length) {
@@ -408,19 +438,17 @@
                         <span>Total</span>
                         <span>₹${total.toLocaleString()}</span>
                     </div>
-                    <a href="checkout.html" class="checkout-btn">Proceed to Checkout →</a>
+                    <button class="checkout-btn" onclick="goToCheckout()" ${cart.length === 0 ? 'disabled' : ''}>Proceed to Checkout →</button>
                     <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
                 </div>
             `;
         }
         
-        // Update quantity of an item
         window.updateQuantity = async function(productId, newQuantity) {
             newQuantity = parseInt(newQuantity);
             if (isNaN(newQuantity) || newQuantity < 1) newQuantity = 1;
             if (newQuantity > 99) newQuantity = 99;
             
-            // Check stock
             const { data: product, error } = await supabase
                 .from('products')
                 .select('stock')
@@ -445,12 +473,10 @@
             }
         };
         
-        // Increase quantity
         window.increaseQuantity = async function(productId, currentQty) {
             await updateQuantity(productId, currentQty + 1);
         };
         
-        // Decrease quantity
         window.decreaseQuantity = async function(productId, currentQty) {
             if (currentQty > 1) {
                 await updateQuantity(productId, currentQty - 1);
@@ -459,7 +485,6 @@
             }
         };
         
-        // Remove single item
         window.removeItem = async function(productId) {
             const newCart = cart.filter(item => item.id !== productId);
             cart = newCart;
@@ -467,7 +492,6 @@
             showToast('Item removed from cart');
         };
         
-        // Clear entire cart
         window.clearCart = async function() {
             if (cart.length === 0) {
                 showToast('Cart is already empty', true);
@@ -481,7 +505,6 @@
             }
         };
         
-        // Go to checkout
         window.goToCheckout = function() {
             if (cart.length === 0) {
                 showToast('Your cart is empty!', true);
@@ -490,7 +513,6 @@
             window.location.href = 'checkout.html';
         };
         
-        // Render cart items
         function renderCart() {
             const container = document.getElementById('cartItems');
             
@@ -507,11 +529,10 @@
             }
             
             let html = '';
-            for (let i = 0; i < cart.length; i++) {
-                const item = cart[i];
+            cart.forEach((item, index) => {
                 const itemTotal = item.price * item.quantity;
                 html += `
-                    <div class="cart-item">
+                    <div class="cart-item" data-id="${item.id}">
                         <img class="cart-item-image" src="${item.image || 'https://via.placeholder.com/80x80?text=Style+Of+Life'}" 
                              alt="${escapeHtml(item.name)}" 
                              onerror="this.src='https://via.placeholder.com/80x80?text=Style+Of+Life'">
@@ -532,7 +553,7 @@
                         </button>
                     </div>
                 `;
-            }
+            });
             container.innerHTML = html;
         }
         
@@ -546,14 +567,14 @@
             });
         }
         
-        // Load cart on page load
         loadCart();
         
-        // Refresh cart when page becomes visible
         document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                loadCart();
-            }
+            if (!document.hidden) loadCart();
+        });
+        
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'sessionId') loadCart();
         });
     </script>
 </body>
