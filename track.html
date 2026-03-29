@@ -2,374 +2,176 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#d4af37">
     <title>Track Order - Style Of Life</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary: #d4af37;
             --dark: #1a1a1a;
-            --light: #ffffff;
             --gray-200: #e9ecef;
             --gray-600: #6c757d;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
         }
-        body { font-family: 'Inter', sans-serif; background: #faf7f2; }
+        body { font-family: 'Inter', sans-serif; background: #faf7f2; padding-bottom: 70px; }
         
         header {
             background: white;
-            padding: 20px 50px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
         }
-        .logo { font-size: 28px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
-        nav a { color: var(--gray-600); text-decoration: none; margin-left: 30px; font-weight: 500; transition: color 0.3s; }
-        nav a:hover, nav a.active { color: var(--primary); }
+        .logo { font-size: 20px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
         
-        .container { max-width: 800px; margin: 60px auto; padding: 0 20px; }
-        
+        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
         .track-box {
             background: white;
-            padding: 40px;
-            border-radius: 24px;
-            border: 1px solid var(--gray-200);
+            border-radius: 20px;
+            padding: 25px;
             text-align: center;
+            border: 1px solid var(--gray-200);
         }
-        h1 { color: var(--primary); margin-bottom: 20px; }
+        h1 { font-size: 24px; margin-bottom: 15px; color: var(--primary); }
         
-        .track-form { display: flex; gap: 12px; margin: 30px 0; }
+        .track-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
         .track-input {
-            flex: 1;
-            padding: 14px 18px;
+            padding: 14px;
             border: 1px solid var(--gray-200);
             border-radius: 40px;
-            font-size: 16px;
+            font-size: 14px;
         }
-        .track-input:focus { outline: none; border-color: var(--primary); }
         .track-btn {
-            padding: 14px 32px;
+            padding: 14px;
             background: var(--primary);
             border: none;
             border-radius: 40px;
             font-weight: 600;
             cursor: pointer;
         }
-        .track-btn:hover { background: var(--primary-dark); }
         
         .order-details {
-            margin-top: 30px;
+            margin-top: 20px;
             text-align: left;
-            animation: fadeIn 0.5s ease;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
         .status-badge {
             display: inline-block;
-            padding: 6px 14px;
-            border-radius: 30px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-        .status-Pending { background: var(--warning); color: #856404; }
-        .status-Processing { background: var(--info); color: white; }
-        .status-Shipped { background: var(--success); color: white; }
-        .status-Delivered { background: #20c997; color: white; }
-        .status-Cancelled { background: var(--danger); color: white; }
-        
-        .payment-badge {
-            display: inline-block;
-            padding: 4px 12px;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
         }
-        .payment-success { background: #d4edda; color: #155724; }
-        .payment-pending { background: #fff3cd; color: #856404; }
-        .payment-cod { background: #d1ecf1; color: #0c5460; }
-        .payment-failed { background: #f8d7da; color: #721c24; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-processing { background: #d1ecf1; color: #0c5460; }
+        .status-shipped { background: #d4edda; color: #155724; }
+        .status-delivered { background: #c3e6cb; color: #155724; }
         
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin: 20px 0;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 12px;
-        }
-        .info-label { font-size: 12px; color: var(--gray-600); text-transform: uppercase; }
-        .info-value { font-weight: 600; }
+        .info-row { padding: 8px 0; border-bottom: 1px solid var(--gray-200); }
+        .error { text-align: center; padding: 30px; color: #dc3545; }
         
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        .items-table th, .items-table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid var(--gray-200);
-        }
-        .items-table th { background: #f8f9fa; }
-        
-        .price-summary {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-        }
-        .price-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-        }
-        .price-row.total {
-            border-top: 2px solid var(--gray-200);
-            margin-top: 8px;
-            padding-top: 12px;
-            font-weight: bold;
-            color: var(--primary);
-            font-size: 18px;
-        }
-        
-        .loading-spinner { text-align: center; padding: 40px; }
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--gray-200);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 15px;
-        }
+        .loading { text-align: center; padding: 30px; }
+        .spinner { width: 30px; height: 30px; border: 2px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        .error-message {
-            text-align: center;
-            padding: 40px;
-            background: #f8d7da;
-            border-radius: 12px;
-            color: #721c24;
-            margin-top: 20px;
-        }
-        
-        .help-section {
-            margin-top: 30px;
-            padding-top: 20px;
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 20px 15px;
             border-top: 1px solid var(--gray-200);
-            font-size: 13px;
+            z-index: 100;
+        }
+        .bottom-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
             color: var(--gray-600);
+            text-decoration: none;
+            font-size: 10px;
         }
-        
-        footer { background: var(--dark); color: white; text-align: center; padding: 40px; margin-top: 60px; }
-        
-        @media (max-width: 768px) {
-            header { flex-direction: column; padding: 15px; }
-            .track-form { flex-direction: column; }
-            .info-grid { grid-template-columns: 1fr; }
-        }
+        .bottom-nav a i { font-size: 20px; }
+        .bottom-nav a.active { color: var(--primary); }
     </style>
 </head>
 <body>
     <header>
-        <a href="index.html" class="logo">STYLE OF LIFE</a>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="cart.html">Cart</a>
-            <a href="track.html" class="active">Track Order</a>
-        </nav>
+        <a href="index.html" class="logo">STYLE·OF·LIFE</a>
+        <div></div>
     </header>
-
+    
     <div class="container">
         <div class="track-box">
-            <h1>🔍 Track Your Order</h1>
-            <p style="color: var(--gray-600);">Enter your Order ID to get real-time updates</p>
-            
+            <h1>🔍 Track Order</h1>
+            <p>Enter your Order ID</p>
             <div class="track-form">
                 <input type="text" id="orderId" class="track-input" placeholder="e.g., ORD1739876543210">
-                <button class="track-btn" onclick="trackOrder()">Track Order →</button>
+                <button class="track-btn" onclick="trackOrder()">Track →</button>
             </div>
-            
             <div id="result"></div>
-            
-            <div class="help-section">
-                <p>📧 Order ID was sent to your email after purchase</p>
-                <p>📞 Need help? <a href="mailto:support@styleoflife.com" style="color: var(--primary);">support@styleoflife.com</a></p>
-            </div>
         </div>
     </div>
-
-    <footer>
-        <p>© 2026 STYLE OF LIFE. All rights reserved.</p>
-    </footer>
-
-    <script type="importmap">
-        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
-    </script>
+    
+    <div class="bottom-nav">
+        <a href="index.html"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="shop.html"><i class="fas fa-search"></i><span>Shop</span></a>
+        <a href="cart.html"><i class="fas fa-shopping-bag"></i><span>Cart</span></a>
+        <a href="track.html" class="active"><i class="fas fa-truck"></i><span>Track</span></a>
+        <a href="customer-portal.html"><i class="fas fa-user"></i><span>Account</span></a>
+    </div>
+    
+    <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
-        
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-        
-        function getStatusBadge(status) {
-            const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered'];
-            const icons = { 'Pending': '📝', 'Processing': '⚙️', 'Shipped': '🚚', 'Delivered': '🎁' };
-            
-            let stepsHtml = '';
-            statuses.forEach((step, index) => {
-                const stepNum = index + 1;
-                const currentStepNum = statuses.indexOf(status) + 1;
-                let stepClass = '';
-                if (stepNum < currentStepNum) stepClass = 'completed';
-                if (stepNum === currentStepNum) stepClass = 'active';
-                
-                stepsHtml += `
-                    <div style="flex: 1; text-align: center; position: relative;">
-                        <div style="width: 40px; height: 40px; background: ${stepClass === 'completed' ? '#28a745' : (stepClass === 'active' ? '#d4af37' : '#e9ecef')}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;">
-                            <span style="font-size: 18px;">${icons[step]}</span>
-                        </div>
-                        <div style="font-size: 12px; font-weight: ${stepClass ? '600' : '400'}; color: ${stepClass === 'active' ? '#d4af37' : '#6c757d'};">${step}</div>
-                    </div>
-                `;
-            });
-            
-            return `
-                <div style="display: flex; justify-content: space-between; margin: 30px 0; position: relative;">
-                    ${stepsHtml}
-                </div>
-            `;
-        }
         
         window.trackOrder = async function() {
             const orderId = document.getElementById('orderId').value.trim();
-            if (!orderId) {
-                alert('Please enter Order ID');
+            if (!orderId) { alert('Enter Order ID'); return; }
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Searching...</p></div>';
+            
+            const { data, error } = await supabase.from('orders').select('*').eq('order_id', orderId);
+            if (error || !data?.length) {
+                resultDiv.innerHTML = '<div class="error">❌ Order not found</div>';
                 return;
             }
             
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>Fetching order details...</p></div>';
-            
-            try {
-                const { data, error } = await supabase
-                    .from('orders')
-                    .select('*')
-                    .eq('order_id', orderId);
-                
-                if (error) throw error;
-                
-                if (!data || data.length === 0) {
-                    resultDiv.innerHTML = `
-                        <div class="error-message">
-                            <span style="font-size: 48px;">🔍</span>
-                            <h3>Order Not Found</h3>
-                            <p>We couldn't find an order with ID: <strong>${orderId}</strong></p>
-                            <p>Please check your Order ID and try again.</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                const order = data[0];
-                
-                let itemsHtml = '';
-                order.items.forEach(item => {
-                    itemsHtml += `
-                        <tr>
-                            <td>${escapeHtml(item.name)}</td>
-                            <td style="text-align: center;">${item.quantity}</td>
-                            <td style="text-align: right;">₹${(item.price || 0).toLocaleString()}</td>
-                            <td style="text-align: right;">₹${((item.price || 0) * item.quantity).toLocaleString()}</td>
-                        </tr>
-                    `;
-                });
-                
-                resultDiv.innerHTML = `
-                    <div class="order-details">
-                        <div style="background: linear-gradient(135deg, #1a1a1a, #2c2c2c); padding: 20px; border-radius: 16px 16px 0 0; text-align: center;">
-                            <h3 style="color: #d4af37;">Order ${order.order_id}</h3>
-                            <p style="color: #aaa;">Placed on ${new Date(order.created_at).toLocaleDateString()}</p>
-                        </div>
-                        
-                        <div style="border: 1px solid #e9ecef; border-top: none; border-radius: 0 0 16px 16px; padding: 25px;">
-                            ${getStatusBadge(order.status)}
-                            
-                            <div style="text-align: center; margin: 20px 0;">
-                                <span class="status-badge status-${order.status}">${order.status.toUpperCase()}</span>
-                            </div>
-                            
-                            <div class="info-grid">
-                                <div><div class="info-label">Customer Name</div><div class="info-value">${escapeHtml(order.customer_name)}</div></div>
-                                <div><div class="info-label">Phone Number</div><div class="info-value">${order.phone}</div></div>
-                                <div><div class="info-label">Email Address</div><div class="info-value">${order.email || 'Not provided'}</div></div>
-                                <div><div class="info-label">Shipping Address</div><div class="info-value">${escapeHtml(order.address)}</div></div>
-                                <div><div class="info-label">Payment Status</div><div class="info-value"><span class="payment-badge payment-${order.payment_status || 'pending'}">${getPaymentStatusText(order.payment_status)}</span></div></div>
-                                ${order.payment_id ? `<div><div class="info-label">Transaction ID</div><div class="info-value" style="font-size: 11px;">${order.payment_id}</div></div>` : ''}
-                            </div>
-                            
-                            <h4 style="margin: 20px 0 10px; color: #d4af37;">Order Items</h4>
-                            <table class="items-table">
-                                <thead><tr><th>Product</th><th style="text-align: center;">Qty</th><th style="text-align: right;">Price</th><th style="text-align: right;">Total</th></tr></thead>
-                                <tbody>${itemsHtml}</tbody>
-                            </table>
-                            
-                            <div class="price-summary">
-                                <div class="price-row"><span>Subtotal</span><span>₹${(order.subtotal || 0).toLocaleString()}</span></div>
-                                <div class="price-row"><span>Shipping</span><span>₹${(order.shipping || 0).toLocaleString()}</span></div>
-                                <div class="price-row"><span>GST (18%)</span><span>₹${(order.tax || 0).toLocaleString()}</span></div>
-                                <div class="price-row total"><span>Total</span><span>₹${(order.total || 0).toLocaleString()}</span></div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-            } catch (error) {
-                console.error('Error tracking order:', error);
-                resultDiv.innerHTML = '<div class="error-message">Error fetching order details. Please try again.</div>';
-            }
+            const o = data[0];
+            resultDiv.innerHTML = `
+                <div class="order-details">
+                    <div class="info-row"><strong>Order ID:</strong> ${o.order_id}</div>
+                    <div class="info-row"><strong>Date:</strong> ${new Date(o.created_at).toLocaleDateString()}</div>
+                    <div class="info-row"><strong>Customer:</strong> ${escapeHtml(o.customer_name)}</div>
+                    <div class="info-row"><strong>Phone:</strong> ${o.phone || o.customer_phone}</div>
+                    <div class="info-row"><strong>Address:</strong> ${escapeHtml(o.address)}</div>
+                    <div class="info-row"><strong>Status:</strong> <span class="status-badge status-${o.status?.toLowerCase()}">${o.status || 'Pending'}</span></div>
+                    <div class="info-row"><strong>Total:</strong> ₹${(o.total || 0).toLocaleString()}</div>
+                    <div class="info-row"><strong>Items:</strong> ${o.items?.map(i => `${i.name} x${i.quantity}`).join(', ')}</div>
+                </div>
+            `;
         };
         
-        function getPaymentStatusText(status) {
-            switch(status) {
-                case 'success': return '✅ Paid';
-                case 'cod': return '💵 Cash on Delivery';
-                case 'failed': return '❌ Failed';
-                default: return '⏳ Pending';
-            }
-        }
-        
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m))); }
         
         const urlParams = new URLSearchParams(window.location.search);
-        const orderId = urlParams.get('order');
-        if (orderId) {
-            document.getElementById('orderId').value = orderId;
+        if (urlParams.get('order')) {
+            document.getElementById('orderId').value = urlParams.get('order');
             trackOrder();
         }
-        
-        document.getElementById('orderId').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') trackOrder();
-        });
     </script>
 </body>
 </html>
