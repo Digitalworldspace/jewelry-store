@@ -319,14 +319,12 @@
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         
-        // Session management
         let sessionId = localStorage.getItem('sessionId');
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
         }
         
-        // Toast notification
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast';
@@ -337,7 +335,6 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
-        // Update cart count badge
         async function updateCartCount() {
             try {
                 const { data, error } = await supabase
@@ -350,14 +347,16 @@
                 const items = data?.items || [];
                 const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
                 document.getElementById('cartCount').textContent = totalItems;
+                console.log('Cart count updated:', totalItems);
             } catch (error) {
                 console.error('Error updating cart count:', error);
             }
         }
         
-        // Add to cart function
         window.addToCart = async function(productId, productName, productPrice, productSku, productImage) {
             try {
+                console.log('Adding to cart:', productName, 'ID:', productId);
+                
                 // Step 1: Check stock
                 const { data: product, error: stockError } = await supabase
                     .from('products')
@@ -390,6 +389,7 @@
                         return;
                     }
                     existingItem.quantity += 1;
+                    console.log('Updated existing item, new quantity:', existingItem.quantity);
                 } else {
                     currentItems.push({
                         id: productId,
@@ -399,6 +399,7 @@
                         quantity: 1,
                         image: productImage
                     });
+                    console.log('Added new item to cart');
                 }
                 
                 // Step 4: Calculate total and save
@@ -431,7 +432,6 @@
             }
         };
         
-        // Subscribe to newsletter
         window.subscribeNewsletter = function() {
             const email = document.getElementById('newsletterEmail').value;
             if (email && email.includes('@')) {
@@ -442,7 +442,6 @@
             }
         };
         
-        // Load products
         async function loadProducts() {
             const container = document.getElementById('products');
             try {
@@ -498,7 +497,6 @@
             });
         }
         
-        // Initialize
         await updateCartCount();
         await loadProducts();
     </script>
