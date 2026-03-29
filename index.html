@@ -305,6 +305,7 @@
                 const items = data?.items || [];
                 const total = items.reduce((s, i) => s + i.quantity, 0);
                 document.getElementById('cartCount').textContent = total;
+                console.log('Cart count updated:', total, 'items:', items.length);
             } catch (error) {
                 console.error('Error updating cart count:', error);
             }
@@ -312,30 +313,50 @@
         
         window.addToCart = async (id, name, price, sku, img) => {
             try {
-                console.log('Adding to cart:', name);
+                console.log('========================================');
+                console.log('ADDING TO CART:', name);
+                console.log('Product ID:', id);
                 
-                // Get current cart
+                // Step 1: Get current cart
                 const { data: cartData, error: cartError } = await supabase
                     .from('carts')
                     .select('items')
                     .eq('session_id', sessionId)
                     .maybeSingle();
                 
-                if (cartError) throw cartError;
+                if (cartError) {
+                    console.error('Error getting cart:', cartError);
+                    throw cartError;
+                }
                 
                 let items = cartData?.items || [];
+                console.log('Current cart items:', items.length);
+                
+                // Step 2: Check if product already exists
                 const existing = items.find(i => i.id === id);
                 
                 if (existing) {
+                    // Update existing product quantity
                     existing.quantity += 1;
-                    console.log('Updated existing item, new quantity:', existing.quantity);
+                    console.log('Product exists, new quantity:', existing.quantity);
                 } else {
-                    items.push({ id, sku, name, price, quantity: 1, image: img });
-                    console.log('Added new item to cart');
+                    // Add new product
+                    items.push({ 
+                        id: id, 
+                        sku: sku, 
+                        name: name, 
+                        price: price, 
+                        quantity: 1, 
+                        image: img 
+                    });
+                    console.log('New product added, total items:', items.length);
                 }
                 
+                // Step 3: Calculate total
                 const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
+                console.log('New cart total:', total);
                 
+                // Step 4: Save to Supabase
                 const { error: saveError } = await supabase
                     .from('carts')
                     .upsert({
@@ -345,7 +366,13 @@
                         updated_at: new Date().toISOString()
                     });
                 
-                if (saveError) throw saveError;
+                if (saveError) {
+                    console.error('Error saving cart:', saveError);
+                    throw saveError;
+                }
+                
+                console.log('Cart saved successfully!');
+                console.log('========================================');
                 
                 showToast(`${name} added to cart!`);
                 await updateCartCount();
@@ -359,7 +386,7 @@
                 
             } catch (error) {
                 console.error('Error adding to cart:', error);
-                showToast('Failed to add to cart', true);
+                showToast('Failed to add to cart: ' + error.message, true);
             }
         };
         
@@ -387,6 +414,8 @@
                     container.innerHTML = '<div class="loading"><p>Coming soon...</p></div>';
                     return;
                 }
+                
+                console.log('Products loaded:', products.length);
                 
                 let html = '';
                 for (const p of products) {
