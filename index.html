@@ -69,7 +69,7 @@
             50% { transform: translateY(-50px) translateX(30px); opacity: 0.4; }
         }
         
-        /* Instagram Stories Section - Beautiful Product Images */
+        /* Instagram Stories Section */
         .stories-section {
             padding: 15px 0;
             background: rgba(0,0,0,0.8);
@@ -132,7 +132,7 @@
             font-weight: 500;
         }
         
-        /* Header - Premium Instagram Style */
+        /* Header */
         .instagram-header {
             display: flex;
             justify-content: space-between;
@@ -307,42 +307,124 @@
             transform: scale(1.02);
         }
         
+        /* Action Buttons - Only Share & Cart */
         .post-actions {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 12px 15px;
         }
         
-        .action-icons {
+        .action-buttons {
             display: flex;
+            gap: 25px;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(212,175,55,0.1);
+            padding: 8px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(212,175,55,0.2);
+        }
+        
+        .action-btn i {
+            font-size: 18px;
+            color: var(--gold);
+        }
+        
+        .action-btn span {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gold-light);
+        }
+        
+        .action-btn:hover {
+            background: rgba(212,175,55,0.2);
+            transform: translateY(-2px);
+            border-color: var(--gold);
+        }
+        
+        .action-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Share Popup */
+        .share-popup {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--black-light);
+            border-radius: 20px;
+            padding: 20px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            border: 1px solid rgba(212,175,55,0.3);
+            width: 280px;
+            text-align: center;
+        }
+        
+        .share-popup.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .share-popup h4 {
+            margin-bottom: 15px;
+            color: var(--gold);
+        }
+        
+        .share-options {
+            display: flex;
+            justify-content: center;
             gap: 20px;
         }
         
-        .action-icons i {
-            font-size: 26px;
+        .share-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             transition: all 0.3s;
         }
         
-        .action-icons i:hover {
-            color: var(--gold);
-            transform: scale(1.15);
+        .share-option i {
+            font-size: 24px;
         }
         
-        .liked {
-            color: #ff3040;
-            animation: heartBeat 0.5s ease;
+        .share-option.whatsapp {
+            background: #25D366;
+            color: white;
         }
         
-        @keyframes heartBeat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.3); }
+        .share-option.instagram {
+            background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+            color: white;
         }
         
-        .post-likes {
-            padding: 0 15px 8px;
-            font-size: 13px;
-            font-weight: 600;
+        .share-option.facebook {
+            background: #1877F2;
+            color: white;
+        }
+        
+        .share-option.twitter {
+            background: #1DA1F2;
+            color: white;
+        }
+        
+        .share-option:hover {
+            transform: scale(1.1);
         }
         
         .post-caption {
@@ -368,16 +450,22 @@
             color: var(--gray-light);
         }
         
-        /* Product Tag */
+        /* Product Tag - Enhanced */
         .post-product-tag {
-            background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.05));
+            background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.08));
             margin: 10px 15px;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 15px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border: 1px solid rgba(212,175,55,0.2);
+            border: 1px solid rgba(212,175,55,0.3);
+            transition: all 0.3s;
+        }
+        
+        .post-product-tag:hover {
+            background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.1));
+            border-color: var(--gold);
         }
         
         .tag-product-info {
@@ -389,7 +477,7 @@
         .tag-product-image {
             width: 55px;
             height: 55px;
-            border-radius: 10px;
+            border-radius: 12px;
             object-fit: cover;
         }
         
@@ -399,27 +487,66 @@
         }
         
         .tag-product-price {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--gold);
-            font-weight: 600;
+            font-weight: 700;
         }
         
-        .shop-now-btn {
+        /* Attractive Shop Buttons */
+        .product-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .buy-now-btn {
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             color: var(--black);
-            padding: 8px 20px;
-            border-radius: 25px;
+            padding: 10px 24px;
+            border-radius: 40px;
             text-decoration: none;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
             transition: all 0.3s;
             border: none;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .shop-now-btn:hover {
+        .buy-now-btn i {
+            font-size: 14px;
+        }
+        
+        .buy-now-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(212,175,55,0.4);
+            box-shadow: 0 8px 20px rgba(212,175,55,0.4);
+            letter-spacing: 0.5px;
+        }
+        
+        .add-to-cart-icon {
+            background: rgba(212,175,55,0.15);
+            border: 1px solid rgba(212,175,55,0.3);
+            color: var(--gold);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .add-to-cart-icon i {
+            font-size: 18px;
+        }
+        
+        .add-to-cart-icon:hover {
+            background: var(--gold);
+            color: var(--black);
+            transform: scale(1.05);
+            border-color: var(--gold);
         }
         
         /* Grid Section */
@@ -469,6 +596,7 @@
             width: 100%;
             cursor: pointer;
             transition: all 0.3s;
+            position: relative;
         }
         
         .grid-product:hover {
@@ -582,61 +710,37 @@
     <div class="animated-bg"></div>
     <div class="floating-particles" id="particles"></div>
     
-    <!-- Instagram Stories with Beautiful Product Images -->
+    <!-- Instagram Stories -->
     <div class="stories-section">
         <div class="stories-container">
             <div class="story-item" onclick="window.location.href='shop.html?category=new'">
-                <div class="story-ring">
-                    <img class="story-image" src="https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="New Arrivals">
-                </div>
+                <div class="story-ring"><img class="story-image" src="https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="New Arrivals"></div>
                 <div class="story-name">✨ New Arrivals</div>
             </div>
             <div class="story-item" onclick="window.location.href='shop.html?category=rings'">
-                <div class="story-ring">
-                    <img class="story-image" src="https://images.pexels.com/photos/1191665/pexels-photo-1191665.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Diamond Rings">
-                </div>
+                <div class="story-ring"><img class="story-image" src="https://images.pexels.com/photos/1191665/pexels-photo-1191665.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Diamond Rings"></div>
                 <div class="story-name">💍 Diamond Rings</div>
             </div>
             <div class="story-item" onclick="window.location.href='shop.html?category=necklaces'">
-                <div class="story-ring">
-                    <img class="story-image" src="https://images.pexels.com/photos/1455286/pexels-photo-1455286.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Gold Necklaces">
-                </div>
+                <div class="story-ring"><img class="story-image" src="https://images.pexels.com/photos/1455286/pexels-photo-1455286.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Gold Necklaces"></div>
                 <div class="story-name">📿 Gold Necklaces</div>
             </div>
             <div class="story-item" onclick="window.location.href='shop.html?category=earrings'">
-                <div class="story-ring">
-                    <img class="story-image" src="https://images.pexels.com/photos/1740602/pexels-photo-1740602.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Diamond Earrings">
-                </div>
+                <div class="story-ring"><img class="story-image" src="https://images.pexels.com/photos/1740602/pexels-photo-1740602.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Diamond Earrings"></div>
                 <div class="story-name">👑 Diamond Earrings</div>
             </div>
             <div class="story-item" onclick="window.location.href='shop.html?category=bracelets'">
-                <div class="story-ring">
-                    <img class="story-image" src="https://images.pexels.com/photos/1095318/pexels-photo-1095318.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Gold Bracelets">
-                </div>
+                <div class="story-ring"><img class="story-image" src="https://images.pexels.com/photos/1095318/pexels-photo-1095318.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Gold Bracelets"></div>
                 <div class="story-name">💫 Gold Bracelets</div>
             </div>
             <div class="story-item" onclick="window.location.href='shop.html?category=pendants'">
-                <div class="story-ring">
-                    <img class="story-image" src="https://images.pexels.com/photos/1455285/pexels-photo-1455285.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Pendants">
-                </div>
+                <div class="story-ring"><img class="story-image" src="https://images.pexels.com/photos/1455285/pexels-photo-1455285.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Pendants"></div>
                 <div class="story-name">💎 Pendants</div>
-            </div>
-            <div class="story-item" onclick="window.location.href='shop.html?category=wedding'">
-                <div class="story-ring">
-                    <img class="story-image" src="https://images.pexels.com/photos/1418244/pexels-photo-1418244.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Wedding Collection">
-                </div>
-                <div class="story-name">💒 Wedding</div>
-            </div>
-            <div class="story-item" onclick="window.location.href='shop.html?category=sale'">
-                <div class="story-ring">
-                    <img class="story-image" src="https://images.pexels.com/photos/1927260/pexels-photo-1927260.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Sale">
-                </div>
-                <div class="story-name">🔥 Sale</div>
             </div>
         </div>
     </div>
     
-    <!-- Instagram Header with Animated Logo -->
+    <!-- Instagram Header -->
     <div class="instagram-header">
         <i class="fas fa-camera" style="color: var(--gold); font-size: 24px; cursor: pointer;"></i>
         <div class="animated-logo">
@@ -649,6 +753,17 @@
         <div class="header-icons">
             <a href="cart.html"><i class="fas fa-shopping-bag"></i><span class="cart-badge" id="cartCount">0</span></a>
             <a href="customer-portal.html"><i class="fas fa-user-circle"></i></a>
+        </div>
+    </div>
+    
+    <!-- Share Popup -->
+    <div id="sharePopup" class="share-popup">
+        <h4>Share this product</h4>
+        <div class="share-options">
+            <div class="share-option whatsapp" onclick="shareToWhatsApp()"><i class="fab fa-whatsapp"></i></div>
+            <div class="share-option instagram" onclick="shareToInstagram()"><i class="fab fa-instagram"></i></div>
+            <div class="share-option facebook" onclick="shareToFacebook()"><i class="fab fa-facebook-f"></i></div>
+            <div class="share-option twitter" onclick="shareToTwitter()"><i class="fab fa-twitter"></i></div>
         </div>
     </div>
     
@@ -668,26 +783,11 @@
     
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
-        <a href="index.html" class="active">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </a>
-        <a href="shop.html">
-            <i class="fas fa-search"></i>
-            <span>Explore</span>
-        </a>
-        <a href="cart.html">
-            <i class="fas fa-shopping-bag"></i>
-            <span>Cart</span>
-        </a>
-        <a href="track.html">
-            <i class="fas fa-truck"></i>
-            <span>Track</span>
-        </a>
-        <a href="customer-portal.html">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-        </a>
+        <a href="index.html" class="active"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="shop.html"><i class="fas fa-search"></i><span>Explore</span></a>
+        <a href="cart.html"><i class="fas fa-shopping-bag"></i><span>Cart</span></a>
+        <a href="track.html"><i class="fas fa-truck"></i><span>Track</span></a>
+        <a href="customer-portal.html"><i class="fas fa-user"></i><span>Profile</span></a>
     </div>
     
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
@@ -696,13 +796,12 @@
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let sessionId = localStorage.getItem('sessionId');
+        let currentShareProduct = null;
         
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
         }
-        
-        let likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '{}');
         
         // Create floating particles
         function createParticles() {
@@ -790,25 +889,49 @@
             }
         };
         
-        window.likePost = function(postId) {
-            const heartIcon = document.getElementById(`heart-${postId}`);
-            const likesCount = document.getElementById(`likes-${postId}`);
-            
-            if (likedPosts[postId]) {
-                likedPosts[postId] = false;
-                heartIcon.classList.remove('liked');
-                let currentLikes = parseInt(likesCount.textContent);
-                likesCount.textContent = currentLikes - 1;
-            } else {
-                likedPosts[postId] = true;
-                heartIcon.classList.add('liked');
-                let currentLikes = parseInt(likesCount.textContent);
-                likesCount.textContent = currentLikes + 1;
-                heartIcon.style.animation = 'heartBeat 0.5s ease';
-                setTimeout(() => heartIcon.style.animation = '', 500);
+        window.buyNow = async (id, name, price, sku, img) => {
+            await addToCart(id, name, price, sku, img);
+            setTimeout(() => {
+                window.location.href = 'checkout.html';
+            }, 500);
+        };
+        
+        window.showSharePopup = (productId, productName, productPrice, productImg) => {
+            currentShareProduct = { id: productId, name: productName, price: productPrice, image: productImg };
+            const popup = document.getElementById('sharePopup');
+            popup.classList.add('show');
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 5000);
+        };
+        
+        window.shareToWhatsApp = () => {
+            if (currentShareProduct) {
+                const text = `Check out this beautiful ${currentShareProduct.name} from Style Of Life! Price: ₹${currentShareProduct.price.toLocaleString()}`;
+                const url = window.location.href;
+                window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+                showToast('Opening WhatsApp...');
             }
-            
-            localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
+            document.getElementById('sharePopup').classList.remove('show');
+        };
+        
+        window.shareToInstagram = () => {
+            showToast('Copy the link to share on Instagram!');
+            navigator.clipboard.writeText(window.location.href);
+            document.getElementById('sharePopup').classList.remove('show');
+        };
+        
+        window.shareToFacebook = () => {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+            showToast('Opening Facebook...');
+            document.getElementById('sharePopup').classList.remove('show');
+        };
+        
+        window.shareToTwitter = () => {
+            const text = `Check out Style Of Life - Luxury Jewelry!`;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
+            showToast('Opening Twitter...');
+            document.getElementById('sharePopup').classList.remove('show');
         };
         
         async function loadFeed() {
@@ -833,7 +956,6 @@
                     product: products[0],
                     caption: 'Elevate your elegance with our stunning diamond necklace. ✨ Handcrafted with love and precision.',
                     time: '2 hours ago',
-                    likes: 1247,
                     hashtags: '#LuxuryJewelry #StyleOfLife #DiamondNecklace'
                 },
                 {
@@ -855,7 +977,6 @@
                     product: products[2] || products[0],
                     caption: 'Pearls never go out of style. 🌟 Our pearl drop earrings add the perfect touch of elegance.',
                     time: '1 day ago',
-                    likes: 2103,
                     hashtags: '#PearlJewelry #Elegance #StyleOfLife'
                 }
             ];
@@ -863,7 +984,6 @@
             let html = '';
             for (const post of feedPosts) {
                 const img = post.product?.images?.[0] || 'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop';
-                const isLiked = likedPosts[post.id] || false;
                 
                 html += `
                     <div class="post-card">
@@ -879,17 +999,12 @@
                         </div>
                         <img class="post-image" src="${img}" alt="">
                         <div class="post-actions">
-                            <div class="action-icons">
-                                <i class="fas fa-heart ${isLiked ? 'liked' : ''}" id="heart-${post.id}" onclick="likePost(${post.id})"></i>
-                                <i class="far fa-comment"></i>
-                                <i class="far fa-paper-plane"></i>
+                            <div class="action-buttons">
+                                <div class="action-btn" onclick="showSharePopup(${post.product?.id || 1}, '${escapeHtml(post.product?.name || 'Jewelry')}', ${post.product?.price || 0}, '${img}')">
+                                    <i class="fas fa-share-alt"></i>
+                                    <span>Share</span>
+                                </div>
                             </div>
-                            <div class="action-icons">
-                                <i class="far fa-bookmark"></i>
-                            </div>
-                        </div>
-                        <div class="post-likes">
-                            <span id="likes-${post.id}">${post.likes}</span> likes
                         </div>
                         <div class="post-caption">
                             <span>${post.user}</span> ${post.caption}<br>
@@ -903,7 +1018,14 @@
                                     <div class="tag-product-price">₹${(post.product?.price || 0).toLocaleString()}</div>
                                 </div>
                             </div>
-                            <button class="shop-now-btn" onclick="addToCart(${post.product?.id || 1}, '${escapeHtml(post.product?.name || 'Jewelry')}', ${post.product?.price || 0}, '${post.product?.sku || 'LUX-001'}', '${img}')">Shop Now →</button>
+                            <div class="product-buttons">
+                                <button class="buy-now-btn" onclick="buyNow(${post.product?.id || 1}, '${escapeHtml(post.product?.name || 'Jewelry')}', ${post.product?.price || 0}, '${post.product?.sku || 'LUX-001'}', '${img}')">
+                                    <i class="fas fa-bolt"></i> Buy Now
+                                </button>
+                                <div class="add-to-cart-icon" onclick="addToCart(${post.product?.id || 1}, '${escapeHtml(post.product?.name || 'Jewelry')}', ${post.product?.price || 0}, '${post.product?.sku || 'LUX-001'}', '${img}')">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                            </div>
                         </div>
                         <div class="post-time">${post.time}</div>
                     </div>
@@ -932,7 +1054,7 @@
                 for (const p of products) {
                     const img = p.images?.[0] || 'https://via.placeholder.com/200x200?text=Style+Of+Life';
                     html += `
-                        <img class="grid-product" src="${img}" alt="${p.name}" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
+                        <img class="grid-product" src="${img}" alt="${p.name}" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
                     `;
                 }
                 container.innerHTML = html;
