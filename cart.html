@@ -48,7 +48,11 @@
             gap: 15px;
             position: relative;
             border: 1px solid var(--gray-200);
-            transition: all 0.2s ease;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .cart-item-image {
             width: 80px;
@@ -69,21 +73,21 @@
             margin-top: 5px;
         }
         .quantity-btn {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             background: var(--gray-100);
             border: 1px solid var(--gray-200);
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
             transition: all 0.2s;
         }
-        .quantity-btn:hover:not(:disabled) { background: var(--primary); color: white; }
+        .quantity-btn:hover:not(:disabled) { background: var(--primary); color: white; border-color: var(--primary); }
         .quantity-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .quantity-input {
-            width: 45px;
-            height: 28px;
+            width: 55px;
+            height: 32px;
             text-align: center;
             border: 1px solid var(--gray-200);
             border-radius: 8px;
@@ -93,6 +97,7 @@
             font-weight: 700;
             font-size: 14px;
             margin-top: 8px;
+            color: var(--dark);
         }
         .remove-item {
             position: absolute;
@@ -105,8 +110,8 @@
             cursor: pointer;
             padding: 5px;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -302,7 +307,6 @@
         let cart = [];
         const FREE_SHIPPING_LIMIT = 3000;
         
-        // Toast notification
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast';
@@ -313,7 +317,6 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
-        // Load cart from database
         async function loadCart() {
             try {
                 const { data, error } = await supabase
@@ -324,6 +327,7 @@
                 
                 if (error) throw error;
                 cart = data?.items || [];
+                console.log('Cart loaded:', cart.length, 'items');
                 renderCart();
                 updateSummary();
                 updateCartBadge();
@@ -334,7 +338,6 @@
             }
         }
         
-        // Save cart to database
         async function saveCart() {
             try {
                 const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -348,6 +351,7 @@
                     });
                 
                 if (error) throw error;
+                console.log('Cart saved:', cart.length, 'items');
                 renderCart();
                 updateSummary();
                 updateCartBadge();
@@ -359,7 +363,6 @@
             }
         }
         
-        // Update cart count badge in header
         function updateCartBadge() {
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             const badges = document.querySelectorAll('.cart-count');
@@ -368,7 +371,6 @@
             });
         }
         
-        // Update order summary
         function updateSummary() {
             const summaryDiv = document.getElementById('cartSummary');
             if (!cart.length) {
@@ -410,19 +412,17 @@
                         <span>Total</span>
                         <span>₹${total.toLocaleString()}</span>
                     </div>
-                    <button class="checkout-btn" onclick="goToCheckout()">Proceed to Checkout →</button>
+                    <button class="checkout-btn" onclick="goToCheckout()" ${cart.length === 0 ? 'disabled' : ''}>Proceed to Checkout →</button>
                     <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
                 </div>
             `;
         }
         
-        // Update quantity of a product
         window.updateQuantity = async function(productId, newQuantity) {
             newQuantity = parseInt(newQuantity);
             if (isNaN(newQuantity) || newQuantity < 1) newQuantity = 1;
             if (newQuantity > 99) newQuantity = 99;
             
-            // Check stock limit
             const { data: product, error } = await supabase
                 .from('products')
                 .select('stock')
@@ -447,13 +447,13 @@
             }
         };
         
-        // Increase quantity
         window.increaseQuantity = async function(productId, currentQty) {
+            console.log('Increasing quantity for:', productId, 'current:', currentQty);
             await updateQuantity(productId, currentQty + 1);
         };
         
-        // Decrease quantity
         window.decreaseQuantity = async function(productId, currentQty) {
+            console.log('Decreasing quantity for:', productId, 'current:', currentQty);
             if (currentQty > 1) {
                 await updateQuantity(productId, currentQty - 1);
             } else {
@@ -461,15 +461,14 @@
             }
         };
         
-        // Remove single item
         window.removeItem = async function(productId) {
+            console.log('Removing item:', productId);
             const newCart = cart.filter(item => item.id !== productId);
             cart = newCart;
             await saveCart();
             showToast('Item removed from cart');
         };
         
-        // Clear entire cart
         window.clearCart = async function() {
             if (cart.length === 0) {
                 showToast('Cart is already empty', true);
@@ -483,7 +482,6 @@
             }
         };
         
-        // Go to checkout
         window.goToCheckout = function() {
             if (cart.length === 0) {
                 showToast('Your cart is empty!', true);
@@ -492,7 +490,6 @@
             window.location.href = 'checkout.html';
         };
         
-        // Render cart items
         function renderCart() {
             const container = document.getElementById('cartItems');
             
@@ -551,18 +548,12 @@
         // Initial load
         loadCart();
         
-        // Refresh cart when page becomes visible
         document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                loadCart();
-            }
+            if (!document.hidden) loadCart();
         });
         
-        // Listen for cart updates from other tabs
         window.addEventListener('storage', function(e) {
-            if (e.key === 'sessionId' || e.key === 'cartCleared') {
-                loadCart();
-            }
+            if (e.key === 'sessionId' || e.key === 'cartCleared') loadCart();
         });
     </script>
 </body>
