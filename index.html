@@ -38,7 +38,7 @@
             overflow-x: hidden;
         }
         
-        /* Light Background Pattern */
+        /* Light Background */
         .light-bg {
             position: fixed;
             top: 0;
@@ -49,35 +49,11 @@
             background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
         }
         
-        .floating-particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-        
-        .particle {
-            position: absolute;
-            background: radial-gradient(circle, var(--gold), transparent);
-            border-radius: 50%;
-            opacity: 0.15;
-            animation: floatParticle 15s infinite;
-        }
-        
-        @keyframes floatParticle {
-            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.05; }
-            50% { transform: translateY(-50px) translateX(30px); opacity: 0.2; }
-        }
-        
-        /* Instagram Stories Section */
+        /* Stories Section - Instagram Style */
         .stories-section {
             padding: 15px 0;
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(212,175,55,0.15);
+            background: var(--white);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -97,28 +73,22 @@
         
         .story-item {
             text-align: center;
-            min-width: 75px;
+            min-width: 70px;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: transform 0.2s;
         }
         
         .story-item:hover {
-            transform: translateY(-3px);
+            transform: scale(0.95);
         }
         
         .story-ring {
-            width: 75px;
-            height: 75px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--gold-dark));
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             padding: 2px;
-            margin-bottom: 8px;
-            animation: ringPulse 2s infinite;
-        }
-        
-        @keyframes ringPulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0.2); }
-            50% { box-shadow: 0 0 0 5px rgba(212,175,55,0.1); }
+            margin-bottom: 6px;
         }
         
         .story-image {
@@ -131,7 +101,7 @@
         
         .story-name {
             font-size: 11px;
-            color: var(--black);
+            color: var(--gray);
             font-weight: 500;
         }
         
@@ -141,68 +111,19 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 15px;
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(212,175,55,0.15);
-        }
-        
-        /* Animated Logo - White Theme */
-        .animated-logo {
-            position: relative;
-            cursor: pointer;
-        }
-        
-        .logo-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            background: var(--white);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         
         .logo-main {
             font-family: 'Playfair Display', serif;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 800;
-            letter-spacing: 4px;
-            background: linear-gradient(135deg, #D4AF37 0%, #B8962E 50%, #D4AF37 100%);
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #D4AF37 0%, #B8962E 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            position: relative;
-            animation: logoShine 3s ease-in-out infinite;
-        }
-        
-        @keyframes logoShine {
-            0%, 100% {
-                text-shadow: 0 0 10px rgba(212,175,55,0.2);
-                letter-spacing: 4px;
-            }
-            50% {
-                text-shadow: 0 0 20px rgba(212,175,55,0.4);
-                letter-spacing: 5px;
-            }
-        }
-        
-        .logo-sub {
-            font-size: 8px;
-            letter-spacing: 6px;
-            color: var(--gold-dark);
-            margin-top: -2px;
-            opacity: 0.7;
-        }
-        
-        .logo-diamond {
-            position: absolute;
-            top: -15px;
-            right: -25px;
-            font-size: 14px;
-            color: var(--gold);
-            animation: diamondSpin 3s linear infinite;
-        }
-        
-        @keyframes diamondSpin {
-            0% { transform: rotate(0deg) scale(1); opacity: 0.5; }
-            50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
-            100% { transform: rotate(360deg) scale(1); opacity: 0.5; }
         }
         
         .header-icons {
@@ -215,46 +136,163 @@
             font-size: 22px;
             text-decoration: none;
             position: relative;
-            transition: all 0.3s;
-        }
-        
-        .header-icons a:hover {
-            color: var(--gold);
-            transform: scale(1.1);
         }
         
         .cart-badge {
             position: absolute;
             top: -8px;
             right: -12px;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            background: var(--gold);
             color: var(--white);
             font-size: 10px;
             padding: 2px 6px;
             border-radius: 50%;
             font-weight: bold;
-            animation: badgePulse 1.5s infinite;
         }
         
-        @keyframes badgePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        /* Story Modal */
+        .story-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
         }
         
-        /* Instagram Post Card - White Theme */
+        .story-modal.active {
+            display: flex;
+        }
+        
+        .story-modal-content {
+            max-width: 90%;
+            width: 400px;
+            background: var(--white);
+            border-radius: 24px;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+        }
+        
+        .story-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: var(--white);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .story-modal-header h3 {
+            font-size: 18px;
+            color: var(--black);
+        }
+        
+        .close-story {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .story-modal-image {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+        }
+        
+        .story-modal-info {
+            padding: 20px;
+        }
+        
+        .story-product-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .story-product-sku {
+            font-size: 12px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+        
+        .story-product-price {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gold);
+            margin: 15px 0;
+        }
+        
+        .story-product-description {
+            font-size: 14px;
+            color: var(--gray);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        .story-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .story-buy-btn {
+            flex: 1;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--white);
+            padding: 14px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .story-cart-btn {
+            flex: 1;
+            background: var(--white-light);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 14px;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Post Card */
         .post-card {
             margin-bottom: 20px;
             background: var(--white);
             border-radius: 16px;
             overflow: hidden;
-            border: 1px solid rgba(212,175,55,0.1);
+            border: 1px solid rgba(0,0,0,0.05);
             transition: all 0.3s;
-            box-shadow: var(--shadow);
         }
         
         .post-card:hover {
             transform: translateY(-3px);
-            border-color: rgba(212,175,55,0.3);
             box-shadow: var(--shadow-hover);
         }
         
@@ -283,7 +321,6 @@
         .post-user-info h4 {
             font-size: 14px;
             font-weight: 600;
-            color: var(--black);
         }
         
         .post-user-info p {
@@ -291,38 +328,18 @@
             color: var(--gray);
         }
         
-        .verified-badge {
-            color: var(--gold);
-            font-size: 12px;
-            margin-left: 4px;
-        }
-        
         .post-image {
             width: 100%;
             aspect-ratio: 1 / 1;
             object-fit: cover;
-            transition: transform 0.5s;
         }
         
-        .post-card:hover .post-image {
-            transform: scale(1.02);
-        }
-        
-        /* Action Buttons */
         .post-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             padding: 12px 15px;
         }
         
-        .action-buttons {
-            display: flex;
-            gap: 25px;
-        }
-        
         .action-btn {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
             background: var(--white-light);
@@ -341,100 +358,21 @@
         .action-btn span {
             font-size: 13px;
             font-weight: 500;
-            color: var(--black);
         }
         
         .action-btn:hover {
             background: rgba(212,175,55,0.1);
             transform: translateY(-2px);
-            border-color: var(--gold);
-        }
-        
-        /* Share Popup */
-        .share-popup {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--white);
-            border-radius: 20px;
-            padding: 20px;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-            border: 1px solid rgba(212,175,55,0.2);
-            box-shadow: var(--shadow-hover);
-            width: 280px;
-            text-align: center;
-        }
-        
-        .share-popup.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(0);
-        }
-        
-        .share-popup h4 {
-            margin-bottom: 15px;
-            color: var(--gold);
-        }
-        
-        .share-options {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-        
-        .share-option {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .share-option i {
-            font-size: 24px;
-        }
-        
-        .share-option.whatsapp {
-            background: #25D366;
-            color: white;
-        }
-        
-        .share-option.instagram {
-            background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-            color: white;
-        }
-        
-        .share-option.facebook {
-            background: #1877F2;
-            color: white;
-        }
-        
-        .share-option.twitter {
-            background: #1DA1F2;
-            color: white;
-        }
-        
-        .share-option:hover {
-            transform: scale(1.1);
         }
         
         .post-caption {
             padding: 0 15px 12px;
             font-size: 13px;
             line-height: 1.4;
-            color: var(--black-light);
         }
         
         .post-caption span {
             font-weight: 600;
-            margin-right: 5px;
             color: var(--gold-dark);
         }
         
@@ -458,13 +396,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border: 1px solid rgba(212,175,55,0.15);
-            transition: all 0.3s;
-        }
-        
-        .post-product-tag:hover {
-            background: rgba(212,175,55,0.05);
-            border-color: rgba(212,175,55,0.3);
         }
         
         .tag-product-info {
@@ -483,7 +414,6 @@
         .tag-product-name {
             font-size: 14px;
             font-weight: 600;
-            color: var(--black);
         }
         
         .tag-product-price {
@@ -492,7 +422,6 @@
             font-weight: 700;
         }
         
-        /* Shop Buttons */
         .product-buttons {
             display: flex;
             gap: 12px;
@@ -503,10 +432,8 @@
             color: var(--white);
             padding: 10px 24px;
             border-radius: 40px;
-            text-decoration: none;
             font-size: 13px;
             font-weight: 700;
-            transition: all 0.3s;
             border: none;
             cursor: pointer;
             display: flex;
@@ -514,19 +441,9 @@
             gap: 8px;
         }
         
-        .buy-now-btn i {
-            font-size: 14px;
-        }
-        
-        .buy-now-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(212,175,55,0.3);
-            letter-spacing: 0.5px;
-        }
-        
         .add-to-cart-icon {
             background: var(--white);
-            border: 1px solid rgba(212,175,55,0.3);
+            border: 1px solid var(--gold);
             color: var(--gold);
             width: 42px;
             height: 42px;
@@ -541,8 +458,6 @@
         .add-to-cart-icon:hover {
             background: var(--gold);
             color: var(--white);
-            transform: scale(1.05);
-            border-color: var(--gold);
         }
         
         /* Grid Section */
@@ -560,29 +475,12 @@
         .section-title h3 {
             font-size: 18px;
             font-weight: 600;
-            color: var(--black);
-            position: relative;
-        }
-        
-        .section-title h3::before {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 30px;
-            height: 2px;
-            background: var(--gold);
         }
         
         .section-title a {
             color: var(--gold);
             font-size: 12px;
             text-decoration: none;
-            transition: all 0.3s;
-        }
-        
-        .section-title a:hover {
-            color: var(--gold-dark);
         }
         
         .product-grid {
@@ -601,21 +499,19 @@
         
         .grid-product:hover {
             transform: scale(1.02);
-            filter: brightness(0.98);
         }
         
-        /* Bottom Navigation - White Theme */
+        /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
+            background: var(--white);
             display: flex;
             justify-content: space-around;
             padding: 10px 20px 20px;
-            border-top: 1px solid rgba(212,175,55,0.15);
+            border-top: 1px solid rgba(0,0,0,0.05);
             z-index: 100;
         }
         
@@ -632,16 +528,11 @@
         
         .bottom-nav a i {
             font-size: 22px;
-            transition: all 0.3s;
         }
         
         .bottom-nav a.active,
         .bottom-nav a:hover {
             color: var(--gold);
-        }
-        
-        .bottom-nav a.active i {
-            transform: translateY(-3px);
         }
         
         /* Toast */
@@ -650,7 +541,7 @@
             bottom: 70px;
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            background: var(--gold);
             color: var(--white);
             padding: 12px 24px;
             border-radius: 40px;
@@ -658,12 +549,10 @@
             font-size: 13px;
             font-weight: 700;
             animation: slideUp 0.3s ease;
-            box-shadow: var(--shadow-hover);
         }
         
         .toast-error {
-            background: linear-gradient(135deg, #f44336, #d32f2f);
-            color: white;
+            background: #f44336;
         }
         
         @keyframes slideUp {
@@ -709,69 +598,48 @@
 <body>
     <!-- Light Background -->
     <div class="light-bg"></div>
-    <div class="floating-particles" id="particles"></div>
     
-    <!-- Instagram Stories -->
+    <!-- Stories Section -->
     <div class="stories-section">
-        <div class="stories-container">
-            <div class="story-item" onclick="window.location.href='shop.html?category=new'">
-                <div class="story-ring"><img class="story-image" src="https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="New Arrivals"></div>
-                <div class="story-name">✨ New Arrivals</div>
-            </div>
-            <div class="story-item" onclick="window.location.href='shop.html?category=rings'">
-                <div class="story-ring"><img class="story-image" src="https://images.pexels.com/photos/1191665/pexels-photo-1191665.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Diamond Rings"></div>
-                <div class="story-name">💍 Diamond Rings</div>
-            </div>
-            <div class="story-item" onclick="window.location.href='shop.html?category=necklaces'">
-                <div class="story-ring"><img class="story-image" src="https://images.pexels.com/photos/1455286/pexels-photo-1455286.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Gold Necklaces"></div>
-                <div class="story-name">📿 Gold Necklaces</div>
-            </div>
-            <div class="story-item" onclick="window.location.href='shop.html?category=earrings'">
-                <div class="story-ring"><img class="story-image" src="https://images.pexels.com/photos/1740602/pexels-photo-1740602.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Diamond Earrings"></div>
-                <div class="story-name">👑 Diamond Earrings</div>
-            </div>
-            <div class="story-item" onclick="window.location.href='shop.html?category=bracelets'">
-                <div class="story-ring"><img class="story-image" src="https://images.pexels.com/photos/1095318/pexels-photo-1095318.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Gold Bracelets"></div>
-                <div class="story-name">💫 Gold Bracelets</div>
-            </div>
-            <div class="story-item" onclick="window.location.href='shop.html?category=pendants'">
-                <div class="story-ring"><img class="story-image" src="https://images.pexels.com/photos/1455285/pexels-photo-1455285.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Pendants"></div>
-                <div class="story-name">💎 Pendants</div>
-            </div>
+        <div class="stories-container" id="storiesContainer">
+            <!-- Stories will be loaded here -->
         </div>
     </div>
     
-    <!-- Instagram Header -->
+    <!-- Header -->
     <div class="instagram-header">
-        <i class="fas fa-camera" style="color: var(--gold); font-size: 24px; cursor: pointer;"></i>
-        <div class="animated-logo">
-            <div class="logo-container">
-                <div class="logo-main">STYLE OF LIFE</div>
-                <div class="logo-sub">LUXURY JEWELRY</div>
-            </div>
-            <i class="fas fa-gem logo-diamond"></i>
-        </div>
+        <div class="logo-main">STYLE OF LIFE</div>
         <div class="header-icons">
             <a href="cart.html"><i class="fas fa-shopping-bag"></i><span class="cart-badge" id="cartCount">0</span></a>
             <a href="customer-portal.html"><i class="fas fa-user-circle"></i></a>
         </div>
     </div>
     
-    <!-- Share Popup -->
-    <div id="sharePopup" class="share-popup">
-        <h4>Share this product</h4>
-        <div class="share-options">
-            <div class="share-option whatsapp" onclick="shareToWhatsApp()"><i class="fab fa-whatsapp"></i></div>
-            <div class="share-option instagram" onclick="shareToInstagram()"><i class="fab fa-instagram"></i></div>
-            <div class="share-option facebook" onclick="shareToFacebook()"><i class="fab fa-facebook-f"></i></div>
-            <div class="share-option twitter" onclick="shareToTwitter()"><i class="fab fa-twitter"></i></div>
+    <!-- Story Modal -->
+    <div id="storyModal" class="story-modal">
+        <div class="story-modal-content">
+            <div class="story-modal-header">
+                <h3>Product Details</h3>
+                <button class="close-story" onclick="closeStoryModal()">&times;</button>
+            </div>
+            <img id="storyModalImage" class="story-modal-image" src="" alt="">
+            <div class="story-modal-info">
+                <div class="story-product-name" id="storyProductName"></div>
+                <div class="story-product-sku" id="storyProductSku"></div>
+                <div class="story-product-price" id="storyProductPrice"></div>
+                <div class="story-product-description" id="storyProductDesc"></div>
+                <div class="story-buttons">
+                    <button class="story-buy-btn" id="storyBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button>
+                    <button class="story-cart-btn" id="storyCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                </div>
+            </div>
         </div>
     </div>
     
     <!-- Feed Posts -->
     <div id="feedContainer"></div>
     
-    <!-- Product Grid Section -->
+    <!-- Grid Section -->
     <div class="grid-section">
         <div class="section-title">
             <h3>Shop Our Collection</h3>
@@ -797,30 +665,12 @@
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let sessionId = localStorage.getItem('sessionId');
-        let currentShareProduct = null;
+        let currentStoryProduct = null;
         
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
         }
-        
-        // Create floating particles
-        function createParticles() {
-            const container = document.getElementById('particles');
-            for (let i = 0; i < 30; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                const size = Math.random() * 4 + 2;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 10 + 's';
-                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                container.appendChild(particle);
-            }
-        }
-        createParticles();
         
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
@@ -897,43 +747,70 @@
             }, 500);
         };
         
-        window.showSharePopup = (productId, productName, productPrice, productImg) => {
-            currentShareProduct = { id: productId, name: productName, price: productPrice, image: productImg };
-            const popup = document.getElementById('sharePopup');
-            popup.classList.add('show');
-            setTimeout(() => {
-                popup.classList.remove('show');
-            }, 5000);
+        window.openStoryModal = (product) => {
+            currentStoryProduct = product;
+            document.getElementById('storyModalImage').src = product.image;
+            document.getElementById('storyProductName').textContent = product.name;
+            document.getElementById('storyProductSku').textContent = `SKU: ${product.sku}`;
+            document.getElementById('storyProductPrice').textContent = `₹${product.price.toLocaleString()}`;
+            document.getElementById('storyProductDesc').textContent = product.description || 'Exquisite handcrafted jewelry piece. Made with premium quality materials and finest craftsmanship.';
+            
+            const buyBtn = document.getElementById('storyBuyBtn');
+            const cartBtn = document.getElementById('storyCartBtn');
+            
+            buyBtn.onclick = () => buyNow(product.id, product.name, product.price, product.sku, product.image);
+            cartBtn.onclick = () => addToCart(product.id, product.name, product.price, product.sku, product.image);
+            
+            document.getElementById('storyModal').classList.add('active');
         };
         
-        window.shareToWhatsApp = () => {
-            if (currentShareProduct) {
-                const text = `Check out this beautiful ${currentShareProduct.name} from Style Of Life! Price: ₹${currentShareProduct.price.toLocaleString()}`;
-                const url = window.location.href;
-                window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
-                showToast('Opening WhatsApp...');
+        window.closeStoryModal = () => {
+            document.getElementById('storyModal').classList.remove('active');
+        };
+        
+        async function loadStories() {
+            const container = document.getElementById('storiesContainer');
+            const { data: products, error } = await supabase
+                .from('products')
+                .select('*')
+                .order('id')
+                .limit(8);
+            
+            if (error || !products?.length) return;
+            
+            const storyCategories = [
+                { name: '✨ New', filter: 'new' },
+                { name: '💍 Rings', filter: 'rings' },
+                { name: '📿 Necklaces', filter: 'necklaces' },
+                { name: '👑 Earrings', filter: 'earrings' },
+                { name: '💫 Bracelets', filter: 'bracelets' },
+                { name: '💎 Pendants', filter: 'pendants' },
+                { name: '⭐ Best Sellers', filter: 'bestsellers' },
+                { name: '🔥 Sale', filter: 'sale' }
+            ];
+            
+            let html = '';
+            for (let i = 0; i < storyCategories.length && i < products.length; i++) {
+                const product = products[i];
+                const img = product.images?.[0] || 'https://via.placeholder.com/70x70';
+                html += `
+                    <div class="story-item" onclick="openStoryModal({
+                        id: ${product.id},
+                        name: '${escapeHtml(product.name)}',
+                        sku: '${product.sku}',
+                        price: ${product.price},
+                        image: '${img}',
+                        description: '${escapeHtml(product.description || 'Exquisite handcrafted jewelry piece.')}'
+                    })">
+                        <div class="story-ring">
+                            <img class="story-image" src="${img}" alt="${storyCategories[i].name}">
+                        </div>
+                        <div class="story-name">${storyCategories[i].name}</div>
+                    </div>
+                `;
             }
-            document.getElementById('sharePopup').classList.remove('show');
-        };
-        
-        window.shareToInstagram = () => {
-            showToast('Copy the link to share on Instagram!');
-            navigator.clipboard.writeText(window.location.href);
-            document.getElementById('sharePopup').classList.remove('show');
-        };
-        
-        window.shareToFacebook = () => {
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
-            showToast('Opening Facebook...');
-            document.getElementById('sharePopup').classList.remove('show');
-        };
-        
-        window.shareToTwitter = () => {
-            const text = `Check out Style Of Life - Luxury Jewelry!`;
-            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
-            showToast('Opening Twitter...');
-            document.getElementById('sharePopup').classList.remove('show');
-        };
+            container.innerHTML = html;
+        }
         
         async function loadFeed() {
             const container = document.getElementById('feedContainer');
@@ -953,7 +830,7 @@
                     id: 1,
                     user: 'styleoflife',
                     name: 'Style Of Life',
-                    avatar: 'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=50&h=50&fit=crop',
+                    avatar: products[0]?.images?.[0] || 'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=50&h=50&fit=crop',
                     product: products[0],
                     caption: 'Elevate your elegance with our stunning diamond necklace. ✨ Handcrafted with love and precision.',
                     time: '2 hours ago',
@@ -963,18 +840,17 @@
                     id: 2,
                     user: 'styleoflife',
                     name: 'Style Of Life',
-                    avatar: 'https://images.pexels.com/photos/1191665/pexels-photo-1191665.jpeg?auto=compress&cs=tinysrgb&w=50&h=50&fit=crop',
+                    avatar: products[1]?.images?.[0] || 'https://images.pexels.com/photos/1191665/pexels-photo-1191665.jpeg?auto=compress&cs=tinysrgb&w=50&h=50&fit=crop',
                     product: products[1] || products[0],
                     caption: 'The perfect ring for your special moment. 💍 Our solitaire diamond ring is a timeless classic.',
                     time: '5 hours ago',
-                    likes: 892,
                     hashtags: '#DiamondRing #Proposal #EngagementRing'
                 },
                 {
                     id: 3,
                     user: 'styleoflife',
                     name: 'Style Of Life',
-                    avatar: 'https://images.pexels.com/photos/1455286/pexels-photo-1455286.jpeg?auto=compress&cs=tinysrgb&w=50&h=50&fit=crop',
+                    avatar: products[2]?.images?.[0] || 'https://images.pexels.com/photos/1455286/pexels-photo-1455286.jpeg?auto=compress&cs=tinysrgb&w=50&h=50&fit=crop',
                     product: products[2] || products[0],
                     caption: 'Pearls never go out of style. 🌟 Our pearl drop earrings add the perfect touch of elegance.',
                     time: '1 day ago',
@@ -992,7 +868,7 @@
                             <div class="post-user">
                                 <img class="post-avatar" src="${post.avatar}" alt="">
                                 <div class="post-user-info">
-                                    <h4>${post.name} <i class="fas fa-check-circle verified-badge"></i></h4>
+                                    <h4>${post.name} <i class="fas fa-check-circle" style="color: var(--gold); font-size: 12px;"></i></h4>
                                     <p>${post.user}</p>
                                 </div>
                             </div>
@@ -1000,11 +876,16 @@
                         </div>
                         <img class="post-image" src="${img}" alt="">
                         <div class="post-actions">
-                            <div class="action-buttons">
-                                <div class="action-btn" onclick="showSharePopup(${post.product?.id || 1}, '${escapeHtml(post.product?.name || 'Jewelry')}', ${post.product?.price || 0}, '${img}')">
-                                    <i class="fas fa-share-alt"></i>
-                                    <span>Share</span>
-                                </div>
+                            <div class="action-btn" onclick="openStoryModal({
+                                id: ${post.product?.id || 1},
+                                name: '${escapeHtml(post.product?.name || 'Jewelry')}',
+                                sku: '${post.product?.sku || 'LUX-001'}',
+                                price: ${post.product?.price || 0},
+                                image: '${img}',
+                                description: '${escapeHtml(post.product?.description || 'Exquisite handcrafted jewelry piece.')}'
+                            })">
+                                <i class="fas fa-info-circle"></i>
+                                <span>View Details</span>
                             </div>
                         </div>
                         <div class="post-caption">
@@ -1055,7 +936,14 @@
                 for (const p of products) {
                     const img = p.images?.[0] || 'https://via.placeholder.com/200x200?text=Style+Of+Life';
                     html += `
-                        <img class="grid-product" src="${img}" alt="${p.name}" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
+                        <img class="grid-product" src="${img}" alt="${p.name}" onclick="openStoryModal({
+                            id: ${p.id},
+                            name: '${escapeHtml(p.name)}',
+                            sku: '${p.sku}',
+                            price: ${p.price},
+                            image: '${img}',
+                            description: '${escapeHtml(p.description || 'Exquisite handcrafted jewelry piece.')}'
+                        })">
                     `;
                 }
                 container.innerHTML = html;
@@ -1069,7 +957,15 @@
             return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
         }
         
+        // Close modal on outside click
+        document.getElementById('storyModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeStoryModal();
+            }
+        });
+        
         await updateCartCount();
+        await loadStories();
         await loadFeed();
         await loadProductGrid();
     </script>
