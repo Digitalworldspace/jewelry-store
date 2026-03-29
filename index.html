@@ -35,15 +35,49 @@
             overflow-x: hidden;
         }
         
-        /* Instagram Stories Section */
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: radial-gradient(circle at 20% 30%, #1a1a2e, #0a0a0a);
+        }
+        
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, var(--gold), transparent);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: floatParticle 15s infinite;
+        }
+        
+        @keyframes floatParticle {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.1; }
+            50% { transform: translateY(-50px) translateX(30px); opacity: 0.4; }
+        }
+        
+        /* Instagram Stories Section - Beautiful Product Images */
         .stories-section {
             padding: 15px 0;
-            background: var(--black);
-            border-bottom: 1px solid rgba(212,175,55,0.1);
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212,175,55,0.2);
             position: sticky;
             top: 0;
             z-index: 100;
-            backdrop-filter: blur(10px);
         }
         
         .stories-container {
@@ -60,17 +94,28 @@
         
         .story-item {
             text-align: center;
-            min-width: 70px;
+            min-width: 75px;
             cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .story-item:hover {
+            transform: translateY(-3px);
         }
         
         .story-ring {
-            width: 70px;
-            height: 70px;
+            width: 75px;
+            height: 75px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--gold-dark));
             padding: 2px;
             margin-bottom: 8px;
+            animation: ringPulse 2s infinite;
+        }
+        
+        @keyframes ringPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0.4); }
+            50% { box-shadow: 0 0 0 5px rgba(212,175,55,0.2); }
         }
         
         .story-image {
@@ -83,28 +128,78 @@
         
         .story-name {
             font-size: 11px;
-            color: var(--gray-light);
+            color: var(--gold-light);
+            font-weight: 500;
         }
         
-        /* Header - Instagram Style */
+        /* Header - Premium Instagram Style */
         .instagram-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 12px 15px;
-            background: var(--black);
-            border-bottom: 1px solid rgba(212,175,55,0.1);
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212,175,55,0.2);
         }
         
-        .logo-small {
+        /* Animated Logo */
+        .animated-logo {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .logo-main {
             font-family: 'Playfair Display', serif;
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #D4AF37 0%, #F5E6B3 30%, #D4AF37 60%, #B8962E 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            position: relative;
+            animation: logoShine 3s ease-in-out infinite;
+        }
+        
+        @keyframes logoShine {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(212,175,55,0.3);
+                letter-spacing: 4px;
+            }
+            50% {
+                text-shadow: 0 0 25px rgba(212,175,55,0.6);
+                letter-spacing: 5px;
+            }
+        }
+        
+        .logo-sub {
+            font-size: 8px;
+            letter-spacing: 6px;
+            color: var(--gold);
+            margin-top: -2px;
+            opacity: 0.7;
+        }
+        
+        .logo-diamond {
+            position: absolute;
+            top: -15px;
+            right: -25px;
+            font-size: 14px;
+            color: var(--gold);
+            animation: diamondSpin 3s linear infinite;
+        }
+        
+        @keyframes diamondSpin {
+            0% { transform: rotate(0deg) scale(1); opacity: 0.5; }
+            50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
+            100% { transform: rotate(360deg) scale(1); opacity: 0.5; }
         }
         
         .header-icons {
@@ -117,26 +212,46 @@
             font-size: 22px;
             text-decoration: none;
             position: relative;
+            transition: all 0.3s;
+        }
+        
+        .header-icons a:hover {
+            transform: scale(1.1);
+            text-shadow: 0 0 10px rgba(212,175,55,0.5);
         }
         
         .cart-badge {
             position: absolute;
             top: -8px;
             right: -12px;
-            background: var(--gold);
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             color: var(--black);
             font-size: 10px;
             padding: 2px 6px;
             border-radius: 50%;
             font-weight: bold;
+            animation: badgePulse 1.5s infinite;
+        }
+        
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
         
         /* Instagram Post Card */
         .post-card {
             margin-bottom: 20px;
             background: var(--black-light);
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
+            border: 1px solid rgba(212,175,55,0.1);
+            transition: all 0.3s;
+        }
+        
+        .post-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(212,175,55,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         
         .post-header {
@@ -153,8 +268,8 @@
         }
         
         .post-avatar {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid var(--gold);
@@ -162,8 +277,12 @@
         }
         
         .post-user-info h4 {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
         
         .post-user-info p {
@@ -171,15 +290,21 @@
             color: var(--gray-light);
         }
         
-        .post-menu {
-            color: var(--gray-light);
-            font-size: 18px;
+        .verified-badge {
+            color: var(--gold);
+            font-size: 12px;
+            margin-left: 4px;
         }
         
         .post-image {
             width: 100%;
             aspect-ratio: 1 / 1;
             object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .post-card:hover .post-image {
+            transform: scale(1.02);
         }
         
         .post-actions {
@@ -194,18 +319,24 @@
         }
         
         .action-icons i {
-            font-size: 24px;
+            font-size: 26px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
         
         .action-icons i:hover {
             color: var(--gold);
-            transform: scale(1.1);
+            transform: scale(1.15);
         }
         
         .liked {
             color: #ff3040;
+            animation: heartBeat 0.5s ease;
+        }
+        
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
         }
         
         .post-likes {
@@ -223,6 +354,12 @@
         .post-caption span {
             font-weight: 600;
             margin-right: 5px;
+            color: var(--gold);
+        }
+        
+        .hashtag {
+            color: var(--gold);
+            cursor: pointer;
         }
         
         .post-time {
@@ -231,14 +368,16 @@
             color: var(--gray-light);
         }
         
+        /* Product Tag */
         .post-product-tag {
-            background: rgba(212,175,55,0.1);
+            background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.05));
             margin: 10px 15px;
             padding: 12px;
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            border: 1px solid rgba(212,175,55,0.2);
         }
         
         .tag-product-info {
@@ -248,33 +387,42 @@
         }
         
         .tag-product-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
+            width: 55px;
+            height: 55px;
+            border-radius: 10px;
             object-fit: cover;
         }
         
         .tag-product-name {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
         }
         
         .tag-product-price {
             font-size: 12px;
             color: var(--gold);
-        }
-        
-        .shop-now-btn {
-            background: var(--gold);
-            color: var(--black);
-            padding: 6px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 12px;
             font-weight: 600;
         }
         
-        /* Grid Posts Section */
+        .shop-now-btn {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--black);
+            padding: 8px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .shop-now-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212,175,55,0.4);
+        }
+        
+        /* Grid Section */
         .grid-section {
             padding: 20px 15px;
         }
@@ -287,14 +435,26 @@
         }
         
         .section-title h3 {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
+            position: relative;
+        }
+        
+        .section-title h3::before {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--gold);
         }
         
         .section-title a {
             color: var(--gold);
             font-size: 12px;
             text-decoration: none;
+            transition: all 0.3s;
         }
         
         .product-grid {
@@ -308,14 +468,15 @@
             object-fit: cover;
             width: 100%;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s;
         }
         
         .grid-product:hover {
             transform: scale(1.02);
+            filter: brightness(1.1);
         }
         
-        /* Bottom Navigation - Instagram Style */
+        /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -343,11 +504,16 @@
         
         .bottom-nav a i {
             font-size: 22px;
+            transition: all 0.3s;
         }
         
         .bottom-nav a.active,
         .bottom-nav a:hover {
             color: var(--gold);
+        }
+        
+        .bottom-nav a.active i {
+            transform: translateY(-3px);
         }
         
         /* Toast */
@@ -356,18 +522,18 @@
             bottom: 70px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--gold);
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             color: var(--black);
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 40px;
             z-index: 9999;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
             animation: slideUp 0.3s ease;
         }
         
         .toast-error {
-            background: #f44336;
+            background: linear-gradient(135deg, #f44336, #d32f2f);
             color: white;
         }
         
@@ -401,7 +567,6 @@
             to { transform: rotate(360deg); }
         }
         
-        /* Add to Cart Animation */
         .cart-animation {
             animation: cartBounce 0.5s ease;
         }
@@ -413,40 +578,74 @@
     </style>
 </head>
 <body>
-    <!-- Instagram Stories -->
+    <!-- Animated Background Particles -->
+    <div class="animated-bg"></div>
+    <div class="floating-particles" id="particles"></div>
+    
+    <!-- Instagram Stories with Beautiful Product Images -->
     <div class="stories-section">
         <div class="stories-container">
-            <div class="story-item">
-                <div class="story-ring"><img class="story-image" src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=70&h=70&fit=crop" alt=""></div>
-                <div class="story-name">New Arrivals</div>
+            <div class="story-item" onclick="window.location.href='shop.html?category=new'">
+                <div class="story-ring">
+                    <img class="story-image" src="https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="New Arrivals">
+                </div>
+                <div class="story-name">✨ New Arrivals</div>
             </div>
-            <div class="story-item">
-                <div class="story-ring"><img class="story-image" src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=70&h=70&fit=crop" alt=""></div>
-                <div class="story-name">Rings</div>
+            <div class="story-item" onclick="window.location.href='shop.html?category=rings'">
+                <div class="story-ring">
+                    <img class="story-image" src="https://images.pexels.com/photos/1191665/pexels-photo-1191665.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Diamond Rings">
+                </div>
+                <div class="story-name">💍 Diamond Rings</div>
             </div>
-            <div class="story-item">
-                <div class="story-ring"><img class="story-image" src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=70&h=70&fit=crop" alt=""></div>
-                <div class="story-name">Necklaces</div>
+            <div class="story-item" onclick="window.location.href='shop.html?category=necklaces'">
+                <div class="story-ring">
+                    <img class="story-image" src="https://images.pexels.com/photos/1455286/pexels-photo-1455286.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Gold Necklaces">
+                </div>
+                <div class="story-name">📿 Gold Necklaces</div>
             </div>
-            <div class="story-item">
-                <div class="story-ring"><img class="story-image" src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=70&h=70&fit=crop" alt=""></div>
-                <div class="story-name">Bracelets</div>
+            <div class="story-item" onclick="window.location.href='shop.html?category=earrings'">
+                <div class="story-ring">
+                    <img class="story-image" src="https://images.pexels.com/photos/1740602/pexels-photo-1740602.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Diamond Earrings">
+                </div>
+                <div class="story-name">👑 Diamond Earrings</div>
             </div>
-            <div class="story-item">
-                <div class="story-ring"><img class="story-image" src="https://images.unsplash.com/photo-1589674781759-21f0bb668a1d?w=70&h=70&fit=crop" alt=""></div>
-                <div class="story-name">Pendants</div>
+            <div class="story-item" onclick="window.location.href='shop.html?category=bracelets'">
+                <div class="story-ring">
+                    <img class="story-image" src="https://images.pexels.com/photos/1095318/pexels-photo-1095318.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Gold Bracelets">
+                </div>
+                <div class="story-name">💫 Gold Bracelets</div>
             </div>
-            <div class="story-item">
-                <div class="story-ring"><img class="story-image" src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=70&h=70&fit=crop" alt=""></div>
-                <div class="story-name">Earrings</div>
+            <div class="story-item" onclick="window.location.href='shop.html?category=pendants'">
+                <div class="story-ring">
+                    <img class="story-image" src="https://images.pexels.com/photos/1455285/pexels-photo-1455285.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Pendants">
+                </div>
+                <div class="story-name">💎 Pendants</div>
+            </div>
+            <div class="story-item" onclick="window.location.href='shop.html?category=wedding'">
+                <div class="story-ring">
+                    <img class="story-image" src="https://images.pexels.com/photos/1418244/pexels-photo-1418244.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Wedding Collection">
+                </div>
+                <div class="story-name">💒 Wedding</div>
+            </div>
+            <div class="story-item" onclick="window.location.href='shop.html?category=sale'">
+                <div class="story-ring">
+                    <img class="story-image" src="https://images.pexels.com/photos/1927260/pexels-photo-1927260.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop" alt="Sale">
+                </div>
+                <div class="story-name">🔥 Sale</div>
             </div>
         </div>
     </div>
     
-    <!-- Instagram Header -->
+    <!-- Instagram Header with Animated Logo -->
     <div class="instagram-header">
-        <i class="fas fa-camera" style="color: var(--gold); font-size: 24px;"></i>
-        <div class="logo-small">STYLE OF LIFE</div>
+        <i class="fas fa-camera" style="color: var(--gold); font-size: 24px; cursor: pointer;"></i>
+        <div class="animated-logo">
+            <div class="logo-container">
+                <div class="logo-main">STYLE OF LIFE</div>
+                <div class="logo-sub">LUXURY JEWELRY</div>
+            </div>
+            <i class="fas fa-gem logo-diamond"></i>
+        </div>
         <div class="header-icons">
             <a href="cart.html"><i class="fas fa-shopping-bag"></i><span class="cart-badge" id="cartCount">0</span></a>
             <a href="customer-portal.html"><i class="fas fa-user-circle"></i></a>
@@ -469,11 +668,26 @@
     
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
-        <a href="index.html" class="active"><i class="fas fa-home"></i><span>Home</span></a>
-        <a href="shop.html"><i class="fas fa-search"></i><span>Explore</span></a>
-        <a href="cart.html"><i class="fas fa-shopping-bag"></i><span>Cart</span></a>
-        <a href="track.html"><i class="fas fa-truck"></i><span>Track</span></a>
-        <a href="customer-portal.html"><i class="fas fa-user"></i><span>Profile</span></a>
+        <a href="index.html" class="active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="shop.html">
+            <i class="fas fa-search"></i>
+            <span>Explore</span>
+        </a>
+        <a href="cart.html">
+            <i class="fas fa-shopping-bag"></i>
+            <span>Cart</span>
+        </a>
+        <a href="track.html">
+            <i class="fas fa-truck"></i>
+            <span>Track</span>
+        </a>
+        <a href="customer-portal.html">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
     </div>
     
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
@@ -489,6 +703,24 @@
         }
         
         let likedPosts = JSON.parse(localStorage.getItem('likedPosts') || '{}');
+        
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
         
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
@@ -545,7 +777,7 @@
                 
                 if (saveError) throw saveError;
                 
-                showToast(`${name} added to cart!`);
+                showToast(`${name} added to cart! ✨`);
                 await updateCartCount();
                 
                 const cartIcon = document.querySelector('.header-icons a:first-child i');
@@ -572,6 +804,8 @@
                 heartIcon.classList.add('liked');
                 let currentLikes = parseInt(likesCount.textContent);
                 likesCount.textContent = currentLikes + 1;
+                heartIcon.style.animation = 'heartBeat 0.5s ease';
+                setTimeout(() => heartIcon.style.animation = '', 500);
             }
             
             localStorage.setItem('likedPosts', JSON.stringify(likedPosts));
@@ -595,37 +829,40 @@
                     id: 1,
                     user: 'styleoflife',
                     name: 'Style Of Life',
-                    avatar: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=40&h=40&fit=crop',
+                    avatar: 'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=50&h=50&fit=crop',
                     product: products[0],
-                    caption: 'Elevate your elegance with our stunning diamond necklace. ✨ Handcrafted with love and precision. #LuxuryJewelry #StyleOfLife',
+                    caption: 'Elevate your elegance with our stunning diamond necklace. ✨ Handcrafted with love and precision.',
                     time: '2 hours ago',
-                    likes: 1247
+                    likes: 1247,
+                    hashtags: '#LuxuryJewelry #StyleOfLife #DiamondNecklace'
                 },
                 {
                     id: 2,
                     user: 'styleoflife',
                     name: 'Style Of Life',
-                    avatar: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=40&h=40&fit=crop',
+                    avatar: 'https://images.pexels.com/photos/1191665/pexels-photo-1191665.jpeg?auto=compress&cs=tinysrgb&w=50&h=50&fit=crop',
                     product: products[1] || products[0],
-                    caption: 'The perfect ring for your special moment. 💍 Our solitaire diamond ring is a timeless classic. #DiamondRing #Proposal',
+                    caption: 'The perfect ring for your special moment. 💍 Our solitaire diamond ring is a timeless classic.',
                     time: '5 hours ago',
-                    likes: 892
+                    likes: 892,
+                    hashtags: '#DiamondRing #Proposal #EngagementRing'
                 },
                 {
                     id: 3,
                     user: 'styleoflife',
                     name: 'Style Of Life',
-                    avatar: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=40&h=40&fit=crop',
+                    avatar: 'https://images.pexels.com/photos/1455286/pexels-photo-1455286.jpeg?auto=compress&cs=tinysrgb&w=50&h=50&fit=crop',
                     product: products[2] || products[0],
-                    caption: 'Pearls never go out of style. 🌟 Our pearl drop earrings add the perfect touch of elegance to any outfit. #PearlJewelry #Elegance',
+                    caption: 'Pearls never go out of style. 🌟 Our pearl drop earrings add the perfect touch of elegance.',
                     time: '1 day ago',
-                    likes: 2103
+                    likes: 2103,
+                    hashtags: '#PearlJewelry #Elegance #StyleOfLife'
                 }
             ];
             
             let html = '';
             for (const post of feedPosts) {
-                const img = post.product?.images?.[0] || 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop';
+                const img = post.product?.images?.[0] || 'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop';
                 const isLiked = likedPosts[post.id] || false;
                 
                 html += `
@@ -634,7 +871,7 @@
                             <div class="post-user">
                                 <img class="post-avatar" src="${post.avatar}" alt="">
                                 <div class="post-user-info">
-                                    <h4>${post.name}</h4>
+                                    <h4>${post.name} <i class="fas fa-check-circle verified-badge"></i></h4>
                                     <p>${post.user}</p>
                                 </div>
                             </div>
@@ -655,7 +892,8 @@
                             <span id="likes-${post.id}">${post.likes}</span> likes
                         </div>
                         <div class="post-caption">
-                            <span>${post.user}</span> ${post.caption}
+                            <span>${post.user}</span> ${post.caption}<br>
+                            <span class="hashtag">${post.hashtags}</span>
                         </div>
                         <div class="post-product-tag">
                             <div class="tag-product-info">
@@ -665,7 +903,7 @@
                                     <div class="tag-product-price">₹${(post.product?.price || 0).toLocaleString()}</div>
                                 </div>
                             </div>
-                            <button class="shop-now-btn" onclick="addToCart(${post.product?.id || 1}, '${escapeHtml(post.product?.name || 'Jewelry')}', ${post.product?.price || 0}, '${post.product?.sku || 'LUX-001'}', '${img}')">Shop Now</button>
+                            <button class="shop-now-btn" onclick="addToCart(${post.product?.id || 1}, '${escapeHtml(post.product?.name || 'Jewelry')}', ${post.product?.price || 0}, '${post.product?.sku || 'LUX-001'}', '${img}')">Shop Now →</button>
                         </div>
                         <div class="post-time">${post.time}</div>
                     </div>
