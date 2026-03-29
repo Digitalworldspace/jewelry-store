@@ -317,36 +317,16 @@
         async function saveCart() {
             try {
                 const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-                // Check if cart exists
-                const { data: existing } = await supabase
+                const { error } = await supabase
                     .from('carts')
-                    .select('id')
-                    .eq('session_id', sessionId)
-                    .maybeSingle();
+                    .upsert({
+                        session_id: sessionId,
+                        items: cart,
+                        total: total,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'session_id' });
                 
-                if (existing) {
-                    // Update existing
-                    const { error } = await supabase
-                        .from('carts')
-                        .update({
-                            items: cart,
-                            total: total,
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq('session_id', sessionId);
-                    if (error) throw error;
-                } else {
-                    // Insert new
-                    const { error } = await supabase
-                        .from('carts')
-                        .insert({
-                            session_id: sessionId,
-                            items: cart,
-                            total: total,
-                            updated_at: new Date().toISOString()
-                        });
-                    if (error) throw error;
-                }
+                if (error) throw error;
                 renderCart();
                 updateCartBadge();
                 return true;
