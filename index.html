@@ -32,17 +32,8 @@
             border-bottom: 1px solid var(--gray-200);
         }
         .logo { font-size: 20px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
-        .mobile-nav {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-        .mobile-nav a {
-            color: var(--gray-600);
-            text-decoration: none;
-            font-size: 18px;
-            position: relative;
-        }
+        .mobile-nav { display: flex; gap: 20px; align-items: center; }
+        .mobile-nav a { color: var(--gray-600); text-decoration: none; font-size: 18px; position: relative; }
         .cart-count {
             position: absolute;
             top: -8px;
@@ -101,12 +92,7 @@
             padding: 30px 20px;
             background: white;
         }
-        .feature {
-            text-align: center;
-            padding: 15px;
-            background: var(--gray-100);
-            border-radius: 12px;
-        }
+        .feature { text-align: center; padding: 15px; background: var(--gray-100); border-radius: 12px; }
         .feature i { font-size: 28px; color: var(--primary); margin-bottom: 8px; }
         .feature h3 { font-size: 13px; margin-bottom: 4px; }
         .feature p { font-size: 10px; color: var(--gray-600); }
@@ -126,7 +112,9 @@
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid var(--gray-200);
+            transition: transform 0.2s;
         }
+        .product-card:hover { transform: translateY(-2px); }
         .product-image { width: 100%; height: 160px; object-fit: cover; }
         .product-info { padding: 10px; }
         .product-sku { font-size: 9px; color: var(--primary); }
@@ -147,7 +135,7 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .add-to-cart-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .add-to-cart-btn:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-1px); }
         .add-to-cart-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .view-all-btn { text-align: center; margin: 20px 0 40px; }
@@ -165,11 +153,7 @@
             background: linear-gradient(135deg, #f8f9fa, #f4e9e0);
             padding: 30px 20px;
         }
-        .testimonials-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
+        .testimonials-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
         .testimonial-card {
             background: white;
             padding: 15px;
@@ -186,12 +170,7 @@
             color: white;
         }
         .newsletter h3 { font-size: 20px; margin-bottom: 8px; }
-        .newsletter-form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
-        }
+        .newsletter-form { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .newsletter-form input {
             padding: 10px 16px;
             border: none;
@@ -221,6 +200,8 @@
             font-size: 12px;
             white-space: nowrap;
         }
+        .toast-error { background: #dc3545; }
+        .toast-success { background: #28a745; }
         
         .loading { text-align: center; padding: 40px; }
         .spinner { width: 30px; height: 30px; border: 2px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px; }
@@ -342,7 +323,8 @@
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast';
-            toast.style.background = isError ? '#dc3545' : '#1a1a1a';
+            if (isError) toast.classList.add('toast-error');
+            else toast.classList.add('toast-success');
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
@@ -367,7 +349,6 @@
         
         window.addToCart = async function(productId, productName, productPrice, productSku, productImage) {
             try {
-                // Check stock
                 const { data: product, error: stockError } = await supabase
                     .from('products')
                     .select('stock')
@@ -380,7 +361,6 @@
                     return;
                 }
                 
-                // Get current cart
                 const { data: cartData, error: cartError } = await supabase
                     .from('carts')
                     .select('items')
@@ -411,7 +391,6 @@
                 
                 const total = currentItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                 
-                // Save to Supabase
                 const { error: saveError } = await supabase
                     .from('carts')
                     .upsert({
@@ -426,8 +405,7 @@
                 showToast(`${productName} added to cart!`);
                 await updateCartCount();
                 
-                // Animate cart icon
-                const cartIcon = document.querySelector('nav a[href="cart.html"]');
+                const cartIcon = document.querySelector('.mobile-nav a[href="cart.html"]');
                 if (cartIcon) {
                     cartIcon.style.transform = 'scale(1.1)';
                     setTimeout(() => cartIcon.style.transform = 'scale(1)', 200);
