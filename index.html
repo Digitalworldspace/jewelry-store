@@ -39,7 +39,7 @@
             padding-bottom: 70px;
         }
         
-        /* Light Background */
+        /* Light Background Animation */
         .light-bg {
             position: fixed;
             top: 0;
@@ -48,6 +48,30 @@
             height: 100%;
             z-index: -2;
             background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+        }
+        
+        /* Floating Particles */
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, var(--gold), transparent);
+            border-radius: 50%;
+            opacity: 0.2;
+            animation: floatParticle 15s infinite;
+        }
+        
+        @keyframes floatParticle {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.1; }
+            50% { transform: translateY(-50px) translateX(30px); opacity: 0.3; }
         }
         
         /* Stories Section */
@@ -90,6 +114,11 @@
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             padding: 2px;
             margin-bottom: 0;
+            transition: all 0.3s;
+        }
+        
+        .story-ring:hover {
+            transform: scale(1.05);
         }
         
         .story-image {
@@ -168,6 +197,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s;
         }
         
         .story-close:hover {
@@ -267,6 +297,11 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .story-buy:hover, .story-cart:hover {
+            transform: translateY(-2px);
         }
         
         .story-cart {
@@ -282,6 +317,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            transition: all 0.2s;
         }
         
         @keyframes fadeIn {
@@ -357,6 +393,12 @@
             font-size: 22px;
             text-decoration: none;
             position: relative;
+            transition: all 0.2s;
+        }
+        
+        .header-icons a:hover {
+            transform: scale(1.05);
+            color: var(--gold);
         }
         
         .cart-badge {
@@ -369,6 +411,12 @@
             padding: 2px 6px;
             border-radius: 50%;
             font-weight: bold;
+            animation: badgePulse 1.5s infinite;
+        }
+        
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
         
         /* Featured Section */
@@ -402,6 +450,7 @@
         .random-product-card:hover {
             transform: translateY(-3px);
             box-shadow: var(--shadow-hover);
+            border-color: var(--gold);
         }
         
         .random-product-image {
@@ -446,6 +495,7 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
+            transition: all 0.2s;
         }
         
         .random-cart-btn {
@@ -461,6 +511,11 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
+            transition: all 0.2s;
+        }
+        
+        .random-buy-btn:hover, .random-cart-btn:hover {
+            transform: translateY(-2px);
         }
         
         /* Product Grid with Scrollable Images */
@@ -469,9 +524,6 @@
         }
         
         .section-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 15px;
         }
         
@@ -479,6 +531,7 @@
             font-size: 18px;
             font-weight: 600;
             position: relative;
+            display: inline-block;
         }
         
         .section-title h3::before {
@@ -520,6 +573,11 @@
             scroll-snap-type: x mandatory;
             display: flex;
             scrollbar-width: thin;
+            cursor: grab;
+        }
+        
+        .product-gallery:active {
+            cursor: grabbing;
         }
         
         .product-gallery::-webkit-scrollbar {
@@ -622,6 +680,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            transition: all 0.2s;
         }
         
         .product-cart-btn {
@@ -635,7 +694,11 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
+        }
+        
+        .product-buy-btn:hover, .product-cart-btn:hover {
+            transform: translateY(-2px);
         }
         
         .product-cart-btn:hover {
@@ -662,6 +725,7 @@
             padding: 10px 20px 20px;
             border-top: 1px solid rgba(0,0,0,0.05);
             z-index: 100;
+            backdrop-filter: blur(10px);
         }
         
         .bottom-nav a {
@@ -672,7 +736,7 @@
             color: var(--gray);
             text-decoration: none;
             font-size: 10px;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
         
         .bottom-nav a i {
@@ -684,24 +748,30 @@
             color: var(--gold);
         }
         
+        .bottom-nav a.active i {
+            transform: translateY(-3px);
+        }
+        
         /* Toast */
         .toast {
             position: fixed;
             bottom: 70px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--gold);
-            color: var(--white);
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--black);
             padding: 12px 24px;
             border-radius: 40px;
             z-index: 9999;
             font-size: 13px;
             font-weight: 700;
             animation: slideUp 0.3s ease;
+            box-shadow: 0 5px 15px rgba(212,175,55,0.3);
         }
         
         .toast-error {
-            background: #f44336;
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
         }
         
         @keyframes slideUp {
@@ -755,6 +825,7 @@
 </head>
 <body>
     <div class="light-bg"></div>
+    <div class="floating-particles" id="particles"></div>
     
     <!-- Stories Section -->
     <div class="stories-section">
@@ -805,7 +876,7 @@
         </div>
     </div>
     
-    <!-- Random Products Section -->
+    <!-- You May Also Like Section -->
     <div class="featured-section">
         <div class="featured-title">✨ You May Also Like</div>
         <div class="random-products" id="randomProducts">
@@ -846,6 +917,24 @@
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
         }
+        
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
         
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
@@ -904,6 +993,12 @@
                 
                 showToast(`${name} added to cart! ✨`);
                 await updateCartCount();
+                
+                const cartIcon = document.querySelector('.header-icons a:first-child i');
+                if (cartIcon) {
+                    cartIcon.classList.add('cart-animation');
+                    setTimeout(() => cartIcon.classList.remove('cart-animation'), 500);
+                }
             } catch (error) {
                 showToast('Failed to add', true);
             }
@@ -1009,7 +1104,6 @@
                     return;
                 }
                 
-                // Shuffle products randomly
                 const shuffled = [...products];
                 for (let i = shuffled.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
@@ -1043,12 +1137,19 @@
                 .order('id')
                 .limit(6);
             
-            const storyNames = ['New', 'Rings', 'Necklaces', 'Earrings', 'Bracelets', 'Pendants'];
+            const storyImages = [
+                'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
+                'https://images.pexels.com/photos/1191665/pexels-photo-1191665.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
+                'https://images.pexels.com/photos/1455286/pexels-photo-1455286.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
+                'https://images.pexels.com/photos/1740602/pexels-photo-1740602.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
+                'https://images.pexels.com/photos/1095318/pexels-photo-1095318.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
+                'https://images.pexels.com/photos/1455285/pexels-photo-1455285.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop'
+            ];
             
             let html = '';
             for (let i = 0; i < 6; i++) {
                 const product = products && products[i] ? products[i] : null;
-                const storyImage = product?.images?.[0] || `https://via.placeholder.com/70x70?text=${storyNames[i]}`;
+                const storyImage = product?.images?.[0] || storyImages[i];
                 
                 html += `
                     <div class="story-item" onclick="openRandomStory()">
@@ -1077,7 +1178,6 @@
                     return;
                 }
                 
-                // Shuffle and get 4 random products
                 const shuffled = [...products];
                 for (let i = shuffled.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
@@ -1121,11 +1221,9 @@
             
             if (!gallery || !dotContainer) return;
             
-            // Clear existing content
             gallery.innerHTML = '';
             dotContainer.innerHTML = '';
             
-            // Add images
             images.forEach((img, index) => {
                 const imgElement = document.createElement('img');
                 imgElement.src = img;
@@ -1134,17 +1232,16 @@
                 imgElement.onerror = () => { imgElement.src = 'https://via.placeholder.com/400x400?text=Image+Not+Available'; };
                 gallery.appendChild(imgElement);
                 
-                // Add dot
                 const dot = document.createElement('div');
                 dot.className = 'gallery-dot';
                 if (index === 0) dot.classList.add('active');
-                dot.addEventListener('click', () => {
+                dot.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     gallery.scrollTo({ left: gallery.clientWidth * index, behavior: 'smooth' });
                 });
                 dotContainer.appendChild(dot);
             });
             
-            // Update active dot on scroll
             gallery.addEventListener('scroll', () => {
                 const scrollPosition = gallery.scrollLeft;
                 const itemWidth = gallery.clientWidth;
@@ -1212,7 +1309,6 @@
                 }
                 container.innerHTML = html;
                 
-                // Initialize galleries after adding to DOM
                 for (let i = 0; i < products.length; i++) {
                     const p = products[i];
                     const images = p.images || [];
@@ -1237,25 +1333,26 @@
             return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
         }
         
-        // Close modal on outside click
         document.getElementById('instagramStoryModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeInstagramStory();
             }
         });
         
-        // Touch swipe for story navigation
         let touchStartX = 0;
-        document.getElementById('storyContent').addEventListener('touchstart', (e) => {
-            touchStartX = e.touches[0].clientX;
-        });
-        
-        document.getElementById('storyContent').addEventListener('touchend', (e) => {
-            const touchEndX = e.changedTouches[0].clientX;
-            if (touchEndX < touchStartX - 50) {
-                nextStory();
-            }
-        });
+        const storyContent = document.getElementById('storyContent');
+        if (storyContent) {
+            storyContent.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+            });
+            
+            storyContent.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                if (touchEndX < touchStartX - 50) {
+                    nextStory();
+                }
+            });
+        }
         
         // Initialize
         loadStories();
