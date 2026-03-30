@@ -418,7 +418,7 @@
             50% { transform: scale(1.1); }
         }
         
-        /* Featured Section */
+        /* Featured Section - Full Buttons */
         .featured-section {
             padding: 20px 15px;
             background: linear-gradient(135deg, rgba(212,175,55,0.05), rgba(212,175,55,0.02));
@@ -459,40 +459,73 @@
             object-fit: cover;
         }
         
-        .random-buttons {
-            display: flex;
-            gap: 8px;
+        .random-product-info {
             padding: 12px;
         }
         
-        .random-buy-btn, .random-cart-btn {
+        .random-product-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .random-product-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+        
+        .random-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .random-buy-btn {
             flex: 1;
-            padding: 10px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--white);
+            padding: 8px 12px;
+            border: none;
             border-radius: 30px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 5px;
             transition: all 0.2s;
         }
         
-        .random-buy-btn {
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: var(--white);
-            border: none;
-        }
-        
         .random-cart-btn {
+            flex: 1;
             background: var(--white-light);
             border: 1px solid var(--gold);
             color: var(--gold);
+            padding: 8px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.2s;
         }
         
         .random-buy-btn:hover, .random-cart-btn:hover {
             transform: translateY(-2px);
+        }
+        
+        .random-cart-btn:hover {
+            background: var(--gold);
+            color: var(--white);
         }
         
         /* Product Grid with Scrollable Images */
@@ -1038,7 +1071,7 @@
         </div>
     </div>
     
-    <!-- You May Also Like Section -->
+    <!-- You May Also Like Section - Full Buttons -->
     <div class="featured-section">
         <div class="featured-title">✨ You May Also Like</div>
         <div class="random-products" id="randomProducts">
@@ -1073,9 +1106,6 @@
         let sessionId = localStorage.getItem('sessionId');
         let currentStoryProduct = null;
         let currentShareProduct = null;
-        let storyTimer = null;
-        let currentStoryIndex = 0;
-        let currentStoryProducts = [];
         
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -1309,7 +1339,7 @@
             }
         }
         
-        // Load random products for featured section
+        // Load random products for featured section - Full Buttons
         async function loadRandomProducts() {
             const container = document.getElementById('randomProducts');
             
@@ -1339,13 +1369,17 @@
                     html += `
                         <div class="random-product-card">
                             <img class="random-product-image" src="${img}" alt="Product" onerror="this.src='https://via.placeholder.com/300x150?text=Style+Of+Life'">
-                            <div class="random-buttons">
-                                <button class="random-buy-btn" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
-                                    <i class="fas fa-bolt"></i> Buy Now
-                                </button>
-                                <button class="random-cart-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
-                                    <i class="fas fa-cart-plus"></i> Add to Cart
-                                </button>
+                            <div class="random-product-info">
+                                <div class="random-product-name">${escapeHtml(p.name)}</div>
+                                <div class="random-product-price">₹${(p.price || 0).toLocaleString()}</div>
+                                <div class="random-buttons">
+                                    <button class="random-buy-btn" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
+                                        <i class="fas fa-bolt"></i> Buy Now
+                                    </button>
+                                    <button class="random-cart-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
+                                        <i class="fas fa-cart-plus"></i> Add to Cart
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     `;
