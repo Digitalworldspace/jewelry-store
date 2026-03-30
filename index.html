@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <meta name="theme-color" content="#FFFFFF">
+    <meta name="theme-color" content="#000000">
     <title>Style Of Life - Luxury Jewelry</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -20,37 +20,60 @@
             --gold: #D4AF37;
             --gold-light: #F5E6B3;
             --gold-dark: #B8962E;
+            --gold-glow: rgba(212,175,55,0.3);
             --white: #FFFFFF;
             --white-light: #F8F9FA;
             --white-dark: #F0F0F0;
-            --black: #1A1A1A;
-            --black-light: #333333;
-            --gray: #666666;
-            --gray-light: #999999;
-            --shadow: 0 2px 10px rgba(0,0,0,0.05);
-            --shadow-hover: 0 10px 30px rgba(0,0,0,0.1);
+            --black: #0A0A0A;
+            --black-light: #141414;
+            --black-card: #1A1A1A;
+            --gray: #2A2A2A;
+            --gray-light: #3A3A3A;
+            --shadow: 0 8px 32px rgba(0,0,0,0.1);
+            --shadow-hover: 0 15px 40px rgba(212,175,55,0.15);
+            --glass: rgba(255,255,255,0.05);
+            --glass-border: rgba(212,175,55,0.2);
         }
         
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--white-light);
-            color: var(--black);
+            background: var(--black);
+            color: var(--white);
             overflow-x: hidden;
             padding-bottom: 70px;
         }
         
-        /* Light Background Animation */
-        .light-bg {
+        /* Premium Animated Background */
+        .premium-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -2;
-            background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+            background: radial-gradient(circle at 20% 30%, #1a1a2e, #0a0a0a);
         }
         
-        /* Floating Particles */
+        .glow-orb {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(212,175,55,0.08), transparent);
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: floatOrb 20s ease-in-out infinite;
+            z-index: -1;
+        }
+        
+        .glow-orb-1 { top: -200px; left: -200px; animation-delay: 0s; }
+        .glow-orb-2 { bottom: -200px; right: -200px; animation-delay: -5s; }
+        .glow-orb-3 { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 800px; animation-delay: -10s; opacity: 0.3; }
+        
+        @keyframes floatOrb {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 30px) scale(1.1); }
+        }
+        
         .floating-particles {
             position: fixed;
             top: 0;
@@ -66,19 +89,20 @@
             background: radial-gradient(circle, var(--gold), transparent);
             border-radius: 50%;
             opacity: 0.2;
-            animation: floatParticle 15s infinite;
+            animation: floatParticle 20s infinite;
         }
         
         @keyframes floatParticle {
             0%, 100% { transform: translateY(0) translateX(0); opacity: 0.1; }
-            50% { transform: translateY(-50px) translateX(30px); opacity: 0.3; }
+            50% { transform: translateY(-60px) translateX(40px); opacity: 0.4; }
         }
         
-        /* Instagram Stories Section - Small Circular Toggles */
+        /* Premium Stories Section */
         .stories-section {
-            padding: 15px 0;
-            background: var(--white);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 20px 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -86,9 +110,9 @@
         
         .stories-container {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             overflow-x: auto;
-            padding: 0 15px;
+            padding: 0 20px;
             scrollbar-width: none;
         }
         
@@ -98,27 +122,29 @@
         
         .story-toggle {
             text-align: center;
-            min-width: 70px;
+            min-width: 80px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
         
-        .story-toggle:active {
-            transform: scale(0.95);
+        .story-toggle:hover {
+            transform: translateY(-5px);
         }
         
         .story-ring {
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            padding: 2px;
-            margin-bottom: 0;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark), var(--gold-light));
+            padding: 3px;
+            margin-bottom: 8px;
             transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(212,175,55,0.3);
         }
         
         .story-toggle:hover .story-ring {
             transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(212,175,55,0.5);
         }
         
         .story-thumbnail {
@@ -126,10 +152,10 @@
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            background: var(--white);
+            background: var(--black);
         }
         
-        /* Instagram Story Modal - Full Screen */
+        /* Premium Instagram Story Modal */
         .instagram-story-modal {
             position: fixed;
             top: 0;
@@ -140,7 +166,7 @@
             z-index: 2000;
             display: none;
             flex-direction: column;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
         
         .instagram-story-modal.active {
@@ -152,11 +178,11 @@
             top: 0;
             left: 0;
             right: 0;
-            padding: 20px;
+            padding: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
             z-index: 10;
         }
         
@@ -167,29 +193,32 @@
         }
         
         .story-user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             border: 2px solid var(--gold);
             object-fit: cover;
+            box-shadow: 0 0 20px rgba(212,175,55,0.3);
         }
         
         .story-user-info h4 {
             color: white;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 600;
+            letter-spacing: 0.5px;
         }
         
         .story-user-info p {
             color: rgba(255,255,255,0.7);
-            font-size: 10px;
+            font-size: 11px;
         }
         
         .story-close {
-            background: none;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
             border: none;
             color: white;
-            font-size: 24px;
+            font-size: 20px;
             cursor: pointer;
             width: 40px;
             height: 40px;
@@ -202,6 +231,7 @@
         
         .story-close:hover {
             background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
         }
         
         .story-content {
@@ -213,9 +243,11 @@
         }
         
         .story-content-image {
-            max-width: 100%;
-            max-height: 100%;
+            max-width: 90%;
+            max-height: 90%;
             object-fit: contain;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
         
         .story-progress-bar {
@@ -224,8 +256,8 @@
             left: 0;
             right: 0;
             display: flex;
-            gap: 4px;
-            padding: 12px 15px;
+            gap: 6px;
+            padding: 15px 20px;
             z-index: 10;
         }
         
@@ -240,7 +272,7 @@
         .story-progress-fill {
             height: 100%;
             width: 0%;
-            background: white;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
             transition: width 0.1s linear;
         }
         
@@ -249,74 +281,66 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            padding: 60px 20px 30px;
+            background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+            padding: 80px 25px 35px;
             color: white;
         }
         
         .story-product-name {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 700;
             margin-bottom: 8px;
+            letter-spacing: -0.5px;
         }
         
         .story-product-price {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
             color: var(--gold);
-            margin: 10px 0;
+            margin: 12px 0;
         }
         
         .story-product-desc {
-            font-size: 13px;
+            font-size: 14px;
             opacity: 0.9;
             margin-bottom: 20px;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            line-height: 1.5;
         }
         
         .story-buttons {
             display: flex;
-            gap: 12px;
+            gap: 15px;
+        }
+        
+        .story-buy, .story-cart {
+            flex: 1;
+            padding: 14px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            font-size: 14px;
         }
         
         .story-buy {
-            flex: 1;
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             color: var(--black);
-            padding: 12px;
             border: none;
-            border-radius: 40px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
         }
         
         .story-cart {
-            flex: 1;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
             border: 1px solid var(--gold);
             color: var(--gold);
-            padding: 12px;
-            border-radius: 40px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
         }
         
         .story-buy:hover, .story-cart:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
         }
         
         @keyframes fadeIn {
@@ -324,256 +348,279 @@
             to { opacity: 1; }
         }
         
-        /* Header */
-        .instagram-header {
+        /* Premium Header */
+        .premium-header {
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 15px;
-            background: var(--white);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            max-width: 1400px;
+            margin: 0 auto;
         }
         
-        .animated-logo {
+        .luxury-logo {
             position: relative;
-            cursor: pointer;
         }
         
-        .logo-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .logo-main {
+        .logo-text {
             font-family: 'Playfair Display', serif;
-            font-size: 22px;
+            font-size: 28px;
             font-weight: 800;
-            letter-spacing: 2px;
-            color: var(--black);
-        }
-        
-        .logo-gold {
-            color: var(--gold);
-            font-weight: 900;
-            margin: 0 2px;
-        }
-        
-        .logo-sub {
-            font-size: 8px;
             letter-spacing: 4px;
-            color: var(--gold);
-            margin-top: -2px;
-            opacity: 0.8;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            position: relative;
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes logoGlow {
+            0%, 100% { text-shadow: 0 0 20px rgba(212,175,55,0.3); }
+            50% { text-shadow: 0 0 40px rgba(212,175,55,0.6); }
         }
         
         .logo-diamond {
             position: absolute;
-            top: -12px;
-            right: -20px;
-            font-size: 14px;
+            top: -15px;
+            right: -30px;
+            font-size: 18px;
             color: var(--gold);
-            animation: diamondSpin 3s linear infinite;
+            animation: diamondFloat 3s ease-in-out infinite;
         }
         
-        @keyframes diamondSpin {
-            0% { transform: rotate(0deg) scale(1); opacity: 0.6; }
-            50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
-            100% { transform: rotate(360deg) scale(1); opacity: 0.6; }
+        @keyframes diamondFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(180deg); }
         }
         
         .header-icons {
             display: flex;
-            gap: 20px;
+            gap: 25px;
         }
         
         .header-icons a {
-            color: var(--black);
+            color: var(--gold);
             font-size: 22px;
-            text-decoration: none;
             position: relative;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
         
         .header-icons a:hover {
-            transform: scale(1.05);
-            color: var(--gold);
+            transform: scale(1.1);
+            text-shadow: 0 0 15px rgba(212,175,55,0.5);
         }
         
         .cart-badge {
             position: absolute;
             top: -8px;
             right: -12px;
-            background: var(--gold);
-            color: var(--white);
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--black);
             font-size: 10px;
             padding: 2px 6px;
             border-radius: 50%;
             font-weight: bold;
-            animation: badgePulse 1.5s infinite;
+            animation: pulse 1.5s infinite;
         }
         
-        @keyframes badgePulse {
+        @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
         }
         
-        /* Featured Section - Full Buttons */
+        /* Premium Featured Section */
         .featured-section {
-            padding: 20px 15px;
-            background: linear-gradient(135deg, rgba(212,175,55,0.05), rgba(212,175,55,0.02));
-            margin-bottom: 20px;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, rgba(212,175,55,0.05), rgba(212,175,55,0.01));
+            margin: 20px;
+            border-radius: 32px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
         }
         
         .featured-title {
-            font-size: 18px;
+            font-size: 24px;
             font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--gold-dark);
+            margin-bottom: 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .featured-title::before,
+        .featured-title::after {
+            content: '✦';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: var(--gold);
+        }
+        
+        .featured-title::before {
+            left: 20%;
+        }
+        
+        .featured-title::after {
+            right: 20%;
         }
         
         .random-products {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 20px;
         }
         
         .random-product-card {
-            background: var(--white);
-            border-radius: 16px;
+            background: var(--black-card);
+            border-radius: 24px;
             overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.05);
-            transition: all 0.3s;
-            text-align: center;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid var(--glass-border);
+            position: relative;
+        }
+        
+        .random-product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.1), transparent);
+            transition: left 0.6s;
+        }
+        
+        .random-product-card:hover::before {
+            left: 100%;
         }
         
         .random-product-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
+            transform: translateY(-8px);
             border-color: var(--gold);
+            box-shadow: 0 20px 40px rgba(212,175,55,0.2);
         }
         
         .random-product-image {
             width: 100%;
-            height: 150px;
+            height: 180px;
             object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .random-product-card:hover .random-product-image {
+            transform: scale(1.05);
         }
         
         .random-product-info {
-            padding: 12px;
+            padding: 15px;
         }
         
         .random-product-name {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            margin-bottom: 6px;
         }
         
         .random-product-price {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--gold);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         
         .random-buttons {
             display: flex;
-            gap: 8px;
-            margin-top: 8px;
+            gap: 10px;
+        }
+        
+        .random-buy-btn, .random-cart-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.3s;
         }
         
         .random-buy-btn {
-            flex: 1;
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: var(--white);
-            padding: 8px 12px;
+            color: var(--black);
             border: none;
-            border-radius: 30px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            transition: all 0.2s;
         }
         
         .random-cart-btn {
-            flex: 1;
-            background: var(--white-light);
+            background: rgba(212,175,55,0.1);
             border: 1px solid var(--gold);
             color: var(--gold);
-            padding: 8px 12px;
-            border-radius: 30px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            transition: all 0.2s;
         }
         
         .random-buy-btn:hover, .random-cart-btn:hover {
             transform: translateY(-2px);
         }
         
-        .random-cart-btn:hover {
-            background: var(--gold);
-            color: var(--white);
-        }
-        
-        /* Product Grid with Scrollable Images */
+        /* Premium Products Section */
         .products-section {
-            padding: 20px 15px;
+            padding: 20px;
         }
         
         .section-title {
-            margin-bottom: 15px;
+            margin-bottom: 25px;
+            position: relative;
         }
         
         .section-title h3 {
-            font-size: 18px;
-            font-weight: 600;
-            position: relative;
+            font-size: 28px;
+            font-weight: 700;
             display: inline-block;
+            position: relative;
         }
         
         .section-title h3::before {
             content: '';
             position: absolute;
-            bottom: -5px;
+            bottom: -8px;
             left: 0;
-            width: 30px;
-            height: 2px;
-            background: var(--gold);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), transparent);
         }
         
         .products-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 20px;
+            gap: 25px;
         }
         
         .product-item {
-            background: var(--white);
-            border-radius: 16px;
+            background: var(--black-card);
+            border-radius: 28px;
             overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.05);
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid var(--glass-border);
+            position: relative;
         }
         
         .product-item:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
+            transform: translateY(-5px);
+            border-color: var(--gold);
+            box-shadow: 0 20px 40px rgba(212,175,55,0.15);
         }
         
-        /* Image Gallery - Scrollable */
         .product-gallery {
             position: relative;
             width: 100%;
@@ -595,7 +642,7 @@
         }
         
         .product-gallery::-webkit-scrollbar-track {
-            background: var(--white-dark);
+            background: var(--gray);
             border-radius: 10px;
         }
         
@@ -614,12 +661,12 @@
         
         .gallery-dots {
             position: absolute;
-            bottom: 10px;
+            bottom: 15px;
             left: 0;
             right: 0;
             display: flex;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
             z-index: 5;
         }
         
@@ -628,22 +675,22 @@
             height: 6px;
             border-radius: 50%;
             background: rgba(255,255,255,0.5);
-            transition: all 0.2s;
+            transition: all 0.3s;
             cursor: pointer;
         }
         
         .gallery-dot.active {
-            width: 20px;
+            width: 25px;
             border-radius: 3px;
             background: var(--gold);
         }
         
         .product-item-info {
-            padding: 15px;
+            padding: 20px;
         }
         
         .product-item-name {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             margin-bottom: 5px;
         }
@@ -656,20 +703,16 @@
         
         .product-item-desc {
             font-size: 13px;
-            color: var(--gray);
+            color: var(--gray-light);
             line-height: 1.5;
             margin-bottom: 15px;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
         
         .product-item-price {
-            font-size: 22px;
+            font-size: 26px;
             font-weight: 700;
             color: var(--gold);
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
         
         .product-item-buttons {
@@ -680,75 +723,55 @@
         .product-buy-btn {
             flex: 1;
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: var(--white);
-            padding: 12px;
+            color: var(--black);
+            padding: 14px;
             border: none;
-            border-radius: 40px;
+            border-radius: 50px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
         
-        .product-cart-btn {
-            background: var(--white-light);
+        .product-cart-btn, .product-share-btn {
+            background: rgba(212,175,55,0.1);
             border: 1px solid var(--gold);
             color: var(--gold);
-            width: 48px;
-            height: 48px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
         
-        .product-buy-btn:hover, .product-cart-btn:hover {
-            transform: translateY(-2px);
+        .product-buy-btn:hover, .product-cart-btn:hover, .product-share-btn:hover {
+            transform: translateY(-3px);
         }
         
-        .product-cart-btn:hover {
+        .product-cart-btn:hover, .product-share-btn:hover {
             background: var(--gold);
-            color: var(--white);
+            color: var(--black);
         }
         
-        .product-share-btn {
-            background: var(--white-light);
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .product-share-btn:hover {
-            background: var(--gold);
-            color: var(--white);
-            transform: scale(1.05);
-        }
-        
-        /* Share Modal */
+        /* Premium Share Modal */
         .share-modal {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: var(--white);
-            border-radius: 24px 24px 0 0;
-            padding: 25px;
+            background: var(--black-card);
+            border-radius: 32px 32px 0 0;
+            padding: 30px;
             z-index: 3000;
             transform: translateY(100%);
-            transition: transform 0.3s ease;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border-top: 1px solid var(--glass-border);
         }
         
         .share-modal.active {
@@ -759,56 +782,57 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--glass-border);
         }
         
         .share-modal-header h4 {
-            font-size: 18px;
-            color: var(--black);
+            font-size: 20px;
+            color: var(--gold);
         }
         
         .close-share {
             background: none;
             border: none;
-            font-size: 24px;
+            font-size: 28px;
             cursor: pointer;
-            color: var(--gray);
+            color: var(--gray-light);
         }
         
         .share-product-info {
             display: flex;
             gap: 15px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            padding: 15px;
+            background: var(--gray);
+            border-radius: 20px;
         }
         
         .share-product-image {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
             object-fit: cover;
         }
         
         .share-product-details h5 {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
         
         .share-product-details p {
-            font-size: 12px;
+            font-size: 14px;
             color: var(--gold);
-            font-weight: 600;
+            font-weight: 700;
         }
         
         .share-options-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         
         .share-option {
@@ -817,20 +841,20 @@
             align-items: center;
             gap: 8px;
             padding: 12px;
-            border-radius: 16px;
+            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.2s;
-            background: var(--white-light);
+            transition: all 0.3s;
+            background: var(--gray);
         }
         
         .share-option:hover {
-            transform: translateY(-3px);
+            transform: translateY(-5px);
             background: rgba(212,175,55,0.1);
         }
         
         .share-option-icon {
-            width: 48px;
-            height: 48px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -846,9 +870,9 @@
         .share-copy-icon { background: var(--gray); }
         
         .share-link-container {
-            background: var(--white-light);
-            border-radius: 12px;
-            padding: 12px;
+            background: var(--gray);
+            border-radius: 16px;
+            padding: 12px 15px;
             display: flex;
             gap: 10px;
             align-items: center;
@@ -859,18 +883,18 @@
             background: none;
             border: none;
             font-size: 12px;
-            color: var(--gray);
-            word-break: break-all;
+            color: var(--gray-light);
         }
         
         .copy-link-btn {
             background: var(--gold);
             border: none;
             padding: 8px 16px;
-            border-radius: 40px;
+            border-radius: 30px;
             font-weight: 600;
             cursor: pointer;
             font-size: 12px;
+            color: var(--black);
         }
         
         /* Bottom Navigation */
@@ -879,13 +903,13 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: var(--white);
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(20px);
             display: flex;
             justify-content: space-around;
             padding: 10px 20px 20px;
-            border-top: 1px solid rgba(0,0,0,0.05);
+            border-top: 1px solid var(--glass-border);
             z-index: 100;
-            backdrop-filter: blur(10px);
         }
         
         .bottom-nav a {
@@ -893,10 +917,10 @@
             flex-direction: column;
             align-items: center;
             gap: 4px;
-            color: var(--gray);
+            color: var(--gray-light);
             text-decoration: none;
             font-size: 10px;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
         
         .bottom-nav a i {
@@ -906,27 +930,24 @@
         .bottom-nav a.active,
         .bottom-nav a:hover {
             color: var(--gold);
-        }
-        
-        .bottom-nav a.active i {
             transform: translateY(-3px);
         }
         
         /* Toast */
         .toast {
             position: fixed;
-            bottom: 70px;
+            bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             color: var(--black);
             padding: 12px 24px;
-            border-radius: 40px;
+            border-radius: 50px;
             z-index: 9999;
             font-size: 13px;
             font-weight: 700;
             animation: slideUp 0.3s ease;
-            box-shadow: 0 5px 15px rgba(212,175,55,0.3);
+            box-shadow: 0 5px 20px rgba(212,175,55,0.3);
         }
         
         .toast-error {
@@ -935,14 +956,8 @@
         }
         
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
         
         .loading {
@@ -951,9 +966,9 @@
         }
         
         .spinner {
-            width: 30px;
-            height: 30px;
-            border: 2px solid var(--white-dark);
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--gray);
             border-top-color: var(--gold);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
@@ -980,21 +995,24 @@
             .products-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+            .featured-title::before { left: 30%; }
+            .featured-title::after { right: 30%; }
         }
     </style>
 </head>
 <body>
-    <div class="light-bg"></div>
+    <div class="premium-bg"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+    <div class="glow-orb glow-orb-3"></div>
     <div class="floating-particles" id="particles"></div>
     
-    <!-- Instagram Stories Section - Small Circular Toggles -->
+    <!-- Premium Stories Section -->
     <div class="stories-section">
-        <div class="stories-container" id="storiesContainer">
-            <!-- Story toggles will be loaded here -->
-        </div>
+        <div class="stories-container" id="storiesContainer"></div>
     </div>
     
-    <!-- Instagram Story Modal - Full Screen -->
+    <!-- Premium Instagram Story Modal -->
     <div id="instagramStoryModal" class="instagram-story-modal">
         <div class="story-header">
             <div class="story-user">
@@ -1021,7 +1039,7 @@
         </div>
     </div>
     
-    <!-- Share Modal -->
+    <!-- Premium Share Modal -->
     <div id="shareModal" class="share-modal">
         <div class="share-modal-header">
             <h4><i class="fas fa-share-alt" style="color: var(--gold);"></i> Share this beauty</h4>
@@ -1056,36 +1074,35 @@
         </div>
     </div>
     
-    <!-- Header -->
-    <div class="instagram-header">
-        <div class="animated-logo">
-            <div class="logo-container">
-                <div class="logo-main">STYLE<span class="logo-gold">OF</span>LIFE</div>
-                <div class="logo-sub">LUXURY JEWELRY</div>
+    <!-- Premium Header -->
+    <div class="premium-header">
+        <div class="header-content">
+            <div class="luxury-logo">
+                <div class="logo-text">STYLE OF LIFE</div>
+                <i class="fas fa-gem logo-diamond"></i>
             </div>
-            <i class="fas fa-gem logo-diamond"></i>
-        </div>
-        <div class="header-icons">
-            <a href="cart.html"><i class="fas fa-shopping-bag"></i><span class="cart-badge" id="cartCount">0</span></a>
-            <a href="customer-portal.html"><i class="fas fa-user-circle"></i></a>
+            <div class="header-icons">
+                <a href="cart.html"><i class="fas fa-shopping-bag"></i><span class="cart-badge" id="cartCount">0</span></a>
+                <a href="customer-portal.html"><i class="fas fa-user-circle"></i></a>
+            </div>
         </div>
     </div>
     
-    <!-- You May Also Like Section - Full Buttons -->
+    <!-- Premium You May Also Like Section -->
     <div class="featured-section">
-        <div class="featured-title">✨ You May Also Like</div>
+        <div class="featured-title">✨ You May Also Like ✨</div>
         <div class="random-products" id="randomProducts">
             <div class="loading"><div class="spinner"></div></div>
         </div>
     </div>
     
-    <!-- Products Section with Scrollable Images -->
+    <!-- Premium Products Section -->
     <div class="products-section">
         <div class="section-title">
             <h3>All Products</h3>
         </div>
         <div class="products-grid" id="productsGrid">
-            <div class="loading"><div class="spinner"></div><p>Loading products...</p></div>
+            <div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div>
         </div>
     </div>
     
@@ -1104,7 +1121,6 @@
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let sessionId = localStorage.getItem('sessionId');
-        let currentStoryProduct = null;
         let currentShareProduct = null;
         
         if (!sessionId) {
@@ -1115,16 +1131,16 @@
         // Create floating particles
         function createParticles() {
             const container = document.getElementById('particles');
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 40; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                const size = Math.random() * 4 + 2;
+                const size = Math.random() * 6 + 2;
                 particle.style.width = size + 'px';
                 particle.style.height = size + 'px';
                 particle.style.left = Math.random() * 100 + '%';
                 particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 10 + 's';
-                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (Math.random() * 15 + 15) + 's';
                 container.appendChild(particle);
             }
         }
@@ -1210,7 +1226,7 @@
             currentShareProduct = product;
             const shareInfo = document.getElementById('shareProductInfo');
             shareInfo.innerHTML = `
-                <img class="share-product-image" src="${product.image}" onerror="this.src='https://via.placeholder.com/60x60'">
+                <img class="share-product-image" src="${product.image}" onerror="this.src='https://via.placeholder.com/70x70'">
                 <div class="share-product-details">
                     <h5>${escapeHtml(product.name)}</h5>
                     <p>₹${product.price.toLocaleString()}</p>
@@ -1286,7 +1302,6 @@
         }
         
         window.openStory = (product) => {
-            currentStoryProduct = product;
             showStoryInModal(product);
             document.getElementById('instagramStoryModal').classList.add('active');
         };
@@ -1295,7 +1310,7 @@
             document.getElementById('instagramStoryModal').classList.remove('active');
         };
         
-        // Load Story Toggles (Small Circular Images)
+        // Load Story Toggles
         async function loadStoryToggles() {
             const container = document.getElementById('storiesContainer');
             
@@ -1315,7 +1330,7 @@
                 
                 let html = '';
                 for (const product of products) {
-                    const thumbnail = product.images?.[0] || 'https://via.placeholder.com/70x70?text=Style';
+                    const thumbnail = product.images?.[0] || 'https://via.placeholder.com/80x80?text=Style';
                     
                     html += `
                         <div class="story-toggle" onclick="openStory({
@@ -1327,7 +1342,7 @@
                             description: '${escapeHtml(product.description || 'Exquisite handcrafted jewelry piece.')}'
                         })">
                             <div class="story-ring">
-                                <img class="story-thumbnail" src="${thumbnail}" alt="${escapeHtml(product.name)}" onerror="this.src='https://via.placeholder.com/70x70?text=Style'">
+                                <img class="story-thumbnail" src="${thumbnail}" alt="${escapeHtml(product.name)}">
                             </div>
                         </div>
                     `;
@@ -1335,11 +1350,10 @@
                 container.innerHTML = html;
             } catch (error) {
                 console.error('Error loading story toggles:', error);
-                container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             }
         }
         
-        // Load random products for featured section - Full Buttons
+        // Load random products for featured section
         async function loadRandomProducts() {
             const container = document.getElementById('randomProducts');
             
@@ -1364,11 +1378,11 @@
                 
                 let html = '';
                 for (const p of randomProducts) {
-                    const img = p.images?.[0] || 'https://via.placeholder.com/300x150?text=Style+Of+Life';
+                    const img = p.images?.[0] || 'https://via.placeholder.com/300x180?text=Style+Of+Life';
                     
                     html += `
                         <div class="random-product-card">
-                            <img class="random-product-image" src="${img}" alt="Product" onerror="this.src='https://via.placeholder.com/300x150?text=Style+Of+Life'">
+                            <img class="random-product-image" src="${img}" alt="Product">
                             <div class="random-product-info">
                                 <div class="random-product-name">${escapeHtml(p.name)}</div>
                                 <div class="random-product-price">₹${(p.price || 0).toLocaleString()}</div>
@@ -1391,7 +1405,7 @@
             }
         }
         
-        // Initialize gallery with scroll and dots
+        // Initialize gallery
         function initGallery(galleryId, images, dotContainerId) {
             const gallery = document.getElementById(galleryId);
             const dotContainer = document.getElementById(dotContainerId);
@@ -1434,10 +1448,10 @@
             });
         }
         
-        // Load products with scrollable images
+        // Load products
         async function loadProducts() {
             const container = document.getElementById('productsGrid');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading products...</p></div>';
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div>';
             
             try {
                 const { data: products, error } = await supabase
@@ -1458,7 +1472,7 @@
                     const images = p.images || [];
                     const validImages = images.filter(img => img && img.trim() !== '');
                     const displayImages = validImages.length > 0 ? validImages : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
-                    const desc = p.description || 'Exquisite handcrafted jewelry piece made with premium quality materials and finest craftsmanship. Perfect for special occasions.';
+                    const desc = p.description || 'Exquisite handcrafted jewelry piece made with premium quality materials and finest craftsmanship.';
                     
                     const galleryId = `gallery-${p.id}`;
                     const dotId = `dots-${p.id}`;
@@ -1470,7 +1484,7 @@
                             <div class="product-item-info">
                                 <div class="product-item-name">${escapeHtml(p.name)}</div>
                                 <div class="product-item-sku">SKU: ${p.sku} | ${p.category || 'Jewelry'}</div>
-                                <div class="product-item-desc">${escapeHtml(desc.substring(0, 120))}${desc.length > 120 ? '...' : ''}</div>
+                                <div class="product-item-desc">${escapeHtml(desc.substring(0, 100))}${desc.length > 100 ? '...' : ''}</div>
                                 <div class="product-item-price">₹${(p.price || 0).toLocaleString()}</div>
                                 <div class="product-item-buttons">
                                     <button class="product-buy-btn" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')">
