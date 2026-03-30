@@ -76,15 +76,11 @@
             text-align: center;
             min-width: 70px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: transform 0.2s;
         }
         
-        .story-item.active .story-ring {
-            box-shadow: 0 0 0 2px var(--gold);
-        }
-        
-        .story-item:hover {
-            transform: translateY(-3px);
+        .story-item:active {
+            transform: scale(0.95);
         }
         
         .story-ring {
@@ -111,6 +107,88 @@
             font-weight: 500;
         }
         
+        /* Header */
+        .instagram-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: var(--white);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .animated-logo {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .logo-main {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--black);
+        }
+        
+        .logo-gold {
+            color: var(--gold);
+            font-weight: 900;
+            margin: 0 2px;
+        }
+        
+        .logo-sub {
+            font-size: 8px;
+            letter-spacing: 4px;
+            color: var(--gold);
+            margin-top: -2px;
+            opacity: 0.8;
+        }
+        
+        .logo-diamond {
+            position: absolute;
+            top: -12px;
+            right: -20px;
+            font-size: 14px;
+            color: var(--gold);
+            animation: diamondSpin 3s linear infinite;
+        }
+        
+        @keyframes diamondSpin {
+            0% { transform: rotate(0deg) scale(1); opacity: 0.6; }
+            50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
+            100% { transform: rotate(360deg) scale(1); opacity: 0.6; }
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .header-icons a {
+            color: var(--black);
+            font-size: 22px;
+            text-decoration: none;
+            position: relative;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background: var(--gold);
+            color: var(--white);
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+        
         /* Instagram Story Modal - Full Screen */
         .instagram-story-modal {
             position: fixed;
@@ -134,18 +212,18 @@
             top: 0;
             left: 0;
             right: 0;
-            padding: 15px;
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
             z-index: 10;
         }
         
         .story-user {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         
         .story-user-avatar {
@@ -173,6 +251,16 @@
             color: white;
             font-size: 24px;
             cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .story-close:hover {
+            background: rgba(255,255,255,0.2);
         }
         
         .story-content {
@@ -181,6 +269,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            cursor: pointer;
         }
         
         .story-content-image {
@@ -196,7 +285,7 @@
             right: 0;
             display: flex;
             gap: 4px;
-            padding: 10px 15px;
+            padding: 12px 15px;
             z-index: 10;
         }
         
@@ -220,7 +309,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
             padding: 60px 20px 30px;
             color: white;
         }
@@ -228,7 +317,7 @@
         .story-product-name {
             font-size: 20px;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
         
         .story-product-price {
@@ -241,14 +330,13 @@
         .story-product-desc {
             font-size: 13px;
             opacity: 0.9;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             line-height: 1.4;
         }
         
         .story-buttons {
             display: flex;
             gap: 12px;
-            margin-top: 10px;
         }
         
         .story-buy {
@@ -264,6 +352,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            transition: all 0.3s;
         }
         
         .story-cart {
@@ -279,6 +368,11 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .story-buy:hover, .story-cart:hover {
+            transform: translateY(-2px);
         }
         
         /* Scrollable Products Dashboard */
@@ -680,7 +774,7 @@
         </div>
     </div>
     
-    <!-- Instagram Story Modal - Full Screen Story Viewer -->
+    <!-- Instagram Story Modal -->
     <div id="instagramStoryModal" class="instagram-story-modal">
         <div class="story-header">
             <div class="story-user">
@@ -690,10 +784,10 @@
                     <p id="storyUserTime">Just now</p>
                 </div>
             </div>
-            <button class="story-close" onclick="closeInstagramStory()">&times;</button>
+            <button class="story-close" onclick="closeInstagramStory()">✕</button>
         </div>
         <div class="story-progress-bar" id="storyProgressBar"></div>
-        <div class="story-content">
+        <div class="story-content" id="storyContent" onclick="nextStory()">
             <img id="storyContentImage" class="story-content-image" src="" alt="">
         </div>
         <div class="story-product-info">
@@ -744,8 +838,6 @@
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let sessionId = localStorage.getItem('sessionId');
-        let allProducts = [];
-        let currentCategory = 'all';
         let currentStoryProducts = [];
         let currentStoryIndex = 0;
         let storyTimer = null;
@@ -755,14 +847,14 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
-        // Category mapping
+        // Category mapping with images
         const categories = [
-            { id: 'all', name: 'All', icon: 'fa-gem', filter: null },
-            { id: 'rings', name: 'Rings', icon: 'fa-ring', filter: 'Rings' },
-            { id: 'necklaces', name: 'Necklaces', icon: 'fa-link', filter: 'Necklaces' },
-            { id: 'earrings', name: 'Earrings', icon: 'fa-ear-deaf', filter: 'Earrings' },
-            { id: 'bracelets', name: 'Bracelets', icon: 'fa-hand-peace', filter: 'Bracelets' },
-            { id: 'pendants', name: 'Pendants', icon: 'fa-gem', filter: 'Pendants' }
+            { id: 'all', name: '✨ All', icon: 'fa-gem', filter: null, image: 'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop' },
+            { id: 'rings', name: '💍 Rings', icon: 'fa-ring', filter: 'Rings', image: 'https://images.pexels.com/photos/1191665/pexels-photo-1191665.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop' },
+            { id: 'necklaces', name: '📿 Necklaces', icon: 'fa-link', filter: 'Necklaces', image: 'https://images.pexels.com/photos/1455286/pexels-photo-1455286.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop' },
+            { id: 'earrings', name: '👑 Earrings', icon: 'fa-ear-deaf', filter: 'Earrings', image: 'https://images.pexels.com/photos/1740602/pexels-photo-1740602.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop' },
+            { id: 'bracelets', name: '💫 Bracelets', icon: 'fa-hand-peace', filter: 'Bracelets', image: 'https://images.pexels.com/photos/1095318/pexels-photo-1095318.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop' },
+            { id: 'pendants', name: '💎 Pendants', icon: 'fa-gem', filter: 'Pendants', image: 'https://images.pexels.com/photos/1455285/pexels-photo-1455285.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop' }
         ];
         
         function showToast(message, isError = false) {
@@ -834,51 +926,7 @@
             }, 500);
         };
         
-        // Open Instagram-style story viewer
-        window.openInstagramStory = (product, index = 0) => {
-            currentStoryProducts = [product];
-            currentStoryIndex = 0;
-            showStoryAtIndex(index);
-            document.getElementById('instagramStoryModal').classList.add('active');
-            startStoryTimer();
-        };
-        
-        // Open story with multiple products for a category
-        window.openCategoryStory = async (categoryId, categoryName) => {
-            try {
-                let query = supabase.from('products').select('*');
-                if (categoryId !== 'all') {
-                    const category = categories.find(c => c.id === categoryId);
-                    if (category && category.filter) {
-                        query = query.ilike('category', `%${category.filter}%`);
-                    }
-                }
-                const { data: products, error } = await query.limit(10);
-                if (error) throw error;
-                
-                if (!products || products.length === 0) {
-                    showToast('No products in this category', true);
-                    return;
-                }
-                
-                currentStoryProducts = products.map(p => ({
-                    id: p.id,
-                    name: p.name,
-                    sku: p.sku,
-                    price: p.price,
-                    image: p.images?.[0] || 'https://via.placeholder.com/400x400',
-                    description: p.description || 'Exquisite handcrafted jewelry piece.'
-                }));
-                
-                currentStoryIndex = 0;
-                showStoryAtIndex(0);
-                document.getElementById('instagramStoryModal').classList.add('active');
-                startStoryTimer();
-            } catch (error) {
-                showToast('Error loading stories', true);
-            }
-        };
-        
+        // Show story in modal
         function showStoryAtIndex(index) {
             if (!currentStoryProducts[index]) return;
             
@@ -942,10 +990,64 @@
             }
         }
         
+        window.nextStory = function() {
+            if (currentStoryIndex < currentStoryProducts.length - 1) {
+                currentStoryIndex++;
+                showStoryAtIndex(currentStoryIndex);
+                stopStoryTimer();
+                startStoryTimer();
+            }
+        };
+        
         window.closeInstagramStory = () => {
             stopStoryTimer();
             document.getElementById('instagramStoryModal').classList.remove('active');
             currentStoryProducts = [];
+        };
+        
+        // Open category story
+        window.openCategoryStory = async (categoryId, categoryName) => {
+            try {
+                let query = supabase.from('products').select('*');
+                if (categoryId !== 'all') {
+                    const category = categories.find(c => c.id === categoryId);
+                    if (category && category.filter) {
+                        query = query.ilike('category', `%${category.filter}%`);
+                    }
+                }
+                const { data: products, error } = await query.limit(8);
+                if (error) throw error;
+                
+                if (!products || products.length === 0) {
+                    showToast(`No products in ${categoryName}`, true);
+                    return;
+                }
+                
+                currentStoryProducts = products.map(p => ({
+                    id: p.id,
+                    name: p.name,
+                    sku: p.sku,
+                    price: p.price,
+                    image: p.images?.[0] || 'https://via.placeholder.com/400x400',
+                    description: p.description || 'Exquisite handcrafted jewelry piece.'
+                }));
+                
+                currentStoryIndex = 0;
+                showStoryAtIndex(0);
+                document.getElementById('instagramStoryModal').classList.add('active');
+                startStoryTimer();
+            } catch (error) {
+                showToast('Error loading stories', true);
+            }
+        };
+        
+        // Open single product story
+        window.openProductStory = (product) => {
+            currentStoryProducts = [product];
+            currentStoryIndex = 0;
+            showStoryAtIndex(0);
+            document.getElementById('instagramStoryModal').classList.add('active');
+            startStoryTimer();
         };
         
         // Load Stories
@@ -961,7 +1063,7 @@
             for (let i = 0; i < categories.length; i++) {
                 const cat = categories[i];
                 const product = products && products[i] ? products[i] : null;
-                const storyImage = product?.images?.[0] || `https://via.placeholder.com/70x70?text=${cat.name}`;
+                const storyImage = product?.images?.[0] || cat.image;
                 
                 html += `
                     <div class="story-item" onclick="openCategoryStory('${cat.id}', '${cat.name}')">
@@ -977,48 +1079,37 @@
         
         // Filter by category
         window.filterByCategory = async (categoryId) => {
-            currentCategory = categoryId;
-            
-            // Update UI
             const category = categories.find(c => c.id === categoryId);
             document.getElementById('categoryTitle').textContent = category?.name || 'Products';
             document.getElementById('currentCategory').textContent = category?.name || 'All';
             
-            await loadProductsByCategory(categoryId);
-        };
-        
-        // Load products by category
-        async function loadProductsByCategory(categoryId) {
             const container = document.getElementById('productsGrid');
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading products...</p></div>';
             
             try {
                 let query = supabase.from('products').select('*');
-                
                 if (categoryId !== 'all') {
-                    const category = categories.find(c => c.id === categoryId);
-                    if (category && category.filter) {
-                        query = query.ilike('category', `%${category.filter}%`);
+                    const cat = categories.find(c => c.id === categoryId);
+                    if (cat && cat.filter) {
+                        query = query.ilike('category', `%${cat.filter}%`);
                     }
                 }
-                
                 const { data: products, error } = await query.order('id');
-                
                 if (error) throw error;
                 
                 if (!products || products.length === 0) {
-                    container.innerHTML = '<div class="empty-state">✨ No products found in this category</div>';
+                    container.innerHTML = '<div class="empty-state">✨ No products found</div>';
                     return;
                 }
                 
                 let html = '';
                 for (const p of products) {
-                    const img = p.images?.[0] || 'https://via.placeholder.com/400x400?text=Style+Of+Life';
-                    const desc = p.description || 'Exquisite handcrafted jewelry piece made with premium quality materials and finest craftsmanship. Perfect for special occasions.';
+                    const img = p.images?.[0] || 'https://via.placeholder.com/400x400';
+                    const desc = p.description || 'Exquisite handcrafted jewelry piece.';
                     
                     html += `
                         <div class="product-item">
-                            <img class="product-item-image" src="${img}" alt="${p.name}" onclick="openInstagramStory({
+                            <img class="product-item-image" src="${img}" alt="${p.name}" onclick="openProductStory({
                                 id: ${p.id},
                                 name: '${escapeHtml(p.name)}',
                                 sku: '${p.sku}',
@@ -1028,8 +1119,8 @@
                             })">
                             <div class="product-item-info">
                                 <div class="product-item-name">${escapeHtml(p.name)}</div>
-                                <div class="product-item-sku">SKU: ${p.sku} | ${p.category || 'Jewelry'}</div>
-                                <div class="product-item-desc">${escapeHtml(desc.substring(0, 120))}${desc.length > 120 ? '...' : ''}</div>
+                                <div class="product-item-sku">SKU: ${p.sku}</div>
+                                <div class="product-item-desc">${escapeHtml(desc.substring(0, 100))}${desc.length > 100 ? '...' : ''}</div>
                                 <div class="product-item-price">₹${(p.price || 0).toLocaleString()}</div>
                                 <div class="product-item-buttons">
                                     <button class="product-buy-btn" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
@@ -1045,10 +1136,9 @@
                 }
                 container.innerHTML = html;
             } catch (error) {
-                console.error('Error loading products:', error);
                 container.innerHTML = '<div class="empty-state">Error loading products</div>';
             }
-        }
+        };
         
         // Load scrollable products
         async function loadScrollableProducts() {
@@ -1069,11 +1159,11 @@
                 
                 let html = '';
                 for (const p of products) {
-                    const img = p.images?.[0] || 'https://via.placeholder.com/150x150?text=Style+Of+Life';
+                    const img = p.images?.[0] || 'https://via.placeholder.com/150x150';
                     const desc = p.description || 'Exquisite handcrafted jewelry piece.';
                     
                     html += `
-                        <div class="scroll-product-card" onclick="openInstagramStory({
+                        <div class="scroll-product-card" onclick="openProductStory({
                             id: ${p.id},
                             name: '${escapeHtml(p.name)}',
                             sku: '${p.sku}',
@@ -1081,7 +1171,7 @@
                             image: '${img}',
                             description: '${escapeHtml(desc)}'
                         })">
-                            <img class="scroll-product-image" src="${img}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/150x150?text=Style+Of+Life'">
+                            <img class="scroll-product-image" src="${img}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/150x150'">
                             <div class="scroll-product-info">
                                 <div class="scroll-product-name">${escapeHtml(p.name)}</div>
                                 <div class="scroll-product-price">₹${(p.price || 0).toLocaleString()}</div>
@@ -1095,7 +1185,6 @@
                 }
                 container.innerHTML = html;
             } catch (error) {
-                console.error('Error loading scrollable products:', error);
                 container.innerHTML = '<div class="empty-state">Unable to load products</div>';
             }
         }
@@ -1105,11 +1194,38 @@
             return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
         }
         
+        // Click outside modal to close
+        document.getElementById('instagramStoryModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeInstagramStory();
+            }
+        });
+        
+        // Touch events for story navigation
+        let touchStartX = 0;
+        document.getElementById('storyContent').addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+        
+        document.getElementById('storyContent').addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            if (touchEndX < touchStartX - 50) {
+                nextStory();
+            } else if (touchEndX > touchStartX + 50) {
+                if (currentStoryIndex > 0) {
+                    currentStoryIndex--;
+                    showStoryAtIndex(currentStoryIndex);
+                    stopStoryTimer();
+                    startStoryTimer();
+                }
+            }
+        });
+        
         // Initialize
         loadStories();
         await updateCartCount();
         await loadScrollableProducts();
-        await loadProductsByCategory('all');
+        await filterByCategory('all');
     </script>
 </body>
 </html>
