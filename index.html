@@ -74,84 +74,220 @@
             50% { transform: translateY(-50px) translateX(30px); opacity: 0.3; }
         }
         
-        /* Single Story Toggle - Main Feature */
-        .single-story-section {
-            padding: 20px 15px;
-            background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02));
-            margin-bottom: 20px;
+        /* Instagram Stories Section - Small Circular Toggles */
+        .stories-section {
+            padding: 15px 0;
+            background: var(--white);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
-        .story-title {
-            font-size: 14px;
-            color: var(--gold-dark);
-            margin-bottom: 12px;
+        .stories-container {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 0 15px;
+            scrollbar-width: none;
+        }
+        
+        .stories-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .story-toggle {
             text-align: center;
-            letter-spacing: 1px;
+            min-width: 70px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
         
-        .story-container {
-            position: relative;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: var(--shadow-hover);
+        .story-toggle:active {
+            transform: scale(0.95);
+        }
+        
+        .story-ring {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            padding: 2px;
+            margin-bottom: 0;
             transition: all 0.3s;
         }
         
-        .story-container:hover {
-            transform: translateY(-3px);
-        }
-        
-        .story-image-wrapper {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            overflow: hidden;
-        }
-        
-        .story-main-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s;
-        }
-        
-        .story-container:hover .story-main-image {
+        .story-toggle:hover .story-ring {
             transform: scale(1.05);
         }
         
-        .story-overlay {
+        .story-thumbnail {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--white);
+        }
+        
+        /* Instagram Story Modal - Full Screen */
+        .instagram-story-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .instagram-story-modal.active {
+            display: flex;
+        }
+        
+        .story-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+            z-index: 10;
+        }
+        
+        .story-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .story-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            object-fit: cover;
+        }
+        
+        .story-user-info h4 {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .story-user-info p {
+            color: rgba(255,255,255,0.7);
+            font-size: 10px;
+        }
+        
+        .story-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .story-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .story-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .story-content-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .story-progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            gap: 4px;
+            padding: 12px 15px;
+            z-index: 10;
+        }
+        
+        .story-progress-segment {
+            flex: 1;
+            height: 3px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .story-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: white;
+            transition: width 0.1s linear;
+        }
+        
+        .story-product-info {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            padding: 30px 20px 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 60px 20px 30px;
+            color: white;
         }
         
         .story-product-name {
-            color: white;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
         
         .story-product-price {
-            color: var(--gold);
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 700;
-            margin-bottom: 15px;
+            color: var(--gold);
+            margin: 10px 0;
         }
         
-        .story-action-buttons {
+        .story-product-desc {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .story-buttons {
             display: flex;
             gap: 12px;
         }
         
-        .story-buy-now {
+        .story-buy {
             flex: 1;
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             color: var(--black);
-            padding: 10px;
+            padding: 12px;
             border: none;
             border-radius: 40px;
             font-weight: 700;
@@ -160,17 +296,15 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            font-size: 13px;
             transition: all 0.2s;
         }
         
-        .story-add-cart {
+        .story-cart {
             flex: 1;
             background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
             border: 1px solid var(--gold);
             color: var(--gold);
-            padding: 10px;
+            padding: 12px;
             border-radius: 40px;
             font-weight: 700;
             cursor: pointer;
@@ -178,46 +312,16 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            font-size: 13px;
             transition: all 0.2s;
         }
         
-        .story-buy-now:hover, .story-add-cart:hover {
+        .story-buy:hover, .story-cart:hover {
             transform: translateY(-2px);
         }
         
-        .story-buy-now:hover {
-            box-shadow: 0 5px 15px rgba(212,175,55,0.4);
-        }
-        
-        .story-add-cart:hover {
-            background: var(--gold);
-            color: var(--black);
-        }
-        
-        /* Refresh Story Button */
-        .refresh-story {
-            text-align: center;
-            margin-top: 12px;
-        }
-        
-        .refresh-story-btn {
-            background: none;
-            border: none;
-            color: var(--gold);
-            font-size: 12px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 8px 16px;
-            border-radius: 40px;
-            transition: all 0.2s;
-        }
-        
-        .refresh-story-btn:hover {
-            background: rgba(212,175,55,0.1);
-            transform: translateY(-2px);
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         /* Header */
@@ -843,9 +947,6 @@
             .products-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-            .story-image-wrapper {
-                aspect-ratio: 21 / 9;
-            }
         }
     </style>
 </head>
@@ -853,16 +954,37 @@
     <div class="light-bg"></div>
     <div class="floating-particles" id="particles"></div>
     
-    <!-- Single Story Toggle - Main Feature -->
-    <div class="single-story-section">
-        <div class="story-title">✨ STORY OF THE DAY ✨</div>
-        <div class="story-container" id="storyContainer">
-            <!-- Story content will be loaded here -->
+    <!-- Instagram Stories Section - Small Circular Toggles -->
+    <div class="stories-section">
+        <div class="stories-container" id="storiesContainer">
+            <!-- Story toggles will be loaded here -->
         </div>
-        <div class="refresh-story">
-            <button class="refresh-story-btn" onclick="refreshStory()">
-                <i class="fas fa-sync-alt"></i> Refresh Story
-            </button>
+    </div>
+    
+    <!-- Instagram Story Modal - Full Screen -->
+    <div id="instagramStoryModal" class="instagram-story-modal">
+        <div class="story-header">
+            <div class="story-user">
+                <img id="storyUserAvatar" class="story-user-avatar" src="" alt="">
+                <div class="story-user-info">
+                    <h4 id="storyUserName">Style Of Life</h4>
+                    <p id="storyUserTime">Just now</p>
+                </div>
+            </div>
+            <button class="story-close" onclick="closeInstagramStory()">✕</button>
+        </div>
+        <div class="story-progress-bar" id="storyProgressBar"></div>
+        <div class="story-content">
+            <img id="storyContentImage" class="story-content-image" src="" alt="">
+        </div>
+        <div class="story-product-info">
+            <div class="story-product-name" id="storyProductName"></div>
+            <div class="story-product-price" id="storyProductPrice"></div>
+            <div class="story-product-desc" id="storyProductDesc"></div>
+            <div class="story-buttons">
+                <button class="story-buy" id="storyBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button>
+                <button class="story-cart" id="storyCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+            </div>
         </div>
     </div>
     
@@ -951,6 +1073,9 @@
         let sessionId = localStorage.getItem('sessionId');
         let currentStoryProduct = null;
         let currentShareProduct = null;
+        let storyTimer = null;
+        let currentStoryIndex = 0;
+        let currentStoryProducts = [];
         
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -1113,88 +1238,76 @@
             showToast('Link copied to clipboard! ✨');
         };
         
-        // Load Random Story Product
-        async function loadStoryProduct() {
+        // Story Functions
+        function showStoryInModal(product) {
+            document.getElementById('storyUserAvatar').src = product.image;
+            document.getElementById('storyUserName').textContent = product.name;
+            document.getElementById('storyUserTime').textContent = 'Just now';
+            document.getElementById('storyContentImage').src = product.image;
+            document.getElementById('storyProductName').textContent = product.name;
+            document.getElementById('storyProductPrice').textContent = `₹${product.price.toLocaleString()}`;
+            document.getElementById('storyProductDesc').textContent = product.description;
+            
+            const buyBtn = document.getElementById('storyBuyBtn');
+            const cartBtn = document.getElementById('storyCartBtn');
+            
+            buyBtn.onclick = () => buyNow(product.id, product.name, product.price, product.sku, product.image);
+            cartBtn.onclick = () => addToCart(product.id, product.name, product.price, product.sku, product.image);
+        }
+        
+        window.openStory = (product) => {
+            currentStoryProduct = product;
+            showStoryInModal(product);
+            document.getElementById('instagramStoryModal').classList.add('active');
+        };
+        
+        window.closeInstagramStory = () => {
+            document.getElementById('instagramStoryModal').classList.remove('active');
+        };
+        
+        // Load Story Toggles (Small Circular Images)
+        async function loadStoryToggles() {
+            const container = document.getElementById('storiesContainer');
+            
             try {
                 const { data: products, error } = await supabase
                     .from('products')
-                    .select('*');
+                    .select('*')
+                    .order('id')
+                    .limit(8);
                 
                 if (error) throw error;
                 
                 if (!products || products.length === 0) {
-                    document.getElementById('storyContainer').innerHTML = `
-                        <div class="story-image-wrapper">
-                            <img class="story-main-image" src="https://via.placeholder.com/800x450?text=Coming+Soon" alt="Story">
-                        </div>
-                        <div class="story-overlay">
-                            <div class="story-product-name">Coming Soon</div>
-                            <div class="story-product-price">✨ New Collection ✨</div>
-                            <div class="story-action-buttons">
-                                <button class="story-buy-now" disabled>Buy Now</button>
-                                <button class="story-add-cart" disabled>Add to Cart</button>
-                            </div>
-                        </div>
-                    `;
+                    container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
                     return;
                 }
                 
-                // Get random product
-                const randomIndex = Math.floor(Math.random() * products.length);
-                const product = products[randomIndex];
-                const img = product.images?.[0] || 'https://via.placeholder.com/800x450?text=Style+Of+Life';
-                const desc = product.description || 'Exquisite handcrafted jewelry piece made with premium quality materials.';
-                
-                currentStoryProduct = {
-                    id: product.id,
-                    name: product.name,
-                    sku: product.sku,
-                    price: product.price,
-                    image: img,
-                    description: desc
-                };
-                
-                document.getElementById('storyContainer').innerHTML = `
-                    <div class="story-image-wrapper">
-                        <img class="story-main-image" src="${img}" alt="${escapeHtml(product.name)}" onerror="this.src='https://via.placeholder.com/800x450?text=Style+Of+Life'">
-                    </div>
-                    <div class="story-overlay">
-                        <div class="story-product-name">${escapeHtml(product.name)}</div>
-                        <div class="story-product-price">₹${(product.price || 0).toLocaleString()}</div>
-                        <div class="story-action-buttons">
-                            <button class="story-buy-now" onclick="buyNow(${product.id}, '${escapeHtml(product.name).replace(/'/g, "\\'")}', ${product.price}, '${product.sku}', '${img}')">
-                                <i class="fas fa-bolt"></i> Buy Now
-                            </button>
-                            <button class="story-add-cart" onclick="addToCart(${product.id}, '${escapeHtml(product.name).replace(/'/g, "\\'")}', ${product.price}, '${product.sku}', '${img}')">
-                                <i class="fas fa-cart-plus"></i> Add to Cart
-                            </button>
+                let html = '';
+                for (const product of products) {
+                    const thumbnail = product.images?.[0] || 'https://via.placeholder.com/70x70?text=Style';
+                    
+                    html += `
+                        <div class="story-toggle" onclick="openStory({
+                            id: ${product.id},
+                            name: '${escapeHtml(product.name)}',
+                            sku: '${product.sku}',
+                            price: ${product.price},
+                            image: '${thumbnail}',
+                            description: '${escapeHtml(product.description || 'Exquisite handcrafted jewelry piece.')}'
+                        })">
+                            <div class="story-ring">
+                                <img class="story-thumbnail" src="${thumbnail}" alt="${escapeHtml(product.name)}" onerror="this.src='https://via.placeholder.com/70x70?text=Style'">
+                            </div>
                         </div>
-                    </div>
-                `;
-                
+                    `;
+                }
+                container.innerHTML = html;
             } catch (error) {
-                console.error('Error loading story product:', error);
-                document.getElementById('storyContainer').innerHTML = `
-                    <div class="story-image-wrapper">
-                        <img class="story-main-image" src="https://via.placeholder.com/800x450?text=Error+Loading" alt="Error">
-                    </div>
-                    <div class="story-overlay">
-                        <div class="story-product-name">Unable to load</div>
-                        <div class="story-product-price">Please refresh</div>
-                        <div class="story-action-buttons">
-                            <button class="story-buy-now" disabled>Buy Now</button>
-                            <button class="story-add-cart" disabled>Add to Cart</button>
-                        </div>
-                    </div>
-                `;
+                console.error('Error loading story toggles:', error);
+                container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
             }
         }
-        
-        window.refreshStory = async () => {
-            showToast('Loading new story...');
-            await loadStoryProduct();
-            showToast('New story loaded! ✨');
-        };
         
         // Load random products for featured section
         async function loadRandomProducts() {
@@ -1372,6 +1485,12 @@
             return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
         }
         
+        document.getElementById('instagramStoryModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeInstagramStory();
+            }
+        });
+        
         document.getElementById('shareModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeShareModal();
@@ -1379,7 +1498,7 @@
         });
         
         // Initialize
-        await loadStoryProduct();
+        loadStoryToggles();
         await updateCartCount();
         await loadRandomProducts();
         await loadProducts();
