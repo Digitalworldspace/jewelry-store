@@ -419,7 +419,7 @@
             50% { transform: scale(1.1); }
         }
         
-        /* Featured Section */
+        /* Featured Section - Only Buttons, No Name/Details */
         .featured-section {
             padding: 20px 15px;
             background: linear-gradient(135deg, rgba(212,175,55,0.05), rgba(212,175,55,0.02));
@@ -445,6 +445,7 @@
             overflow: hidden;
             border: 1px solid rgba(0,0,0,0.05);
             transition: all 0.3s;
+            text-align: center;
         }
         
         .random-product-card:hover {
@@ -459,58 +460,43 @@
             object-fit: cover;
         }
         
-        .random-product-info {
-            padding: 12px;
-        }
-        
-        .random-product-name {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .random-product-price {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--gold);
-            margin-bottom: 10px;
-        }
-        
         .random-buttons {
             display: flex;
             gap: 8px;
+            padding: 12px;
         }
         
         .random-buy-btn {
             flex: 1;
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             color: var(--white);
-            padding: 8px;
+            padding: 10px;
             border: none;
-            border-radius: 20px;
-            font-size: 11px;
+            border-radius: 30px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 6px;
             transition: all 0.2s;
         }
         
         .random-cart-btn {
+            flex: 1;
             background: var(--white-light);
             border: 1px solid var(--gold);
             color: var(--gold);
-            padding: 8px;
-            border-radius: 20px;
-            font-size: 11px;
+            padding: 10px;
+            border-radius: 30px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 6px;
             transition: all 0.2s;
         }
         
@@ -706,6 +692,67 @@
             color: var(--white);
         }
         
+        /* Share Section */
+        .share-section {
+            background: linear-gradient(135deg, var(--white), var(--white-light));
+            padding: 30px 20px;
+            margin: 20px 15px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(212,175,55,0.2);
+        }
+        
+        .share-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--gold-dark);
+        }
+        
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .share-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            font-size: 22px;
+        }
+        
+        .share-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .share-whatsapp {
+            background: #25D366;
+        }
+        
+        .share-instagram {
+            background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+        }
+        
+        .share-facebook {
+            background: #1877F2;
+        }
+        
+        .share-twitter {
+            background: #1DA1F2;
+        }
+        
+        .share-copy {
+            background: var(--gray);
+        }
+        
         /* Empty State */
         .empty-state {
             text-align: center;
@@ -876,7 +923,7 @@
         </div>
     </div>
     
-    <!-- You May Also Like Section -->
+    <!-- You May Also Like Section - Only Buttons, No Name/Details -->
     <div class="featured-section">
         <div class="featured-title">✨ You May Also Like</div>
         <div class="random-products" id="randomProducts">
@@ -891,6 +938,18 @@
         </div>
         <div class="products-grid" id="productsGrid">
             <div class="loading"><div class="spinner"></div><p>Loading products...</p></div>
+        </div>
+    </div>
+    
+    <!-- Share Section -->
+    <div class="share-section">
+        <div class="share-title">✨ Share the Elegance ✨</div>
+        <div class="share-buttons">
+            <div class="share-btn share-whatsapp" onclick="shareToWhatsApp()"><i class="fab fa-whatsapp"></i></div>
+            <div class="share-btn share-instagram" onclick="shareToInstagram()"><i class="fab fa-instagram"></i></div>
+            <div class="share-btn share-facebook" onclick="shareToFacebook()"><i class="fab fa-facebook-f"></i></div>
+            <div class="share-btn share-twitter" onclick="shareToTwitter()"><i class="fab fa-twitter"></i></div>
+            <div class="share-btn share-copy" onclick="copyLink()"><i class="fas fa-link"></i></div>
         </div>
     </div>
     
@@ -1011,6 +1070,34 @@
             }, 500);
         };
         
+        // Share Functions
+        window.shareToWhatsApp = () => {
+            const text = `Check out Style Of Life - Luxury Jewelry! ✨ Beautiful handcrafted jewelry at ${window.location.href}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+            showToast('Opening WhatsApp...');
+        };
+        
+        window.shareToInstagram = () => {
+            showToast('Copy the link to share on Instagram!');
+            navigator.clipboard.writeText(window.location.href);
+        };
+        
+        window.shareToFacebook = () => {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+            showToast('Opening Facebook...');
+        };
+        
+        window.shareToTwitter = () => {
+            const text = `Style Of Life - Luxury Jewelry ✨`;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
+            showToast('Opening Twitter...');
+        };
+        
+        window.copyLink = () => {
+            navigator.clipboard.writeText(window.location.href);
+            showToast('Link copied to clipboard! ✨');
+        };
+        
         // Story Functions
         function showStoryAtIndex(index) {
             if (!currentStoryProducts[index]) return;
@@ -1128,7 +1215,7 @@
             }
         };
         
-        // Load Stories with actual product images from database
+        // Load Stories with actual product images
         async function loadStories() {
             const container = document.getElementById('storiesContainer');
             
@@ -1144,7 +1231,6 @@
                 let html = '';
                 
                 if (products && products.length > 0) {
-                    // Use actual product images from database
                     for (let i = 0; i < 6; i++) {
                         const product = products[i % products.length];
                         const storyImage = product.images?.[0] || 'https://via.placeholder.com/70x70?text=Style';
@@ -1158,7 +1244,6 @@
                         `;
                     }
                 } else {
-                    // Fallback images if no products
                     const fallbackImages = [
                         'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
                         'https://images.pexels.com/photos/1191665/pexels-photo-1191665.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
@@ -1182,31 +1267,10 @@
                 container.innerHTML = html;
             } catch (error) {
                 console.error('Error loading stories:', error);
-                // Fallback
-                const fallbackImages = [
-                    'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
-                    'https://images.pexels.com/photos/1191665/pexels-photo-1191665.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
-                    'https://images.pexels.com/photos/1455286/pexels-photo-1455286.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
-                    'https://images.pexels.com/photos/1740602/pexels-photo-1740602.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
-                    'https://images.pexels.com/photos/1095318/pexels-photo-1095318.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
-                    'https://images.pexels.com/photos/1455285/pexels-photo-1455285.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop'
-                ];
-                
-                let html = '';
-                for (let i = 0; i < 6; i++) {
-                    html += `
-                        <div class="story-item" onclick="openRandomStory()">
-                            <div class="story-ring">
-                                <img class="story-image" src="${fallbackImages[i]}" alt="Story">
-                            </div>
-                        </div>
-                    `;
-                }
-                container.innerHTML = html;
             }
         }
         
-        // Load random products for featured section
+        // Load random products for featured section - No Name/Details, Only Buttons
         async function loadRandomProducts() {
             const container = document.getElementById('randomProducts');
             
@@ -1235,18 +1299,14 @@
                     
                     html += `
                         <div class="random-product-card">
-                            <img class="random-product-image" src="${img}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/300x150?text=Style+Of+Life'">
-                            <div class="random-product-info">
-                                <div class="random-product-name">${escapeHtml(p.name)}</div>
-                                <div class="random-product-price">₹${(p.price || 0).toLocaleString()}</div>
-                                <div class="random-buttons">
-                                    <button class="random-buy-btn" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
-                                        <i class="fas fa-bolt"></i> Buy
-                                    </button>
-                                    <button class="random-cart-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
-                                        <i class="fas fa-cart-plus"></i> Cart
-                                    </button>
-                                </div>
+                            <img class="random-product-image" src="${img}" alt="Product" onerror="this.src='https://via.placeholder.com/300x150?text=Style+Of+Life'">
+                            <div class="random-buttons">
+                                <button class="random-buy-btn" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
+                                    <i class="fas fa-bolt"></i> Buy Now
+                                </button>
+                                <button class="random-cart-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
+                                    <i class="fas fa-cart-plus"></i> Add to Cart
+                                </button>
                             </div>
                         </div>
                     `;
