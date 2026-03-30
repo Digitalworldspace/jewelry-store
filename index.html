@@ -830,7 +830,7 @@
     <!-- Stories Section -->
     <div class="stories-section">
         <div class="stories-container" id="storiesContainer">
-            <!-- Stories will be loaded here -->
+            <!-- Stories will be loaded here with product images -->
         </div>
     </div>
     
@@ -1128,38 +1128,82 @@
             }
         };
         
-        // Load Stories
+        // Load Stories with actual product images from database
         async function loadStories() {
             const container = document.getElementById('storiesContainer');
-            const { data: products, error } = await supabase
-                .from('products')
-                .select('*')
-                .order('id')
-                .limit(6);
             
-            const storyImages = [
-                'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
-                'https://images.pexels.com/photos/1191665/pexels-photo-1191665.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
-                'https://images.pexels.com/photos/1455286/pexels-photo-1455286.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
-                'https://images.pexels.com/photos/1740602/pexels-photo-1740602.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
-                'https://images.pexels.com/photos/1095318/pexels-photo-1095318.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
-                'https://images.pexels.com/photos/1455285/pexels-photo-1455285.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop'
-            ];
-            
-            let html = '';
-            for (let i = 0; i < 6; i++) {
-                const product = products && products[i] ? products[i] : null;
-                const storyImage = product?.images?.[0] || storyImages[i];
+            try {
+                const { data: products, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .order('id')
+                    .limit(6);
                 
-                html += `
-                    <div class="story-item" onclick="openRandomStory()">
-                        <div class="story-ring">
-                            <img class="story-image" src="${storyImage}" alt="Story">
+                if (error) throw error;
+                
+                let html = '';
+                
+                if (products && products.length > 0) {
+                    // Use actual product images from database
+                    for (let i = 0; i < 6; i++) {
+                        const product = products[i % products.length];
+                        const storyImage = product.images?.[0] || 'https://via.placeholder.com/70x70?text=Style';
+                        
+                        html += `
+                            <div class="story-item" onclick="openRandomStory()">
+                                <div class="story-ring">
+                                    <img class="story-image" src="${storyImage}" alt="Story">
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    // Fallback images if no products
+                    const fallbackImages = [
+                        'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
+                        'https://images.pexels.com/photos/1191665/pexels-photo-1191665.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
+                        'https://images.pexels.com/photos/1455286/pexels-photo-1455286.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
+                        'https://images.pexels.com/photos/1740602/pexels-photo-1740602.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
+                        'https://images.pexels.com/photos/1095318/pexels-photo-1095318.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
+                        'https://images.pexels.com/photos/1455285/pexels-photo-1455285.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop'
+                    ];
+                    
+                    for (let i = 0; i < 6; i++) {
+                        html += `
+                            <div class="story-item" onclick="openRandomStory()">
+                                <div class="story-ring">
+                                    <img class="story-image" src="${fallbackImages[i]}" alt="Story">
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading stories:', error);
+                // Fallback
+                const fallbackImages = [
+                    'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
+                    'https://images.pexels.com/photos/1191665/pexels-photo-1191665.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
+                    'https://images.pexels.com/photos/1455286/pexels-photo-1455286.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
+                    'https://images.pexels.com/photos/1740602/pexels-photo-1740602.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
+                    'https://images.pexels.com/photos/1095318/pexels-photo-1095318.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop',
+                    'https://images.pexels.com/photos/1455285/pexels-photo-1455285.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop'
+                ];
+                
+                let html = '';
+                for (let i = 0; i < 6; i++) {
+                    html += `
+                        <div class="story-item" onclick="openRandomStory()">
+                            <div class="story-ring">
+                                <img class="story-image" src="${fallbackImages[i]}" alt="Story">
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
+                container.innerHTML = html;
             }
-            container.innerHTML = html;
         }
         
         // Load random products for featured section
