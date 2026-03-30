@@ -74,7 +74,7 @@
             50% { transform: translateY(-50px) translateX(30px); opacity: 0.3; }
         }
         
-        /* Stories Section */
+        /* Stories Section - Display Images on Dashboard */
         .stories-section {
             padding: 15px 0;
             background: var(--white);
@@ -100,11 +100,12 @@
             text-align: center;
             min-width: 70px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s;
+            position: relative;
         }
         
-        .story-item:active {
-            transform: scale(0.95);
+        .story-item:hover {
+            transform: translateY(-3px);
         }
         
         .story-ring {
@@ -115,10 +116,24 @@
             padding: 2px;
             margin-bottom: 0;
             transition: all 0.3s;
+            position: relative;
         }
         
-        .story-ring:hover {
-            transform: scale(1.05);
+        .story-ring::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(212,175,55,0.3), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .story-item:hover .story-ring::after {
+            opacity: 1;
         }
         
         .story-image {
@@ -300,10 +315,6 @@
             transition: all 0.2s;
         }
         
-        .story-buy:hover, .story-cart:hover {
-            transform: translateY(-2px);
-        }
-        
         .story-cart {
             flex: 1;
             background: rgba(255,255,255,0.2);
@@ -318,6 +329,151 @@
             justify-content: center;
             gap: 8px;
             transition: all 0.2s;
+        }
+        
+        /* Unique Share Modal */
+        .share-modal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-radius: 24px 24px 0 0;
+            padding: 25px;
+            z-index: 3000;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .share-modal.active {
+            transform: translateY(0);
+        }
+        
+        .share-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .share-modal-header h4 {
+            font-size: 18px;
+            color: var(--black);
+        }
+        
+        .close-share {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .share-product-info {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .share-product-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+        
+        .share-product-details h5 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .share-product-details p {
+            font-size: 12px;
+            color: var(--gold);
+            font-weight: 600;
+        }
+        
+        .share-options-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--white-light);
+        }
+        
+        .share-option:hover {
+            transform: translateY(-3px);
+            background: rgba(212,175,55,0.1);
+        }
+        
+        .share-option-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .share-option span {
+            font-size: 11px;
+            color: var(--gray);
+        }
+        
+        .share-whatsapp-icon { background: #25D366; }
+        .share-instagram-icon { background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
+        .share-facebook-icon { background: #1877F2; }
+        .share-twitter-icon { background: #1DA1F2; }
+        .share-pinterest-icon { background: #E60023; }
+        .share-telegram-icon { background: #0088cc; }
+        .share-sms-icon { background: #34B7F1; }
+        .share-copy-icon { background: var(--gray); }
+        
+        .share-link-container {
+            background: var(--white-light);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .share-link-input {
+            flex: 1;
+            background: none;
+            border: none;
+            font-size: 12px;
+            color: var(--gray);
+            word-break: break-all;
+        }
+        
+        .copy-link-btn {
+            background: var(--gold);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 12px;
         }
         
         @keyframes fadeIn {
@@ -419,7 +575,7 @@
             50% { transform: scale(1.1); }
         }
         
-        /* Featured Section - Only Buttons, No Name/Details */
+        /* Featured Section */
         .featured-section {
             padding: 20px 15px;
             background: linear-gradient(135deg, rgba(212,175,55,0.05), rgba(212,175,55,0.02));
@@ -466,12 +622,9 @@
             padding: 12px;
         }
         
-        .random-buy-btn {
+        .random-buy-btn, .random-cart-btn {
             flex: 1;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: var(--white);
             padding: 10px;
-            border: none;
             border-radius: 30px;
             font-size: 12px;
             font-weight: 600;
@@ -483,21 +636,16 @@
             transition: all 0.2s;
         }
         
+        .random-buy-btn {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--white);
+            border: none;
+        }
+        
         .random-cart-btn {
-            flex: 1;
             background: var(--white-light);
             border: 1px solid var(--gold);
             color: var(--gold);
-            padding: 10px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.2s;
         }
         
         .random-buy-btn:hover, .random-cart-btn:hover {
@@ -692,72 +840,24 @@
             color: var(--white);
         }
         
-        /* Share Section */
-        .share-section {
-            background: linear-gradient(135deg, var(--white), var(--white-light));
-            padding: 30px 20px;
-            margin: 20px 15px;
-            border-radius: 20px;
-            text-align: center;
-            border: 1px solid rgba(212,175,55,0.2);
-        }
-        
-        .share-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--gold-dark);
-        }
-        
-        .share-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .share-btn {
-            width: 50px;
-            height: 50px;
+        .product-share-btn {
+            background: var(--white-light);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s;
-            color: white;
-            font-size: 22px;
+            transition: all 0.2s;
         }
         
-        .share-btn:hover {
-            transform: scale(1.1);
-        }
-        
-        .share-whatsapp {
-            background: #25D366;
-        }
-        
-        .share-instagram {
-            background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-        }
-        
-        .share-facebook {
-            background: #1877F2;
-        }
-        
-        .share-twitter {
-            background: #1DA1F2;
-        }
-        
-        .share-copy {
-            background: var(--gray);
-        }
-        
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--gray);
+        .product-share-btn:hover {
+            background: var(--gold);
+            color: var(--white);
+            transform: scale(1.05);
         }
         
         /* Bottom Navigation */
@@ -874,7 +974,7 @@
     <div class="light-bg"></div>
     <div class="floating-particles" id="particles"></div>
     
-    <!-- Stories Section -->
+    <!-- Stories Section - Display Images on Dashboard -->
     <div class="stories-section">
         <div class="stories-container" id="storiesContainer">
             <!-- Stories will be loaded here with product images -->
@@ -908,6 +1008,53 @@
         </div>
     </div>
     
+    <!-- Product Share Modal -->
+    <div id="shareModal" class="share-modal">
+        <div class="share-modal-header">
+            <h4><i class="fas fa-share-alt" style="color: var(--gold);"></i> Share this beauty</h4>
+            <button class="close-share" onclick="closeShareModal()">&times;</button>
+        </div>
+        <div id="shareProductInfo" class="share-product-info"></div>
+        <div class="share-options-grid">
+            <div class="share-option" onclick="shareToWhatsApp()">
+                <div class="share-option-icon share-whatsapp-icon"><i class="fab fa-whatsapp"></i></div>
+                <span>WhatsApp</span>
+            </div>
+            <div class="share-option" onclick="shareToInstagram()">
+                <div class="share-option-icon share-instagram-icon"><i class="fab fa-instagram"></i></div>
+                <span>Instagram</span>
+            </div>
+            <div class="share-option" onclick="shareToFacebook()">
+                <div class="share-option-icon share-facebook-icon"><i class="fab fa-facebook-f"></i></div>
+                <span>Facebook</span>
+            </div>
+            <div class="share-option" onclick="shareToTwitter()">
+                <div class="share-option-icon share-twitter-icon"><i class="fab fa-twitter"></i></div>
+                <span>Twitter</span>
+            </div>
+            <div class="share-option" onclick="shareToPinterest()">
+                <div class="share-option-icon share-pinterest-icon"><i class="fab fa-pinterest-p"></i></div>
+                <span>Pinterest</span>
+            </div>
+            <div class="share-option" onclick="shareToTelegram()">
+                <div class="share-option-icon share-telegram-icon"><i class="fab fa-telegram-plane"></i></div>
+                <span>Telegram</span>
+            </div>
+            <div class="share-option" onclick="shareToSMS()">
+                <div class="share-option-icon share-sms-icon"><i class="fas fa-sms"></i></div>
+                <span>SMS</span>
+            </div>
+            <div class="share-option" onclick="copyProductLink()">
+                <div class="share-option-icon share-copy-icon"><i class="fas fa-link"></i></div>
+                <span>Copy Link</span>
+            </div>
+        </div>
+        <div class="share-link-container">
+            <input type="text" id="shareLinkInput" class="share-link-input" readonly>
+            <button class="copy-link-btn" onclick="copyProductLink()">Copy Link</button>
+        </div>
+    </div>
+    
     <!-- Header -->
     <div class="instagram-header">
         <div class="animated-logo">
@@ -923,7 +1070,7 @@
         </div>
     </div>
     
-    <!-- You May Also Like Section - Only Buttons, No Name/Details -->
+    <!-- You May Also Like Section -->
     <div class="featured-section">
         <div class="featured-title">✨ You May Also Like</div>
         <div class="random-products" id="randomProducts">
@@ -938,18 +1085,6 @@
         </div>
         <div class="products-grid" id="productsGrid">
             <div class="loading"><div class="spinner"></div><p>Loading products...</p></div>
-        </div>
-    </div>
-    
-    <!-- Share Section -->
-    <div class="share-section">
-        <div class="share-title">✨ Share the Elegance ✨</div>
-        <div class="share-buttons">
-            <div class="share-btn share-whatsapp" onclick="shareToWhatsApp()"><i class="fab fa-whatsapp"></i></div>
-            <div class="share-btn share-instagram" onclick="shareToInstagram()"><i class="fab fa-instagram"></i></div>
-            <div class="share-btn share-facebook" onclick="shareToFacebook()"><i class="fab fa-facebook-f"></i></div>
-            <div class="share-btn share-twitter" onclick="shareToTwitter()"><i class="fab fa-twitter"></i></div>
-            <div class="share-btn share-copy" onclick="copyLink()"><i class="fas fa-link"></i></div>
         </div>
     </div>
     
@@ -971,6 +1106,7 @@
         let currentStoryProducts = [];
         let currentStoryIndex = 0;
         let storyTimer = null;
+        let currentShareProduct = null;
         
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -1070,31 +1206,95 @@
             }, 500);
         };
         
-        // Share Functions
+        // Share Functions - Product Wise
+        window.openShareModal = (product) => {
+            currentShareProduct = product;
+            const shareInfo = document.getElementById('shareProductInfo');
+            shareInfo.innerHTML = `
+                <img class="share-product-image" src="${product.image}" onerror="this.src='https://via.placeholder.com/60x60'">
+                <div class="share-product-details">
+                    <h5>${escapeHtml(product.name)}</h5>
+                    <p>₹${product.price.toLocaleString()}</p>
+                </div>
+            `;
+            document.getElementById('shareLinkInput').value = `${window.location.origin}${window.location.pathname}?product=${product.id}`;
+            document.getElementById('shareModal').classList.add('active');
+        };
+        
+        window.closeShareModal = () => {
+            document.getElementById('shareModal').classList.remove('active');
+        };
+        
         window.shareToWhatsApp = () => {
-            const text = `Check out Style Of Life - Luxury Jewelry! ✨ Beautiful handcrafted jewelry at ${window.location.href}`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-            showToast('Opening WhatsApp...');
+            if (currentShareProduct) {
+                const text = `✨ Check out this beautiful ${currentShareProduct.name} from Style Of Life! ✨\nPrice: ₹${currentShareProduct.price.toLocaleString()}\n\n${window.location.origin}${window.location.pathname}?product=${currentShareProduct.id}`;
+                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+                showToast('Opening WhatsApp...');
+                closeShareModal();
+            }
         };
         
         window.shareToInstagram = () => {
-            showToast('Copy the link to share on Instagram!');
-            navigator.clipboard.writeText(window.location.href);
+            if (currentShareProduct) {
+                const text = `${currentShareProduct.name} - ₹${currentShareProduct.price.toLocaleString()}\n\n${window.location.origin}${window.location.pathname}?product=${currentShareProduct.id}`;
+                navigator.clipboard.writeText(text);
+                showToast('Link copied! Share on Instagram ✨');
+                closeShareModal();
+            }
         };
         
         window.shareToFacebook = () => {
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
-            showToast('Opening Facebook...');
+            if (currentShareProduct) {
+                const url = `${window.location.origin}${window.location.pathname}?product=${currentShareProduct.id}`;
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+                showToast('Opening Facebook...');
+                closeShareModal();
+            }
         };
         
         window.shareToTwitter = () => {
-            const text = `Style Of Life - Luxury Jewelry ✨`;
-            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
-            showToast('Opening Twitter...');
+            if (currentShareProduct) {
+                const text = `✨ ${currentShareProduct.name} ✨`;
+                const url = `${window.location.origin}${window.location.pathname}?product=${currentShareProduct.id}`;
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+                showToast('Opening Twitter...');
+                closeShareModal();
+            }
         };
         
-        window.copyLink = () => {
-            navigator.clipboard.writeText(window.location.href);
+        window.shareToPinterest = () => {
+            if (currentShareProduct) {
+                const url = `${window.location.origin}${window.location.pathname}?product=${currentShareProduct.id}`;
+                const media = currentShareProduct.image;
+                const description = currentShareProduct.name;
+                window.open(`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(url)}&media=${encodeURIComponent(media)}&description=${encodeURIComponent(description)}`, '_blank');
+                showToast('Opening Pinterest...');
+                closeShareModal();
+            }
+        };
+        
+        window.shareToTelegram = () => {
+            if (currentShareProduct) {
+                const text = `✨ ${currentShareProduct.name} - ₹${currentShareProduct.price.toLocaleString()} ✨\n${window.location.origin}${window.location.pathname}?product=${currentShareProduct.id}`;
+                window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.origin + window.location.pathname + '?product=' + currentShareProduct.id)}&text=${encodeURIComponent(text)}`, '_blank');
+                showToast('Opening Telegram...');
+                closeShareModal();
+            }
+        };
+        
+        window.shareToSMS = () => {
+            if (currentShareProduct) {
+                const text = `Check out ${currentShareProduct.name} from Style Of Life! Price: ₹${currentShareProduct.price.toLocaleString()} - ${window.location.origin}${window.location.pathname}?product=${currentShareProduct.id}`;
+                window.open(`sms:?body=${encodeURIComponent(text)}`, '_blank');
+                showToast('Opening SMS...');
+                closeShareModal();
+            }
+        };
+        
+        window.copyProductLink = () => {
+            const linkInput = document.getElementById('shareLinkInput');
+            linkInput.select();
+            navigator.clipboard.writeText(linkInput.value);
             showToast('Link copied to clipboard! ✨');
         };
         
@@ -1177,7 +1377,6 @@
             currentStoryProducts = [];
         };
         
-        // Open random story with products
         window.openRandomStory = async () => {
             try {
                 const { data: products, error } = await supabase
@@ -1215,7 +1414,7 @@
             }
         };
         
-        // Load Stories with actual product images
+        // Load Stories with product images
         async function loadStories() {
             const container = document.getElementById('storiesContainer');
             
@@ -1270,7 +1469,7 @@
             }
         }
         
-        // Load random products for featured section - No Name/Details, Only Buttons
+        // Load random products for featured section
         async function loadRandomProducts() {
             const container = document.getElementById('randomProducts');
             
@@ -1361,7 +1560,7 @@
             });
         }
         
-        // Load products with scrollable images
+        // Load products with scrollable images and share button
         async function loadProducts() {
             const container = document.getElementById('productsGrid');
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading products...</p></div>';
@@ -1406,6 +1605,15 @@
                                     <button class="product-cart-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')">
                                         <i class="fas fa-shopping-cart"></i>
                                     </button>
+                                    <button class="product-share-btn" onclick="openShareModal({
+                                        id: ${p.id},
+                                        name: '${escapeHtml(p.name)}',
+                                        price: ${p.price},
+                                        image: '${displayImages[0]}',
+                                        sku: '${p.sku}'
+                                    })">
+                                        <i class="fas fa-share-alt"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -1440,6 +1648,12 @@
         document.getElementById('instagramStoryModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeInstagramStory();
+            }
+        });
+        
+        document.getElementById('shareModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeShareModal();
             }
         });
         
