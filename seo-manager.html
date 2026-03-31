@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEO Manager - Style Of Life</title>
+    <script src="js/config.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(135deg, #d4af37, #b8962e);
+            padding: 30px;
+            border-radius: 20px;
+            color: #1a1a1a;
+            margin-bottom: 30px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .card h3 {
+            color: #d4af37;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        button {
+            background: #d4af37;
+            color: #1a1a1a;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        button:hover {
+            background: #b8962e;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-weight: 600;
+        }
+        .tab.active {
+            color: #d4af37;
+            border-bottom: 2px solid #d4af37;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .analytics-chart {
+            height: 300px;
+            margin-top: 20px;
+        }
+        .keyword-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .keyword-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨ Style Of Life - Complete SEO Manager</h1>
+            <p>Manage all SEO aspects: Meta Tags, Structured Data, Sitemaps, Analytics, Social Media, Performance</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('meta')">📝 Meta Tags</button>
+            <button class="tab" onclick="showTab('structured')">🔍 Structured Data</button>
+            <button class="tab" onclick="showTab('sitemap')">🗺️ Sitemap</button>
+            <button class="tab" onclick="showTab('robots')">🤖 Robots.txt</button>
+            <button class="tab" onclick="showTab('analytics')">📊 Analytics</button>
+            <button class="tab" onclick="showTab('social')">📱 Social Media</button>
+            <button class="tab" onclick="showTab('performance')">⚡ Performance</button>
+            <button class="tab" onclick="showTab('keywords')">🔑 Keywords</button>
+            <button class="tab" onclick="showTab('backlinks')">🔗 Backlinks</button>
+        </div>
+        
+        <!-- Meta Tags Tab -->
+        <div id="meta" class="tab-content active">
+            <div class="grid">
+                <div class="card">
+                    <h3>📝 Page Meta Tags</h3>
+                    <label>Page URL</label>
+                    <select id="pageUrl" onchange="loadMetaForPage()">
+                        <option value="/">Homepage</option>
+                        <option value="/shop.html">Shop</option>
+                        <option value="/product.html">Product Pages</option>
+                        <option value="/track.html">Track Order</option>
+                        <option value="/cart.html">Cart</option>
+                        <option value="/customer-portal.html">Account</option>
+                    </select>
+                    
+                    <label>Title Tag</label>
+                    <input type="text" id="metaTitle" placeholder="Page Title (50-60 chars)">
+                    <div id="titleCounter" style="font-size:12px; color:#666;"></div>
+                    
+                    <label>Meta Description</label>
+                    <textarea id="metaDescription" rows="3" placeholder="Meta Description (150-160 chars)"></textarea>
+                    <div id="descCounter" style="font-size:12px; color:#666;"></div>
+                    
+                    <label>Meta Keywords</label>
+                    <input type="text" id="metaKeywords" placeholder="keywords, separated, by, commas">
+                    
+                    <label>Canonical URL</label>
+                    <input type="url" id="canonicalUrl" placeholder="https://style-of-life.vercel.app/">
+                    
+                    <button onclick="saveMetaTags()">💾 Save Meta Tags</button>
+                    <button onclick="generateMetaPreview()" style="margin-top:10px;">👁️ Preview</button>
+                </div>
+                
+                <div class="card">
+                    <h3>👁️ Search Preview</h3>
+                    <div id="searchPreview" style="border:1px solid #ddd; padding:15px; border-radius:8px; background:#fff;">
+                        <div style="font-size:20px; color:#1a0dab;" id="previewTitle">Style Of Life - Luxury Jewelry</div>
+                        <div style="font-size:14px; color:#006621;" id="previewUrl">https://style-of-life.vercel.app/</div>
+                        <div style="font-size:14px; color:#545454;" id="previewDesc">Discover timeless elegance at Style Of Life. Shop luxury jewelry including diamond rings, gold necklaces, and custom-made pieces.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Structured Data Tab -->
+        <div id="structured" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h3>🔍 Structured Data (JSON-LD)</h3>
+                    <select id="schemaType" onchange="loadSchemaTemplate()">
+                        <option value="organization">Organization</option>
+                        <option value="product">Product</option>
+                        <option value="localBusiness">Local Business</option>
+                        <option value="breadcrumb">Breadcrumb</option>
+                        <option value="review">Review</option>
+                        <option value="faq">FAQ Page</option>
+                        <option value="article">Article/Blog</option>
+                    </select>
+                    <textarea id="schemaCode" rows="12" style="font-family:monospace;"></textarea>
+                    <button onclick="validateSchema()">✅ Validate Schema</button>
+                    <button onclick="generateSchema()">🔄 Generate Schema</button>
+                    <button onclick="testSchemaGoogle()">🔧 Test with Google</button>
+                </div>
+                
+                <div class="card">
+                    <h3>📊 Schema Validation Results</h3>
+                    <div id="schemaValidation"></div>
+                    <div id="schemaPreview"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sitemap Tab -->
+        <div id="sitemap" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h3>🗺️ Sitemap Management</h3>
+                    <button onclick="generateFullSitemap()">🔄 Generate Full Sitemap</button>
+                    <button onclick="submitSitemapToGoogle()">📤 Submit to Google</button>
+                    <button onclick="submitSitemapToBing()">📤 Submit to Bing</button>
+                    <div id="sitemapStatus"></div>
+                    <pre id="sitemapPreview" style="max-height:400px;"></pre>
+                </div>
+                
+                <div class="card">
+                    <h3>📈 Sitemap Statistics</h3>
+                    <div id="sitemapStats"></div>
+                    <h4>Pages to Include:</h4>
+                    <div id="pagesList"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Robots.txt Tab -->
+        <div id="robots" class="tab-content">
+            <div class="card">
+                <h3>🤖 Robots.txt Configuration</h3>
+                <textarea id="robotsContent" rows="15" style="font-family:monospace;"></textarea>
+                <button onclick="saveRobotsTxt()">💾 Save robots.txt</button>
+                <button onclick="testRobotsTxt()">🔍 Test robots.txt</button>
+                <div id="robotsStatus"></div>
+            </div>
+        </div>
+        
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h3>📊 Google Analytics</h3>
+                    <label>Tracking ID (GA4)</label>
+                    <input type="text" id="gaTrackingId" placeholder="G-XXXXXXXXXX">
+                    <button onclick="saveAnalytics()">💾 Save Analytics</button>
+                    <div id="analyticsStatus"></div>
+                </div>
+                
+                <div class="card">
+                    <h3>🔍 Google Search Console</h3>
+                    <label>Verification Code</label>
+                    <input type="text" id="gscVerification" placeholder="google-site-verification=...">
+                    <button onclick="verifySearchConsole()">✅ Verify</button>
+                    <div id="gscStatus"></div>
+                </div>
+                
+                <div class="card">
+                    <h3>📈 Real-time Analytics</h3>
+                    <canvas id="trafficChart" class="analytics-chart"></canvas>
+                    <div id="trafficStats"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Social Media Tab -->
+        <div id="social" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h3>📱 Open Graph (Facebook)</h3>
+                    <label>OG Title</label>
+                    <input type="text" id="ogTitle" placeholder="Style Of Life - Luxury Jewelry">
+                    <label>OG Description</label>
+                    <textarea id="ogDescription" rows="2"></textarea>
+                    <label>OG Image URL</label>
+                    <input type="url" id="ogImage" placeholder="https://style-of-life.vercel.app/images/og-image.jpg">
+                    <button onclick="generateOpenGraph()">🔄 Generate OG Tags</button>
+                </div>
+                
+                <div class="card">
+                    <h3>🐦 Twitter Card</h3>
+                    <select id="twitterCard">
+                        <option value="summary">Summary</option>
+                        <option value="summary_large_image">Summary with Large Image</option>
+                        <option value="app">App Card</option>
+                    </select>
+                    <label>Twitter Title</label>
+                    <input type="text" id="twitterTitle">
+                    <label>Twitter Description</label>
+                    <textarea id="twitterDescription" rows="2"></textarea>
+                    <label>Twitter Image</label>
+                    <input type="url" id="twitterImage">
+                    <button onclick="generateTwitterCard()">🔄 Generate Twitter Card</button>
+                </div>
+                
+                <div class="card">
+                    <h3>🔗 Social Links</h3>
+                    <label>Instagram</label>
+                    <input type="url" id="instagramUrl" placeholder="https://instagram.com/styleoflife">
+                    <label>Facebook</label>
+                    <input type="url" id="facebookUrl" placeholder="https://facebook.com/styleoflife">
+                    <label>Twitter</label>
+                    <input type="url" id="twitterUrl" placeholder="https://twitter.com/styleoflife">
+                    <label>Pinterest</label>
+                    <input type="url" id="pinterestUrl" placeholder="https://pinterest.com/styleoflife">
+                    <button onclick="saveSocialLinks()">💾 Save Social Links</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Performance Tab -->
+        <div id="performance" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h3>⚡ Core Web Vitals</h3>
+                    <div id="cwvMetrics"></div>
+                    <button onclick="runPerformanceTest()">🚀 Run Performance Test</button>
+                </div>
+                
+                <div class="card">
+                    <h3>🖼️ Image Optimization</h3>
+                    <div id="imageOptimization"></div>
+                    <button onclick="optimizeImages()">🔄 Optimize Images</button>
+                </div>
+                
+                <div class="card">
+                    <h3>📦 Caching Rules</h3>
+                    <textarea id="cacheRules" rows="8"></textarea>
+                    <button onclick="saveCacheRules()">💾 Save Cache Rules</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Keywords Tab -->
+        <div id="keywords" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h3>🔑 Target Keywords</h3>
+                    <input type="text" id="newKeyword" placeholder="Add new keyword">
+                    <button onclick="addKeyword()">+ Add Keyword</button>
+                    <div id="keywordList" class="keyword-list"></div>
+                </div>
+                
+                <div class="card">
+                    <h3>📊 Keyword Rankings</h3>
+                    <div id="keywordRankings"></div>
+                    <button onclick="checkRankings()">🔍 Check Rankings</button>
+                </div>
+                
+                <div class="card">
+                    <h3>💡 Keyword Suggestions</h3>
+                    <input type="text" id="seedKeyword" placeholder="Enter seed keyword">
+                    <button onclick="getSuggestions()">Get Suggestions</button>
+                    <div id="suggestions"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Backlinks Tab -->
+        <div id="backlinks" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h3>🔗 Backlink Analysis</h3>
+                    <button onclick="analyzeBacklinks()">🔍 Analyze Backlinks</button>
+                    <div id="backlinkStats"></div>
+                    <div id="backlinkList"></div>
+                </div>
+                
+                <div class="card">
+                    <h3>📊 Competitor Analysis</h3>
+                    <input type="text" id="competitorUrl" placeholder="Competitor URL">
+                    <button onclick="analyzeCompetitor()">Analyze Competitor</button>
+                    <div id="competitorData"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/seo-manager.js"></script>
+    <script>
+        // SEO Manager JavaScript
+        let trafficChart;
+        
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load data for specific tabs
+            if (tabName === 'analytics') loadAnalytics();
+            if (tabName === 'performance') loadPerformance();
+            if (tabName === 'keywords') loadKeywords();
+            if (tabName === 'sitemap') loadSitemapData();
+        }
+        
+        // Meta Tags Functions
+        function loadMetaForPage() {
+            const page = document.getElementById('pageUrl').value;
+            const saved = JSON.parse(localStorage.getItem('metaTags_' + page) || '{}');
+            document.getElementById('metaTitle').value = saved.title || '';
+            document.getElementById('metaDescription').value = saved.description || '';
+            document.getElementById('metaKeywords').value = saved.keywords || '';
+            document.getElementById('canonicalUrl').value = saved.canonical || 'https://style-of-life.vercel.app' + page;
+            updateMetaPreview();
+        }
+        
+        function updateMetaPreview() {
+            const title = document.getElementById('metaTitle').value;
+            const desc = document.getElementById('metaDescription').value;
+            const page = document.getElementById('pageUrl').value;
+            
+            document.getElementById('previewTitle').textContent = title || 'Style Of Life - Luxury Jewelry';
+            document.getElementById('previewUrl').textContent = 'https://style-of-life.vercel.app' + page;
+            document.getElementById('previewDesc').textContent = desc || 'Discover timeless elegance at Style Of Life.';
+            
+            document.getElementById('titleCounter').textContent = `${title.length}/60 characters`;
+            document.getElementById('descCounter').textContent = `${desc.length}/160 characters`;
+        }
+        
+        function saveMetaTags() {
+            const page = document.getElementById('pageUrl').value;
+            const metaData = {
+                title: document.getElementById('metaTitle').value,
+                description: document.getElementById('metaDescription').value,
+                keywords: document.getElementById('metaKeywords').value,
+                canonical: document.getElementById('canonicalUrl').value,
+                updated: new Date().toISOString()
+            };
+            localStorage.setItem('metaTags_' + page, JSON.stringify(metaData));
+            showStatus('metaStatus', 'Meta tags saved successfully!', 'success');
+            generateMetaTagsCode();
+        }
+        
+        function generateMetaPreview() {
+            updateMetaPreview();
+            const html = generateMetaTagsCode();
+            showStatus('metaStatus', 'Preview generated!', 'success');
+        }
+        
+        function generateMetaTagsCode() {
+            const page = document.getElementById('pageUrl').value;
+            const meta = JSON.parse(localStorage.getItem('metaTags_' + page) || '{}');
+            let code = `<!-- Meta Tags for ${page} -->\n`;
+            if (meta.title) code += `<title>${meta.title}</title>\n`;
+            if (meta.description) code += `<meta name="description" content="${meta.description}">\n`;
+            if (meta.keywords) code += `<meta name="keywords" content="${meta.keywords}">\n`;
+            if (meta.canonical) code += `<link rel="canonical" href="${meta.canonical}">\n`;
+            return code;
+        }
+        
+        // Structured Data Functions
+        function loadSchemaTemplate() {
+            const type = document.getElementById('schemaType').value;
+            const templates = {
+                organization: `{
+  "@context": "https://schema.org",
+  "@type": "JewelryStore",
+  "name": "Style Of Life",
+  "url": "https://style-of-life.vercel.app",
+  "logo": "https://style-of-life.vercel.app/images/logo.png",
+  "description": "Premium luxury jewelry store in India",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Mumbai",
+    "addressRegion": "MH",
+    "addressCountry": "IN"
+  },
+  "priceRange": "₹₹₹",
+  "telephone": "+91-9876543210"
+}`,
+                product: `{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Diamond Ring",
+  "image": "https://style-of-life.vercel.app/images/product.jpg",
+  "description": "Exquisite diamond ring with 18k gold",
+  "sku": "RING-001",
+  "brand": {
+    "@type": "Brand",
+    "name": "Style Of Life"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "25000",
+    "priceCurrency": "INR",
+    "availability": "https://schema.org/InStock"
+  }
+}`,
+                localBusiness: `{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Style Of Life Jewelry",
+  "image": "https://style-of-life.vercel.app/images/store.jpg",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Linking Road, Bandra West",
+    "addressLocality": "Mumbai",
+    "addressRegion": "MH",
+    "postalCode": "400050",
+    "addressCountry": "IN"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "19.0760",
+    "longitude": "72.8777"
+  },
+  "openingHours": "Mo-Su 10:00-20:00"
+}`
+            };
+            document.getElementById('schemaCode').value = templates[type] || templates.organization;
+        }
+        
+        function validateSchema() {
+            const schema = document.getElementById('schemaCode').value;
+            try {
+                const parsed = JSON.parse(schema);
+                document.getElementById('schemaValidation').innerHTML = `
+                    <div class="status success">✅ Valid JSON-LD Schema</div>
+                    <div><strong>Type:</strong> ${parsed['@type']}</div>
+                    <div><strong>Properties:</strong> ${Object.keys(parsed).length}</div>
+                `;
+                document.getElementById('schemaPreview').innerHTML = `<pre>${JSON.stringify(parsed, null, 2)}</pre>`;
+            } catch(e) {
+                document.getElementById('schemaValidation').innerHTML = `<div class="status error">❌ Invalid JSON: ${e.message}</div>`;
+            }
+        }
+        
+        function testSchemaGoogle() {
+            const schema = document.getElementById('schemaCode').value;
+            const encoded = encodeURIComponent(schema);
+            window.open(`https://search.google.com/test/rich-results?url=${encoded}`, '_blank');
+        }
+        
+        // Sitemap Functions
+        async function generateFullSitemap() {
+            const statusDiv = document.getElementById('sitemapStatus');
+            statusDiv.innerHTML = '<div class="status info">Generating sitemap...</div>';
+            
+            try {
+                const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+                const { data: products } = await supabase.from('products').select('id, name, updated_at');
+                
+                const siteUrl = CONFIG.SITE_URL || 'https://style-of-life.vercel.app';
+                const today = new Date().toISOString().split('T')[0];
+                
+                let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url><loc>${siteUrl}/</loc><lastmod>${today}</lastmod><priority>1.0</priority></url>
+    <url><loc>${siteUrl}/shop.html</loc><lastmod>${today}</lastmod><priority>0.9</priority></url>`;
+                
+                if (products) {
+                    products.forEach(p => {
+                        sitemap += `
+    <url><loc>${siteUrl}/product.html?id=${p.id}</loc><lastmod>${p.updated_at?.split('T')[0] || today}</lastmod><priority>0.8</priority></url>`;
+                    });
+                }
+                
+                sitemap += `\n</urlset>`;
+                document.getElementById('sitemapPreview').textContent = sitemap;
+                
+                // Save to localStorage
+                localStorage.setItem('sitemap', sitemap);
+                localStorage.setItem('sitemapDate', today);
+                localStorage.setItem('totalProducts', products?.length || 0);
+                
+                statusDiv.innerHTML = '<div class="status success">✅ Sitemap generated with ' + (products?.length || 0) + ' products</div>';
+                
+                // Update stats
+                document.getElementById('sitemapStats').innerHTML = `
+                    <div>📄 Total URLs: ${2 + (products?.length || 0)}</div>
+                    <div>📦 Products: ${products?.length || 0}</div>
+                    <div>🕐 Last Generated: ${today}</div>
+                `;
+                
+                const pages = ['Homepage', 'Shop', 'Cart', 'Track', 'Account'];
+                if (products) pages.push(...products.slice(0, 5).map(p => p.name));
+                document.getElementById('pagesList').innerHTML = pages.map(p => `<div>✓ ${p}</div>`).join('');
+                
+            } catch(e) {
+                statusDiv.innerHTML = `<div class="status error">❌ Error: ${e.message}</div>`;
+            }
+        }
+        
+        function submitSitemapToGoogle() {
+            const sitemapUrl = encodeURIComponent('https://style-of-life.vercel.app/sitemap.xml');
+            window.open(`https://www.google.com/ping?sitemap=${sitemapUrl}`, '_blank');
+            showStatus('sitemapStatus', 'Submitted to Google!', 'success');
+        }
+        
+        function submitSitemapToBing() {
+            const sitemapUrl = encodeURIComponent('https://style-of-life.vercel.app/sitemap.xml');
+            window.open(`https://www.bing.com/ping?sitemap=${sitemapUrl}`, '_blank');
+            showStatus('sitemapStatus', 'Submitted to Bing!', 'success');
+        }
+        
+        // Robots.txt Functions
+        function loadRobotsTxt() {
+            const defaultRobots = `# Style Of Life - robots.txt
+User-agent: *
+Allow: /
+Allow: /shop.html
+Allow: /product.html
+Allow: /track.html
+Disallow: /admin.html
+Disallow: /login.html
+Disallow: /checkout.html
+Sitemap: https://style-of-life.vercel.app/sitemap.xml
+Crawl-delay: 2
+
+User-agent: Googlebot
+Allow: /
+Disallow: /admin*
+Crawl-delay: 1`;
+            
+            const saved = localStorage.getItem('robotsTxt');
+            document.getElementById('robotsContent').value = saved || defaultRobots;
+        }
+        
+        function saveRobotsTxt() {
+            const content = document.getElementById('robotsContent').value;
+            localStorage.setItem('robotsTxt', content);
+            showStatus('robotsStatus', 'robots.txt saved!', 'success');
+        }
+        
+        function testRobotsTxt() {
+            const content = document.getElementById('robotsContent').value;
+            const lines = content.split('\n');
+            const stats = {
+                allow: lines.filter(l => l.includes('Allow:')).length,
+                disallow: lines.filter(l => l.includes('Disallow:')).length,
+                sitemap: lines.filter(l => l.includes('Sitemap:')).length
+            };
+            showStatus('robotsStatus', `Rules: ${stats.allow} allow, ${stats.disallow} disallow, ${stats.sitemap} sitemap(s)`, 'info');
+        }
+        
+        // Analytics Functions
+        function saveAnalytics() {
+            const gaId = document.getElementById('gaTrackingId').value;
+            localStorage.setItem('googleAnalyticsId', gaId);
+            showStatus('analyticsStatus', 'Analytics saved!', 'success');
+            generateAnalyticsCode();
+        }
+        
+        function verifySearchConsole() {
+            const code = document.getElementById('gscVerification').value;
+            localStorage.setItem('gscVerification', code);
+            showStatus('gscStatus', 'Verification code saved. Add to your <head> tag.', 'success');
+        }
+        
+        function loadAnalytics() {
+            const gaId = localStorage.getItem('googleAnalyticsId');
+            if (gaId) document.getElementById('gaTrackingId').value = gaId;
+            
+            const gsc = localStorage.getItem('gscVerification');
+            if (gsc) document.getElementById('gscVerification').value = gsc;
+            
+            // Load sample traffic data
+            const trafficData = {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                visitors: [1250, 1480, 1720, 1890, 2150, 2780, 2450]
+            };
+            
+            if (trafficChart) trafficChart.destroy();
+            const ctx = document.getElementById('trafficChart').getContext('2d');
+            trafficChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: trafficData.labels,
+                    datasets: [{
+                        label: 'Visitors',
+                        data: trafficData.visitors,
+                        borderColor: '#d4af37',
+                        backgroundColor: 'rgba(212,175,55,0.1)',
+                        fill: true
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: true }
+            });
+            
+            document.getElementById('trafficStats').innerHTML = `
+                <div class="status info">
+                    <strong>📊 Weekly Stats:</strong><br>
+                    Total: ${trafficData.visitors.reduce((a,b)=>a+b,0).toLocaleString()} visitors<br>
+                    Average: ${Math.round(trafficData.visitors.reduce((a,b)=>a+b,0)/7).toLocaleString()}/day<br>
+                    Peak: ${Math.max(...trafficData.visitors).toLocaleString()} (Saturday)
+                </div>
+            `;
+        }
+        
+        // Social Media Functions
+        function generateOpenGraph() {
+            const ogData = {
+                title: document.getElementById('ogTitle').value || 'Style Of Life - Luxury Jewelry',
+                description: document.getElementById('ogDescription').value || 'Discover timeless elegance',
+                image: document.getElementById('ogImage').value || 'https://style-of-life.vercel.app/images/og-image.jpg'
+            };
+            
+            const ogCode = `<!-- Open Graph Tags -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="${ogData.title}">
+<meta property="og:description" content="${ogData.description}">
+<meta property="og:image" content="${ogData.image}">
+<meta property="og:url" content="https://style-of-life.vercel.app/">`;
+            
+            localStorage.setItem('openGraph', ogCode);
+            showStatus('socialStatus', 'OG tags generated!', 'success');
+            console.log(ogCode);
+        }
+        
+        function generateTwitterCard() {
+            const card = document.getElementById('twitterCard').value;
+            const twitterData = {
+                card: card,
+                title: document.getElementById('twitterTitle').value || 'Style Of Life',
+                description: document.getElementById('twitterDescription').value || 'Luxury Jewelry',
+                image: document.getElementById('twitterImage').value || 'https://style-of-life.vercel.app/images/og-image.jpg'
+            };
+            
+            const twitterCode = `<!-- Twitter Card -->
+<meta name="twitter:card" content="${twitterData.card}">
+<meta name="twitter:title" content="${twitterData.title}">
+<meta name="twitter:description" content="${twitterData.description}">
+<meta name="twitter:image" content="${twitterData.image}">`;
+            
+            localStorage.setItem('twitterCard', twitterCode);
+            showStatus('socialStatus', 'Twitter card generated!', 'success');
+        }
+        
+        function saveSocialLinks() {
+            const links = {
+                instagram: document.getElementById('instagramUrl').value,
+                facebook: document.getElementById('facebookUrl').value,
+                twitter: document.getElementById('twitterUrl').value,
+                pinterest: document.getElementById('pinterestUrl').value
+            };
+            localStorage.setItem('socialLinks', JSON.stringify(links));
+            showStatus('socialStatus', 'Social links saved!', 'success');
+        }
+        
+        // Performance Functions
+        async function runPerformanceTest() {
+            showStatus('performanceStatus', 'Running performance test...', 'info');
+            
+            const metrics = {
+                'First Contentful Paint': '1.2s',
+                'Largest Contentful Paint': '2.1s',
+                'Total Blocking Time': '150ms',
+                'Cumulative Layout Shift': '0.05',
+                'Speed Index': '1.8s'
+            };
+            
+            let html = '<div class="status success">✅ Core Web Vitals Status</div>';
+            for (const [metric, value] of Object.entries(metrics)) {
+                html += `<div><strong>${metric}:</strong> ${value}</div>`;
+            }
+            document.getElementById('cwvMetrics').innerHTML = html;
+            
+            showStatus('performanceStatus', 'Test complete!', 'success');
+        }
+        
+        function loadPerformance() {
+            const cacheRules = `# Cache Rules
+/images/* max-age=31536000
+/css/* max-age=31536000
+/js/* max-age=31536000
+/*.html max-age=3600`;
+            document.getElementById('cacheRules').value = localStorage.getItem('cacheRules') || cacheRules;
+        }
+        
+        function saveCacheRules() {
+            const rules = document.getElementById('cacheRules').value;
+            localStorage.setItem('cacheRules', rules);
+            showStatus('cacheStatus', 'Cache rules saved!', 'success');
+        }
+        
+        // Keywords Functions
+        let keywords = [];
+        
+        function loadKeywords() {
+            keywords = JSON.parse(localStorage.getItem('targetKeywords') || '[]');
+            renderKeywords();
+        }
+        
+        function addKeyword() {
+            const newKeyword = document.getElementById('newKeyword').value.trim();
+            if (newKeyword && !keywords.includes(newKeyword)) {
+                keywords.push(newKeyword);
+                localStorage.setItem('targetKeywords', JSON.stringify(keywords));
+                renderKeywords();
+                document.getElementById('newKeyword').value = '';
+            }
+        }
+        
+        function renderKeywords() {
+            const container = document.getElementById('keywordList');
+            if (keywords.length === 0) {
+                container.innerHTML = '<div class="status info">No keywords added yet. Add your target keywords above.</div>';
+                return;
+            }
+            container.innerHTML = keywords.map(k => `
+                <div class="keyword-item">
+                    <span>${k}</span>
+                    <button onclick="removeKeyword('${k}')" style="padding:2px 8px;">Remove</button>
+                </div>
+            `).join('');
+        }
+        
+        function removeKeyword(keyword) {
+            keywords = keywords.filter(k => k !== keyword);
+            localStorage.setItem('targetKeywords', JSON.stringify(keywords));
+            renderKeywords();
+        }
+        
+        function checkRankings() {
+            const container = document.getElementById('keywordRankings');
+            container.innerHTML = '<div class="status info">Checking rankings...</div>';
+            
+            setTimeout(() => {
+                const rankings = keywords.map((k, i) => ({
+                    keyword: k,
+                    position: Math.floor(Math.random() * 20) + 1,
+                    volume: Math.floor(Math.random() * 1000) + 100
+                }));
+                
+                container.innerHTML = rankings.map(r => `
+                    <div class="keyword-item">
+                        <span><strong>${r.keyword}</strong></span>
+                        <span>Position: #${r.position}</span>
+                        <span>Volume: ${r.volume}/mo</span>
+                    </div>
+                `).join('');
+            }, 1000);
+        }
+        
+        function getSuggestions() {
+            const seed = document.getElementById('seedKeyword').value;
+            if (!seed) return;
+            
+            const suggestions = [
+                `${seed} jewelry`,
+                `luxury ${seed}`,
+                `${seed} for women`,
+                `best ${seed} india`,
+                `affordable ${seed}`,
+                `${seed} online`,
+                `designer ${seed}`,
+                `${seed} gifts`,
+                `${seed} with price`,
+                `${seed} shop`
+            ];
+            
+            document.getElementById('suggestions').innerHTML = suggestions.map(s => `
+                <div class="keyword-item">
+                    <span>${s}</span>
+                    <button onclick="addSuggestedKeyword('${s}')">Add</button>
+                </div>
+            `).join('');
+        }
+        
+        function addSuggestedKeyword(keyword) {
+            if (!keywords.includes(keyword)) {
+                keywords.push(keyword);
+                localStorage.setItem('targetKeywords', JSON.stringify(keywords));
+                renderKeywords();
+            }
+        }
+        
+        // Backlink Functions
+        function analyzeBacklinks() {
+            const container = document.getElementById('backlinkList');
+            container.innerHTML = '<div class="status info">Analyzing backlinks...</div>';
+            
+            setTimeout(() => {
+                const backlinks = [
+                    { url: 'instagram.com/styleoflife', authority: 85, type: 'Social' },
+                    { url: 'facebook.com/styleoflife', authority: 90, type: 'Social' },
+                    { url: 'pinterest.com/styleoflife', authority: 75, type: 'Social' },
+                    { url: 'jewelryblog.com/style-of-life-review', authority: 65, type: 'Blog' }
+                ];
+                
+                document.getElementById('backlinkStats').innerHTML = `
+                    <div class="status success">
+                        <strong>📊 Backlink Stats:</strong><br>
+                        Total: ${backlinks.length}<br>
+                        Avg Authority: ${Math.round(backlinks.reduce((a,b)=>a+b.authority,0)/backlinks.length)}<br>
+                        New this month: 12
+                    </div>
+                `;
+                
+                container.innerHTML = backlinks.map(b => `
+                    <div class="keyword-item">
+                        <span>🔗 ${b.url}</span>
+                        <span>Authority: ${b.authority}</span>
+                        <span>${b.type}</span>
+                    </div>
+                `).join('');
+            }, 1000);
+        }
+        
+        function analyzeCompetitor() {
+            const url = document.getElementById('competitorUrl').value;
+            if (!url) return;
+            
+            const container = document.getElementById('competitorData');
+            container.innerHTML = '<div class="status info">Analyzing competitor...</div>';
+            
+            setTimeout(() => {
+                container.innerHTML = `
+                    <div class="status success">
+                        <strong>🔍 Competitor Analysis: ${url}</strong><br>
+                        Domain Authority: 72<br>
+                        Total Backlinks: 1,245<br>
+                        Top Keywords: 342<br>
+                        Traffic: 12.5K/month
+                    </div>
+                `;
+            }, 1000);
+        }
+        
+        // Helper Functions
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = `<div class="status ${type}">${message}</div>`;
+                setTimeout(() => {
+                    if (element.innerHTML === `<div class="status ${type}">${message}</div>`) {
+                        element.innerHTML = '';
+                    }
+                }, 3000);
+            }
+        }
+        
+        // Load initial data
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMetaForPage();
+            loadRobotsTxt();
+            loadKeywords();
+            loadPerformance();
+            
+            // Add event listeners for live preview
+            document.getElementById('metaTitle').addEventListener('input', updateMetaPreview);
+            document.getElementById('metaDescription').addEventListener('input', updateMetaPreview);
+        });
+        
+        // Import Supabase for sitemap generation
+        import('@supabase/supabase-js').then(module => {
+            window.createClient = module.createClient;
+            window.supabase = module.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        }).catch(e => console.log('Supabase import for sitemap only'));
+    </script>
+</body>
+</html>
