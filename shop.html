@@ -12,9 +12,15 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --primary-light: #f5e6c6;
             --dark: #1a1a1a;
+            --dark-light: #2a2a2a;
             --gray-200: #e9ecef;
             --gray-600: #6c757d;
+            --white: #ffffff;
+            --success: #28a745;
+            --danger: #dc3545;
         }
         body { font-family: 'Inter', sans-serif; background: #faf7f2; padding-bottom: 70px; }
         
@@ -27,6 +33,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         .logo { font-size: 20px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
         
@@ -39,6 +46,9 @@
             overflow-x: auto;
             white-space: nowrap;
             border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 60px;
+            z-index: 99;
         }
         .filter-chip {
             padding: 6px 16px;
@@ -46,8 +56,9 @@
             border-radius: 30px;
             font-size: 13px;
             cursor: pointer;
+            transition: all 0.3s;
         }
-        .filter-chip.active { background: var(--primary); color: var(--dark); }
+        .filter-chip.active { background: var(--primary); color: var(--dark); font-weight: 600; }
         
         /* Products Grid */
         .products {
@@ -58,15 +69,22 @@
         }
         .product-card {
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
             border: 1px solid var(--gray-200);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-color: var(--primary);
         }
         .product-image { width: 100%; height: 160px; object-fit: cover; }
-        .product-info { padding: 10px; }
-        .product-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
-        .product-price { font-size: 14px; font-weight: 700; color: var(--primary); }
-        .add-btn {
+        .product-info { padding: 12px; }
+        .product-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .product-price { font-size: 16px; font-weight: 700; color: var(--primary); }
+        .quick-add-btn {
             width: 100%;
             padding: 8px;
             background: var(--primary);
@@ -76,6 +94,236 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+        .quick-add-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        /* Product Detail Modal */
+        .product-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .product-modal.active { display: flex; }
+        
+        .modal-content {
+            background: white;
+            border-radius: 28px;
+            max-width: 90%;
+            width: 400px;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        .modal-close:hover {
+            background: rgba(0,0,0,0.8);
+            transform: scale(1.1);
+        }
+        
+        /* Image Gallery in Modal */
+        .modal-gallery {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+        .modal-gallery-images {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            height: 100%;
+            scrollbar-width: thin;
+        }
+        .modal-gallery-images::-webkit-scrollbar {
+            height: 4px;
+        }
+        .modal-gallery-image {
+            min-width: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            scroll-snap-align: start;
+        }
+        .modal-gallery-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            z-index: 5;
+        }
+        .modal-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .modal-dot.active {
+            width: 24px;
+            border-radius: 4px;
+            background: var(--primary);
+        }
+        
+        .modal-info {
+            padding: 20px;
+        }
+        .modal-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+        .modal-sku {
+            font-size: 12px;
+            color: var(--gray-600);
+            margin-bottom: 12px;
+        }
+        .modal-category {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .modal-price {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        .modal-description {
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .modal-stock {
+            font-size: 13px;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 12px;
+            background: var(--gray-200);
+        }
+        .in-stock { color: var(--success); }
+        .low-stock { color: #ff9800; }
+        .out-of-stock { color: var(--danger); }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .modal-buy-btn {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--dark);
+            padding: 14px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .modal-cart-btn {
+            flex: 1;
+            background: var(--white);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 14px;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .modal-wishlist-btn {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            color: var(--gray-600);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .modal-wishlist-btn:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            transform: scale(1.05);
+        }
+        .modal-wishlist-btn.active {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: rgba(220,53,69,0.1);
+        }
+        .modal-buy-btn:hover, .modal-cart-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .toast {
@@ -89,11 +337,28 @@
             border-radius: 40px;
             z-index: 9999;
             font-size: 13px;
+            animation: slideUp 0.3s ease;
         }
+        .toast-success { background: var(--success); }
+        .toast-error { background: var(--danger); }
         
         .loading { text-align: center; padding: 40px; }
-        .spinner { width: 30px; height: 30px; border: 2px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px; }
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: var(--gray-600);
+        }
         
         .bottom-nav {
             position: fixed;
@@ -115,13 +380,15 @@
             color: var(--gray-600);
             text-decoration: none;
             font-size: 10px;
+            transition: all 0.2s;
         }
         .bottom-nav a i { font-size: 20px; }
-        .bottom-nav a.active { color: var(--primary); }
+        .bottom-nav a.active, .bottom-nav a:hover { color: var(--primary); }
         
         @media (min-width: 768px) {
             .products { grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 30px; }
             .product-image { height: 220px; }
+            .modal-content { width: 500px; }
         }
     </style>
 </head>
@@ -132,7 +399,39 @@
     </header>
     
     <div class="filter-bar" id="filterBar"></div>
-    <div class="products" id="products"><div class="loading"><div class="spinner"></div><p>Loading...</p></div></div>
+    <div class="products" id="products">
+        <div class="loading"><div class="spinner"></div><p>Loading beautiful products...</p></div>
+    </div>
+    
+    <!-- Product Detail Modal -->
+    <div id="productModal" class="product-modal">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeProductModal()">&times;</div>
+            <div class="modal-gallery">
+                <div class="modal-gallery-images" id="modalGallery"></div>
+                <div class="modal-gallery-dots" id="modalGalleryDots"></div>
+            </div>
+            <div class="modal-info">
+                <div class="modal-name" id="modalName"></div>
+                <div class="modal-sku" id="modalSku"></div>
+                <div class="modal-category" id="modalCategory"></div>
+                <div class="modal-price" id="modalPrice"></div>
+                <div class="modal-description" id="modalDescription"></div>
+                <div class="modal-stock" id="modalStock"></div>
+                <div class="modal-buttons">
+                    <button class="modal-buy-btn" id="modalBuyBtn">
+                        <i class="fas fa-bolt"></i> Buy Now
+                    </button>
+                    <button class="modal-cart-btn" id="modalCartBtn">
+                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </button>
+                    <button class="modal-wishlist-btn" id="modalWishlistBtn">
+                        <i class="far fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <div class="bottom-nav">
         <a href="index.html"><i class="fas fa-home"></i><span>Home</span></a>
@@ -142,29 +441,56 @@
         <a href="customer-portal.html"><i class="fas fa-user"></i><span>Account</span></a>
     </div>
     
-    <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
+    <script type="importmap">
+        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
+    </script>
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
+        
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let sessionId = localStorage.getItem('sessionId');
-        if (!sessionId) { sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); localStorage.setItem('sessionId', sessionId); }
-        
         let allProducts = [];
         let currentCategory = 'all';
+        let currentProduct = null;
+        let currentUser = null;
         
-        function showToast(msg, isError = false) {
+        if (!sessionId) {
+            sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('sessionId', sessionId);
+        }
+        
+        // Get current user
+        async function getCurrentUser() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+                currentUser = { ...user, profile };
+            }
+            return currentUser;
+        }
+        
+        function showToast(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast';
-            toast.style.background = isError ? '#dc3545' : '#1a1a1a';
-            toast.textContent = msg;
+            if (isError) toast.classList.add('toast-error');
+            else toast.classList.add('toast-success');
+            toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
         
         async function loadProducts() {
-            const { data, error } = await supabase.from('products').select('*').order('id');
-            if (error) return;
-            allProducts = data;
+            const { data, error } = await supabase
+                .from('products')
+                .select('*')
+                .order('id');
+            
+            if (error) {
+                document.getElementById('products').innerHTML = '<div class="empty-state">Error loading products</div>';
+                return;
+            }
+            
+            allProducts = data || [];
             loadCategories();
             renderProducts();
         }
@@ -172,7 +498,11 @@
         function loadCategories() {
             const categories = ['all', ...new Set(allProducts.map(p => p.category).filter(Boolean))];
             const filterBar = document.getElementById('filterBar');
-            filterBar.innerHTML = categories.map(cat => `<span class="filter-chip ${cat === currentCategory ? 'active' : ''}" onclick="filterByCategory('${cat}')">${cat === 'all' ? 'All' : cat}</span>`).join('');
+            filterBar.innerHTML = categories.map(cat => `
+                <span class="filter-chip ${cat === currentCategory ? 'active' : ''}" onclick="filterByCategory('${cat}')">
+                    ${cat === 'all' ? '✨ All' : cat}
+                </span>
+            `).join('');
         }
         
         window.filterByCategory = function(cat) {
@@ -185,18 +515,26 @@
         function renderProducts() {
             const container = document.getElementById('products');
             let products = currentCategory === 'all' ? allProducts : allProducts.filter(p => p.category === currentCategory);
-            if (!products.length) { container.innerHTML = '<div class="loading"><p>No products</p></div>'; return; }
+            
+            if (!products.length) {
+                container.innerHTML = '<div class="empty-state">✨ No products in this category</div>';
+                return;
+            }
             
             let html = '';
             products.forEach(p => {
-                const img = p.images?.[0] || 'https://via.placeholder.com/300x160';
+                const img = p.images?.[0] || 'https://via.placeholder.com/300x160?text=Style+Of+Life';
+                const stockClass = p.stock > 0 ? 'in-stock' : 'out-of-stock';
+                
                 html += `
-                    <div class="product-card">
-                        <img class="product-image" src="${img}" onerror="this.src='https://via.placeholder.com/300x160'">
+                    <div class="product-card" onclick="openProductModal(${p.id})">
+                        <img class="product-image" src="${img}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/300x160?text=Style+Of+Life'">
                         <div class="product-info">
                             <div class="product-name">${escapeHtml(p.name)}</div>
                             <div class="product-price">₹${(p.price || 0).toLocaleString()}</div>
-                            <button class="add-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">Add to Cart</button>
+                            <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
+                                <i class="fas fa-shopping-cart"></i> Quick Add
+                            </button>
                         </div>
                     </div>
                 `;
@@ -204,24 +542,240 @@
             container.innerHTML = html;
         }
         
-        window.addToCart = async function(id, name, price, sku, img) {
-            const { data: product } = await supabase.from('products').select('stock').eq('id', id).single();
-            if (product?.stock <= 0) { showToast(`${name} out of stock!`, true); return; }
+        // Open Product Modal with full details
+        window.openProductModal = async function(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
             
-            const { data: cartData } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
-            let items = cartData?.items || [];
-            const existing = items.find(i => i.id === id);
-            if (existing) { existing.quantity++; }
-            else { items.push({ id, sku, name, price, quantity: 1, image: img }); }
+            currentProduct = product;
             
-            const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
-            await supabase.from('carts').upsert({ session_id: sessionId, items, total, updated_at: new Date().toISOString() });
-            showToast(`${name} added!`);
+            // Set basic info
+            document.getElementById('modalName').textContent = product.name;
+            document.getElementById('modalSku').textContent = `SKU: ${product.sku}`;
+            document.getElementById('modalCategory').textContent = product.category || 'Jewelry';
+            document.getElementById('modalPrice').textContent = `₹${(product.price || 0).toLocaleString()}`;
+            document.getElementById('modalDescription').textContent = product.description || 'Exquisite handcrafted jewelry piece made with premium quality materials and finest craftsmanship. Perfect for special occasions and everyday elegance.';
+            
+            // Stock status
+            const stockDiv = document.getElementById('modalStock');
+            if (product.stock <= 0) {
+                stockDiv.innerHTML = '<i class="fas fa-times-circle"></i> Out of Stock';
+                stockDiv.className = 'modal-stock out-of-stock';
+            } else if (product.stock < 10) {
+                stockDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Only ${product.stock} left in stock - Order soon!`;
+                stockDiv.className = 'modal-stock low-stock';
+            } else {
+                stockDiv.innerHTML = `<i class="fas fa-check-circle"></i> In Stock (${product.stock} available)`;
+                stockDiv.className = 'modal-stock in-stock';
+            }
+            
+            // Setup gallery images
+            const images = product.images || [];
+            const validImages = images.filter(img => img && img.trim() !== '');
+            const displayImages = validImages.length > 0 ? validImages : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
+            
+            const galleryContainer = document.getElementById('modalGallery');
+            const dotsContainer = document.getElementById('modalGalleryDots');
+            
+            galleryContainer.innerHTML = '';
+            dotsContainer.innerHTML = '';
+            
+            displayImages.forEach((img, index) => {
+                const imgElement = document.createElement('img');
+                imgElement.src = img;
+                imgElement.className = 'modal-gallery-image';
+                imgElement.alt = product.name;
+                imgElement.onerror = () => { imgElement.src = 'https://via.placeholder.com/400x400?text=Image+Not+Available'; };
+                galleryContainer.appendChild(imgElement);
+                
+                const dot = document.createElement('div');
+                dot.className = 'modal-dot';
+                if (index === 0) dot.classList.add('active');
+                dot.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    galleryContainer.scrollTo({ left: galleryContainer.clientWidth * index, behavior: 'smooth' });
+                });
+                dotsContainer.appendChild(dot);
+            });
+            
+            // Add scroll listener for dots
+            galleryContainer.addEventListener('scroll', () => {
+                const scrollPos = galleryContainer.scrollLeft;
+                const itemWidth = galleryContainer.clientWidth;
+                const activeIndex = Math.round(scrollPos / itemWidth);
+                const dots = dotsContainer.querySelectorAll('.modal-dot');
+                dots.forEach((dot, idx) => {
+                    if (idx === activeIndex) dot.classList.add('active');
+                    else dot.classList.remove('active');
+                });
+            });
+            
+            // Setup button actions
+            const buyBtn = document.getElementById('modalBuyBtn');
+            const cartBtn = document.getElementById('modalCartBtn');
+            const wishlistBtn = document.getElementById('modalWishlistBtn');
+            
+            buyBtn.onclick = () => {
+                addToCart(product.id, product.name, product.price, product.sku, displayImages[0]);
+                setTimeout(() => {
+                    window.location.href = 'checkout.html';
+                }, 500);
+            };
+            
+            cartBtn.onclick = () => {
+                addToCart(product.id, product.name, product.price, product.sku, displayImages[0]);
+            };
+            
+            // Check if in wishlist
+            if (currentUser) {
+                const { data: wishlistData } = await supabase
+                    .from('wishlist')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .eq('product_id', product.id)
+                    .single();
+                
+                if (wishlistData) {
+                    wishlistBtn.innerHTML = '<i class="fas fa-heart"></i>';
+                    wishlistBtn.classList.add('active');
+                } else {
+                    wishlistBtn.innerHTML = '<i class="far fa-heart"></i>';
+                    wishlistBtn.classList.remove('active');
+                }
+            }
+            
+            wishlistBtn.onclick = () => toggleWishlist(product.id, wishlistBtn);
+            
+            // Show modal
+            document.getElementById('productModal').classList.add('active');
         };
         
-        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m))); }
+        window.closeProductModal = function() {
+            document.getElementById('productModal').classList.remove('active');
+            currentProduct = null;
+        };
         
-        loadProducts();
+        // Toggle wishlist
+        async function toggleWishlist(productId, btnElement) {
+            if (!currentUser) {
+                showToast('Please login to add to wishlist', true);
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1000);
+                return;
+            }
+            
+            const { data: existing } = await supabase
+                .from('wishlist')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .eq('product_id', productId)
+                .single();
+            
+            if (existing) {
+                const { error } = await supabase
+                    .from('wishlist')
+                    .delete()
+                    .eq('user_id', currentUser.id)
+                    .eq('product_id', productId);
+                
+                if (!error) {
+                    btnElement.innerHTML = '<i class="far fa-heart"></i>';
+                    btnElement.classList.remove('active');
+                    showToast('Removed from wishlist');
+                }
+            } else {
+                const { error } = await supabase
+                    .from('wishlist')
+                    .insert({ user_id: currentUser.id, product_id: productId });
+                
+                if (!error) {
+                    btnElement.innerHTML = '<i class="fas fa-heart"></i>';
+                    btnElement.classList.add('active');
+                    showToast('Added to wishlist! ❤️');
+                }
+            }
+        }
+        
+        // Add to cart function
+        window.addToCart = async function(id, name, price, sku, img) {
+            try {
+                // Check stock
+                const { data: product } = await supabase
+                    .from('products')
+                    .select('stock')
+                    .eq('id', id)
+                    .single();
+                
+                if (product?.stock <= 0) {
+                    showToast(`${name} is out of stock!`, true);
+                    return;
+                }
+                
+                let { data: cartData, error: fetchError } = await supabase
+                    .from('carts')
+                    .select('items')
+                    .eq('session_id', sessionId)
+                    .maybeSingle();
+                
+                if (fetchError) throw fetchError;
+                
+                let items = cartData?.items || [];
+                const existing = items.find(i => i.id === id);
+                
+                if (existing) {
+                    if (product && existing.quantity + 1 > product.stock) {
+                        showToast(`Only ${product.stock} left in stock!`, true);
+                        return;
+                    }
+                    existing.quantity += 1;
+                } else {
+                    items.push({ id, sku, name, price, quantity: 1, image: img });
+                }
+                
+                const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
+                
+                const { error: saveError } = await supabase
+                    .from('carts')
+                    .upsert({
+                        session_id: sessionId,
+                        items: items,
+                        total: total,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'session_id' });
+                
+                if (saveError) throw saveError;
+                
+                showToast(`${name} added to cart! ✨`);
+                
+                // Animate cart icon
+                const cartIcon = document.querySelector('.bottom-nav a i.fa-shopping-bag');
+                if (cartIcon) {
+                    cartIcon.style.transform = 'scale(1.2)';
+                    setTimeout(() => cartIcon.style.transform = '', 300);
+                }
+                
+            } catch (error) {
+                console.error('Add to cart error:', error);
+                showToast('Failed to add to cart', true);
+            }
+        };
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
+        }
+        
+        // Close modal on outside click
+        document.getElementById('productModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeProductModal();
+            }
+        });
+        
+        // Initialize
+        await getCurrentUser();
+        await loadProducts();
     </script>
 </body>
 </html>
