@@ -21,6 +21,7 @@
             --white: #ffffff;
             --success: #28a745;
             --danger: #dc3545;
+            --warning: #ff9800;
         }
         body { font-family: 'Inter', sans-serif; background: #faf7f2; padding-bottom: 70px; }
         
@@ -82,23 +83,72 @@
         }
         .product-image { width: 100%; height: 160px; object-fit: cover; }
         .product-info { padding: 12px; }
-        .product-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-        .product-price { font-size: 16px; font-weight: 700; color: var(--primary); }
-        .quick-add-btn {
-            width: 100%;
+        .product-name { 
+            font-size: 14px; 
+            font-weight: 600; 
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .product-price { 
+            font-size: 16px; 
+            font-weight: 700; 
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .product-stock-badge {
+            font-size: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .stock-low { color: var(--warning); }
+        .stock-out { color: var(--danger); }
+        .stock-in { color: var(--success); }
+        
+        .product-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .quick-add-btn, .quick-buy-btn {
+            flex: 1;
             padding: 8px;
-            background: var(--primary);
             border: none;
             border-radius: 30px;
-            margin-top: 8px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .quick-add-btn {
+            background: var(--white);
+            border: 1px solid var(--primary);
+            color: var(--primary);
         }
         .quick-add-btn:hover {
-            background: var(--primary-dark);
+            background: var(--primary);
+            color: var(--dark);
             transform: translateY(-2px);
+        }
+        .quick-buy-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--dark);
+        }
+        .quick-buy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212,175,55,0.3);
+        }
+        .quick-add-btn:disabled, .quick-buy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
         
         /* Product Detail Modal */
@@ -246,7 +296,7 @@
             background: var(--gray-200);
         }
         .in-stock { color: var(--success); }
-        .low-stock { color: #ff9800; }
+        .low-stock { color: var(--warning); }
         .out-of-stock { color: var(--danger); }
         
         .modal-buttons {
@@ -512,6 +562,16 @@
             renderProducts();
         };
         
+        function getStockStatus(product) {
+            if (product.stock <= 0) {
+                return { text: 'Out of Stock', class: 'stock-out', disabled: true };
+            } else if (product.stock < 10) {
+                return { text: `⚠️ Only ${product.stock} left`, class: 'stock-low', disabled: false };
+            } else {
+                return { text: `✓ In Stock`, class: 'stock-in', disabled: false };
+            }
+        }
+        
         function renderProducts() {
             const container = document.getElementById('products');
             let products = currentCategory === 'all' ? allProducts : allProducts.filter(p => p.category === currentCategory);
@@ -524,7 +584,7 @@
             let html = '';
             products.forEach(p => {
                 const img = p.images?.[0] || 'https://via.placeholder.com/300x160?text=Style+Of+Life';
-                const stockClass = p.stock > 0 ? 'in-stock' : 'out-of-stock';
+                const stock = getStockStatus(p);
                 
                 html += `
                     <div class="product-card" onclick="openProductModal(${p.id})">
@@ -532,15 +592,37 @@
                         <div class="product-info">
                             <div class="product-name">${escapeHtml(p.name)}</div>
                             <div class="product-price">₹${(p.price || 0).toLocaleString()}</div>
-                            <button class="quick-add-btn" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')">
-                                <i class="fas fa-shopping-cart"></i> Quick Add
-                            </button>
+                            <div class="product-stock-badge ${stock.class}">
+                                <i class="fas ${p.stock <= 0 ? 'fa-times-circle' : (p.stock < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i>
+                                <span>${stock.text}</span>
+                            </div>
+                            <div class="product-buttons">
+                                <button class="quick-add-btn" onclick="event.stopPropagation(); quickAddToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')" ${stock.disabled ? 'disabled' : ''}>
+                                    <i class="fas fa-shopping-cart"></i> Cart
+                                </button>
+                                <button class="quick-buy-btn" onclick="event.stopPropagation(); quickBuyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')" ${stock.disabled ? 'disabled' : ''}>
+                                    <i class="fas fa-bolt"></i> Buy
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
             });
             container.innerHTML = html;
         }
+        
+        // Quick Add to Cart (without redirect)
+        window.quickAddToCart = async function(id, name, price, sku, img) {
+            await addToCart(id, name, price, sku, img);
+        };
+        
+        // Quick Buy Now (add to cart and redirect to checkout)
+        window.quickBuyNow = async function(id, name, price, sku, img) {
+            await addToCart(id, name, price, sku, img);
+            setTimeout(() => {
+                window.location.href = 'checkout.html';
+            }, 500);
+        };
         
         // Open Product Modal with full details
         window.openProductModal = async function(productId) {
@@ -615,15 +697,32 @@
             const cartBtn = document.getElementById('modalCartBtn');
             const wishlistBtn = document.getElementById('modalWishlistBtn');
             
+            const canAdd = product.stock > 0;
+            
+            buyBtn.disabled = !canAdd;
+            cartBtn.disabled = !canAdd;
+            
+            if (!canAdd) {
+                buyBtn.style.opacity = '0.5';
+                cartBtn.style.opacity = '0.5';
+            } else {
+                buyBtn.style.opacity = '1';
+                cartBtn.style.opacity = '1';
+            }
+            
             buyBtn.onclick = () => {
-                addToCart(product.id, product.name, product.price, product.sku, displayImages[0]);
-                setTimeout(() => {
-                    window.location.href = 'checkout.html';
-                }, 500);
+                if (canAdd) {
+                    addToCart(product.id, product.name, product.price, product.sku, displayImages[0]);
+                    setTimeout(() => {
+                        window.location.href = 'checkout.html';
+                    }, 500);
+                }
             };
             
             cartBtn.onclick = () => {
-                addToCart(product.id, product.name, product.price, product.sku, displayImages[0]);
+                if (canAdd) {
+                    addToCart(product.id, product.name, product.price, product.sku, displayImages[0]);
+                }
             };
             
             // Check if in wishlist
@@ -709,7 +808,7 @@
                 
                 if (product?.stock <= 0) {
                     showToast(`${name} is out of stock!`, true);
-                    return;
+                    return false;
                 }
                 
                 let { data: cartData, error: fetchError } = await supabase
@@ -726,7 +825,7 @@
                 if (existing) {
                     if (product && existing.quantity + 1 > product.stock) {
                         showToast(`Only ${product.stock} left in stock!`, true);
-                        return;
+                        return false;
                     }
                     existing.quantity += 1;
                 } else {
@@ -749,15 +848,18 @@
                 showToast(`${name} added to cart! ✨`);
                 
                 // Animate cart icon
-                const cartIcon = document.querySelector('.bottom-nav a i.fa-shopping-bag');
+                const cartIcon = document.querySelector('.bottom-nav a i.fa-shopping-bag, .header-icons a i.fa-shopping-bag');
                 if (cartIcon) {
                     cartIcon.style.transform = 'scale(1.2)';
                     setTimeout(() => cartIcon.style.transform = '', 300);
                 }
                 
+                return true;
+                
             } catch (error) {
                 console.error('Add to cart error:', error);
                 showToast('Failed to add to cart', true);
+                return false;
             }
         };
         
