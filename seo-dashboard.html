@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEO Dashboard - Style Of Life</title>
+    <title>SEO Manager - Style Of Life</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -16,7 +15,6 @@
             --primary-dark: #b8962e;
             --primary-light: #f5e6c6;
             --dark: #1a1a1a;
-            --dark-card: #141414;
             --light: #ffffff;
             --gray-100: #f8f9fa;
             --gray-200: #e9ecef;
@@ -27,7 +25,6 @@
             --danger: #ef4444;
             --warning: #f59e0b;
             --info: #3b82f6;
-            --purple: #8b5cf6;
         }
         
         body {
@@ -107,241 +104,190 @@
         
         /* Container */
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 30px auto;
             padding: 0 25px;
         }
         
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: white;
+            padding: 8px;
+            border-radius: 60px;
+            border: 1px solid var(--gray-200);
         }
         
-        .stat-card {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            border: 1px solid var(--gray-200);
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
             transition: all 0.3s;
         }
         
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        .tab.active {
+            background: var(--primary);
+            color: var(--dark);
         }
         
-        .stat-icon {
-            width: 55px;
-            height: 55px;
-            background: rgba(212,175,55,0.1);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: var(--primary);
-        }
-        
-        .stat-info h3 {
-            font-size: 12px;
-            color: var(--gray-600);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-        
-        .stat-number {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--gray-800);
-        }
-        
-        .stat-trend {
-            font-size: 11px;
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .trend-up { color: var(--success); }
-        .trend-down { color: var(--danger); }
-        
-        /* Charts Row */
-        .charts-row {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .chart-card {
+        /* Cards */
+        .card {
             background: white;
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 25px;
             border: 1px solid var(--gray-200);
         }
         
-        .chart-header {
+        .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-200);
         }
         
-        .chart-header h3 {
-            font-size: 16px;
+        .card-header h2 {
+            font-size: 18px;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-        
-        canvas { max-height: 280px; width: 100%; }
-        
-        /* SEO Checker */
-        .seo-checker {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 30px;
-            border: 1px solid var(--gray-200);
-        }
-        
-        .seo-checker h3 {
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-        
-        .url-input-group {
-            display: flex;
             gap: 10px;
+        }
+        
+        /* Form Elements */
+        .form-group {
             margin-bottom: 20px;
         }
         
-        .url-input {
-            flex: 1;
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+        
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
             padding: 12px 16px;
             border: 1px solid var(--gray-200);
             border-radius: 12px;
             font-size: 14px;
+            font-family: inherit;
         }
         
-        .check-btn {
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .btn {
             padding: 12px 24px;
-            background: var(--primary);
             border: none;
-            border-radius: 12px;
+            border-radius: 40px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s;
         }
         
-        .seo-results {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+        .btn-primary {
+            background: var(--primary);
+            color: var(--dark);
         }
         
-        .seo-metric {
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-800);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        /* Meta Tags List */
+        .meta-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .meta-item {
             background: var(--gray-100);
             border-radius: 12px;
             padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .seo-metric h4 {
-            font-size: 13px;
+        .meta-info h4 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .meta-info p {
+            font-size: 12px;
             color: var(--gray-600);
-            margin-bottom: 8px;
         }
         
-        .seo-score {
-            font-size: 24px;
-            font-weight: 700;
+        .meta-actions {
+            display: flex;
+            gap: 8px;
         }
         
-        .score-good { color: var(--success); }
-        .score-average { color: var(--warning); }
-        .score-poor { color: var(--danger); }
+        .icon-btn {
+            background: none;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
         
-        .progress-bar {
-            height: 6px;
+        .icon-btn:hover {
             background: var(--gray-200);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 8px;
         }
         
-        .progress-fill {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.3s;
+        /* Sitemap Section */
+        .sitemap-urls {
+            max-height: 400px;
+            overflow-y: auto;
         }
         
-        .fill-good { background: var(--success); }
-        .fill-average { background: var(--warning); }
-        .fill-poor { background: var(--danger); }
-        
-        /* Keywords Table */
-        .keywords-card {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid var(--gray-200);
-            margin-bottom: 30px;
-        }
-        
-        .keywords-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .keywords-table th, .keywords-table td {
+        .url-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 12px;
-            text-align: left;
             border-bottom: 1px solid var(--gray-200);
         }
         
-        .keywords-table th {
-            color: var(--gray-600);
-            font-weight: 600;
+        .url-item:last-child {
+            border-bottom: none;
+        }
+        
+        .url-priority {
             font-size: 12px;
+            color: var(--primary);
         }
-        
-        .rank-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        
-        .rank-top { background: #d1fae5; color: #065f46; }
-        .rank-middle { background: #fef3c7; color: #92400e; }
-        .rank-bottom { background: #fee2e2; color: #991b1b; }
-        
-        /* Loading */
-        .loading {
-            text-align: center;
-            padding: 40px;
-        }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--gray-200);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 15px;
-        }
-        
-        @keyframes spin { to { transform: rotate(360deg); } }
         
         /* Toast */
         .toast {
@@ -364,7 +310,7 @@
         @media (max-width: 768px) {
             .admin-header { flex-direction: column; gap: 15px; padding: 15px; }
             .admin-nav { flex-wrap: wrap; justify-content: center; }
-            .charts-row { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
             .container { padding: 15px; }
         }
     </style>
@@ -372,121 +318,249 @@
 <body>
     <div class="admin-header">
         <div class="logo">
-            <i class="fas fa-chart-line"></i>
-            STYLE OF LIFE <span>SEO DASHBOARD</span>
+            <i class="fas fa-cog"></i>
+            STYLE OF LIFE <span>SEO MANAGER</span>
         </div>
         <div class="admin-nav">
             <a href="admin.html"><i class="fas fa-chart-line"></i> Dashboard</a>
             <a href="admin-products.html"><i class="fas fa-box"></i> Products</a>
             <a href="admin-orders.html"><i class="fas fa-shopping-cart"></i> Orders</a>
-            <a href="seo-dashboard.html" class="active"><i class="fas fa-search"></i> SEO</a>
+            <a href="seo-dashboard.html"><i class="fas fa-search"></i> SEO</a>
+            <a href="seo-manager.html" class="active"><i class="fas fa-cog"></i> Settings</a>
         </div>
         <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
 
     <div class="container">
-        <!-- SEO Stats -->
-        <div class="stats-grid" id="statsGrid">
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-eye"></i></div>
-                <div class="stat-info">
-                    <h3>Total Impressions</h3>
-                    <div class="stat-number" id="totalImpressions">--</div>
-                    <div class="stat-trend"><i class="fas fa-arrow-up trend-up"></i> <span class="trend-up">+23%</span></div>
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('meta')">Meta Tags</div>
+            <div class="tab" onclick="showTab('sitemap')">Sitemap</div>
+            <div class="tab" onclick="showTab('robots')">Robots.txt</div>
+            <div class="tab" onclick="showTab('schema')">Schema</div>
+            <div class="tab" onclick="showTab('settings')">Settings</div>
+        </div>
+        
+        <!-- Meta Tags Tab -->
+        <div id="metaTab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-tag"></i> Global Meta Tags</h2>
+                    <button class="btn btn-primary" onclick="saveGlobalMeta()">Save Changes</button>
+                </div>
+                <div class="form-group">
+                    <label>Site Title</label>
+                    <input type="text" id="siteTitle" value="Style Of Life - Luxury Jewelry Store | Diamond & Gold Jewelry Online">
+                </div>
+                <div class="form-group">
+                    <label>Meta Description</label>
+                    <textarea id="siteDescription" rows="3">Discover exquisite handcrafted jewelry at Style Of Life. Shop diamond rings, gold necklaces, earrings, and luxury accessories. Free shipping on orders above ₹3000. 15-day exchange policy.</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Meta Keywords</label>
+                    <input type="text" id="siteKeywords" value="jewelry, diamond jewelry, gold jewelry, luxury jewelry, engagement rings, necklaces, earrings, bracelets">
+                </div>
+                <div class="form-group">
+                    <label>Author</label>
+                    <input type="text" id="siteAuthor" value="Style Of Life Jewelry">
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-mouse-pointer"></i></div>
-                <div class="stat-info">
-                    <h3>Total Clicks</h3>
-                    <div class="stat-number" id="totalClicks">--</div>
-                    <div class="stat-trend"><i class="fas fa-arrow-up trend-up"></i> <span class="trend-up">+15%</span></div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fab fa-facebook"></i> Open Graph (Facebook)</h2>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>OG Title</label>
+                        <input type="text" id="ogTitle" value="Style Of Life - Luxury Jewelry Store">
+                    </div>
+                    <div class="form-group">
+                        <label>OG Image URL</label>
+                        <input type="text" id="ogImage" value="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>OG Description</label>
+                    <textarea id="ogDescription" rows="2">Discover exquisite handcrafted jewelry at Style Of Life. Shop diamond rings, gold necklaces, earrings, and luxury accessories.</textarea>
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
-                <div class="stat-info">
-                    <h3>CTR</h3>
-                    <div class="stat-number" id="ctr">--</div>
-                    <div class="stat-trend"><i class="fas fa-arrow-up trend-up"></i> <span class="trend-up">+5.2%</span></div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fab fa-twitter"></i> Twitter Card</h2>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-chart-bar"></i></div>
-                <div class="stat-info">
-                    <h3>Avg. Position</h3>
-                    <div class="stat-number" id="avgPosition">--</div>
-                    <div class="stat-trend"><i class="fas fa-arrow-down trend-down"></i> <span class="trend-down">-2.1</span></div>
+                <div class="form-group">
+                    <label>Twitter Title</label>
+                    <input type="text" id="twitterTitle" value="Style Of Life - Luxury Jewelry Store">
+                </div>
+                <div class="form-group">
+                    <label>Twitter Description</label>
+                    <textarea id="twitterDescription" rows="2">Discover exquisite handcrafted jewelry at Style Of Life. Shop diamond rings, gold necklaces, earrings, and luxury accessories.</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Twitter Image</label>
+                    <input type="text" id="twitterImage" value="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338">
                 </div>
             </div>
         </div>
         
-        <!-- Charts -->
-        <div class="charts-row">
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3><i class="fas fa-chart-line"></i> Traffic Overview</h3>
-                    <select id="periodSelect" onchange="updateCharts()">
-                        <option value="7">Last 7 Days</option>
-                        <option value="30" selected>Last 30 Days</option>
-                        <option value="90">Last 90 Days</option>
+        <!-- Sitemap Tab -->
+        <div id="sitemapTab" class="tab-content" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-sitemap"></i> Sitemap URLs</h2>
+                    <div>
+                        <button class="btn btn-primary" onclick="generateSitemap()">Generate Sitemap</button>
+                        <button class="btn btn-secondary" onclick="downloadSitemap()">Download XML</button>
+                    </div>
+                </div>
+                <div class="sitemap-urls" id="sitemapUrls">
+                    <div class="loading"><div class="spinner"></div>Loading URLs...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Robots.txt Tab -->
+        <div id="robotsTab" class="tab-content" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-robot"></i> Robots.txt Editor</h2>
+                    <button class="btn btn-primary" onclick="saveRobotsTxt()">Save Changes</button>
+                </div>
+                <div class="form-group">
+                    <textarea id="robotsContent" rows="20" style="font-family: monospace; font-size: 12px;"></textarea>
+                </div>
+                <p style="font-size: 12px; color: var(--gray-600); margin-top: 10px;">
+                    <i class="fas fa-info-circle"></i> The robots.txt file tells search engines which pages to crawl.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Schema Tab -->
+        <div id="schemaTab" class="tab-content" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-code"></i> Schema.org Settings</h2>
+                </div>
+                <div class="form-group">
+                    <label>Business Type</label>
+                    <select id="businessType">
+                        <option value="JewelryStore" selected>Jewelry Store</option>
+                        <option value="LocalBusiness">Local Business</option>
+                        <option value="OnlineStore">Online Store</option>
                     </select>
                 </div>
-                <canvas id="trafficChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3><i class="fas fa-chart-pie"></i> Traffic Source</h3>
+                <div class="form-group">
+                    <label>Business Name</label>
+                    <input type="text" id="businessName" value="Style Of Life">
                 </div>
-                <canvas id="sourceChart"></canvas>
+                <div class="form-group">
+                    <label>Business Description</label>
+                    <textarea id="businessDescription" rows="3">Luxury jewelry store offering diamond rings, gold necklaces, earrings, and fine jewelry.</textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="text" id="businessPhone" value="+91-9876543210">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="businessEmail" value="support@styleoflife.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" id="businessAddress" value="Mumbai, Maharashtra, India">
+                </div>
+                <div class="form-group">
+                    <label>Price Range</label>
+                    <select id="priceRange">
+                        <option value="₹₹">₹₹ (Moderate)</option>
+                        <option value="₹₹₹" selected>₹₹₹ (Expensive)</option>
+                        <option value="₹₹₹₹">₹₹₹₹ (Luxury)</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="saveSchemaSettings()">Save Schema Settings</button>
             </div>
         </div>
         
-        <!-- SEO Checker Tool -->
-        <div class="seo-checker">
-            <h3><i class="fas fa-search"></i> SEO Page Analyzer</h3>
-            <div class="url-input-group">
-                <input type="text" id="seoUrl" class="url-input" placeholder="Enter page URL to analyze (e.g., https://styleoflife987-hub.github.io/jewelry-store/shop.html)">
-                <button class="check-btn" onclick="analyzePageSEO()"><i class="fas fa-chart-simple"></i> Analyze SEO</button>
+        <!-- Settings Tab -->
+        <div id="settingsTab" class="tab-content" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-line"></i> Google Analytics</h2>
+                </div>
+                <div class="form-group">
+                    <label>Google Analytics ID</label>
+                    <input type="text" id="gaId" placeholder="G-XXXXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label>Google Tag Manager ID</label>
+                    <input type="text" id="gtmId" placeholder="GTM-XXXXXXX">
+                </div>
             </div>
-            <div id="seoResults" class="seo-results"></div>
-        </div>
-        
-        <!-- Top Keywords -->
-        <div class="keywords-card">
-            <h3><i class="fas fa-key"></i> Top Performing Keywords</h3>
-            <div style="overflow-x: auto;">
-                <table class="keywords-table">
-                    <thead>
-                        <tr><th>Keyword</th><th>Position</th><th>Impressions</th><th>Clicks</th><th>CTR</th><th>Trend</th></tr>
-                    </thead>
-                    <tbody id="keywordsTable">
-                        <tr><td colspan="6" class="loading"><div class="spinner"></div>Loading...</td></tr>
-                    </tbody>
-                </table>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fab fa-google"></i> Google Search Console</h2>
+                </div>
+                <div class="form-group">
+                    <label>Verification Code</label>
+                    <input type="text" id="gscCode" placeholder="google-site-verification=xxxxxxxxxxx">
+                </div>
+                <p style="font-size: 12px; color: var(--gray-600);">Add this code to the head section of your site to verify ownership.</p>
             </div>
-        </div>
-        
-        <!-- SEO Recommendations -->
-        <div class="keywords-card">
-            <h3><i class="fas fa-lightbulb"></i> SEO Recommendations</h3>
-            <div id="recommendations"></div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-share-alt"></i> Social Media Links</h2>
+                </div>
+                <div class="form-group">
+                    <label>Instagram URL</label>
+                    <input type="text" id="instagramUrl" placeholder="https://instagram.com/styleoflife">
+                </div>
+                <div class="form-group">
+                    <label>Facebook URL</label>
+                    <input type="text" id="facebookUrl" placeholder="https://facebook.com/styleoflife">
+                </div>
+                <div class="form-group">
+                    <label>Twitter URL</label>
+                    <input type="text" id="twitterUrl" placeholder="https://twitter.com/styleoflife">
+                </div>
+                <div class="form-group">
+                    <label>Pinterest URL</label>
+                    <input type="text" id="pinterestUrl" placeholder="https://pinterest.com/styleoflife">
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-database"></i> Advanced Settings</h2>
+                </div>
+                <div class="form-group">
+                    <label>Canonical URL</label>
+                    <input type="text" id="canonicalUrl" value="https://styleoflife987-hub.github.io/jewelry-store/">
+                </div>
+                <div class="form-group">
+                    <label>Enable Breadcrumbs</label>
+                    <select id="enableBreadcrumbs">
+                        <option value="yes" selected>Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Enable JSON-LD Schema</label>
+                    <select id="enableSchema">
+                        <option value="yes" selected>Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="saveAdvancedSettings()">Save All Settings</button>
+            </div>
         </div>
     </div>
 
-    <script type="importmap">
-        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
-    </script>
-    <script type="module">
-        import { createClient } from '@supabase/supabase-js';
-        
-        if (!sessionStorage.getItem('adminLoggedIn')) {
-            window.location.href = 'login.html';
-        }
-        
-        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-        let trafficChart, sourceChart;
-        
+    <script>
         function showToast(message) {
             const toast = document.createElement('div');
             toast.className = 'toast';
@@ -495,218 +569,179 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
-        function updateCharts() {
-            loadTrafficData();
-        }
-        
-        async function loadTrafficData() {
-            const period = document.getElementById('periodSelect').value;
-            
-            // Simulated data (in production, fetch from Google Search Console API)
-            const days = parseInt(period);
-            const labels = [];
-            const impressions = [];
-            const clicks = [];
-            
-            for (let i = days - 1; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                labels.push(date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }));
-                
-                // Simulated data
-                const baseImpressions = 500 + Math.random() * 300;
-                const baseClicks = 50 + Math.random() * 40;
-                impressions.push(Math.round(baseImpressions));
-                clicks.push(Math.round(baseClicks));
-            }
-            
-            // Update stats
-            const totalImpressions = impressions.reduce((a, b) => a + b, 0);
-            const totalClicks = clicks.reduce((a, b) => a + b, 0);
-            const ctr = ((totalClicks / totalImpressions) * 100).toFixed(1);
-            const avgPosition = (8 + Math.random() * 4).toFixed(1);
-            
-            document.getElementById('totalImpressions').textContent = totalImpressions.toLocaleString();
-            document.getElementById('totalClicks').textContent = totalClicks.toLocaleString();
-            document.getElementById('ctr').textContent = `${ctr}%`;
-            document.getElementById('avgPosition').textContent = avgPosition;
-            
-            // Traffic Chart
-            const trafficCtx = document.getElementById('trafficChart').getContext('2d');
-            if (trafficChart) trafficChart.destroy();
-            trafficChart = new Chart(trafficCtx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Impressions',
-                            data: impressions,
-                            borderColor: '#d4af37',
-                            backgroundColor: 'rgba(212,175,55,0.1)',
-                            borderWidth: 2,
-                            fill: true,
-                            tension: 0.4,
-                            yAxisID: 'y'
-                        },
-                        {
-                            label: 'Clicks',
-                            data: clicks,
-                            borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59,130,246,0.1)',
-                            borderWidth: 2,
-                            fill: true,
-                            tension: 0.4,
-                            yAxisID: 'y'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: { position: 'top' },
-                        tooltip: { mode: 'index', intersect: false }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: '#e9ecef' } },
-                        x: { grid: { display: false } }
-                    }
-                }
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
             });
             
-            // Source Chart
-            const sourceCtx = document.getElementById('sourceChart').getContext('2d');
-            if (sourceChart) sourceChart.destroy();
-            sourceChart = new Chart(sourceCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Organic Search', 'Direct', 'Social Media', 'Referral', 'Email'],
-                    datasets: [{
-                        data: [45, 25, 15, 10, 5],
-                        backgroundColor: ['#d4af37', '#3b82f6', '#10b981', '#8b5cf6', '#ef4444'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: { position: 'bottom' }
-                    }
-                }
+            // Show selected tab
+            document.getElementById(`${tabName}Tab`).style.display = 'block';
+            
+            // Update active tab styling
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
             });
+            event.target.classList.add('active');
         }
         
-        async function loadKeywords() {
-            const keywords = [
-                { keyword: "luxury jewelry india", position: 4, impressions: 12500, clicks: 780, ctr: 6.24, trend: "up" },
-                { keyword: "diamond rings online", position: 7, impressions: 8900, clicks: 445, ctr: 5.00, trend: "up" },
-                { keyword: "gold necklaces", position: 3, impressions: 15200, clicks: 1250, ctr: 8.22, trend: "up" },
-                { keyword: "style of life jewelry", position: 1, impressions: 8500, clicks: 2100, ctr: 24.71, trend: "up" },
-                { keyword: "engagement rings", position: 12, impressions: 6700, clicks: 268, ctr: 4.00, trend: "down" },
-                { keyword: "handcrafted jewelry", position: 8, impressions: 5400, clicks: 324, ctr: 6.00, trend: "up" },
-                { keyword: "bridal jewelry set", position: 15, impressions: 4300, clicks: 172, ctr: 4.00, trend: "down" },
-                { keyword: "24k gold jewelry", position: 9, impressions: 6100, clicks: 366, ctr: 6.00, trend: "up" }
+        function saveGlobalMeta() {
+            const settings = {
+                siteTitle: document.getElementById('siteTitle').value,
+                siteDescription: document.getElementById('siteDescription').value,
+                siteKeywords: document.getElementById('siteKeywords').value,
+                siteAuthor: document.getElementById('siteAuthor').value,
+                ogTitle: document.getElementById('ogTitle').value,
+                ogImage: document.getElementById('ogImage').value,
+                ogDescription: document.getElementById('ogDescription').value,
+                twitterTitle: document.getElementById('twitterTitle').value,
+                twitterDescription: document.getElementById('twitterDescription').value,
+                twitterImage: document.getElementById('twitterImage').value
+            };
+            
+            localStorage.setItem('seo_meta_settings', JSON.stringify(settings));
+            showToast('Meta settings saved successfully!');
+        }
+        
+        function generateSitemap() {
+            const urls = [
+                { url: '/', priority: 1.0, changefreq: 'daily' },
+                { url: '/shop.html', priority: 0.9, changefreq: 'daily' },
+                { url: '/cart.html', priority: 0.6, changefreq: 'weekly' },
+                { url: '/checkout.html', priority: 0.5, changefreq: 'weekly' },
+                { url: '/track.html', priority: 0.5, changefreq: 'weekly' },
+                { url: '/customer-portal.html', priority: 0.6, changefreq: 'weekly' },
+                { url: '/register.html', priority: 0.5, changefreq: 'monthly' }
             ];
             
+            const container = document.getElementById('sitemapUrls');
             let html = '';
-            for (const k of keywords) {
-                const rankClass = k.position <= 5 ? 'rank-top' : (k.position <= 15 ? 'rank-middle' : 'rank-bottom');
+            for (const u of urls) {
                 html += `
-                    <tr>
-                        <td><strong>${k.keyword}</strong></td>
-                        <td><span class="rank-badge ${rankClass}">#${k.position}</span></td>
-                        <td>${k.impressions.toLocaleString()}</td>
-                        <td>${k.clicks.toLocaleString()}</td>
-                        <td>${k.ctr}%</td>
-                        <td><i class="fas fa-arrow-${k.trend === 'up' ? 'up trend-up' : 'down trend-down'}"></i></td>
-                    </tr>
+                    <div class="url-item">
+                        <div>
+                            <strong>${u.url}</strong>
+                            <div style="font-size: 12px; color: var(--gray-600);">Change frequency: ${u.changefreq}</div>
+                        </div>
+                        <div class="url-priority">Priority: ${u.priority}</div>
+                    </div>
                 `;
             }
-            document.getElementById('keywordsTable').innerHTML = html;
+            container.innerHTML = html;
+            showToast('Sitemap generated successfully!');
         }
         
-        window.analyzePageSEO = async function() {
-            const url = document.getElementById('seoUrl').value.trim();
-            if (!url) {
-                showToast('Please enter a URL');
-                return;
-            }
+        function downloadSitemap() {
+            const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://styleoflife987-hub.github.io/jewelry-store/</loc>
+        <lastmod>2026-04-01</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+</urlset>`;
             
-            const resultsDiv = document.getElementById('seoResults');
-            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Analyzing...</div>';
-            
-            // Simulate SEO analysis
-            setTimeout(() => {
-                const scores = {
-                    title: { score: 85, status: 'good', message: 'Title length is optimal (45-60 chars)' },
-                    description: { score: 70, status: 'average', message: 'Meta description could be longer (150-160 chars recommended)' },
-                    headings: { score: 90, status: 'good', message: 'Proper heading structure detected' },
-                    images: { score: 65, status: 'average', message: 'Some images missing alt text' },
-                    keywords: { score: 80, status: 'good', message: 'Keywords well distributed' },
-                    mobile: { score: 95, status: 'good', message: 'Mobile responsive design' },
-                    speed: { score: 72, status: 'average', message: 'Page speed could be improved' },
-                    links: { score: 78, status: 'average', message: 'Internal linking structure good' }
-                };
-                
-                const overallScore = Object.values(scores).reduce((sum, s) => sum + s.score, 0) / Object.keys(scores).length;
-                const overallClass = overallScore >= 80 ? 'score-good' : (overallScore >= 60 ? 'score-average' : 'score-poor');
-                
-                let html = `
-                    <div class="seo-metric">
-                        <h4>Overall SEO Score</h4>
-                        <div class="seo-score ${overallClass}">${Math.round(overallScore)}/100</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill ${overallClass === 'score-good' ? 'fill-good' : (overallClass === 'score-average' ? 'fill-average' : 'fill-poor')}" style="width: ${overallScore}%"></div>
-                        </div>
-                    </div>
-                `;
-                
-                for (const [key, value] of Object.entries(scores)) {
-                    const statusClass = value.status === 'good' ? 'score-good' : 'score-average';
-                    html += `
-                        <div class="seo-metric">
-                            <h4>${key.charAt(0).toUpperCase() + key.slice(1)}</h4>
-                            <div class="seo-score ${statusClass}">${value.score}/100</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill ${value.status === 'good' ? 'fill-good' : 'fill-average'}" style="width: ${value.score}%"></div>
-                            </div>
-                            <p style="font-size: 11px; margin-top: 8px; color: var(--gray-600);">${value.message}</p>
-                        </div>
-                    `;
-                }
-                
-                resultsDiv.innerHTML = html;
-                showToast('SEO analysis completed');
-            }, 1500);
-        };
+            const blob = new Blob([sitemapXml], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sitemap.xml';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Sitemap downloaded!');
+        }
         
-        function loadRecommendations() {
-            const recommendations = [
-                { priority: "High", title: "Add alt text to all product images", description: "52 images are missing alt text. This affects accessibility and SEO." },
-                { priority: "Medium", title: "Improve page load speed", description: "Current load time is 3.2s. Aim for under 2s." },
-                { priority: "High", title: "Update meta descriptions", description: "5 pages have missing or duplicate meta descriptions." },
-                { priority: "Low", title: "Add structured data", description: "Product schema is missing for 12 products." },
-                { priority: "Medium", title: "Fix broken links", description: "3 broken internal links detected." },
-                { priority: "High", title: "Mobile optimization", description: "Some pages have touch elements too close together." }
-            ];
+        function saveRobotsTxt() {
+            const content = document.getElementById('robotsContent').value;
+            localStorage.setItem('robots_txt_content', content);
+            showToast('Robots.txt saved!');
+        }
+        
+        function saveSchemaSettings() {
+            const settings = {
+                businessType: document.getElementById('businessType').value,
+                businessName: document.getElementById('businessName').value,
+                businessDescription: document.getElementById('businessDescription').value,
+                businessPhone: document.getElementById('businessPhone').value,
+                businessEmail: document.getElementById('businessEmail').value,
+                businessAddress: document.getElementById('businessAddress').value,
+                priceRange: document.getElementById('priceRange').value
+            };
+            localStorage.setItem('schema_settings', JSON.stringify(settings));
+            showToast('Schema settings saved!');
+        }
+        
+        function saveAdvancedSettings() {
+            const settings = {
+                gaId: document.getElementById('gaId').value,
+                gtmId: document.getElementById('gtmId').value,
+                gscCode: document.getElementById('gscCode').value,
+                instagramUrl: document.getElementById('instagramUrl').value,
+                facebookUrl: document.getElementById('facebookUrl').value,
+                twitterUrl: document.getElementById('twitterUrl').value,
+                pinterestUrl: document.getElementById('pinterestUrl').value,
+                canonicalUrl: document.getElementById('canonicalUrl').value,
+                enableBreadcrumbs: document.getElementById('enableBreadcrumbs').value,
+                enableSchema: document.getElementById('enableSchema').value
+            };
+            localStorage.setItem('advanced_seo_settings', JSON.stringify(settings));
+            showToast('Advanced settings saved!');
+        }
+        
+        function loadRobotsTxt() {
+            const defaultRobots = `User-agent: *
+Allow: /
+Disallow: /admin*
+Disallow: /login*
+Sitemap: https://styleoflife987-hub.github.io/jewelry-store/sitemap.xml`;
             
-            let html = '<div style="display: flex; flex-direction: column; gap: 12px;">';
-            for (const rec of recommendations) {
-                const priorityColor = rec.priority === 'High' ? '#ef4444' : (rec.priority === 'Medium' ? '#f59e0b' : '#10b981');
-                html += `
-                    <div style="padding: 12px; background: var(--gray-100); border-radius: 12px; border-left: 4px solid ${priorityColor};">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                            <strong>${rec.title}</strong>
-                            <span style="font-size: 10px; color: ${priorityColor};">${rec.priority} Priority</span>
-                        </div>
-                        <p style="font-size: 12px; color: var(--gray-600);">${rec.description}</p>
-                    </div>
-                `;
+            const saved = localStorage.getItem('robots_txt_content');
+            document.getElementById('robotsContent').value = saved || defaultRobots;
+        }
+        
+        function loadSavedSettings() {
+            const metaSettings = localStorage.getItem('seo_meta_settings');
+            if (metaSettings) {
+                const settings = JSON.parse(metaSettings);
+                document.getElementById('siteTitle').value = settings.siteTitle || '';
+                document.getElementById('siteDescription').value = settings.siteDescription || '';
+                document.getElementById('siteKeywords').value = settings.siteKeywords || '';
+                document.getElementById('siteAuthor').value = settings.siteAuthor || '';
+                document.getElementById('ogTitle').value = settings.ogTitle || '';
+                document.getElementById('ogImage').value = settings.ogImage || '';
+                document.getElementById('ogDescription').value = settings.ogDescription || '';
+                document.getElementById('twitterTitle').value = settings.twitterTitle || '';
+                document.getElementById('twitterDescription').value = settings.twitterDescription || '';
+                document.getElementById('twitterImage').value = settings.twitterImage || '';
             }
-            html += '</div>';
-            document.getElementById('recommendations').innerHTML = html;
+            
+            const schemaSettings = localStorage.getItem('schema_settings');
+            if (schemaSettings) {
+                const settings = JSON.parse(schemaSettings);
+                document.getElementById('businessType').value = settings.businessType || 'JewelryStore';
+                document.getElementById('businessName').value = settings.businessName || 'Style Of Life';
+                document.getElementById('businessDescription').value = settings.businessDescription || '';
+                document.getElementById('businessPhone').value = settings.businessPhone || '';
+                document.getElementById('businessEmail').value = settings.businessEmail || '';
+                document.getElementById('businessAddress').value = settings.businessAddress || '';
+                document.getElementById('priceRange').value = settings.priceRange || '₹₹₹';
+            }
+            
+            const advancedSettings = localStorage.getItem('advanced_seo_settings');
+            if (advancedSettings) {
+                const settings = JSON.parse(advancedSettings);
+                document.getElementById('gaId').value = settings.gaId || '';
+                document.getElementById('gtmId').value = settings.gtmId || '';
+                document.getElementById('gscCode').value = settings.gscCode || '';
+                document.getElementById('instagramUrl').value = settings.instagramUrl || '';
+                document.getElementById('facebookUrl').value = settings.facebookUrl || '';
+                document.getElementById('twitterUrl').value = settings.twitterUrl || '';
+                document.getElementById('pinterestUrl').value = settings.pinterestUrl || '';
+                document.getElementById('canonicalUrl').value = settings.canonicalUrl || '';
+                document.getElementById('enableBreadcrumbs').value = settings.enableBreadcrumbs || 'yes';
+                document.getElementById('enableSchema').value = settings.enableSchema || 'yes';
+            }
         }
         
         window.logout = function() {
@@ -715,12 +750,14 @@
         };
         
         // Initialize
-        loadTrafficData();
-        loadKeywords();
-        loadRecommendations();
+        loadRobotsTxt();
+        loadSavedSettings();
+        generateSitemap();
         
-        // Auto-refresh every 5 minutes
-        setInterval(loadTrafficData, 300000);
+        // Check authentication
+        if (!sessionStorage.getItem('adminLoggedIn')) {
+            window.location.href = 'login.html';
+        }
     </script>
 </body>
 </html>
