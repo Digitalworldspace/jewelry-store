@@ -20,8 +20,6 @@
             --gray-600: #6c757d;
             --success: #28a745;
             --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
         }
         body { font-family: 'Inter', sans-serif; background: #faf7f2; padding-bottom: 70px; }
         
@@ -130,6 +128,21 @@
             margin-top: 5px;
         }
         
+        /* Welcome Card */
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--dark);
+            padding: 15px 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .welcome-text h3 { font-size: 16px; margin-bottom: 4px; }
+        .welcome-text p { font-size: 12px; opacity: 0.9; }
+        .welcome-icon { font-size: 40px; opacity: 0.8; }
+        
         /* Tabs */
         .tabs {
             display: flex;
@@ -155,7 +168,6 @@
             color: var(--dark);
         }
         
-        /* Content */
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
@@ -186,7 +198,6 @@
         .status-delivered { background: #c3e6cb; color: #155724; }
         .status-cancelled { background: #f8d7da; color: #721c24; }
         
-        /* Price Breakdown */
         .price-breakdown {
             background: var(--gray-100);
             border-radius: 12px;
@@ -253,12 +264,7 @@
             border-radius: 40px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
         }
-        .save-btn:hover {
-            background: var(--primary-dark);
-        }
-        
         .logout-btn {
             background: transparent;
             border: 1px solid var(--danger);
@@ -268,16 +274,10 @@
             width: 100%;
             margin-top: 15px;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-        .logout-btn:hover {
-            background: var(--danger);
-            color: white;
         }
         
         .empty { text-align: center; padding: 40px; color: var(--gray-600); }
         
-        /* Loading */
         .loading { text-align: center; padding: 40px; }
         .spinner {
             width: 30px;
@@ -290,7 +290,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 80px;
@@ -309,30 +308,6 @@
         @keyframes slideUp {
             from { opacity: 0; transform: translateX(-50%) translateY(20px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-        
-        /* User Welcome Card */
-        .welcome-card {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: var(--dark);
-            padding: 15px 20px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .welcome-text h3 {
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
-        .welcome-text p {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-        .welcome-icon {
-            font-size: 40px;
-            opacity: 0.8;
         }
         
         .bottom-nav {
@@ -372,7 +347,6 @@
     </header>
     
     <div class="container">
-        <!-- Login Section -->
         <div id="loginSection" class="login-section">
             <h2><i class="fas fa-user-circle"></i> Welcome Back!</h2>
             <p>Login to view your orders, wishlist and manage your account</p>
@@ -390,28 +364,18 @@
             <div class="register-link">
                 <p>New customer? <a href="register.html">Create an account</a></p>
             </div>
-            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--gray-200);">
-                <p style="font-size: 11px; color: var(--gray-600);">
-                    <i class="fas fa-shield-alt"></i> Secure login powered by Supabase
-                </p>
-            </div>
         </div>
         
-        <!-- Dashboard Content (Hidden until login) -->
         <div id="dashboardContent" style="display: none;">
-            <!-- Welcome Card -->
             <div class="welcome-card">
                 <div class="welcome-text">
                     <h3 id="welcomeUserName">Welcome back!</h3>
                     <p id="welcomeUserEmail"></p>
                 </div>
-                <div class="welcome-icon">
-                    <i class="fas fa-gem"></i>
-                </div>
+                <div class="welcome-icon"><i class="fas fa-gem"></i></div>
             </div>
             
-            <!-- Stats Cards -->
-            <div class="stats-grid" id="statsGrid">
+            <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-number" id="totalOrders">0</div>
                     <div class="stat-label">Total Orders</div>
@@ -459,7 +423,6 @@
         import { createClient } from '@supabase/supabase-js';
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-        
         let currentUser = null;
         let sessionId = localStorage.getItem('sessionId');
         
@@ -467,10 +430,6 @@
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
         }
-        
-        const TAX_RATE = 0.18;
-        const SHIPPING = 100;
-        const FREE_SHIPPING_THRESHOLD = 3000;
         
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
@@ -480,10 +439,8 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
-        // Handle Customer Login
-        async function handleCustomerLogin(event) {
+        async function handleLogin(event) {
             event.preventDefault();
-            
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
             
@@ -492,469 +449,181 @@
                 return;
             }
             
-            const loginBtn = document.querySelector('.login-btn');
-            const originalText = loginBtn.textContent;
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Logging in...';
+            const btn = document.querySelector('.login-btn');
+            btn.disabled = true;
+            btn.textContent = 'Logging in...';
             
             try {
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-                
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
                 
                 if (data.user) {
-                    // Get user profile
-                    const { data: profile, error: profileError } = await supabase
-                        .from('profiles')
-                        .select('*')
-                        .eq('id', data.user.id)
-                        .single();
-                    
-                    if (profileError && profileError.code !== 'PGRST116') {
-                        console.error('Profile error:', profileError);
-                    }
-                    
-                    currentUser = { 
-                        ...data.user, 
-                        profile: profile || { full_name: email.split('@')[0], phone: '' }
-                    };
-                    
-                    // Store user in localStorage
-                    localStorage.setItem('customerLoggedIn', 'true');
+                    const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
+                    currentUser = { ...data.user, profile: profile || {} };
                     localStorage.setItem('customerUser', JSON.stringify(currentUser));
                     
-                    showToast('Login successful! Welcome back!');
-                    
-                    // Hide login, show dashboard
+                    showToast('Login successful!');
                     document.getElementById('loginSection').style.display = 'none';
                     document.getElementById('dashboardContent').style.display = 'block';
-                    
-                    // Update welcome message
                     document.getElementById('welcomeUserName').textContent = `Welcome, ${currentUser.profile?.full_name || currentUser.email?.split('@')[0]}!`;
                     document.getElementById('welcomeUserEmail').textContent = currentUser.email;
                     
-                    // Load user data
                     await loadOrders();
                     await loadWishlist();
                     await loadProfile();
                 }
-                
             } catch (error) {
-                console.error('Login error:', error);
-                let errorMessage = 'Login failed. ';
-                if (error.message === 'Invalid login credentials') {
-                    errorMessage = 'Invalid email or password. Please try again.';
-                } else if (error.message === 'Email not confirmed') {
-                    errorMessage = 'Please confirm your email before logging in.';
-                } else {
-                    errorMessage += error.message;
-                }
-                showToast(errorMessage, true);
+                showToast(error.message || 'Login failed', true);
             } finally {
-                loginBtn.disabled = false;
-                loginBtn.textContent = originalText;
+                btn.disabled = false;
+                btn.textContent = 'Login →';
             }
         }
         
-        // Handle Customer Logout
-        async function handleCustomerLogout() {
-            try {
-                await supabase.auth.signOut();
-                localStorage.removeItem('customerLoggedIn');
-                localStorage.removeItem('customerUser');
-                currentUser = null;
-                
-                showToast('Logged out successfully');
-                
-                // Show login, hide dashboard
-                document.getElementById('loginSection').style.display = 'block';
-                document.getElementById('dashboardContent').style.display = 'none';
-                
-                // Clear form
-                document.getElementById('loginEmail').value = '';
-                document.getElementById('loginPassword').value = '';
-                
-            } catch (error) {
-                console.error('Logout error:', error);
-                showToast('Error logging out', true);
-            }
-        }
-        
-        // Check if user is already logged in
-        async function checkAuth() {
-            try {
-                const { data: { user }, error: userError } = await supabase.auth.getUser();
-                
-                if (userError) throw userError;
-                
-                if (user) {
-                    const { data: profile, error: profileError } = await supabase
-                        .from('profiles')
-                        .select('*')
-                        .eq('id', user.id)
-                        .single();
-                    
-                    if (profileError && profileError.code !== 'PGRST116') {
-                        console.error('Profile error:', profileError);
-                    }
-                    
-                    currentUser = { 
-                        ...user, 
-                        profile: profile || { full_name: user.email?.split('@')[0], phone: '' }
-                    };
-                    
-                    localStorage.setItem('customerLoggedIn', 'true');
-                    localStorage.setItem('customerUser', JSON.stringify(currentUser));
-                    
-                    document.getElementById('loginSection').style.display = 'none';
-                    document.getElementById('dashboardContent').style.display = 'block';
-                    
-                    document.getElementById('welcomeUserName').textContent = `Welcome, ${currentUser.profile?.full_name || currentUser.email?.split('@')[0]}!`;
-                    document.getElementById('welcomeUserEmail').textContent = currentUser.email;
-                    
-                    await loadOrders();
-                    await loadWishlist();
-                    await loadProfile();
-                } else {
-                    // Check localStorage for session
-                    const storedUser = localStorage.getItem('customerUser');
-                    if (storedUser) {
-                        try {
-                            const parsedUser = JSON.parse(storedUser);
-                            const { data: sessionData } = await supabase.auth.getSession();
-                            if (!sessionData.session) {
-                                localStorage.removeItem('customerLoggedIn');
-                                localStorage.removeItem('customerUser');
-                            }
-                        } catch (e) {
-                            localStorage.removeItem('customerLoggedIn');
-                            localStorage.removeItem('customerUser');
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('Auth check error:', error);
-                document.getElementById('loginSection').style.display = 'block';
-                document.getElementById('dashboardContent').style.display = 'none';
-            }
-        }
-        
-        async function updateStats(orders) {
-            const totalOrders = orders.length;
-            const totalSpent = orders.reduce((sum, o) => sum + (o.total || 0), 0);
-            const pendingOrders = orders.filter(o => o.status === 'Pending' || o.status === 'pending').length;
-            
-            document.getElementById('totalOrders').textContent = totalOrders;
-            document.getElementById('totalSpent').textContent = `₹${totalSpent.toLocaleString()}`;
-            document.getElementById('pendingOrders').textContent = pendingOrders;
-        }
-        
-        function calculateOrderBreakdown(subtotal) {
-            const tax = Math.round(subtotal * TAX_RATE);
-            const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING;
-            const total = subtotal + tax + shipping;
-            return { tax, shipping, total };
+        async function handleLogout() {
+            await supabase.auth.signOut();
+            localStorage.removeItem('customerUser');
+            currentUser = null;
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('dashboardContent').style.display = 'none';
+            showToast('Logged out successfully');
         }
         
         async function loadOrders() {
-            if (!currentUser) { 
-                document.getElementById('ordersList').innerHTML = '<div class="empty">Please login to view orders</div>'; 
-                return; 
+            if (!currentUser) return;
+            const { data, error } = await supabase.from('orders').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+            if (error) { document.getElementById('ordersList').innerHTML = '<div class="empty">Error loading orders</div>'; return; }
+            
+            document.getElementById('totalOrders').textContent = data?.length || 0;
+            document.getElementById('totalSpent').textContent = `₹${(data?.reduce((s, o) => s + (o.total || 0), 0) || 0).toLocaleString()}`;
+            document.getElementById('pendingOrders').textContent = data?.filter(o => o.status === 'pending').length || 0;
+            
+            if (!data?.length) {
+                document.getElementById('ordersList').innerHTML = '<div class="empty">✨ No orders yet. Start shopping!</div>';
+                return;
             }
             
-            document.getElementById('ordersList').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading orders...</p></div>';
-            
-            try {
-                const { data, error } = await supabase
-                    .from('orders')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                await updateStats(data || []);
-                
-                if (!data?.length) { 
-                    document.getElementById('ordersList').innerHTML = '<div class="empty">✨ No orders yet. Start shopping!</div>'; 
-                    return; 
-                }
-                
-                let html = '';
-                for (const o of data) {
-                    const subtotal = o.subtotal || o.items?.reduce((s, i) => s + (i.price * i.quantity), 0) || 0;
-                    const { tax, shipping, total } = calculateOrderBreakdown(subtotal);
-                    
-                    html += `
-                        <div class="card order-item">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div><strong>${o.order_id}</strong></div>
-                                <div class="status-badge status-${o.status?.toLowerCase() || 'pending'}">${o.status || 'Pending'}</div>
-                            </div>
-                            <div style="font-size: 12px; color: var(--gray-600); margin: 5px 0;">
-                                ${new Date(o.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                            </div>
-                            <div style="font-size: 12px; margin-top: 8px;">
-                                ${o.items?.slice(0, 2).map(i => `${i.name} x${i.quantity}`).join(', ')}${o.items?.length > 2 ? ` +${o.items.length - 2} more` : ''}
-                            </div>
-                            <div class="price-breakdown">
-                                <div class="price-row">
-                                    <span>Subtotal</span>
-                                    <span>₹${subtotal.toLocaleString()}</span>
-                                </div>
-                                <div class="price-row">
-                                    <span>GST (18%)</span>
-                                    <span>₹${tax.toLocaleString()}</span>
-                                </div>
-                                <div class="price-row">
-                                    <span>Shipping</span>
-                                    <span>${shipping === 0 ? 'Free' : '₹' + shipping.toLocaleString()}</span>
-                                </div>
-                                <div class="price-row total">
-                                    <span>Total</span>
-                                    <span>₹${total.toLocaleString()}</span>
-                                </div>
-                            </div>
-                            <a href="track.html?order=${o.order_id}" style="color: var(--primary); font-size: 12px; margin-top: 10px; display: inline-block;">
-                                Track Order <i class="fas fa-arrow-right"></i>
-                            </a>
+            let html = '';
+            for (const o of data) {
+                html += `
+                    <div class="card order-item">
+                        <div style="display: flex; justify-content: space-between;">
+                            <strong>${o.order_id}</strong>
+                            <span class="status-badge status-${o.status || 'pending'}">${o.status || 'Pending'}</span>
                         </div>
-                    `;
-                }
-                document.getElementById('ordersList').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading orders:', error);
-                document.getElementById('ordersList').innerHTML = '<div class="empty">Error loading orders</div>';
+                        <div style="font-size: 12px; color: var(--gray-600); margin: 5px 0;">${new Date(o.created_at).toLocaleDateString()}</div>
+                        <div style="font-size: 12px;">${o.items?.slice(0, 2).map(i => `${i.name} x${i.quantity}`).join(', ')}${o.items?.length > 2 ? ` +${o.items.length - 2} more` : ''}</div>
+                        <div class="price-breakdown">
+                            <div class="price-row"><span>Total</span><span>₹${(o.total || 0).toLocaleString()}</span></div>
+                        </div>
+                        <a href="track.html?order=${o.order_id}" style="color: var(--primary); font-size: 12px;">Track Order →</a>
+                    </div>
+                `;
             }
+            document.getElementById('ordersList').innerHTML = html;
         }
         
         async function loadWishlist() {
-            if (!currentUser) { 
-                document.getElementById('wishlistList').innerHTML = '<div class="empty">Please login to view wishlist</div>'; 
-                return; 
+            if (!currentUser) return;
+            const { data, error } = await supabase.from('wishlist').select('*, products(*)').eq('user_id', currentUser.id);
+            if (error) { document.getElementById('wishlistList').innerHTML = '<div class="empty">Error loading wishlist</div>'; return; }
+            
+            if (!data?.length) {
+                document.getElementById('wishlistList').innerHTML = '<div class="empty">❤️ Your wishlist is empty.</div>';
+                return;
             }
             
-            document.getElementById('wishlistList').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading wishlist...</p></div>';
-            
-            try {
-                const { data, error } = await supabase
-                    .from('wishlist')
-                    .select('*, products(*)')
-                    .eq('user_id', currentUser.id);
-                
-                if (error) throw error;
-                
-                if (!data?.length) { 
-                    document.getElementById('wishlistList').innerHTML = '<div class="empty">❤️ Your wishlist is empty. Add items you love!</div>'; 
-                    return; 
-                }
-                
-                let html = '<div class="wishlist-grid">';
-                for (const w of data) {
-                    const p = w.products;
-                    const img = p?.images?.[0] || 'https://via.placeholder.com/200x120?text=Style+Of+Life';
-                    html += `
-                        <div class="wishlist-item">
-                            <img src="${img}" onerror="this.src='https://via.placeholder.com/200x120?text=Style+Of+Life'">
-                            <div class="remove-wishlist" onclick="removeFromWishlist(${w.product_id})">
-                                <i class="fas fa-times"></i>
-                            </div>
-                            <div class="wishlist-info">
-                                <div class="wishlist-name">${escapeHtml(p?.name || 'Product')}</div>
-                                <div class="wishlist-price">₹${(p?.price || 0).toLocaleString()}</div>
-                                <button onclick="addToCartFromWishlist(${p?.id}, '${escapeHtml(p?.name).replace(/'/g, "\\'")}', ${p?.price}, '${p?.sku}', '${img}')" 
-                                        style="width:100%; margin-top:8px; padding:5px; background: var(--primary); border:none; border-radius:20px; font-size:10px; font-weight:600; cursor:pointer;">
-                                    Add to Cart
-                                </button>
-                            </div>
+            let html = '<div class="wishlist-grid">';
+            for (const w of data) {
+                const p = w.products;
+                const img = p?.images?.[0] || 'https://via.placeholder.com/200x120';
+                html += `
+                    <div class="wishlist-item">
+                        <img src="${img}" onerror="this.src='https://via.placeholder.com/200x120'">
+                        <div class="remove-wishlist" onclick="removeFromWishlist(${w.product_id})"><i class="fas fa-times"></i></div>
+                        <div class="wishlist-info">
+                            <div class="wishlist-name">${escapeHtml(p?.name || 'Product')}</div>
+                            <div class="wishlist-price">₹${(p?.price || 0).toLocaleString()}</div>
+                            <button onclick="addToCart(${p?.id}, '${escapeHtml(p?.name)}', ${p?.price}, '${p?.sku}', '${img}')" style="width:100%; margin-top:8px; padding:5px; background: var(--primary); border:none; border-radius:20px; cursor:pointer;">Add to Cart</button>
                         </div>
-                    `;
-                }
-                html += '</div>';
-                document.getElementById('wishlistList').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading wishlist:', error);
-                document.getElementById('wishlistList').innerHTML = '<div class="empty">Error loading wishlist</div>';
+                    </div>
+                `;
             }
+            html += '</div>';
+            document.getElementById('wishlistList').innerHTML = html;
         }
         
         window.removeFromWishlist = async function(productId) {
             if (!currentUser) return;
-            
-            try {
-                const { error } = await supabase
-                    .from('wishlist')
-                    .delete()
-                    .eq('user_id', currentUser.id)
-                    .eq('product_id', productId);
-                
-                if (error) throw error;
-                
-                showToast('Removed from wishlist');
-                await loadWishlist();
-            } catch (error) {
-                console.error('Error removing from wishlist:', error);
-                showToast('Error removing item', true);
-            }
+            await supabase.from('wishlist').delete().eq('user_id', currentUser.id).eq('product_id', productId);
+            showToast('Removed from wishlist');
+            await loadWishlist();
         };
         
-        window.addToCartFromWishlist = async function(id, name, price, sku, img) {
-            try {
-                // Check stock
-                const { data: product, error: productError } = await supabase
-                    .from('products')
-                    .select('stock')
-                    .eq('id', id)
-                    .single();
-                
-                if (productError) throw productError;
-                
-                if (product?.stock <= 0) {
-                    showToast(`${name} is out of stock!`, true);
-                    return;
-                }
-                
-                let { data: cartData, error: fetchError } = await supabase
-                    .from('carts')
-                    .select('items')
-                    .eq('session_id', sessionId)
-                    .maybeSingle();
-                
-                if (fetchError) throw fetchError;
-                
-                let items = cartData?.items || [];
-                const existing = items.find(i => i.id === id);
-                
-                if (existing) {
-                    if (product && existing.quantity + 1 > product.stock) {
-                        showToast(`Only ${product.stock} left in stock!`, true);
-                        return;
-                    }
-                    existing.quantity += 1;
-                } else {
-                    items.push({ id, sku, name, price, quantity: 1, image: img });
-                }
-                
-                const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
-                
-                const { error: saveError } = await supabase
-                    .from('carts')
-                    .upsert({
-                        session_id: sessionId,
-                        items: items,
-                        total: total,
-                        updated_at: new Date().toISOString()
-                    }, { onConflict: 'session_id' });
-                
-                if (saveError) throw saveError;
-                
-                showToast(`${name} added to cart! ✨`);
-                
-                // Remove from wishlist after adding to cart
-                await supabase
-                    .from('wishlist')
-                    .delete()
-                    .eq('user_id', currentUser.id)
-                    .eq('product_id', id);
-                
-                await loadWishlist();
-                
-            } catch (error) {
-                console.error('Add to cart error:', error);
-                showToast('Failed to add to cart', true);
-            }
+        window.addToCart = async function(id, name, price, sku, img) {
+            let { data: cartData } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
+            let items = cartData?.items || [];
+            const existing = items.find(i => i.id === id);
+            if (existing) existing.quantity += 1;
+            else items.push({ id, sku, name, price, quantity: 1, image: img });
+            const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
+            await supabase.from('carts').upsert({ session_id: sessionId, items, total, updated_at: new Date() }, { onConflict: 'session_id' });
+            showToast(`${name} added to cart!`);
+            await loadWishlist();
         };
         
         async function loadProfile() {
-            if (!currentUser) { 
-                document.getElementById('profileContent').innerHTML = '<div class="card">Please login to view profile</div>'; 
-                return; 
-            }
-            
+            if (!currentUser) return;
             document.getElementById('profileContent').innerHTML = `
                 <div class="card">
                     <form id="profileForm">
                         <input type="text" name="full_name" value="${currentUser.profile?.full_name || ''}" placeholder="Full Name">
                         <input type="tel" name="phone" value="${currentUser.profile?.phone || ''}" placeholder="Phone Number">
-                        <input type="email" value="${currentUser.email}" disabled placeholder="Email Address">
+                        <input type="email" value="${currentUser.email}" disabled>
                         <button type="submit" class="save-btn">Save Changes</button>
                     </form>
-                    <button class="logout-btn" onclick="handleCustomerLogout()">Logout</button>
+                    <button class="logout-btn" onclick="handleLogout()">Logout</button>
                 </div>
             `;
-            
             document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
-                const updates = {
-                    full_name: formData.get('full_name'),
-                    phone: formData.get('phone'),
-                    updated_at: new Date().toISOString()
-                };
-                
-                try {
-                    const { error } = await supabase
-                        .from('profiles')
-                        .update(updates)
-                        .eq('id', currentUser.id);
-                    
-                    if (error) throw error;
-                    
-                    showToast('Profile updated successfully!');
-                    currentUser.profile = { ...currentUser.profile, ...updates };
-                    localStorage.setItem('customerUser', JSON.stringify(currentUser));
-                    document.getElementById('welcomeUserName').textContent = `Welcome, ${currentUser.profile?.full_name || currentUser.email?.split('@')[0]}!`;
-                    
-                } catch (error) {
-                    console.error('Profile update error:', error);
-                    showToast('Error updating profile', true);
-                }
+                const { error } = await supabase.from('profiles').update({ full_name: formData.get('full_name'), phone: formData.get('phone') }).eq('id', currentUser.id);
+                if (error) showToast('Error updating profile', true);
+                else { showToast('Profile updated!'); currentUser.profile = { ...currentUser.profile, full_name: formData.get('full_name'), phone: formData.get('phone') }; }
             });
         }
         
-        // Tab switching
-        function initTabs() {
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabName = tab.getAttribute('data-tab');
-                    
-                    // Update active tab
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    
-                    // Update content
-                    document.querySelectorAll('.tab-content').forEach(content => {
-                        content.classList.remove('active');
-                    });
-                    document.getElementById(tabName).classList.add('active');
-                    
-                    // Refresh data
-                    if (tabName === 'orders') loadOrders();
-                    if (tabName === 'wishlist') loadWishlist();
-                    if (tabName === 'profile') loadProfile();
-                });
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+        
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        window.handleLogout = handleLogout;
+        
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById(tab.dataset.tab).classList.add('active');
+                if (tab.dataset.tab === 'orders') loadOrders();
+                if (tab.dataset.tab === 'wishlist') loadWishlist();
+                if (tab.dataset.tab === 'profile') loadProfile();
             });
+        });
+        
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+            currentUser = { ...user, profile: profile || {} };
+            localStorage.setItem('customerUser', JSON.stringify(currentUser));
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboardContent').style.display = 'block';
+            document.getElementById('welcomeUserName').textContent = `Welcome, ${currentUser.profile?.full_name || currentUser.email?.split('@')[0]}!`;
+            document.getElementById('welcomeUserEmail').textContent = currentUser.email;
+            await loadOrders();
+            await loadWishlist();
+            await loadProfile();
         }
-        
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
-        }
-        
-        // Make functions global
-        window.handleCustomerLogin = handleCustomerLogin;
-        window.handleCustomerLogout = handleCustomerLogout;
-        window.removeFromWishlist = removeFromWishlist;
-        window.addToCartFromWishlist = addToCartFromWishlist;
-        
-        // Initialize
-        document.getElementById('loginForm').addEventListener('submit', handleCustomerLogin);
-        initTabs();
-        await checkAuth();
     </script>
 </body>
 </html>
