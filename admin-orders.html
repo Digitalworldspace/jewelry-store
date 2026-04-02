@@ -109,6 +109,10 @@
             color: white;
             margin-left: auto;
         }
+        .bulk-print-btn {
+            background: var(--purple);
+            color: white;
+        }
         
         /* Orders Table */
         .orders-table-container {
@@ -134,6 +138,13 @@
         }
         tr:hover { background: var(--gray-100); }
         
+        /* Checkbox for bulk select */
+        .select-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
         /* Status Badges */
         .status-badge {
             display: inline-block;
@@ -148,7 +159,7 @@
         .status-delivered { background: #c3e6cb; color: #155724; }
         .status-cancelled { background: #f8d7da; color: #721c24; }
         
-        /* Payment Badges */
+        /* Payment Badges - Only COD or Paid */
         .payment-badge {
             display: inline-block;
             padding: 5px 12px;
@@ -157,10 +168,7 @@
             font-weight: 600;
         }
         .payment-success { background: #d4edda; color: #155724; }
-        .payment-pending { background: #fff3cd; color: #856404; }
         .payment-cod { background: #d1ecf1; color: #0c5460; }
-        .payment-failed { background: #f8d7da; color: #721c24; }
-        .payment-refunded { background: #e2d5f5; color: #4a1d96; }
         
         /* Select Dropdown */
         .status-select, .payment-select {
@@ -229,6 +237,7 @@
             padding: 20px;
             margin: 20px 0;
             position: relative;
+            page-break-after: always;
         }
         .shipping-label-header {
             text-align: center;
@@ -266,17 +275,6 @@
             font-family: monospace;
             font-size: 20px;
             letter-spacing: 2px;
-        }
-        .print-btn {
-            background: var(--primary);
-            color: var(--dark);
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            width: 100%;
-            margin-top: 10px;
         }
         
         /* Customer Info Card */
@@ -474,6 +472,37 @@
             resize: vertical;
         }
         
+        /* Bulk Print Progress */
+        .bulk-progress {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            z-index: 9999;
+            min-width: 250px;
+            border-left: 4px solid var(--primary);
+        }
+        .bulk-progress h4 {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .progress-bar {
+            height: 6px;
+            background: var(--gray-200);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
         .loading { text-align: center; padding: 60px; }
         .spinner {
             width: 40px;
@@ -493,7 +522,7 @@
         @media (max-width: 768px) {
             .admin-header { flex-direction: column; gap: 15px; padding: 15px; }
             .filter-bar { flex-direction: column; align-items: stretch; }
-            .refresh-btn { margin-left: 0; }
+            .refresh-btn, .bulk-print-btn { margin-left: 0; }
             th, td { font-size: 12px; padding: 8px; }
             .product-item-card { flex-direction: column; text-align: center; }
             .product-item-image { width: 80px; height: 80px; margin: 0 auto; }
@@ -501,21 +530,12 @@
         }
         
         @media print {
-            .admin-header, .filter-bar, .stats-grid, .modal-header, .modal-buttons, .action-buttons, footer, .bottom-nav, .print-hide {
+            .admin-header, .filter-bar, .stats-grid, .modal-header, .modal-buttons, .action-buttons, footer, .bottom-nav, .print-hide, .bulk-progress {
                 display: none !important;
-            }
-            .modal {
-                position: relative;
-                display: block !important;
-                background: white;
-            }
-            .modal-content {
-                max-width: 100%;
-                padding: 0;
-                margin: 0;
             }
             .shipping-label {
                 border: 1px solid #ccc;
+                page-break-after: always;
                 page-break-inside: avoid;
             }
         }
@@ -554,19 +574,14 @@
                 <div class="stat-label">Paid Orders</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">⏳</div>
-                <div class="stat-number" id="pendingPayment">--</div>
-                <div class="stat-label">Pending Payment</div>
-            </div>
-            <div class="stat-card">
                 <div class="stat-icon">💵</div>
                 <div class="stat-number" id="codOrders">--</div>
                 <div class="stat-label">COD Orders</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">❌</div>
-                <div class="stat-number" id="failedPayments">--</div>
-                <div class="stat-label">Failed Payments</div>
+                <div class="stat-icon">⏳</div>
+                <div class="stat-number" id="pendingOrders">--</div>
+                <div class="stat-label">Pending Orders</div>
             </div>
         </div>
         
@@ -583,13 +598,12 @@
             <select id="paymentFilter">
                 <option value="all">All Payments</option>
                 <option value="success">Paid</option>
-                <option value="pending">Pending</option>
                 <option value="cod">Cash on Delivery</option>
-                <option value="failed">Failed</option>
             </select>
             <input type="text" id="searchInput" placeholder="Search by Order ID or Customer" style="width: 250px;">
             <button onclick="applyFilters()">🔍 Apply Filters</button>
             <button onclick="loadOrders()" class="refresh-btn">🔄 Refresh</button>
+            <button onclick="openBulkPrintPanel()" class="bulk-print-btn">📦 Bulk Print Labels</button>
         </div>
         
         <!-- Orders Table -->
@@ -641,6 +655,7 @@
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let allOrders = [];
         let allCustomers = [];
+        let selectedOrders = new Set();
         
         // Default sender address
         let defaultFromAddress = `Style Of Life Jewelry
@@ -756,27 +771,24 @@ GST: 27AAKCS1234L1Z5`;
             const totalOrders = orders.length;
             const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
             const paidOrders = orders.filter(o => o.payment_status === 'success').length;
-            const pendingPayment = orders.filter(o => o.payment_status === 'pending').length;
             const codOrders = orders.filter(o => o.payment_status === 'cod').length;
-            const failedPayments = orders.filter(o => o.payment_status === 'failed').length;
+            const pendingOrders = orders.filter(o => o.status === 'pending').length;
             
             document.getElementById('totalOrders').textContent = totalOrders;
             document.getElementById('totalRevenue').textContent = `₹${totalRevenue.toLocaleString()}`;
             document.getElementById('paidOrders').textContent = paidOrders;
-            document.getElementById('pendingPayment').textContent = pendingPayment;
             document.getElementById('codOrders').textContent = codOrders;
-            document.getElementById('failedPayments').textContent = failedPayments;
+            document.getElementById('pendingOrders').textContent = pendingOrders;
         }
         
         function getPaymentStatusIcon(status) {
-            const icons = {
-                'success': '<span class="payment-badge payment-success">✅ Paid</span>',
-                'pending': '<span class="payment-badge payment-pending">⏳ Pending</span>',
-                'cod': '<span class="payment-badge payment-cod">💵 COD</span>',
-                'failed': '<span class="payment-badge payment-failed">❌ Failed</span>',
-                'refunded': '<span class="payment-badge payment-refunded">🔄 Refunded</span>'
-            };
-            return icons[status] || '<span class="payment-badge payment-pending">⏳ Pending</span>';
+            // Only show COD or Paid - no pending
+            if (status === 'success') {
+                return '<span class="payment-badge payment-success">✅ Paid</span>';
+            } else if (status === 'cod') {
+                return '<span class="payment-badge payment-cod">💵 COD</span>';
+            }
+            return '<span class="payment-badge payment-cod">💵 COD</span>';
         }
         
         function getOrderStatusIcon(status) {
@@ -793,6 +805,268 @@ GST: 27AAKCS1234L1Z5`;
         function applyFilters() {
             renderOrders();
         }
+        
+        // Toggle select all orders
+        window.toggleSelectAll = function() {
+            const checkboxes = document.querySelectorAll('.order-select');
+            const selectAllCheckbox = document.getElementById('selectAll');
+            
+            if (selectAllCheckbox.checked) {
+                checkboxes.forEach(cb => {
+                    cb.checked = true;
+                    selectedOrders.add(cb.value);
+                });
+            } else {
+                checkboxes.forEach(cb => {
+                    cb.checked = false;
+                    selectedOrders.delete(cb.value);
+                });
+            }
+        };
+        
+        // Toggle single order selection
+        window.toggleOrderSelect = function(orderId) {
+            const checkbox = document.querySelector(`.order-select[value="${orderId}"]`);
+            if (checkbox.checked) {
+                selectedOrders.add(orderId);
+            } else {
+                selectedOrders.delete(orderId);
+                const selectAll = document.getElementById('selectAll');
+                if (selectAll) selectAll.checked = false;
+            }
+        };
+        
+        // Open bulk print panel
+        window.openBulkPrintPanel = function() {
+            if (selectedOrders.size === 0) {
+                showToast('❌ Please select at least one order to print', true);
+                return;
+            }
+            
+            const selectedOrdersList = allOrders.filter(o => selectedOrders.has(o.order_id));
+            bulkPrintLabels(selectedOrdersList);
+        };
+        
+        // Bulk print labels
+        async function bulkPrintLabels(orders) {
+            const printWindow = window.open('', '_blank');
+            const totalOrders = orders.length;
+            let currentOrder = 0;
+            
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Bulk Shipping Labels - Style Of Life</title>
+                    <style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body {
+                            font-family: 'Inter', sans-serif;
+                            background: white;
+                            padding: 20px;
+                        }
+                        .shipping-label {
+                            max-width: 800px;
+                            margin: 0 auto 30px;
+                            background: white;
+                            border: 2px dashed #d4af37;
+                            border-radius: 16px;
+                            padding: 20px;
+                            page-break-after: always;
+                        }
+                        .label-header {
+                            background: linear-gradient(135deg, #d4af37, #b8962e);
+                            padding: 20px;
+                            text-align: center;
+                            color: #1a1a1a;
+                            border-radius: 12px 12px 0 0;
+                            margin: -20px -20px 20px -20px;
+                        }
+                        .label-header h1 {
+                            font-size: 24px;
+                            margin-bottom: 5px;
+                        }
+                        .label-header p {
+                            font-size: 12px;
+                            opacity: 0.9;
+                        }
+                        .label-content {
+                            padding: 0;
+                        }
+                        .label-section {
+                            margin-bottom: 25px;
+                            border-bottom: 1px dashed #e9ecef;
+                            padding-bottom: 20px;
+                        }
+                        .label-section:last-child {
+                            border-bottom: none;
+                            margin-bottom: 0;
+                            padding-bottom: 0;
+                        }
+                        .section-title {
+                            font-size: 12px;
+                            color: #6c757d;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                            margin-bottom: 10px;
+                        }
+                        .grid-2 {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 20px;
+                        }
+                        .barcode {
+                            text-align: center;
+                            padding: 20px;
+                            background: #f8f9fa;
+                            border-radius: 12px;
+                            margin-top: 15px;
+                        }
+                        .tracking-number {
+                            font-family: monospace;
+                            font-size: 18px;
+                            font-weight: bold;
+                            color: #d4af37;
+                        }
+                        .footer {
+                            background: #f8f9fa;
+                            padding: 15px;
+                            text-align: center;
+                            font-size: 10px;
+                            color: #6c757d;
+                            margin: 20px -20px -20px -20px;
+                            border-radius: 0 0 12px 12px;
+                        }
+                        @media print {
+                            body { padding: 0; margin: 0; }
+                            .shipping-label { margin: 0; page-break-after: always; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div id="labelsContainer"></div>
+                    <div style="text-align: center; padding: 20px;" class="print-hide">
+                        <button onclick="window.print()" style="padding: 12px 24px; background: #d4af37; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin-right: 10px;">
+                            🖨️ Print All Labels
+                        </button>
+                        <button onclick="window.close()" style="padding: 12px 24px; background: #6c757d; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; color: white;">
+                            ❌ Close
+                        </button>
+                    </div>
+                </body>
+                </html>
+            `);
+            
+            // Generate each label
+            for (const order of orders) {
+                currentOrder++;
+                const trackingNumber = 'SL' + order.order_id.slice(-8) + Date.now().toString().slice(-6);
+                const today = new Date().toLocaleDateString('en-IN');
+                
+                // Get payment method display
+                let paymentMethodDisplay = order.payment_status === 'success' ? 'Online Payment (Paid)' : 'Cash on Delivery';
+                
+                // Format from address
+                const fromAddressHtml = defaultFromAddress.split('\n').map(line => line.trim()).filter(line => line).join('<br>');
+                
+                const labelHtml = `
+                    <div class="shipping-label">
+                        <div class="label-header">
+                            <h1>STYLE OF LIFE</h1>
+                            <p>Luxury Jewelry • Since 2024</p>
+                        </div>
+                        <div class="label-content">
+                            <div class="label-section">
+                                <div class="section-title">SHIPPING LABEL</div>
+                                <div class="grid-2">
+                                    <div>
+                                        <strong>FROM:</strong><br>
+                                        ${fromAddressHtml}
+                                    </div>
+                                    <div>
+                                        <strong>SHIP TO:</strong><br>
+                                        ${escapeHtml(order.customer_name)}<br>
+                                        ${escapeHtml(order.address || 'N/A')}<br>
+                                        Phone: ${order.phone || order.customer_phone || 'N/A'}<br>
+                                        Email: ${order.email || order.customer_email || 'N/A'}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="label-section">
+                                <div class="section-title">ORDER DETAILS</div>
+                                <div class="grid-2">
+                                    <div>
+                                        <strong>Order ID:</strong> ${order.order_id}<br>
+                                        <strong>Order Date:</strong> ${new Date(order.created_at).toLocaleString()}<br>
+                                        <strong>Payment Method:</strong> ${paymentMethodDisplay}
+                                    </div>
+                                    <div>
+                                        <strong>Shipping Method:</strong> Standard Delivery<br>
+                                        <strong>Delivery Estimate:</strong> 10 business days<br>
+                                        <strong>Expected Delivery:</strong> ${new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN')}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="label-section">
+                                <div class="section-title">ITEMS IN ORDER</div>
+                                <table style="width:100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="border-bottom: 1px solid #e9ecef;">
+                                            <th style="text-align: left; padding: 5px 0;">Product</th>
+                                            <th style="text-align: center; padding: 5px 0;">Qty</th>
+                                            <th style="text-align: right; padding: 5px 0;">Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${order.items?.map(item => `
+                                            <tr style="border-bottom: 1px solid #f0f0f0;">
+                                                <td style="padding: 8px 0;">${escapeHtml(item.name)}<br><small style="color:#6c757d;">SKU: ${item.sku}</small></td>
+                                                <td style="text-align: center; padding: 8px 0;">${item.quantity}</td>
+                                                <td style="text-align: right; padding: 8px 0;">₹${(item.price * item.quantity).toLocaleString()}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr style="border-top: 2px solid #e9ecef;">
+                                            <td colspan="2" style="padding: 10px 0; text-align: right;"><strong>Total:</strong></td>
+                                            <td style="text-align: right; padding: 10px 0;"><strong>₹${(order.total || 0).toLocaleString()}</strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            
+                            <div class="barcode">
+                                <div class="section-title">TRACKING NUMBER</div>
+                                <span class="tracking-number">${trackingNumber}</span>
+                                <div style="margin-top: 10px;">
+                                    <img src="https://barcode.tec-it.com/barcode.ashx?data=${trackingNumber}&code=Code128&dpi=96" 
+                                         style="max-width: 200px; height: auto;" alt="Barcode">
+                                </div>
+                                <p style="margin-top: 10px; font-size: 10px;">Track your order at: styleoflife.com/track</p>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <p>Thank you for shopping with Style Of Life! We hope you love your jewelry.</p>
+                            <p>Generated on: ${today}</p>
+                        </div>
+                    </div>
+                `;
+                
+                printWindow.document.getElementById('labelsContainer').innerHTML += labelHtml;
+            }
+            
+            printWindow.document.close();
+            showToast(`✅ Generating ${totalOrders} shipping labels...`);
+        }
+        
+        // Generate single shipping label
+        window.printShippingLabel = function(orderId) {
+            const order = allOrders.find(o => o.order_id === orderId);
+            if (!order) return;
+            bulkPrintLabels([order]);
+        };
         
         function renderOrders() {
             const container = document.getElementById('ordersList');
@@ -826,6 +1100,9 @@ GST: 27AAKCS1234L1Z5`;
                 <table>
                     <thead>
                         <tr>
+                            <th style="width: 40px;">
+                                <input type="checkbox" id="selectAll" class="select-checkbox" onchange="toggleSelectAll()">
+                            </th>
                             <th>Order ID</th>
                             <th>Date</th>
                             <th>Customer</th>
@@ -844,12 +1121,16 @@ GST: 27AAKCS1234L1Z5`;
                 const itemsCount = o.items?.length || 0;
                 const date = new Date(o.created_at).toLocaleDateString('en-IN');
                 const customerTypeBadge = `<span class="customer-badge ${o.customer_type_class}">${o.customer_type_icon} ${o.customer_type}</span>`;
+                const isSelected = selectedOrders.has(o.order_id);
                 
                 const productNames = o.items?.slice(0, 2).map(item => item.name).join(', ') || 'N/A';
                 const moreItems = itemsCount > 2 ? ` +${itemsCount - 2} more` : '';
                 
                 html += `
                     <tr>
+                        <td>
+                            <input type="checkbox" class="order-select select-checkbox" value="${o.order_id}" ${isSelected ? 'checked' : ''} onchange="toggleOrderSelect('${o.order_id}')">
+                        </td>
                         <td><strong>${o.order_id}</strong></td>
                         <td>${date}</td>
                         <td>
@@ -908,7 +1189,7 @@ GST: 27AAKCS1234L1Z5`;
             }
         };
         
-        // Update payment status
+        // Update payment status - only COD or Paid
         window.updatePaymentStatus = async function(orderId, paymentStatus) {
             try {
                 const { error } = await supabase
@@ -918,244 +1199,12 @@ GST: 27AAKCS1234L1Z5`;
                 
                 if (error) throw error;
                 
-                showToast(`✅ Payment status for ${orderId} updated to ${paymentStatus}`);
+                showToast(`✅ Payment status for ${orderId} updated to ${paymentStatus === 'success' ? 'Paid' : 'COD'}`);
                 loadOrders();
                 
             } catch (error) {
                 showToast('Error: ' + error.message, true);
             }
-        };
-        
-        // Print Shipping Label
-        window.printShippingLabel = function(orderId) {
-            const order = allOrders.find(o => o.order_id === orderId);
-            if (!order) return;
-            
-            const labelWindow = window.open('', '_blank');
-            const today = new Date().toLocaleDateString('en-IN');
-            const trackingNumber = 'SL' + order.order_id.slice(-8) + Date.now().toString().slice(-6);
-            
-            // Get payment method display text
-            let paymentMethodDisplay = 'Pending';
-            if (order.payment_status === 'success') {
-                paymentMethodDisplay = 'Online Payment (Paid)';
-            } else if (order.payment_status === 'cod') {
-                paymentMethodDisplay = 'Cash on Delivery';
-            } else if (order.payment_status === 'failed') {
-                paymentMethodDisplay = 'Payment Failed';
-            }
-            
-            // Format from address with line breaks
-            const fromAddressHtml = defaultFromAddress.split('\n').map(line => line.trim()).filter(line => line).join('<br>');
-            
-            labelWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Shipping Label - ${order.order_id}</title>
-                    <style>
-                        * { margin: 0; padding: 0; box-sizing: border-box; }
-                        body {
-                            font-family: 'Inter', sans-serif;
-                            background: #f0f0f0;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            min-height: 100vh;
-                            padding: 20px;
-                        }
-                        .shipping-label {
-                            max-width: 800px;
-                            width: 100%;
-                            background: white;
-                            border-radius: 16px;
-                            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-                            overflow: hidden;
-                        }
-                        .label-header {
-                            background: linear-gradient(135deg, #d4af37, #b8962e);
-                            padding: 20px;
-                            text-align: center;
-                            color: #1a1a1a;
-                        }
-                        .label-header h1 {
-                            font-size: 24px;
-                            margin-bottom: 5px;
-                        }
-                        .label-header p {
-                            font-size: 12px;
-                            opacity: 0.9;
-                        }
-                        .label-content {
-                            padding: 25px;
-                        }
-                        .label-section {
-                            margin-bottom: 25px;
-                            border-bottom: 1px dashed #e9ecef;
-                            padding-bottom: 20px;
-                        }
-                        .label-section:last-child {
-                            border-bottom: none;
-                            margin-bottom: 0;
-                            padding-bottom: 0;
-                        }
-                        .section-title {
-                            font-size: 12px;
-                            color: #6c757d;
-                            text-transform: uppercase;
-                            letter-spacing: 1px;
-                            margin-bottom: 10px;
-                        }
-                        .section-content {
-                            font-size: 14px;
-                            line-height: 1.6;
-                        }
-                        .grid-2 {
-                            display: grid;
-                            grid-template-columns: 1fr 1fr;
-                            gap: 20px;
-                        }
-                        .barcode {
-                            text-align: center;
-                            padding: 20px;
-                            background: #f8f9fa;
-                            border-radius: 12px;
-                            margin-top: 15px;
-                        }
-                        .barcode span {
-                            font-family: monospace;
-                            font-size: 24px;
-                            letter-spacing: 3px;
-                        }
-                        .tracking-number {
-                            font-family: monospace;
-                            font-size: 18px;
-                            font-weight: bold;
-                            color: #d4af37;
-                        }
-                        .footer {
-                            background: #f8f9fa;
-                            padding: 15px;
-                            text-align: center;
-                            font-size: 10px;
-                            color: #6c757d;
-                        }
-                        .edit-address-btn {
-                            background: none;
-                            border: none;
-                            color: #d4af37;
-                            cursor: pointer;
-                            font-size: 12px;
-                            margin-top: 5px;
-                        }
-                        @media print {
-                            body { background: white; padding: 0; }
-                            .no-print { display: none; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="shipping-label">
-                        <div class="label-header">
-                            <h1>STYLE OF LIFE</h1>
-                            <p>Luxury Jewelry • Since 2024</p>
-                        </div>
-                        <div class="label-content">
-                            <div class="label-section">
-                                <div class="section-title">SHIPPING LABEL</div>
-                                <div class="grid-2">
-                                    <div>
-                                        <strong>FROM:</strong><br>
-                                        ${fromAddressHtml}
-                                        <div class="no-print" style="margin-top: 8px;">
-                                            <button class="edit-address-btn" onclick="window.opener.openEditFromModal(); window.close();">
-                                                ✏️ Edit Sender Address
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <strong>SHIP TO:</strong><br>
-                                        ${escapeHtml(order.customer_name)}<br>
-                                        ${escapeHtml(order.address || 'N/A')}<br>
-                                        Phone: ${order.phone || order.customer_phone || 'N/A'}<br>
-                                        Email: ${order.email || order.customer_email || 'N/A'}
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="label-section">
-                                <div class="section-title">ORDER DETAILS</div>
-                                <div class="grid-2">
-                                    <div>
-                                        <strong>Order ID:</strong> ${order.order_id}<br>
-                                        <strong>Order Date:</strong> ${new Date(order.created_at).toLocaleString()}<br>
-                                        <strong>Payment Method:</strong> ${paymentMethodDisplay}
-                                    </div>
-                                    <div>
-                                        <strong>Shipping Method:</strong> Standard Delivery<br>
-                                        <strong>Delivery Estimate:</strong> 10 business days<br>
-                                        <strong>Expected Delivery:</strong> ${new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN')}
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="label-section">
-                                <div class="section-title">ITEMS IN ORDER</div>
-                                <div class="section-content">
-                                    <table style="width:100%; border-collapse: collapse;">
-                                        <thead>
-                                            <tr style="border-bottom: 1px solid #e9ecef;">
-                                                <th style="text-align: left; padding: 5px 0;">Product</th>
-                                                <th style="text-align: center; padding: 5px 0;">Qty</th>
-                                                <th style="text-align: right; padding: 5px 0;">Price</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${order.items?.map(item => `
-                                                <tr style="border-bottom: 1px solid #f0f0f0;">
-                                                    <td style="padding: 8px 0;">${escapeHtml(item.name)}<br><small style="color:#6c757d;">SKU: ${item.sku}</small></td>
-                                                    <td style="text-align: center; padding: 8px 0;">${item.quantity}</td>
-                                                    <td style="text-align: right; padding: 8px 0;">₹${(item.price * item.quantity).toLocaleString()}</td>
-                                                </tr>
-                                            `).join('')}
-                                        </tbody>
-                                        <tfoot>
-                                            <tr style="border-top: 2px solid #e9ecef;">
-                                                <td colspan="2" style="padding: 10px 0; text-align: right;"><strong>Total:</strong></td>
-                                                <td style="text-align: right; padding: 10px 0;"><strong>₹${(order.total || 0).toLocaleString()}</strong></td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                            </div>
-                            
-                            <div class="barcode">
-                                <div class="section-title">TRACKING NUMBER</div>
-                                <span class="tracking-number">${trackingNumber}</span>
-                                <div style="margin-top: 10px;">
-                                    <img src="https://barcode.tec-it.com/barcode.ashx?data=${trackingNumber}&code=Code128&dpi=96" 
-                                         style="max-width: 200px; height: auto;" alt="Barcode">
-                                </div>
-                                <p style="margin-top: 10px; font-size: 10px;">Track your order at: styleoflife.com/track</p>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <p>Thank you for shopping with Style Of Life! We hope you love your jewelry.</p>
-                            <p>Generated on: ${today}</p>
-                        </div>
-                    </div>
-                    <div class="no-print" style="text-align: center; margin-top: 20px;">
-                        <button onclick="window.print()" style="padding: 10px 20px; background: #d4af37; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin-right: 10px;">
-                            🖨️ Print Shipping Label
-                        </button>
-                        <button onclick="window.close()" style="padding: 10px 20px; background: #6c757d; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; color: white;">
-                            ❌ Close
-                        </button>
-                    </div>
-                </body>
-                </html>
-            `);
-            labelWindow.document.close();
         };
         
         // View order details
@@ -1292,9 +1341,7 @@ GST: 27AAKCS1234L1Z5`;
                 <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
                     <select id="modalPaymentStatus" class="payment-select" style="flex: 1;">
                         <option value="success" ${order.payment_status === 'success' ? 'selected' : ''}>✅ Paid</option>
-                        <option value="pending" ${order.payment_status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
                         <option value="cod" ${order.payment_status === 'cod' ? 'selected' : ''}>💵 Cash on Delivery</option>
-                        <option value="failed" ${order.payment_status === 'failed' ? 'selected' : ''}>❌ Failed</option>
                     </select>
                     <button class="action-btn" style="background: var(--primary);" onclick="updatePaymentFromModal('${order.order_id}')">
                         <i class="fas fa-save"></i> Update Payment
