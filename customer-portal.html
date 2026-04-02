@@ -20,6 +20,8 @@
             --gray-600: #6c757d;
             --success: #28a745;
             --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
         }
         body { font-family: 'Inter', sans-serif; background: #faf7f2; padding-bottom: 70px; }
         
@@ -83,6 +85,15 @@
             font-weight: 600;
             cursor: pointer;
             margin-top: 10px;
+            transition: all 0.3s;
+        }
+        .login-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
         .register-link {
             margin-top: 20px;
@@ -242,6 +253,10 @@
             border-radius: 40px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+        .save-btn:hover {
+            background: var(--primary-dark);
         }
         
         .logout-btn {
@@ -253,6 +268,11 @@
             width: 100%;
             margin-top: 15px;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover {
+            background: var(--danger);
+            color: white;
         }
         
         .empty { text-align: center; padding: 40px; color: var(--gray-600); }
@@ -291,6 +311,30 @@
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
         
+        /* User Welcome Card */
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--dark);
+            padding: 15px 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .welcome-text h3 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        .welcome-text p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        .welcome-icon {
+            font-size: 40px;
+            opacity: 0.8;
+        }
+        
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -317,6 +361,7 @@
         
         @media (min-width: 768px) {
             .wishlist-grid { grid-template-columns: repeat(4, 1fr); }
+            .container { max-width: 1000px; }
         }
     </style>
 </head>
@@ -331,7 +376,7 @@
         <div id="loginSection" class="login-section">
             <h2><i class="fas fa-user-circle"></i> Welcome Back!</h2>
             <p>Login to view your orders, wishlist and manage your account</p>
-            <form id="loginForm" class="login-form" onsubmit="handleCustomerLogin(event)">
+            <form id="loginForm" class="login-form">
                 <div class="form-group">
                     <label>Email Address</label>
                     <input type="email" id="loginEmail" required placeholder="your@email.com">
@@ -345,10 +390,26 @@
             <div class="register-link">
                 <p>New customer? <a href="register.html">Create an account</a></p>
             </div>
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--gray-200);">
+                <p style="font-size: 11px; color: var(--gray-600);">
+                    <i class="fas fa-shield-alt"></i> Secure login powered by Supabase
+                </p>
+            </div>
         </div>
         
         <!-- Dashboard Content (Hidden until login) -->
         <div id="dashboardContent" style="display: none;">
+            <!-- Welcome Card -->
+            <div class="welcome-card">
+                <div class="welcome-text">
+                    <h3 id="welcomeUserName">Welcome back!</h3>
+                    <p id="welcomeUserEmail"></p>
+                </div>
+                <div class="welcome-icon">
+                    <i class="fas fa-gem"></i>
+                </div>
+            </div>
+            
             <!-- Stats Cards -->
             <div class="stats-grid" id="statsGrid">
                 <div class="stat-card">
@@ -366,9 +427,9 @@
             </div>
             
             <div class="tabs">
-                <div class="tab active" onclick="showTab('orders')">Orders</div>
-                <div class="tab" onclick="showTab('wishlist')">Wishlist</div>
-                <div class="tab" onclick="showTab('profile')">Profile</div>
+                <div class="tab active" data-tab="orders">📦 Orders</div>
+                <div class="tab" data-tab="wishlist">❤️ Wishlist</div>
+                <div class="tab" data-tab="profile">👤 Profile</div>
             </div>
             
             <div id="orders" class="tab-content active">
@@ -378,7 +439,7 @@
                 <div id="wishlistList"><div class="loading"><div class="spinner"></div><p>Loading wishlist...</p></div></div>
             </div>
             <div id="profile" class="tab-content">
-                <div id="profileContent"></div>
+                <div id="profileContent"><div class="loading"><div class="spinner"></div><p>Loading profile...</p></div></div>
             </div>
         </div>
     </div>
@@ -409,6 +470,7 @@
         
         const TAX_RATE = 0.18;
         const SHIPPING = 100;
+        const FREE_SHIPPING_THRESHOLD = 3000;
         
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
@@ -419,7 +481,7 @@
         }
         
         // Handle Customer Login
-        window.handleCustomerLogin = async function(event) {
+        async function handleCustomerLogin(event) {
             event.preventDefault();
             
             const email = document.getElementById('loginEmail').value.trim();
@@ -430,7 +492,8 @@
                 return;
             }
             
-            const loginBtn = event.target.querySelector('.login-btn');
+            const loginBtn = document.querySelector('.login-btn');
+            const originalText = loginBtn.textContent;
             loginBtn.disabled = true;
             loginBtn.textContent = 'Logging in...';
             
@@ -444,13 +507,20 @@
                 
                 if (data.user) {
                     // Get user profile
-                    const { data: profile } = await supabase
+                    const { data: profile, error: profileError } = await supabase
                         .from('profiles')
                         .select('*')
                         .eq('id', data.user.id)
                         .single();
                     
-                    currentUser = { ...data.user, profile: profile || {} };
+                    if (profileError && profileError.code !== 'PGRST116') {
+                        console.error('Profile error:', profileError);
+                    }
+                    
+                    currentUser = { 
+                        ...data.user, 
+                        profile: profile || { full_name: email.split('@')[0], phone: '' }
+                    };
                     
                     // Store user in localStorage
                     localStorage.setItem('customerLoggedIn', 'true');
@@ -462,6 +532,10 @@
                     document.getElementById('loginSection').style.display = 'none';
                     document.getElementById('dashboardContent').style.display = 'block';
                     
+                    // Update welcome message
+                    document.getElementById('welcomeUserName').textContent = `Welcome, ${currentUser.profile?.full_name || currentUser.email?.split('@')[0]}!`;
+                    document.getElementById('welcomeUserEmail').textContent = currentUser.email;
+                    
                     // Load user data
                     await loadOrders();
                     await loadWishlist();
@@ -470,15 +544,23 @@
                 
             } catch (error) {
                 console.error('Login error:', error);
-                showToast(error.message || 'Login failed. Please check your credentials.', true);
+                let errorMessage = 'Login failed. ';
+                if (error.message === 'Invalid login credentials') {
+                    errorMessage = 'Invalid email or password. Please try again.';
+                } else if (error.message === 'Email not confirmed') {
+                    errorMessage = 'Please confirm your email before logging in.';
+                } else {
+                    errorMessage += error.message;
+                }
+                showToast(errorMessage, true);
             } finally {
                 loginBtn.disabled = false;
-                loginBtn.textContent = 'Login →';
+                loginBtn.textContent = originalText;
             }
-        };
+        }
         
         // Handle Customer Logout
-        window.handleCustomerLogout = async function() {
+        async function handleCustomerLogout() {
             try {
                 await supabase.auth.signOut();
                 localStorage.removeItem('customerLoggedIn');
@@ -499,46 +581,64 @@
                 console.error('Logout error:', error);
                 showToast('Error logging out', true);
             }
-        };
+        }
         
         // Check if user is already logged in
         async function checkAuth() {
-            const { data: { user } } = await supabase.auth.getUser();
-            
-            if (user) {
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
+            try {
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
                 
-                currentUser = { ...user, profile: profile || {} };
-                localStorage.setItem('customerLoggedIn', 'true');
-                localStorage.setItem('customerUser', JSON.stringify(currentUser));
+                if (userError) throw userError;
                 
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('dashboardContent').style.display = 'block';
-                
-                await loadOrders();
-                await loadWishlist();
-                await loadProfile();
-            } else {
-                // Check localStorage for session
-                const storedUser = localStorage.getItem('customerUser');
-                if (storedUser) {
-                    try {
-                        const parsedUser = JSON.parse(storedUser);
-                        // Try to refresh session
-                        const { data } = await supabase.auth.getSession();
-                        if (!data.session) {
+                if (user) {
+                    const { data: profile, error: profileError } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', user.id)
+                        .single();
+                    
+                    if (profileError && profileError.code !== 'PGRST116') {
+                        console.error('Profile error:', profileError);
+                    }
+                    
+                    currentUser = { 
+                        ...user, 
+                        profile: profile || { full_name: user.email?.split('@')[0], phone: '' }
+                    };
+                    
+                    localStorage.setItem('customerLoggedIn', 'true');
+                    localStorage.setItem('customerUser', JSON.stringify(currentUser));
+                    
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('dashboardContent').style.display = 'block';
+                    
+                    document.getElementById('welcomeUserName').textContent = `Welcome, ${currentUser.profile?.full_name || currentUser.email?.split('@')[0]}!`;
+                    document.getElementById('welcomeUserEmail').textContent = currentUser.email;
+                    
+                    await loadOrders();
+                    await loadWishlist();
+                    await loadProfile();
+                } else {
+                    // Check localStorage for session
+                    const storedUser = localStorage.getItem('customerUser');
+                    if (storedUser) {
+                        try {
+                            const parsedUser = JSON.parse(storedUser);
+                            const { data: sessionData } = await supabase.auth.getSession();
+                            if (!sessionData.session) {
+                                localStorage.removeItem('customerLoggedIn');
+                                localStorage.removeItem('customerUser');
+                            }
+                        } catch (e) {
                             localStorage.removeItem('customerLoggedIn');
                             localStorage.removeItem('customerUser');
                         }
-                    } catch (e) {
-                        localStorage.removeItem('customerLoggedIn');
-                        localStorage.removeItem('customerUser');
                     }
                 }
+            } catch (error) {
+                console.error('Auth check error:', error);
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('dashboardContent').style.display = 'none';
             }
         }
         
@@ -554,7 +654,7 @@
         
         function calculateOrderBreakdown(subtotal) {
             const tax = Math.round(subtotal * TAX_RATE);
-            const shipping = subtotal >= 3000 ? 0 : SHIPPING;
+            const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING;
             const total = subtotal + tax + shipping;
             return { tax, shipping, total };
         }
@@ -567,66 +667,68 @@
             
             document.getElementById('ordersList').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading orders...</p></div>';
             
-            const { data, error } = await supabase
-                .from('orders')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .order('created_at', { ascending: false });
-            
-            if (error) {
-                document.getElementById('ordersList').innerHTML = '<div class="empty">Error loading orders</div>';
-                return;
-            }
-            
-            await updateStats(data || []);
-            
-            if (!data?.length) { 
-                document.getElementById('ordersList').innerHTML = '<div class="empty">✨ No orders yet. Start shopping!</div>'; 
-                return; 
-            }
-            
-            let html = '';
-            for (const o of data) {
-                const subtotal = o.subtotal || o.items?.reduce((s, i) => s + (i.price * i.quantity), 0) || 0;
-                const { tax, shipping, total } = calculateOrderBreakdown(subtotal);
+            try {
+                const { data, error } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false });
                 
-                html += `
-                    <div class="card order-item">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div><strong>${o.order_id}</strong></div>
-                            <div class="status-badge status-${o.status?.toLowerCase() || 'pending'}">${o.status || 'Pending'}</div>
-                        </div>
-                        <div style="font-size: 12px; color: var(--gray-600); margin: 5px 0;">
-                            ${new Date(o.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </div>
-                        <div style="font-size: 12px; margin-top: 8px;">
-                            ${o.items?.slice(0, 2).map(i => `${i.name} x${i.quantity}`).join(', ')}${o.items?.length > 2 ? ` +${o.items.length - 2} more` : ''}
-                        </div>
-                        <div class="price-breakdown">
-                            <div class="price-row">
-                                <span>Subtotal</span>
-                                <span>₹${subtotal.toLocaleString()}</span>
+                if (error) throw error;
+                
+                await updateStats(data || []);
+                
+                if (!data?.length) { 
+                    document.getElementById('ordersList').innerHTML = '<div class="empty">✨ No orders yet. Start shopping!</div>'; 
+                    return; 
+                }
+                
+                let html = '';
+                for (const o of data) {
+                    const subtotal = o.subtotal || o.items?.reduce((s, i) => s + (i.price * i.quantity), 0) || 0;
+                    const { tax, shipping, total } = calculateOrderBreakdown(subtotal);
+                    
+                    html += `
+                        <div class="card order-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div><strong>${o.order_id}</strong></div>
+                                <div class="status-badge status-${o.status?.toLowerCase() || 'pending'}">${o.status || 'Pending'}</div>
                             </div>
-                            <div class="price-row">
-                                <span>GST (18%)</span>
-                                <span>₹${tax.toLocaleString()}</span>
+                            <div style="font-size: 12px; color: var(--gray-600); margin: 5px 0;">
+                                ${new Date(o.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </div>
-                            <div class="price-row">
-                                <span>Shipping</span>
-                                <span>${shipping === 0 ? 'Free' : '₹' + shipping.toLocaleString()}</span>
+                            <div style="font-size: 12px; margin-top: 8px;">
+                                ${o.items?.slice(0, 2).map(i => `${i.name} x${i.quantity}`).join(', ')}${o.items?.length > 2 ? ` +${o.items.length - 2} more` : ''}
                             </div>
-                            <div class="price-row total">
-                                <span>Total</span>
-                                <span>₹${total.toLocaleString()}</span>
+                            <div class="price-breakdown">
+                                <div class="price-row">
+                                    <span>Subtotal</span>
+                                    <span>₹${subtotal.toLocaleString()}</span>
+                                </div>
+                                <div class="price-row">
+                                    <span>GST (18%)</span>
+                                    <span>₹${tax.toLocaleString()}</span>
+                                </div>
+                                <div class="price-row">
+                                    <span>Shipping</span>
+                                    <span>${shipping === 0 ? 'Free' : '₹' + shipping.toLocaleString()}</span>
+                                </div>
+                                <div class="price-row total">
+                                    <span>Total</span>
+                                    <span>₹${total.toLocaleString()}</span>
+                                </div>
                             </div>
+                            <a href="track.html?order=${o.order_id}" style="color: var(--primary); font-size: 12px; margin-top: 10px; display: inline-block;">
+                                Track Order <i class="fas fa-arrow-right"></i>
+                            </a>
                         </div>
-                        <a href="track.html?order=${o.order_id}" style="color: var(--primary); font-size: 12px; margin-top: 10px; display: inline-block;">
-                            Track Order <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                `;
+                    `;
+                }
+                document.getElementById('ordersList').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                document.getElementById('ordersList').innerHTML = '<div class="empty">Error loading orders</div>';
             }
-            document.getElementById('ordersList').innerHTML = html;
         }
         
         async function loadWishlist() {
@@ -637,64 +739,84 @@
             
             document.getElementById('wishlistList').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading wishlist...</p></div>';
             
-            const { data, error } = await supabase
-                .from('wishlist')
-                .select('*, products(*)')
-                .eq('user_id', currentUser.id);
-            
-            if (error) {
+            try {
+                const { data, error } = await supabase
+                    .from('wishlist')
+                    .select('*, products(*)')
+                    .eq('user_id', currentUser.id);
+                
+                if (error) throw error;
+                
+                if (!data?.length) { 
+                    document.getElementById('wishlistList').innerHTML = '<div class="empty">❤️ Your wishlist is empty. Add items you love!</div>'; 
+                    return; 
+                }
+                
+                let html = '<div class="wishlist-grid">';
+                for (const w of data) {
+                    const p = w.products;
+                    const img = p?.images?.[0] || 'https://via.placeholder.com/200x120?text=Style+Of+Life';
+                    html += `
+                        <div class="wishlist-item">
+                            <img src="${img}" onerror="this.src='https://via.placeholder.com/200x120?text=Style+Of+Life'">
+                            <div class="remove-wishlist" onclick="removeFromWishlist(${w.product_id})">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <div class="wishlist-info">
+                                <div class="wishlist-name">${escapeHtml(p?.name || 'Product')}</div>
+                                <div class="wishlist-price">₹${(p?.price || 0).toLocaleString()}</div>
+                                <button onclick="addToCartFromWishlist(${p?.id}, '${escapeHtml(p?.name).replace(/'/g, "\\'")}', ${p?.price}, '${p?.sku}', '${img}')" 
+                                        style="width:100%; margin-top:8px; padding:5px; background: var(--primary); border:none; border-radius:20px; font-size:10px; font-weight:600; cursor:pointer;">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+                html += '</div>';
+                document.getElementById('wishlistList').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading wishlist:', error);
                 document.getElementById('wishlistList').innerHTML = '<div class="empty">Error loading wishlist</div>';
-                return;
             }
-            
-            if (!data?.length) { 
-                document.getElementById('wishlistList').innerHTML = '<div class="empty">❤️ Your wishlist is empty. Add items you love!</div>'; 
-                return; 
-            }
-            
-            let html = '<div class="wishlist-grid">';
-            for (const w of data) {
-                const p = w.products;
-                const img = p?.images?.[0] || 'https://via.placeholder.com/200x120?text=Style+Of+Life';
-                html += `
-                    <div class="wishlist-item">
-                        <img src="${img}" onerror="this.src='https://via.placeholder.com/200x120?text=Style+Of+Life'">
-                        <div class="remove-wishlist" onclick="removeFromWishlist(${w.product_id})">
-                            <i class="fas fa-times"></i>
-                        </div>
-                        <div class="wishlist-info">
-                            <div class="wishlist-name">${escapeHtml(p?.name || 'Product')}</div>
-                            <div class="wishlist-price">₹${(p?.price || 0).toLocaleString()}</div>
-                            <button onclick="addToCartFromWishlist(${p?.id}, '${escapeHtml(p?.name).replace(/'/g, "\\'")}', ${p?.price}, '${p?.sku}', '${img}')" 
-                                    style="width:100%; margin-top:8px; padding:5px; background: var(--primary); border:none; border-radius:20px; font-size:10px; font-weight:600; cursor:pointer;">
-                                Add to Cart
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }
-            html += '</div>';
-            document.getElementById('wishlistList').innerHTML = html;
         }
         
         window.removeFromWishlist = async function(productId) {
             if (!currentUser) return;
-            const { error } = await supabase
-                .from('wishlist')
-                .delete()
-                .eq('user_id', currentUser.id)
-                .eq('product_id', productId);
             
-            if (error) {
-                showToast('Error removing item', true);
-            } else {
+            try {
+                const { error } = await supabase
+                    .from('wishlist')
+                    .delete()
+                    .eq('user_id', currentUser.id)
+                    .eq('product_id', productId);
+                
+                if (error) throw error;
+                
                 showToast('Removed from wishlist');
-                loadWishlist();
+                await loadWishlist();
+            } catch (error) {
+                console.error('Error removing from wishlist:', error);
+                showToast('Error removing item', true);
             }
         };
         
         window.addToCartFromWishlist = async function(id, name, price, sku, img) {
             try {
+                // Check stock
+                const { data: product, error: productError } = await supabase
+                    .from('products')
+                    .select('stock')
+                    .eq('id', id)
+                    .single();
+                
+                if (productError) throw productError;
+                
+                if (product?.stock <= 0) {
+                    showToast(`${name} is out of stock!`, true);
+                    return;
+                }
+                
                 let { data: cartData, error: fetchError } = await supabase
                     .from('carts')
                     .select('items')
@@ -707,6 +829,10 @@
                 const existing = items.find(i => i.id === id);
                 
                 if (existing) {
+                    if (product && existing.quantity + 1 > product.stock) {
+                        showToast(`Only ${product.stock} left in stock!`, true);
+                        return;
+                    }
                     existing.quantity += 1;
                 } else {
                     items.push({ id, sku, name, price, quantity: 1, image: img });
@@ -726,10 +852,19 @@
                 if (saveError) throw saveError;
                 
                 showToast(`${name} added to cart! ✨`);
-                await removeFromWishlist(id);
-                loadWishlist();
+                
+                // Remove from wishlist after adding to cart
+                await supabase
+                    .from('wishlist')
+                    .delete()
+                    .eq('user_id', currentUser.id)
+                    .eq('product_id', id);
+                
+                await loadWishlist();
+                
             } catch (error) {
-                showToast('Failed to add', true);
+                console.error('Add to cart error:', error);
+                showToast('Failed to add to cart', true);
             }
         };
         
@@ -756,40 +891,69 @@
                 const formData = new FormData(e.target);
                 const updates = {
                     full_name: formData.get('full_name'),
-                    phone: formData.get('phone')
+                    phone: formData.get('phone'),
+                    updated_at: new Date().toISOString()
                 };
                 
-                const { error } = await supabase
-                    .from('profiles')
-                    .update(updates)
-                    .eq('id', currentUser.id);
-                
-                if (error) {
-                    showToast('Error updating profile', true);
-                } else {
+                try {
+                    const { error } = await supabase
+                        .from('profiles')
+                        .update(updates)
+                        .eq('id', currentUser.id);
+                    
+                    if (error) throw error;
+                    
                     showToast('Profile updated successfully!');
                     currentUser.profile = { ...currentUser.profile, ...updates };
                     localStorage.setItem('customerUser', JSON.stringify(currentUser));
+                    document.getElementById('welcomeUserName').textContent = `Welcome, ${currentUser.profile?.full_name || currentUser.email?.split('@')[0]}!`;
+                    
+                } catch (error) {
+                    console.error('Profile update error:', error);
+                    showToast('Error updating profile', true);
                 }
             });
         }
         
-        window.showTab = function(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(tab).classList.add('active');
-            if (tab === 'orders') loadOrders();
-            if (tab === 'wishlist') loadWishlist();
-            if (tab === 'profile') loadProfile();
-        };
+        // Tab switching
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Update content
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(tabName).classList.add('active');
+                    
+                    // Refresh data
+                    if (tabName === 'orders') loadOrders();
+                    if (tabName === 'wishlist') loadWishlist();
+                    if (tabName === 'profile') loadProfile();
+                });
+            });
+        }
         
         function escapeHtml(str) {
             if (!str) return '';
             return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
         }
         
+        // Make functions global
+        window.handleCustomerLogin = handleCustomerLogin;
+        window.handleCustomerLogout = handleCustomerLogout;
+        window.removeFromWishlist = removeFromWishlist;
+        window.addToCartFromWishlist = addToCartFromWishlist;
+        
         // Initialize
+        document.getElementById('loginForm').addEventListener('submit', handleCustomerLogin);
+        initTabs();
         await checkAuth();
     </script>
 </body>
