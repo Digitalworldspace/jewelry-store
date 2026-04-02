@@ -162,8 +162,21 @@
         .payment-failed { background: #f8d7da; color: #721c24; }
         .payment-refunded { background: #e2d5f5; color: #4a1d96; }
         
+        /* Shipping Badge */
+        .shipping-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .shipping-pending { background: #fff3cd; color: #856404; }
+        .shipping-processed { background: #d1ecf1; color: #0c5460; }
+        .shipping-dispatched { background: #d4edda; color: #155724; }
+        .shipping-delivered { background: #c3e6cb; color: #155724; }
+        
         /* Select Dropdown */
-        .status-select, .payment-select {
+        .status-select, .payment-select, .shipping-select {
             padding: 6px 10px;
             border-radius: 8px;
             border: 1px solid var(--gray-200);
@@ -182,6 +195,7 @@
         }
         .view-btn { background: var(--info); color: white; }
         .delete-btn { background: var(--danger); color: white; }
+        .shipping-btn { background: var(--purple); color: white; }
         
         /* Modal */
         .modal {
@@ -199,7 +213,7 @@
         .modal-content {
             background: white;
             border-radius: 16px;
-            max-width: 600px;
+            max-width: 700px;
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
@@ -220,6 +234,64 @@
             cursor: pointer;
         }
         
+        /* Shipping Label Styles */
+        .shipping-label {
+            background: white;
+            border: 2px dashed var(--primary);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+        .shipping-label-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+        }
+        .shipping-label-header h3 {
+            color: var(--primary);
+            font-size: 20px;
+        }
+        .shipping-label-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .shipping-label-section h4 {
+            font-size: 12px;
+            color: var(--gray-600);
+            margin-bottom: 5px;
+        }
+        .shipping-label-section p {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .shipping-label-barcode {
+            text-align: center;
+            padding: 15px;
+            background: var(--gray-100);
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .shipping-label-barcode span {
+            font-family: monospace;
+            font-size: 20px;
+            letter-spacing: 2px;
+        }
+        .print-btn {
+            background: var(--primary);
+            color: var(--dark);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
         /* Customer Info Card */
         .customer-info-card {
             background: linear-gradient(135deg, #f8f9fa, #e9ecef);
@@ -233,7 +305,7 @@
             align-items: center;
         }
         .customer-info-label {
-            width: 100px;
+            width: 120px;
             font-weight: 600;
             color: var(--gray-600);
             font-size: 12px;
@@ -404,6 +476,27 @@
             th, td { font-size: 12px; padding: 8px; }
             .product-item-card { flex-direction: column; text-align: center; }
             .product-item-image { width: 80px; height: 80px; margin: 0 auto; }
+            .shipping-label-content { grid-template-columns: 1fr; }
+        }
+        
+        @media print {
+            .admin-header, .filter-bar, .stats-grid, .modal-header, .modal-buttons, .action-buttons, footer, .bottom-nav, .print-hide {
+                display: none !important;
+            }
+            .modal {
+                position: relative;
+                display: block !important;
+                background: white;
+            }
+            .modal-content {
+                max-width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+            .shipping-label {
+                border: 1px solid #ccc;
+                page-break-inside: avoid;
+            }
         }
     </style>
 </head>
@@ -473,6 +566,13 @@
                 <option value="cod">Cash on Delivery</option>
                 <option value="failed">Failed</option>
             </select>
+            <select id="shippingFilter">
+                <option value="all">All Shipping</option>
+                <option value="pending">Pending</option>
+                <option value="processed">Processed</option>
+                <option value="dispatched">Dispatched</option>
+                <option value="delivered">Delivered</option>
+            </select>
             <input type="text" id="searchInput" placeholder="Search by Order ID or Customer" style="width: 250px;">
             <button onclick="applyFilters()">🔍 Apply Filters</button>
             <button onclick="loadOrders()" class="refresh-btn">🔄 Refresh</button>
@@ -533,13 +633,24 @@
             return { type: 'New', class: 'customer-new', icon: '🆕' };
         }
         
+        // Get shipping status icon
+        function getShippingStatusIcon(status) {
+            const icons = {
+                'pending': '<span class="shipping-badge shipping-pending">📦 Pending</span>',
+                'processed': '<span class="shipping-badge shipping-processed">✅ Processed</span>',
+                'dispatched': '<span class="shipping-badge shipping-dispatched">🚚 Dispatched</span>',
+                'delivered': '<span class="shipping-badge shipping-delivered">🎁 Delivered</span>'
+            };
+            return icons[status] || icons.pending;
+        }
+        
         // Load all orders and customer data
         async function loadOrders() {
             const container = document.getElementById('ordersList');
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading orders...</p></div>';
             
             try {
-                // Load orders
+                // Load orders - removed updated_at reference
                 const { data: orders, error: ordersError } = await supabase
                     .from('orders')
                     .select('*')
@@ -565,7 +676,7 @@
                     }
                 });
                 
-                // Enhance orders with customer data
+                // Enhance orders with customer data and default shipping status
                 allOrders = (orders || []).map(order => {
                     const email = order.email || order.customer_email;
                     const orderCount = customerOrderCount[email] || 1;
@@ -576,7 +687,8 @@
                         customer_order_count: orderCount,
                         customer_type: customerType.type,
                         customer_type_class: customerType.class,
-                        customer_type_icon: customerType.icon
+                        customer_type_icon: customerType.icon,
+                        shipping_status: order.shipping_status || 'pending'
                     };
                 });
                 
@@ -636,6 +748,7 @@
             const container = document.getElementById('ordersList');
             const statusFilter = document.getElementById('statusFilter').value;
             const paymentFilter = document.getElementById('paymentFilter').value;
+            const shippingFilter = document.getElementById('shippingFilter').value;
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             
             let filteredOrders = [...allOrders];
@@ -645,6 +758,9 @@
             }
             if (paymentFilter !== 'all') {
                 filteredOrders = filteredOrders.filter(o => o.payment_status === paymentFilter);
+            }
+            if (shippingFilter !== 'all') {
+                filteredOrders = filteredOrders.filter(o => o.shipping_status === shippingFilter);
             }
             if (searchTerm) {
                 filteredOrders = filteredOrders.filter(o => 
@@ -671,11 +787,11 @@
                             <th>Items</th>
                             <th>Amount</th>
                             <th>Payment</th>
+                            <th>Shipping</th>
                             <th>Order Status</th>
                             <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                        </thead>
+                        <tbody>
             `;
             
             for (const o of filteredOrders) {
@@ -708,6 +824,14 @@
                         <td><strong>₹${(o.total || 0).toLocaleString()}</strong></td>
                         <td>${getPaymentStatusIcon(o.payment_status)}</td>
                         <td>
+                            <select class="shipping-select" onchange="updateShippingStatus('${o.order_id}', this.value)">
+                                <option value="pending" ${o.shipping_status === 'pending' ? 'selected' : ''}>📦 Pending</option>
+                                <option value="processed" ${o.shipping_status === 'processed' ? 'selected' : ''}>✅ Processed</option>
+                                <option value="dispatched" ${o.shipping_status === 'dispatched' ? 'selected' : ''}>🚚 Dispatched</option>
+                                <option value="delivered" ${o.shipping_status === 'delivered' ? 'selected' : ''}>🎁 Delivered</option>
+                            </select>
+                        </td>
+                        <td>
                             <select class="status-select" onchange="updateOrderStatus('${o.order_id}', this.value)">
                                 <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
                                 <option value="processing" ${o.status === 'processing' ? 'selected' : ''}>Processing</option>
@@ -718,57 +842,41 @@
                         </td>
                         <td>
                             <button class="action-btn view-btn" onclick="viewOrderDetails('${o.order_id}')">👁️ View</button>
+                            <button class="action-btn shipping-btn" onclick="printShippingLabel('${o.order_id}')">🏷️ Label</button>
                             <button class="action-btn delete-btn" onclick="deleteOrder('${o.order_id}')">🗑️ Delete</button>
                         </td>
                     </tr>
                 `;
             }
             
-            html += '</tbody></table>';
+            html += '</tbody> </table>';
             container.innerHTML = html;
         }
         
-        // Status Timeline Component
-        function renderStatusTimeline(currentStatus) {
-            const statuses = ['pending', 'processing', 'shipped', 'delivered'];
-            const statusLabels = {
-                'pending': 'Order Placed',
-                'processing': 'Processing',
-                'shipped': 'Shipped',
-                'delivered': 'Delivered'
-            };
-            const statusIcons = {
-                'pending': '📝',
-                'processing': '⚙️',
-                'shipped': '🚚',
-                'delivered': '🎁'
-            };
-            
-            const currentIndex = statuses.indexOf(currentStatus);
-            
-            let html = '<div class="status-timeline">';
-            statuses.forEach((status, index) => {
-                let stepClass = '';
-                if (index < currentIndex) stepClass = 'completed';
-                if (index === currentIndex) stepClass = 'active';
+        // Update shipping status
+        window.updateShippingStatus = async function(orderId, shippingStatus) {
+            try {
+                const { error } = await supabase
+                    .from('orders')
+                    .update({ shipping_status: shippingStatus })
+                    .eq('order_id', orderId);
                 
-                html += `
-                    <div class="timeline-step ${stepClass}">
-                        <div class="timeline-icon">${statusIcons[status]}</div>
-                        <div class="timeline-label">${statusLabels[status]}</div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            
-            return html;
-        }
+                if (error) throw error;
+                
+                showToast(`✅ Shipping status for ${orderId} updated to ${shippingStatus}`);
+                loadOrders();
+                
+            } catch (error) {
+                showToast('Error: ' + error.message, true);
+            }
+        };
         
+        // Update order status
         window.updateOrderStatus = async function(orderId, status) {
             try {
                 const { error } = await supabase
                     .from('orders')
-                    .update({ status: status, updated_at: new Date().toISOString() })
+                    .update({ status: status })
                     .eq('order_id', orderId);
                 
                 if (error) throw error;
@@ -781,11 +889,12 @@
             }
         };
         
+        // Update payment status
         window.updatePaymentStatus = async function(orderId, paymentStatus) {
             try {
                 const { error } = await supabase
                     .from('orders')
-                    .update({ payment_status: paymentStatus, updated_at: new Date().toISOString() })
+                    .update({ payment_status: paymentStatus })
                     .eq('order_id', orderId);
                 
                 if (error) throw error;
@@ -798,18 +907,224 @@
             }
         };
         
+        // Print Shipping Label
+        window.printShippingLabel = function(orderId) {
+            const order = allOrders.find(o => o.order_id === orderId);
+            if (!order) return;
+            
+            const labelWindow = window.open('', '_blank');
+            const today = new Date().toLocaleDateString('en-IN');
+            const trackingNumber = 'SL' + order.order_id.slice(-8) + Date.now().toString().slice(-6);
+            
+            labelWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Shipping Label - ${order.order_id}</title>
+                    <style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body {
+                            font-family: 'Inter', sans-serif;
+                            background: #f0f0f0;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            min-height: 100vh;
+                            padding: 20px;
+                        }
+                        .shipping-label {
+                            max-width: 800px;
+                            width: 100%;
+                            background: white;
+                            border-radius: 16px;
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                            overflow: hidden;
+                        }
+                        .label-header {
+                            background: linear-gradient(135deg, #d4af37, #b8962e);
+                            padding: 20px;
+                            text-align: center;
+                            color: #1a1a1a;
+                        }
+                        .label-header h1 {
+                            font-size: 24px;
+                            margin-bottom: 5px;
+                        }
+                        .label-header p {
+                            font-size: 12px;
+                            opacity: 0.9;
+                        }
+                        .label-content {
+                            padding: 25px;
+                        }
+                        .label-section {
+                            margin-bottom: 25px;
+                            border-bottom: 1px dashed #e9ecef;
+                            padding-bottom: 20px;
+                        }
+                        .label-section:last-child {
+                            border-bottom: none;
+                            margin-bottom: 0;
+                            padding-bottom: 0;
+                        }
+                        .section-title {
+                            font-size: 12px;
+                            color: #6c757d;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                            margin-bottom: 10px;
+                        }
+                        .section-content {
+                            font-size: 14px;
+                            line-height: 1.6;
+                        }
+                        .grid-2 {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 20px;
+                        }
+                        .barcode {
+                            text-align: center;
+                            padding: 20px;
+                            background: #f8f9fa;
+                            border-radius: 12px;
+                            margin-top: 15px;
+                        }
+                        .barcode span {
+                            font-family: monospace;
+                            font-size: 24px;
+                            letter-spacing: 3px;
+                        }
+                        .tracking-number {
+                            font-family: monospace;
+                            font-size: 18px;
+                            font-weight: bold;
+                            color: #d4af37;
+                        }
+                        .footer {
+                            background: #f8f9fa;
+                            padding: 15px;
+                            text-align: center;
+                            font-size: 10px;
+                            color: #6c757d;
+                        }
+                        @media print {
+                            body { background: white; padding: 0; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="shipping-label">
+                        <div class="label-header">
+                            <h1>STYLE OF LIFE</h1>
+                            <p>Luxury Jewelry • Since 2024</p>
+                        </div>
+                        <div class="label-content">
+                            <div class="label-section">
+                                <div class="section-title">SHIPPING LABEL</div>
+                                <div class="grid-2">
+                                    <div>
+                                        <strong>FROM:</strong><br>
+                                        Style Of Life Jewelry<br>
+                                        123 Luxury Avenue, Bandra West<br>
+                                        Mumbai - 400050, Maharashtra, India<br>
+                                        Tel: +91-9876543210<br>
+                                        Email: support@styleoflife.com
+                                    </div>
+                                    <div>
+                                        <strong>SHIP TO:</strong><br>
+                                        ${escapeHtml(order.customer_name)}<br>
+                                        ${escapeHtml(order.address || 'N/A')}<br>
+                                        Phone: ${order.phone || order.customer_phone || 'N/A'}<br>
+                                        Email: ${order.email || order.customer_email || 'N/A'}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="label-section">
+                                <div class="section-title">ORDER DETAILS</div>
+                                <div class="grid-2">
+                                    <div>
+                                        <strong>Order ID:</strong> ${order.order_id}<br>
+                                        <strong>Order Date:</strong> ${new Date(order.created_at).toLocaleString()}<br>
+                                        <strong>Payment Method:</strong> ${order.payment_status === 'cod' ? 'Cash on Delivery' : (order.payment_status === 'success' ? 'Online Payment' : 'Pending')}
+                                    </div>
+                                    <div>
+                                        <strong>Shipping Method:</strong> Standard Delivery<br>
+                                        <strong>Shipping Status:</strong> ${order.shipping_status || 'Pending'}<br>
+                                        <strong>Delivery Estimate:</strong> 3-5 business days
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="label-section">
+                                <div class="section-title">ITEMS IN ORDER</div>
+                                <div class="section-content">
+                                    <table style="width:100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr style="border-bottom: 1px solid #e9ecef;">
+                                                <th style="text-align: left; padding: 5px 0;">Product</th>
+                                                <th style="text-align: center; padding: 5px 0;">Qty</th>
+                                                <th style="text-align: right; padding: 5px 0;">Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${order.items?.map(item => `
+                                                <tr style="border-bottom: 1px solid #f0f0f0;">
+                                                    <td style="padding: 8px 0;">${escapeHtml(item.name)}<br><small style="color:#6c757d;">SKU: ${item.sku}</small></td>
+                                                    <td style="text-align: center; padding: 8px 0;">${item.quantity}</td>
+                                                    <td style="text-align: right; padding: 8px 0;">₹${(item.price * item.quantity).toLocaleString()}</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr style="border-top: 2px solid #e9ecef;">
+                                                <td colspan="2" style="padding: 10px 0; text-align: right;"><strong>Total:</strong></td>
+                                                <td style="text-align: right; padding: 10px 0;"><strong>₹${(order.total || 0).toLocaleString()}</strong></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="barcode">
+                                <div class="section-title">TRACKING NUMBER</div>
+                                <span class="tracking-number">${trackingNumber}</span>
+                                <div style="margin-top: 10px;">
+                                    <img src="https://barcode.tec-it.com/barcode.ashx?data=${trackingNumber}&code=Code128&dpi=96" 
+                                         style="max-width: 200px; height: auto;" alt="Barcode">
+                                </div>
+                                <p style="margin-top: 10px; font-size: 10px;">Track your order at: styleoflife.com/track</p>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <p>Thank you for shopping with Style Of Life! We hope you love your jewelry.</p>
+                            <p>Generated on: ${today}</p>
+                        </div>
+                    </div>
+                    <div class="no-print" style="text-align: center; margin-top: 20px;">
+                        <button onclick="window.print()" style="padding: 10px 20px; background: #d4af37; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                            🖨️ Print Shipping Label
+                        </button>
+                    </div>
+                </body>
+                </html>
+            `);
+            labelWindow.document.close();
+        };
+        
+        // View order details
         window.viewOrderDetails = async function(orderId) {
             const order = allOrders.find(o => o.order_id === orderId);
             if (!order) return;
             
-            // Customer Info with enhanced details
             const customerTypeBadge = `<span class="customer-badge ${order.customer_type_class}">${order.customer_type_icon} ${order.customer_type} Customer</span>`;
             
             // Product Items with images
             let itemsHtml = '<div class="product-items-list">';
             if (order.items && order.items.length > 0) {
                 for (const item of order.items) {
-                    // Fetch product image if available
                     let productImage = item.image || 'https://via.placeholder.com/60x60?text=Product';
                     
                     itemsHtml += `
@@ -835,7 +1150,24 @@
             const modalContent = document.getElementById('modalContent');
             modalContent.innerHTML = `
                 <!-- Status Timeline -->
-                ${renderStatusTimeline(order.status)}
+                <div class="status-timeline">
+                    <div class="timeline-step ${order.status === 'pending' ? 'active' : (['processing','shipped','delivered'].includes(order.status) ? 'completed' : '')}">
+                        <div class="timeline-icon">📝</div>
+                        <div class="timeline-label">Order Placed</div>
+                    </div>
+                    <div class="timeline-step ${order.status === 'processing' ? 'active' : (['shipped','delivered'].includes(order.status) ? 'completed' : '')}">
+                        <div class="timeline-icon">⚙️</div>
+                        <div class="timeline-label">Processing</div>
+                    </div>
+                    <div class="timeline-step ${order.status === 'shipped' ? 'active' : (order.status === 'delivered' ? 'completed' : '')}">
+                        <div class="timeline-icon">🚚</div>
+                        <div class="timeline-label">Shipped</div>
+                    </div>
+                    <div class="timeline-step ${order.status === 'delivered' ? 'active completed' : ''}">
+                        <div class="timeline-icon">🎁</div>
+                        <div class="timeline-label">Delivered</div>
+                    </div>
+                </div>
                 
                 <!-- Customer Information Card -->
                 <div class="customer-info-card">
@@ -881,13 +1213,13 @@
                         <span class="customer-info-label">Payment Status:</span>
                         <span class="customer-info-value">${getPaymentStatusIcon(order.payment_status)}</span>
                     </div>
+                    <div class="customer-info-row">
+                        <span class="customer-info-label">Shipping Status:</span>
+                        <span class="customer-info-value">${getShippingStatusIcon(order.shipping_status)}</span>
+                    </div>
                     ${order.payment_id ? `<div class="customer-info-row">
                         <span class="customer-info-label">Payment ID:</span>
                         <span class="customer-info-value"><code>${order.payment_id}</code></span>
-                    </div>` : ''}
-                    ${order.payment_error ? `<div class="customer-info-row">
-                        <span class="customer-info-label">Payment Error:</span>
-                        <span class="customer-info-value" style="color: var(--danger);">${order.payment_error}</span>
                     </div>` : ''}
                 </div>
                 
@@ -927,6 +1259,9 @@
                     </select>
                     <button class="action-btn" style="background: var(--primary);" onclick="updatePaymentFromModal('${order.order_id}')">
                         <i class="fas fa-save"></i> Update Payment
+                    </button>
+                    <button class="action-btn shipping-btn" onclick="printShippingLabel('${order.order_id}')">
+                        <i class="fas fa-print"></i> Print Label
                     </button>
                 </div>
             `;
