@@ -35,6 +35,65 @@
         
         .container { padding: 20px; max-width: 600px; margin: 0 auto; }
         
+        /* Login Section */
+        .login-section {
+            background: white;
+            border-radius: 24px;
+            padding: 30px 20px;
+            text-align: center;
+            border: 1px solid var(--gray-200);
+        }
+        .login-section h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        .login-section p {
+            color: var(--gray-600);
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+        .login-form .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .login-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 14px;
+        }
+        .login-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .register-link {
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        .register-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
         /* Stats Cards */
         .stats-grid {
             display: grid;
@@ -268,36 +327,59 @@
     </header>
     
     <div class="container">
-        <!-- Stats Cards -->
-        <div class="stats-grid" id="statsGrid">
-            <div class="stat-card">
-                <div class="stat-number" id="totalOrders">0</div>
-                <div class="stat-label">Total Orders</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="totalSpent">₹0</div>
-                <div class="stat-label">Total Spent</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="pendingOrders">0</div>
-                <div class="stat-label">Pending</div>
+        <!-- Login Section -->
+        <div id="loginSection" class="login-section">
+            <h2><i class="fas fa-user-circle"></i> Welcome Back!</h2>
+            <p>Login to view your orders, wishlist and manage your account</p>
+            <form id="loginForm" class="login-form" onsubmit="handleCustomerLogin(event)">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required placeholder="Enter your password">
+                </div>
+                <button type="submit" class="login-btn">Login →</button>
+            </form>
+            <div class="register-link">
+                <p>New customer? <a href="register.html">Create an account</a></p>
             </div>
         </div>
         
-        <div class="tabs">
-            <div class="tab active" onclick="showTab('orders')">Orders</div>
-            <div class="tab" onclick="showTab('wishlist')">Wishlist</div>
-            <div class="tab" onclick="showTab('profile')">Profile</div>
-        </div>
-        
-        <div id="orders" class="tab-content active">
-            <div id="ordersList"><div class="loading"><div class="spinner"></div><p>Loading orders...</p></div></div>
-        </div>
-        <div id="wishlist" class="tab-content">
-            <div id="wishlistList"><div class="loading"><div class="spinner"></div><p>Loading wishlist...</p></div></div>
-        </div>
-        <div id="profile" class="tab-content">
-            <div id="profileContent"></div>
+        <!-- Dashboard Content (Hidden until login) -->
+        <div id="dashboardContent" style="display: none;">
+            <!-- Stats Cards -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalOrders">0</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalSpent">₹0</div>
+                    <div class="stat-label">Total Spent</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingOrders">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('orders')">Orders</div>
+                <div class="tab" onclick="showTab('wishlist')">Wishlist</div>
+                <div class="tab" onclick="showTab('profile')">Profile</div>
+            </div>
+            
+            <div id="orders" class="tab-content active">
+                <div id="ordersList"><div class="loading"><div class="spinner"></div><p>Loading orders...</p></div></div>
+            </div>
+            <div id="wishlist" class="tab-content">
+                <div id="wishlistList"><div class="loading"><div class="spinner"></div><p>Loading wishlist...</p></div></div>
+            </div>
+            <div id="profile" class="tab-content">
+                <div id="profileContent"></div>
+            </div>
         </div>
     </div>
     
@@ -309,14 +391,24 @@
         <a href="customer-portal.html" class="active"><i class="fas fa-user"></i><span>Account</span></a>
     </div>
     
-    <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
+    <script type="importmap">
+        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
+    </script>
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
+        
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         
         let currentUser = null;
-        const TAX_RATE = 0.03; // 3% GST
-        const SHIPPING = 0; // Free Shipping
+        let sessionId = localStorage.getItem('sessionId');
+        
+        if (!sessionId) {
+            sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('sessionId', sessionId);
+        }
+        
+        const TAX_RATE = 0.18;
+        const SHIPPING = 100;
         
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
@@ -326,13 +418,128 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
-        async function getCurrentUser() {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-                currentUser = { ...user, profile };
+        // Handle Customer Login
+        window.handleCustomerLogin = async function(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showToast('Please enter email and password', true);
+                return;
             }
-            return currentUser;
+            
+            const loginBtn = event.target.querySelector('.login-btn');
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) throw error;
+                
+                if (data.user) {
+                    // Get user profile
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', data.user.id)
+                        .single();
+                    
+                    currentUser = { ...data.user, profile: profile || {} };
+                    
+                    // Store user in localStorage
+                    localStorage.setItem('customerLoggedIn', 'true');
+                    localStorage.setItem('customerUser', JSON.stringify(currentUser));
+                    
+                    showToast('Login successful! Welcome back!');
+                    
+                    // Hide login, show dashboard
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('dashboardContent').style.display = 'block';
+                    
+                    // Load user data
+                    await loadOrders();
+                    await loadWishlist();
+                    await loadProfile();
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast(error.message || 'Login failed. Please check your credentials.', true);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login →';
+            }
+        };
+        
+        // Handle Customer Logout
+        window.handleCustomerLogout = async function() {
+            try {
+                await supabase.auth.signOut();
+                localStorage.removeItem('customerLoggedIn');
+                localStorage.removeItem('customerUser');
+                currentUser = null;
+                
+                showToast('Logged out successfully');
+                
+                // Show login, hide dashboard
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('dashboardContent').style.display = 'none';
+                
+                // Clear form
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+                
+            } catch (error) {
+                console.error('Logout error:', error);
+                showToast('Error logging out', true);
+            }
+        };
+        
+        // Check if user is already logged in
+        async function checkAuth() {
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+                
+                currentUser = { ...user, profile: profile || {} };
+                localStorage.setItem('customerLoggedIn', 'true');
+                localStorage.setItem('customerUser', JSON.stringify(currentUser));
+                
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
+                
+                await loadOrders();
+                await loadWishlist();
+                await loadProfile();
+            } else {
+                // Check localStorage for session
+                const storedUser = localStorage.getItem('customerUser');
+                if (storedUser) {
+                    try {
+                        const parsedUser = JSON.parse(storedUser);
+                        // Try to refresh session
+                        const { data } = await supabase.auth.getSession();
+                        if (!data.session) {
+                            localStorage.removeItem('customerLoggedIn');
+                            localStorage.removeItem('customerUser');
+                        }
+                    } catch (e) {
+                        localStorage.removeItem('customerLoggedIn');
+                        localStorage.removeItem('customerUser');
+                    }
+                }
+            }
         }
         
         async function updateStats(orders) {
@@ -347,7 +554,7 @@
         
         function calculateOrderBreakdown(subtotal) {
             const tax = Math.round(subtotal * TAX_RATE);
-            const shipping = SHIPPING;
+            const shipping = subtotal >= 3000 ? 0 : SHIPPING;
             const total = subtotal + tax + shipping;
             return { tax, shipping, total };
         }
@@ -357,6 +564,8 @@
                 document.getElementById('ordersList').innerHTML = '<div class="empty">Please login to view orders</div>'; 
                 return; 
             }
+            
+            document.getElementById('ordersList').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading orders...</p></div>';
             
             const { data, error } = await supabase
                 .from('orders')
@@ -385,13 +594,13 @@
                     <div class="card order-item">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div><strong>${o.order_id}</strong></div>
-                            <div class="status-badge status-${o.status?.toLowerCase()}">${o.status || 'Pending'}</div>
+                            <div class="status-badge status-${o.status?.toLowerCase() || 'pending'}">${o.status || 'Pending'}</div>
                         </div>
                         <div style="font-size: 12px; color: var(--gray-600); margin: 5px 0;">
                             ${new Date(o.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </div>
                         <div style="font-size: 12px; margin-top: 8px;">
-                            ${o.items?.map(i => `${i.name} x${i.quantity}`).join(', ')}
+                            ${o.items?.slice(0, 2).map(i => `${i.name} x${i.quantity}`).join(', ')}${o.items?.length > 2 ? ` +${o.items.length - 2} more` : ''}
                         </div>
                         <div class="price-breakdown">
                             <div class="price-row">
@@ -399,12 +608,12 @@
                                 <span>₹${subtotal.toLocaleString()}</span>
                             </div>
                             <div class="price-row">
-                                <span>GST (3%)</span>
+                                <span>GST (18%)</span>
                                 <span>₹${tax.toLocaleString()}</span>
                             </div>
                             <div class="price-row">
                                 <span>Shipping</span>
-                                <span>Free</span>
+                                <span>${shipping === 0 ? 'Free' : '₹' + shipping.toLocaleString()}</span>
                             </div>
                             <div class="price-row total">
                                 <span>Total</span>
@@ -425,6 +634,8 @@
                 document.getElementById('wishlistList').innerHTML = '<div class="empty">Please login to view wishlist</div>'; 
                 return; 
             }
+            
+            document.getElementById('wishlistList').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading wishlist...</p></div>';
             
             const { data, error } = await supabase
                 .from('wishlist')
@@ -487,7 +698,7 @@
                 let { data: cartData, error: fetchError } = await supabase
                     .from('carts')
                     .select('items')
-                    .eq('session_id', localStorage.getItem('sessionId'))
+                    .eq('session_id', sessionId)
                     .maybeSingle();
                 
                 if (fetchError) throw fetchError;
@@ -502,7 +713,6 @@
                 }
                 
                 const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
-                const sessionId = localStorage.getItem('sessionId');
                 
                 const { error: saveError } = await supabase
                     .from('carts')
@@ -537,7 +747,7 @@
                         <input type="email" value="${currentUser.email}" disabled placeholder="Email Address">
                         <button type="submit" class="save-btn">Save Changes</button>
                     </form>
-                    <button class="logout-btn" onclick="logout()">Logout</button>
+                    <button class="logout-btn" onclick="handleCustomerLogout()">Logout</button>
                 </div>
             `;
             
@@ -559,17 +769,10 @@
                 } else {
                     showToast('Profile updated successfully!');
                     currentUser.profile = { ...currentUser.profile, ...updates };
+                    localStorage.setItem('customerUser', JSON.stringify(currentUser));
                 }
             });
         }
-        
-        window.logout = async function() {
-            await supabase.auth.signOut();
-            showToast('Logged out successfully');
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 500);
-        };
         
         window.showTab = function(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -586,8 +789,8 @@
             return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
         }
         
-        await getCurrentUser();
-        await loadOrders();
+        // Initialize
+        await checkAuth();
     </script>
 </body>
 </html>
