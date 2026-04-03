@@ -19,6 +19,7 @@
             --gray-600: #6c757d;
             --success: #28a745;
             --danger: #dc3545;
+            --info: #17a2b8;
         }
         
         body {
@@ -159,6 +160,31 @@
             margin-top: 15px;
         }
         
+        .confirmation-message {
+            background: #d1ecf1;
+            border: 1px solid #17a2b8;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .confirmation-message i {
+            font-size: 48px;
+            color: #17a2b8;
+            margin-bottom: 10px;
+        }
+        
+        .confirmation-message h3 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+        
+        .confirmation-message p {
+            color: #0c5460;
+            font-size: 13px;
+        }
+        
         .toast {
             position: fixed;
             bottom: 30px;
@@ -173,6 +199,7 @@
         }
         .toast-success { background: var(--success); color: white; }
         .toast-error { background: var(--danger); color: white; }
+        .toast-info { background: var(--info); color: white; }
         
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
@@ -212,29 +239,43 @@
         </div>
         <div class="register-right">
             <h2>Create Account</h2>
-            <form id="registerForm">
-                <div class="form-group">
-                    <label><i class="fas fa-user"></i> Full Name *</label>
-                    <input type="text" id="fullName" required placeholder="Enter your full name">
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-envelope"></i> Email Address *</label>
-                    <input type="email" id="email" required placeholder="your@email.com">
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-phone"></i> Phone Number</label>
-                    <input type="tel" id="phone" maxlength="10" placeholder="10-digit mobile number (optional)">
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-lock"></i> Password *</label>
-                    <input type="password" id="password" required placeholder="Create a password (min 6 characters)">
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-lock"></i> Confirm Password *</label>
-                    <input type="password" id="confirmPassword" required placeholder="Confirm your password">
-                </div>
-                <button type="submit" class="register-btn">Create Account →</button>
-            </form>
+            
+            <!-- Registration Form -->
+            <div id="registrationForm">
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Full Name *</label>
+                        <input type="text" id="fullName" required placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email Address *</label>
+                        <input type="email" id="email" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> Phone Number</label>
+                        <input type="tel" id="phone" maxlength="10" placeholder="10-digit mobile number (optional)">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Password *</label>
+                        <input type="password" id="password" required placeholder="Create a password (min 6 characters)">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Confirm Password *</label>
+                        <input type="password" id="confirmPassword" required placeholder="Confirm your password">
+                    </div>
+                    <button type="submit" class="register-btn">Create Account →</button>
+                </form>
+            </div>
+            
+            <!-- Confirmation Message (shown after registration) -->
+            <div id="confirmationMessage" style="display: none;" class="confirmation-message">
+                <i class="fas fa-envelope"></i>
+                <h3>Verify Your Email</h3>
+                <p>We've sent a confirmation link to <strong id="confirmEmail"></strong></p>
+                <p>Please check your email and click the link to verify your account.</p>
+                <p style="margin-top: 10px;">After verification, you can <a href="customer-portal.html" style="color: var(--primary);">login here</a></p>
+            </div>
+            
             <div class="login-link">
                 <p>Already have an account? <a href="customer-portal.html">Sign In</a></p>
             </div>
@@ -252,12 +293,13 @@
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         
-        function showToast(message, isError = false) {
+        function showToast(message, isError = false, isInfo = false) {
             const toast = document.createElement('div');
-            toast.className = `toast ${isError ? 'toast-error' : 'toast-success'}`;
-            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
+            if (isInfo) toast.className = 'toast toast-info';
+            else toast.className = `toast ${isError ? 'toast-error' : 'toast-success'}`;
+            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : (isInfo ? 'fa-info-circle' : 'fa-check-circle')}"></i> ${message}`;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+            setTimeout(() => toast.remove(), 5000);
         }
         
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
@@ -290,7 +332,6 @@
                 return;
             }
             
-            // Email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 showToast('Please enter a valid email address', true);
@@ -316,15 +357,23 @@
                 if (error) throw error;
                 
                 if (data.user) {
-                    showToast('Account created successfully! Redirecting to login...');
+                    // Check if email confirmation is required
+                    if (data.user.confirmed_at) {
+                        // Email already confirmed
+                        showToast('Account created successfully! Redirecting to login...');
+                        setTimeout(() => {
+                            window.location.href = 'customer-portal.html';
+                        }, 2000);
+                    } else {
+                        // Email confirmation required
+                        document.getElementById('registrationForm').style.display = 'none';
+                        document.getElementById('confirmEmail').textContent = email;
+                        document.getElementById('confirmationMessage').style.display = 'block';
+                        showToast('Please check your email to confirm your account', false, true);
+                    }
                     
                     // Clear form
                     document.getElementById('registerForm').reset();
-                    
-                    // Redirect to customer portal after 2 seconds
-                    setTimeout(() => {
-                        window.location.href = 'customer-portal.html';
-                    }, 2000);
                 }
                 
             } catch (error) {
@@ -344,7 +393,7 @@
             }
         });
         
-        // Phone input validation - only numbers, max 10 digits
+        // Phone input validation
         document.getElementById('phone').addEventListener('input', function(e) {
             this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
         });
