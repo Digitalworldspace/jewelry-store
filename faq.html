@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>FAQ - Style Of Life</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/config.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --dark: #1a1a1a;
+            --gray-200: #e9ecef;
+            --gray-600: #6c757d;
+            --white: #ffffff;
+        }
+        body { font-family: 'Inter', sans-serif; background: #faf7f2; padding-bottom: 70px; }
+        
+        header {
+            background: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .logo { font-size: 20px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
+        
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .faq-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            border: 1px solid var(--gray-200);
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .subtitle {
+            color: var(--gray-600);
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .faq-item {
+            margin-bottom: 20px;
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            background: var(--white);
+            padding: 18px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--dark);
+            transition: all 0.3s;
+        }
+        
+        .faq-question:hover {
+            background: rgba(212,175,55,0.05);
+        }
+        
+        .faq-question i {
+            color: var(--primary);
+            transition: transform 0.3s;
+        }
+        
+        .faq-question.active i {
+            transform: rotate(180deg);
+        }
+        
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            background: var(--white);
+            border-top: 1px solid transparent;
+        }
+        
+        .faq-answer.show {
+            padding: 20px;
+            max-height: 500px;
+            border-top-color: var(--gray-200);
+        }
+        
+        .faq-answer p {
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .faq-answer ul, .faq-answer ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        
+        .faq-answer li {
+            margin-bottom: 5px;
+            color: var(--gray-600);
+        }
+        
+        .contact-box {
+            background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.05));
+            padding: 25px;
+            border-radius: 16px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .contact-box h3 {
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+        
+        .contact-box p {
+            margin-bottom: 15px;
+        }
+        
+        .contact-btn {
+            display: inline-block;
+            background: var(--primary);
+            color: var(--dark);
+            padding: 10px 25px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 5px;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 20px 15px;
+            border-top: 1px solid var(--gray-200);
+            z-index: 100;
+        }
+        .bottom-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 10px;
+        }
+        .bottom-nav a i { font-size: 20px; }
+        .bottom-nav a.active { color: var(--primary); }
+        
+        @media (max-width: 768px) {
+            .faq-card { padding: 25px; }
+            h1 { font-size: 24px; }
+            .faq-question { padding: 15px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo">STYLE·OF·LIFE</a>
+        <a href="cart.html"><i class="fas fa-shopping-bag" style="font-size: 20px;"></i></a>
+    </header>
+    
+    <div class="container">
+        <div class="faq-card">
+            <h1>❓ Frequently Asked Questions</h1>
+            <div class="subtitle">Find answers to common questions about Style Of Life</div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>🛍️ How do I place an order?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Placing an order is easy:</p>
+                    <ol>
+                        <li>Browse our shop and select your favorite jewelry</li>
+                        <li>Click "Add to Cart" or "Buy Now"</li>
+                        <li>Review your cart and proceed to checkout</li>
+                        <li>Enter shipping details and choose payment method</li>
+                        <li>Confirm and place your order</li>
+                    </ol>
+                    <p>You'll receive an order confirmation via email.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>💳 What payment methods do you accept?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>We accept payments through Razorpay:</p>
+                    <ul>
+                        <li><strong>Razorpay:</strong> Credit/Debit Cards, NetBanking, UPI, Wallets</li>
+                    </ul>
+                    <p>All payments are 100% secure and encrypted.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>🚚 How long does shipping take?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Delivery timelines based on your location:</p>
+                    <ul>
+                        <li><strong>Metro Cities:</strong> 5-7 business days</li>
+                        <li><strong>Tier 2 & 3 Cities:</strong> 7-10 business days</li>
+                        <li><strong>Remote Locations:</strong> 10-12 business days</li>
+                    </ul>
+                    <p>Orders are processed within 24-48 hours after payment confirmation.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>💰 Do you offer free shipping?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes! We offer free shipping on all orders above ₹3,000.</p>
+                    <p>For orders below ₹3,000, a flat shipping fee of ₹100 applies.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>🔄 Can I return or exchange my jewelry?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Style Of Life does not accept returns or exchanges. All sales are final.</p>
+                    <p>However, if you receive a damaged or defective product:</p>
+                    <ul>
+                        <li>Contact us within 24 hours of delivery</li>
+                        <li>Provide clear photos of the damage</li>
+                        <li>We will assess and provide resolution (repair/replacement at our discretion)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>🔍 How can I track my order?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>You can track your order by:</p>
+                    <ul>
+                        <li>Clicking the tracking link in your shipping confirmation email</li>
+                        <li>Visiting our <a href="track.html" style="color: var(--primary);">Track Order</a> page</li>
+                        <li>Entering your Order ID to see real-time status</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>🛡️ Is my payment information secure?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes! We use Razorpay, a PCI-DSS compliant payment gateway.</p>
+                    <ul>
+                        <li>All transactions are encrypted with SSL/TLS</li>
+                        <li>We never store your card details</li>
+                        <li>Two-factor authentication for added security</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>📞 How can I contact customer support?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Our customer support team is here to help:</p>
+                    <ul>
+                        <li><strong>Phone:</strong> +91-6352925472 (10 AM - 7 PM, Mon-Sat)</li>
+                        <li><strong>Email:</strong> styleoflife987@gmail.com (24/7 response within 24 hours)</li>
+                        <li><strong>Instagram:</strong> DM us at @styleoflife.in</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>🎁 Do you offer gift packaging?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes! All orders come in secure, elegant packaging perfect for gifting.</p>
+                    <p>You can also add a personalized gift message at checkout (free of cost).</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>🧼 How do I care for my jewelry?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>To keep your jewelry shining:</p>
+                    <ul>
+                        <li>Avoid contact with perfumes, lotions, and chemicals</li>
+                        <li>Remove before swimming or bathing</li>
+                        <li>Clean with a soft cloth after each wear</li>
+                        <li>Store in a safe, dry place</li>
+                        <li>Get professional cleaning annually</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="contact-box">
+                <h3>Still have questions?</h3>
+                <p>We're here to help! Contact our support team.</p>
+                <a href="mailto:styleoflife987@gmail.com" class="contact-btn"><i class="fas fa-envelope"></i> Email Us</a>
+                <a href="tel:+916352925472" class="contact-btn"><i class="fas fa-phone"></i> Call Us</a>
+            </div>
+            
+            <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        </div>
+    </div>
+    
+    <div class="bottom-nav">
+        <a href="index.html"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="shop.html"><i class="fas fa-search"></i><span>Shop</span></a>
+        <a href="cart.html"><i class="fas fa-shopping-bag"></i><span>Cart</span></a>
+        <a href="track.html"><i class="fas fa-truck"></i><span>Track</span></a>
+        <a href="customer-portal.html"><i class="fas fa-user"></i><span>Account</span></a>
+    </div>
+    
+    <script>
+        function toggleFAQ(element) {
+            element.classList.toggle('active');
+            const answer = element.nextElementSibling;
+            answer.classList.toggle('show');
+        }
+    </script>
+</body>
+</html>
