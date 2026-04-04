@@ -1,12 +1,58 @@
 // js/seo-helper.js
 // Dynamic SEO Helper for Style Of Life
 
-export class SEOHelper {
+class SEOHelper {
     constructor() {
         this.siteName = "Style Of Life";
         this.siteUrl = "https://styleoflife987-hub.github.io/jewelry-store/";
         this.defaultImage = "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338";
         this.defaultDescription = "Discover exquisite handcrafted jewelry at Style Of Life. Shop diamond rings, gold necklaces, earrings, and luxury accessories.";
+        this.initialized = false;
+    }
+
+    // Initialize SEO Helper
+    init() {
+        if (this.initialized) return;
+        
+        console.log("SEO Helper initializing...");
+        
+        // Add missing meta tags
+        this.addMissingMetaTags();
+        
+        // Add organization schema if not present
+        if (!document.querySelector('script[data-organization-schema]')) {
+            this.addOrganizationSchema();
+        }
+        
+        this.initialized = true;
+        console.log("SEO Helper initialized successfully");
+    }
+
+    // Add missing meta tags
+    addMissingMetaTags() {
+        // Check and add viewport if missing
+        if (!document.querySelector('meta[name="viewport"]')) {
+            const viewport = document.createElement('meta');
+            viewport.name = 'viewport';
+            viewport.content = 'width=device-width, initial-scale=1.0, user-scalable=yes';
+            document.head.appendChild(viewport);
+        }
+
+        // Add robots meta if missing
+        if (!document.querySelector('meta[name="robots"]')) {
+            const robots = document.createElement('meta');
+            robots.name = 'robots';
+            robots.content = 'index, follow, max-image-preview:large';
+            document.head.appendChild(robots);
+        }
+
+        // Add theme-color if missing
+        if (!document.querySelector('meta[name="theme-color"]')) {
+            const themeColor = document.createElement('meta');
+            themeColor.name = 'theme-color';
+            themeColor.content = '#d4af37';
+            document.head.appendChild(themeColor);
+        }
     }
 
     // Set page title
@@ -18,25 +64,22 @@ export class SEOHelper {
         
         // Update Twitter title
         this.updateMetaName('twitter:title', `${title} | ${this.siteName}`);
+        
+        console.log(`SEO: Title set to "${document.title}"`);
     }
 
     // Set meta description
     setDescription(description) {
-        const metaDescription = document.querySelector('meta[name="description"]');
-        if (metaDescription) {
-            metaDescription.content = description;
-        } else {
-            const meta = document.createElement('meta');
-            meta.name = 'description';
-            meta.content = description;
-            document.head.appendChild(meta);
-        }
+        // Update standard description
+        this.updateMetaName('description', description);
         
         // Update Open Graph description
         this.updateMetaProperty('og:description', description);
         
         // Update Twitter description
         this.updateMetaName('twitter:description', description);
+        
+        console.log(`SEO: Description set`);
     }
 
     // Set canonical URL
@@ -51,6 +94,8 @@ export class SEOHelper {
         
         // Update Open Graph URL
         this.updateMetaProperty('og:url', url);
+        
+        console.log(`SEO: Canonical URL set to "${url}"`);
     }
 
     // Set Open Graph image
@@ -61,6 +106,8 @@ export class SEOHelper {
         
         // Update Twitter image
         this.updateMetaName('twitter:image', imageUrl);
+        
+        console.log(`SEO: OG Image set`);
     }
 
     // Update meta property (for Open Graph)
@@ -87,8 +134,15 @@ export class SEOHelper {
 
     // Add product schema
     addProductSchema(product) {
+        // Remove existing product schema
+        const existingScript = document.querySelector('script[data-product-schema]');
+        if (existingScript) {
+            existingScript.remove();
+        }
+        
         const script = document.createElement('script');
         script.type = 'application/ld+json';
+        script.setAttribute('data-product-schema', 'true');
         script.textContent = JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Product",
@@ -102,54 +156,25 @@ export class SEOHelper {
                 "price": product.price,
                 "priceCurrency": "INR",
                 "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-                "priceValidUntil": new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
-                "shippingDetails": {
-                    "@type": "OfferShippingDetails",
-                    "shippingRate": {
-                        "@type": "MonetaryAmount",
-                        "value": product.price >= 3000 ? 0 : 100,
-                        "currency": "INR"
-                    },
-                    "deliveryTime": {
-                        "@type": "ShippingDeliveryTime",
-                        "handlingTime": {
-                            "@type": "QuantitativeValue",
-                            "minValue": 1,
-                            "maxValue": 2,
-                            "unitCode": "DAY"
-                        },
-                        "transitTime": {
-                            "@type": "QuantitativeValue",
-                            "minValue": 3,
-                            "maxValue": 5,
-                            "unitCode": "DAY"
-                        }
-                    }
-                },
-                "hasMerchantReturnPolicy": {
-                    "@type": "MerchantReturnPolicy",
-                    "applicableCountry": "IN",
-                    "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
-                    "returnDays": 15,
-                    "returnFees": "https://schema.org/FreeReturn"
-                }
+                "priceValidUntil": new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]
             }
         });
         
-        // Remove existing product schema
-        const existingScript = document.querySelector('script[data-product-schema]');
-        if (existingScript) {
-            existingScript.remove();
-        }
-        
-        script.setAttribute('data-product-schema', 'true');
         document.head.appendChild(script);
+        console.log(`SEO: Product schema added for "${product.name}"`);
     }
 
     // Add breadcrumb schema
     addBreadcrumbSchema(items) {
+        // Remove existing breadcrumb schema
+        const existingScript = document.querySelector('script[data-breadcrumb-schema]');
+        if (existingScript) {
+            existingScript.remove();
+        }
+        
         const script = document.createElement('script');
         script.type = 'application/ld+json';
+        script.setAttribute('data-breadcrumb-schema', 'true');
         script.textContent = JSON.stringify({
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
@@ -161,20 +186,21 @@ export class SEOHelper {
             }))
         });
         
-        // Remove existing breadcrumb schema
-        const existingScript = document.querySelector('script[data-breadcrumb-schema]');
-        if (existingScript) {
-            existingScript.remove();
-        }
-        
-        script.setAttribute('data-breadcrumb-schema', 'true');
         document.head.appendChild(script);
+        console.log(`SEO: Breadcrumb schema added with ${items.length} items`);
     }
 
     // Add organization schema
     addOrganizationSchema() {
+        // Remove existing organization schema
+        const existingScript = document.querySelector('script[data-organization-schema]');
+        if (existingScript) {
+            existingScript.remove();
+        }
+        
         const script = document.createElement('script');
         script.type = 'application/ld+json';
+        script.setAttribute('data-organization-schema', 'true');
         script.textContent = JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
@@ -182,24 +208,25 @@ export class SEOHelper {
             "url": this.siteUrl,
             "logo": `${this.siteUrl}logo.png`,
             "sameAs": [
-                "https://www.instagram.com/styleoflife",
+                "https://www.instagram.com/styleoflife.in",
                 "https://www.facebook.com/styleoflife",
                 "https://twitter.com/styleoflife"
             ],
             "contactPoint": {
                 "@type": "ContactPoint",
-                "telephone": "+91-9876543210",
+                "telephone": "+91-6352925472",
                 "contactType": "customer service",
                 "availableLanguage": ["English", "Hindi"]
             }
         });
         
-        script.setAttribute('data-organization-schema', 'true');
         document.head.appendChild(script);
+        console.log("SEO: Organization schema added");
     }
 
     // Track page view for analytics
     trackPageView(pageName, pageUrl) {
+        // Google Analytics if available
         if (typeof gtag !== 'undefined') {
             gtag('config', 'GA_MEASUREMENT_ID', {
                 'page_title': pageName,
@@ -213,19 +240,50 @@ export class SEOHelper {
             page: pageName,
             url: pageUrl,
             timestamp: new Date().toISOString(),
-            referrer: document.referrer
+            referrer: document.referrer,
+            userAgent: navigator.userAgent
         });
         
         // Keep only last 100 records
-        if (analytics.length > 100) {
+        while (analytics.length > 100) {
             analytics.shift();
         }
         
         localStorage.setItem('seo_analytics', JSON.stringify(analytics));
+        console.log(`SEO: Page view tracked for "${pageName}"`);
+    }
+
+    // Get analytics summary
+    getAnalyticsSummary() {
+        const analytics = JSON.parse(localStorage.getItem('seo_analytics') || '[]');
+        const pageViews = {};
+        
+        analytics.forEach(item => {
+            if (item.page) {
+                pageViews[item.page] = (pageViews[item.page] || 0) + 1;
+            }
+        });
+        
+        return {
+            total_views: analytics.length,
+            unique_pages: Object.keys(pageViews).length,
+            top_pages: Object.entries(pageViews)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([page, views]) => ({ page, views })),
+            last_7_days: analytics.filter(a => {
+                const date = new Date(a.timestamp);
+                const七天前 = new Date();
+               七天前.setDate(七天前.getDate() - 7);
+                return date >七天前;
+            }).length
+        };
     }
 
     // Initialize SEO for page
     initPage(pageData) {
+        console.log("SEO: Initializing page SEO...");
+        
         if (pageData.title) {
             this.setTitle(pageData.title);
         }
@@ -242,19 +300,36 @@ export class SEOHelper {
             this.setOgImage(pageData.image);
         }
         
-        if (pageData.breadcrumbs) {
+        if (pageData.breadcrumbs && pageData.breadcrumbs.length > 0) {
             this.addBreadcrumbSchema(pageData.breadcrumbs);
         }
         
-        // Add organization schema only once
-        if (!document.querySelector('script[data-organization-schema]')) {
-            this.addOrganizationSchema();
+        if (pageData.product) {
+            this.addProductSchema(pageData.product);
         }
         
         // Track page view
         this.trackPageView(pageData.title || document.title, window.location.href);
+        
+        console.log("SEO: Page SEO initialization complete");
     }
 }
 
-// Export singleton instance
-export const seoHelper = new SEOHelper();
+// Create singleton instance
+const seoHelper = new SEOHelper();
+
+// Auto-initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        seoHelper.init();
+    });
+} else {
+    seoHelper.init();
+}
+
+// Make available globally
+window.SEOHelper = seoHelper;
+window.seoHelper = seoHelper;
+
+// Export for module usage
+export { seoHelper, SEOHelper };
