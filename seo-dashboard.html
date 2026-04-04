@@ -222,48 +222,24 @@
             color: white;
         }
         
-        /* Meta Tags List */
-        .meta-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        /* Loading Spinner */
+        .loading {
+            text-align: center;
+            padding: 40px;
         }
         
-        .meta-item {
-            background: var(--gray-100);
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
         }
         
-        .meta-info h4 {
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-        
-        .meta-info p {
-            font-size: 12px;
-            color: var(--gray-600);
-        }
-        
-        .meta-actions {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .icon-btn {
-            background: none;
-            border: none;
-            padding: 8px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-        
-        .icon-btn:hover {
-            background: var(--gray-200);
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         /* Sitemap Section */
@@ -333,11 +309,11 @@
 
     <div class="container">
         <div class="tabs">
-            <div class="tab active" onclick="showTab('meta')">Meta Tags</div>
-            <div class="tab" onclick="showTab('sitemap')">Sitemap</div>
-            <div class="tab" onclick="showTab('robots')">Robots.txt</div>
-            <div class="tab" onclick="showTab('schema')">Schema</div>
-            <div class="tab" onclick="showTab('settings')">Settings</div>
+            <div class="tab active" data-tab="meta">Meta Tags</div>
+            <div class="tab" data-tab="sitemap">Sitemap</div>
+            <div class="tab" data-tab="robots">Robots.txt</div>
+            <div class="tab" data-tab="schema">Schema</div>
+            <div class="tab" data-tab="settings">Settings</div>
         </div>
         
         <!-- Meta Tags Tab -->
@@ -349,15 +325,15 @@
                 </div>
                 <div class="form-group">
                     <label>Site Title</label>
-                    <input type="text" id="siteTitle" value="Style Of Life - Luxury Jewelry Store | Diamond & Gold Jewelry Online">
+                    <input type="text" id="siteTitle" value="Style Of Life - Luxury Jewelry Store | Diamond & Gold Jewelry Online India">
                 </div>
                 <div class="form-group">
                     <label>Meta Description</label>
-                    <textarea id="siteDescription" rows="3">Discover exquisite handcrafted jewelry at Style Of Life. Shop diamond rings, gold necklaces, earrings, and luxury accessories. Free shipping on orders above ₹3000. 15-day exchange policy.</textarea>
+                    <textarea id="siteDescription" rows="3">Discover exquisite handcrafted jewelry at Style Of Life. Shop diamond rings, gold necklaces, earrings, and luxury accessories. Free shipping on orders above ₹3000.</textarea>
                 </div>
                 <div class="form-group">
                     <label>Meta Keywords</label>
-                    <input type="text" id="siteKeywords" value="jewelry, diamond jewelry, gold jewelry, luxury jewelry, engagement rings, necklaces, earrings, bracelets">
+                    <input type="text" id="siteKeywords" value="jewelry, diamond jewelry, gold jewelry, luxury jewelry, engagement rings, necklaces, earrings, bracelets, style of life">
                 </div>
                 <div class="form-group">
                     <label>Author</label>
@@ -436,6 +412,7 @@
             </div>
         </div>
         
+        //= ============================================
         <!-- Schema Tab -->
         <div id="schemaTab" class="tab-content" style="display: none;">
             <div class="card">
@@ -461,16 +438,16 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Phone Number</label>
-                        <input type="text" id="businessPhone" value="+91-9876543210">
+                        <input type="text" id="businessPhone" value="+91-6352925472">
                     </div>
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="email" id="businessEmail" value="support@styleoflife.com">
+                        <input type="email" id="businessEmail" value="styleoflife987@gmail.com">
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Address</label>
-                    <input type="text" id="businessAddress" value="Mumbai, Maharashtra, India">
+                    <input type="text" id="businessAddress" value="Surat, Gujarat, India">
                 </div>
                 <div class="form-group">
                     <label>Price Range</label>
@@ -517,7 +494,7 @@
                 </div>
                 <div class="form-group">
                     <label>Instagram URL</label>
-                    <input type="text" id="instagramUrl" placeholder="https://instagram.com/styleoflife">
+                    <input type="text" id="instagramUrl" placeholder="https://instagram.com/styleoflife.in">
                 </div>
                 <div class="form-group">
                     <label>Facebook URL</label>
@@ -569,20 +546,24 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
-        function showTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.style.display = 'none';
+        // Tab switching
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Update content
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    document.getElementById(`${tabName}Tab`).style.display = 'block';
+                });
             });
-            
-            // Show selected tab
-            document.getElementById(`${tabName}Tab`).style.display = 'block';
-            
-            // Update active tab styling
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
         }
         
         function saveGlobalMeta() {
@@ -601,17 +582,29 @@
             
             localStorage.setItem('seo_meta_settings', JSON.stringify(settings));
             showToast('Meta settings saved successfully!');
+            
+            // Apply to SEO Helper if available
+            if (typeof window.seoHelper !== 'undefined') {
+                window.seoHelper.setTitle(settings.siteTitle);
+                window.seoHelper.setDescription(settings.siteDescription);
+                console.log('SEO settings applied to live site');
+            }
         }
         
         function generateSitemap() {
             const urls = [
-                { url: '/', priority: 1.0, changefreq: 'daily' },
-                { url: '/shop.html', priority: 0.9, changefreq: 'daily' },
-                { url: '/cart.html', priority: 0.6, changefreq: 'weekly' },
-                { url: '/checkout.html', priority: 0.5, changefreq: 'weekly' },
-                { url: '/track.html', priority: 0.5, changefreq: 'weekly' },
-                { url: '/customer-portal.html', priority: 0.6, changefreq: 'weekly' },
-                { url: '/register.html', priority: 0.5, changefreq: 'monthly' }
+                { url: '/', priority: 1.0, changefreq: 'daily', lastmod: '2026-04-04' },
+                { url: '/index.html', priority: 1.0, changefreq: 'daily', lastmod: '2026-04-04' },
+                { url: '/shop.html', priority: 0.9, changefreq: 'daily', lastmod: '2026-04-04' },
+                { url: '/cart.html', priority: 0.6, changefreq: 'weekly', lastmod: '2026-04-04' },
+                { url: '/checkout.html', priority: 0.5, changefreq: 'weekly', lastmod: '2026-04-04' },
+                { url: '/track.html', priority: 0.5, changefreq: 'weekly', lastmod: '2026-04-04' },
+                { url: '/customer-portal.html', priority: 0.6, changefreq: 'weekly', lastmod: '2026-04-04' },
+                { url: '/register.html', priority: 0.5, changefreq: 'monthly', lastmod: '2026-04-04' },
+                { url: '/shipping-policy.html', priority: 0.4, changefreq: 'monthly', lastmod: '2026-04-04' },
+                { url: '/privacy-policy.html', priority: 0.4, changefreq: 'monthly', lastmod: '2026-04-04' },
+                { url: '/terms-conditions.html', priority: 0.4, changefreq: 'monthly', lastmod: '2026-04-04' },
+                { url: '/faq.html', priority: 0.5, changefreq: 'monthly', lastmod: '2026-04-04' }
             ];
             
             const container = document.getElementById('sitemapUrls');
@@ -621,7 +614,7 @@
                     <div class="url-item">
                         <div>
                             <strong>${u.url}</strong>
-                            <div style="font-size: 12px; color: var(--gray-600);">Change frequency: ${u.changefreq}</div>
+                            <div style="font-size: 12px; color: var(--gray-600);">Change frequency: ${u.changefreq} | Last mod: ${u.lastmod}</div>
                         </div>
                         <div class="url-priority">Priority: ${u.priority}</div>
                     </div>
@@ -632,13 +625,55 @@
         }
         
         function downloadSitemap() {
+            const today = new Date().toISOString().split('T')[0];
             const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
     <url>
         <loc>https://styleoflife987-hub.github.io/jewelry-store/</loc>
-        <lastmod>2026-04-01</lastmod>
+        <lastmod>${today}</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
+        <image:image>
+            <image:loc>https://images.unsplash.com/photo-1515562141207-7a88fb7ce338</image:loc>
+            <image:title>Luxury Diamond Necklace</image:title>
+        </image:image>
+    </url>
+    <url>
+        <loc>https://styleoflife987-hub.github.io/jewelry-store/shop.html</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://styleoflife987-hub.github.io/jewelry-store/cart.html</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://styleoflife987-hub.github.io/jewelry-store/checkout.html</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://styleoflife987-hub.github.io/jewelry-store/track.html</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://styleoflife987-hub.github.io/jewelry-store/customer-portal.html</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://styleoflife987-hub.github.io/jewelry-store/faq.html</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
     </url>
 </urlset>`;
             
@@ -690,11 +725,29 @@
         }
         
         function loadRobotsTxt() {
-            const defaultRobots = `User-agent: *
+            const defaultRobots = `# ============================================
+# robots.txt for Style Of Life Jewelry
+# ============================================
+
+User-agent: *
 Allow: /
 Disallow: /admin*
 Disallow: /login*
-Sitemap: https://styleoflife987-hub.github.io/jewelry-store/sitemap.xml`;
+Disallow: /register*
+
+Sitemap: https://styleoflife987-hub.github.io/jewelry-store/sitemap.xml
+
+User-agent: Googlebot
+Allow: /
+Disallow: /admin*
+Disallow: /login*
+Crawl-delay: 5
+
+User-agent: Googlebot-Image
+Allow: /
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$`;
             
             const saved = localStorage.getItem('robots_txt_content');
             document.getElementById('robotsContent').value = saved || defaultRobots;
@@ -704,10 +757,10 @@ Sitemap: https://styleoflife987-hub.github.io/jewelry-store/sitemap.xml`;
             const metaSettings = localStorage.getItem('seo_meta_settings');
             if (metaSettings) {
                 const settings = JSON.parse(metaSettings);
-                document.getElementById('siteTitle').value = settings.siteTitle || '';
+                document.getElementById('siteTitle').value = settings.siteTitle || 'Style Of Life - Luxury Jewelry Store | Diamond & Gold Jewelry Online India';
                 document.getElementById('siteDescription').value = settings.siteDescription || '';
                 document.getElementById('siteKeywords').value = settings.siteKeywords || '';
-                document.getElementById('siteAuthor').value = settings.siteAuthor || '';
+                document.getElementById('siteAuthor').value = settings.siteAuthor || 'Style Of Life Jewelry';
                 document.getElementById('ogTitle').value = settings.ogTitle || '';
                 document.getElementById('ogImage').value = settings.ogImage || '';
                 document.getElementById('ogDescription').value = settings.ogDescription || '';
@@ -722,9 +775,9 @@ Sitemap: https://styleoflife987-hub.github.io/jewelry-store/sitemap.xml`;
                 document.getElementById('businessType').value = settings.businessType || 'JewelryStore';
                 document.getElementById('businessName').value = settings.businessName || 'Style Of Life';
                 document.getElementById('businessDescription').value = settings.businessDescription || '';
-                document.getElementById('businessPhone').value = settings.businessPhone || '';
-                document.getElementById('businessEmail').value = settings.businessEmail || '';
-                document.getElementById('businessAddress').value = settings.businessAddress || '';
+                document.getElementById('businessPhone').value = settings.businessPhone || '+91-6352925472';
+                document.getElementById('businessEmail').value = settings.businessEmail || 'styleoflife987@gmail.com';
+                document.getElementById('businessAddress').value = settings.businessAddress || 'Surat, Gujarat, India';
                 document.getElementById('priceRange').value = settings.priceRange || '₹₹₹';
             }
             
@@ -734,11 +787,11 @@ Sitemap: https://styleoflife987-hub.github.io/jewelry-store/sitemap.xml`;
                 document.getElementById('gaId').value = settings.gaId || '';
                 document.getElementById('gtmId').value = settings.gtmId || '';
                 document.getElementById('gscCode').value = settings.gscCode || '';
-                document.getElementById('instagramUrl').value = settings.instagramUrl || '';
+                document.getElementById('instagramUrl').value = settings.instagramUrl || 'https://instagram.com/styleoflife.in';
                 document.getElementById('facebookUrl').value = settings.facebookUrl || '';
                 document.getElementById('twitterUrl').value = settings.twitterUrl || '';
                 document.getElementById('pinterestUrl').value = settings.pinterestUrl || '';
-                document.getElementById('canonicalUrl').value = settings.canonicalUrl || '';
+                document.getElementById('canonicalUrl').value = settings.canonicalUrl || 'https://styleoflife987-hub.github.io/jewelry-store/';
                 document.getElementById('enableBreadcrumbs').value = settings.enableBreadcrumbs || 'yes';
                 document.getElementById('enableSchema').value = settings.enableSchema || 'yes';
             }
@@ -750,9 +803,13 @@ Sitemap: https://styleoflife987-hub.github.io/jewelry-store/sitemap.xml`;
         };
         
         // Initialize
+        initTabs();
         loadRobotsTxt();
         loadSavedSettings();
         generateSitemap();
+        
+        // Set default active tab
+        document.getElementById('metaTab').style.display = 'block';
         
         // Check authentication
         if (!sessionStorage.getItem('adminLoggedIn')) {
