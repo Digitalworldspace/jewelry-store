@@ -1,440 +1,308 @@
-// js/seo-manager.js - Complete SEO Management System
+// js/seo-manager.js
+// SEO Manager for Style Of Life Customer Pages
+// This file manages SEO for index.html and shop.html only
 
-class SEOManager {
-    constructor() {
-        this.supabase = null;
-        this.init();
-    }
+const SEOManager = {
+    // Site configuration
+    siteName: "Style Of Life",
+    siteUrl: "https://styleoflife987-hub.github.io/jewelry-store/",
+    phone: "+91-6352925472",
+    email: "styleoflife987@gmail.com",
+    address: "Surat, Gujarat, India",
     
-    async init() {
-        const { createClient } = await import('@supabase/supabase-js');
-        this.supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-    }
-    
-    // Generate all SEO metadata
-    generateAllSEO() {
-        return {
-            metaTags: this.generateMetaTags(),
-            structuredData: this.generateStructuredData(),
-            openGraph: this.generateOpenGraph(),
-            twitterCard: this.generateTwitterCard(),
-            hreflang: this.generateHreflang(),
-            canonical: this.generateCanonical()
-        };
-    }
-    
-    generateMetaTags() {
-        const page = window.location.pathname;
-        const saved = localStorage.getItem(`metaTags_${page}`);
-        if (saved) return JSON.parse(saved);
+    // Initialize SEO for current page
+    init: function() {
+        console.log("SEO Manager initialized for:", window.location.pathname);
         
-        return {
-            title: "Style Of Life - Luxury Jewelry",
-            description: "Discover timeless elegance at Style Of Life. Shop luxury jewelry including diamond rings, gold necklaces, and custom-made pieces. Free shipping on orders above ₹3000.",
-            keywords: "jewelry, luxury jewelry, diamond rings, gold necklace, earrings, fine jewelry, style of life",
-            author: "Style Of Life",
-            robots: "index, follow",
-            viewport: "width=device-width, initial-scale=1.0"
-        };
-    }
+        const page = window.location.pathname;
+        
+        if (page === '/' || page === '/index.html') {
+            this.initHomepageSEO();
+        } else if (page === '/shop.html') {
+            this.initShopPageSEO();
+        }
+        
+        this.addCommonSchemas();
+    },
     
-    generateStructuredData() {
-        return {
+    // Homepage SEO
+    initHomepageSEO: function() {
+        // Update title
+        document.title = "Style Of Life - Luxury Jewelry Store | Diamond & Gold Jewelry Online India";
+        
+        // Update meta description
+        this.updateMeta("description", "Discover exquisite handcrafted jewelry at Style Of Life. Shop diamond rings, gold necklaces, earrings, and luxury accessories. Free shipping on orders above ₹3000. Best jewelry store in India.");
+        
+        // Update keywords
+        this.updateMeta("keywords", "jewelry store, diamond rings, gold necklaces, luxury jewelry, engagement rings, earrings, bracelets, style of life, Indian jewelry, online jewelry shopping");
+        
+        // Add homepage schema
+        this.addHomepageSchema();
+    },
+    
+    // Shop Page SEO
+    initShopPageSEO: function() {
+        // Update title
+        document.title = "Shop Luxury Jewelry Online - Style Of Life | Diamond Rings, Gold Necklaces";
+        
+        // Update meta description
+        this.updateMeta("description", "Shop the finest collection of luxury jewelry online at Style Of Life. Browse diamond rings, gold necklaces, earrings, bracelets, and more. Best prices. Free shipping available.");
+        
+        // Update keywords
+        this.updateMeta("keywords", "buy jewelry online, shop diamond rings, gold jewelry online, luxury jewelry shopping, best jewelry store, style of life shop, jewelry collection");
+        
+        // Add product listing schema
+        this.addProductListingSchema();
+    },
+    
+    // Common schemas for all pages
+    addCommonSchemas: function() {
+        // Add Organization Schema
+        this.addOrganizationSchema();
+        
+        // Add Breadcrumb Schema
+        this.addBreadcrumbSchema();
+        
+        // Add Website Schema
+        this.addWebsiteSchema();
+    },
+    
+    // Homepage specific schema
+    addHomepageSchema: function() {
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.textContent = JSON.stringify({
             "@context": "https://schema.org",
-            "@graph": [
-                this.generateOrganizationSchema(),
-                this.generateWebsiteSchema(),
-                this.generateLocalBusinessSchema()
-            ]
-        };
-    }
-    
-    generateOrganizationSchema() {
-        return {
             "@type": "JewelryStore",
-            "@id": "https://style-of-life.vercel.app/#organization",
             "name": "Style Of Life",
-            "url": "https://style-of-life.vercel.app",
-            "logo": "https://style-of-life.vercel.app/images/logo.png",
-            "sameAs": [
-                "https://www.instagram.com/styleoflife",
-                "https://www.facebook.com/styleoflife",
-                "https://twitter.com/styleoflife",
-                "https://pinterest.com/styleoflife"
-            ],
-            "contactPoint": {
-                "@type": "ContactPoint",
-                "telephone": "+91-9876543210",
-                "contactType": "customer service",
-                "availableLanguage": ["English", "Hindi"]
-            }
-        };
-    }
-    
-    generateWebsiteSchema() {
-        return {
-            "@type": "WebSite",
-            "@id": "https://style-of-life.vercel.app/#website",
-            "url": "https://style-of-life.vercel.app",
-            "name": "Style Of Life",
-            "description": "Premium luxury jewelry store in India",
-            "potentialAction": {
-                "@type": "SearchAction",
-                "target": "https://style-of-life.vercel.app/shop.html?search={search_term_string}",
-                "query-input": "required name=search_term_string"
-            }
-        };
-    }
-    
-    generateLocalBusinessSchema() {
-        return {
-            "@type": "LocalBusiness",
-            "@id": "https://style-of-life.vercel.app/#localbusiness",
-            "name": "Style Of Life Jewelry",
-            "image": "https://style-of-life.vercel.app/images/store.jpg",
+            "description": "Luxury jewelry store offering diamond rings, gold necklaces, earrings, and fine jewelry",
+            "image": "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338",
+            "priceRange": "₹₹₹",
+            "telephone": this.phone,
+            "email": this.email,
             "address": {
                 "@type": "PostalAddress",
-                "streetAddress": "Linking Road, Bandra West",
-                "addressLocality": "Mumbai",
-                "addressRegion": "MH",
-                "postalCode": "400050",
+                "addressLocality": "Surat",
+                "addressRegion": "Gujarat",
                 "addressCountry": "IN"
             },
-            "geo": {
-                "@type": "GeoCoordinates",
-                "latitude": "19.0760",
-                "longitude": "72.8777"
-            },
-            "openingHoursSpecification": [
-                {
-                    "@type": "OpeningHoursSpecification",
-                    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-                    "opens": "10:00",
-                    "closes": "20:00"
-                }
-            ],
-            "priceRange": "₹₹₹",
-            "telephone": "+91-9876543210"
-        };
-    }
-    
-    generateOpenGraph() {
-        const saved = localStorage.getItem('openGraph');
-        if (saved) return saved;
-        
-        return {
-            "og:type": "website",
-            "og:title": "Style Of Life - Luxury Jewelry",
-            "og:description": "Discover timeless elegance with our luxury jewelry collection",
-            "og:image": "https://style-of-life.vercel.app/images/og-image.jpg",
-            "og:url": "https://style-of-life.vercel.app",
-            "og:site_name": "Style Of Life",
-            "og:locale": "en_IN"
-        };
-    }
-    
-    generateTwitterCard() {
-        const saved = localStorage.getItem('twitterCard');
-        if (saved) return saved;
-        
-        return {
-            "twitter:card": "summary_large_image",
-            "twitter:title": "Style Of Life - Luxury Jewelry",
-            "twitter:description": "Discover timeless elegance with our luxury jewelry collection",
-            "twitter:image": "https://style-of-life.vercel.app/images/og-image.jpg",
-            "twitter:site": "@styleoflife"
-        };
-    }
-    
-    generateHreflang() {
-        return [
-            { lang: "en", url: "https://style-of-life.vercel.app/" },
-            { lang: "hi", url: "https://style-of-life.vercel.app/hi/" }
-        ];
-    }
-    
-    generateCanonical() {
-        return window.location.href.split('?')[0];
-    }
-    
-    // Sitemap generation
-    async generateSitemap() {
-        try {
-            const { data: products } = await this.supabase
-                .from('products')
-                .select('id, name, updated_at, images');
-            
-            const siteUrl = CONFIG.SITE_URL || 'https://style-of-life.vercel.app';
-            const today = new Date().toISOString().split('T')[0];
-            
-            let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-    
-    <url>
-        <loc>${siteUrl}/</loc>
-        <lastmod>${today}</lastmod>
-        <changefreq>daily</changefreq>
-        <priority>1.0</priority>
-    </url>
-    
-    <url>
-        <loc>${siteUrl}/shop.html</loc>
-        <lastmod>${today}</lastmod>
-        <changefreq>daily</changefreq>
-        <priority>0.9</priority>
-    </url>
-    
-    <url>
-        <loc>${siteUrl}/track.html</loc>
-        <lastmod>${today}</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-    </url>`;
-            
-            if (products) {
-                products.forEach(product => {
-                    sitemap += `
-    <url>
-        <loc>${siteUrl}/product.html?id=${product.id}</loc>
-        <lastmod>${product.updated_at?.split('T')[0] || today}</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>`;
-                    
-                    if (product.images && product.images[0]) {
-                        sitemap += `
-        <image:image>
-            <image:loc>${product.images[0]}</image:loc>
-            <image:title>${this.escapeXml(product.name)}</image:title>
-        </image:image>`;
-                    }
-                    
-                    sitemap += `
-    </url>`;
-                });
-            }
-            
-            sitemap += `
-</urlset>`;
-            
-            return sitemap;
-            
-        } catch (error) {
-            console.error('Sitemap generation error:', error);
-            return null;
-        }
-    }
-    
-    // Robots.txt generation
-    generateRobotsTxt() {
-        const siteUrl = CONFIG.SITE_URL || 'https://style-of-life.vercel.app';
-        
-        return `# Style Of Life - robots.txt
-# Generated: ${new Date().toISOString()}
-
-User-agent: *
-Allow: /
-Allow: /shop.html
-Allow: /product.html
-Allow: /track.html
-Allow: /cart.html
-Allow: /customer-portal.html
-Allow: /register.html
-Allow: /images/
-Allow: /css/
-Allow: /js/
-
-Disallow: /admin.html
-Disallow: /admin-*.html
-Disallow: /login.html
-Disallow: /checkout.html
-Disallow: /api/
-Disallow: /*?*
-Disallow: /*&*
-
-Sitemap: ${siteUrl}/sitemap.xml
-Crawl-delay: 2
-
-User-agent: Googlebot
-Allow: /
-Disallow: /admin*
-Disallow: /login*
-Crawl-delay: 1
-
-User-agent: Bingbot
-Allow: /
-Disallow: /admin*
-Crawl-delay: 2
-
-User-agent: Pinterest
-Allow: /
-Allow: /images/
-Disallow: /admin*
-
-User-agent: GPTBot
-Disallow: /
-
-User-agent: ChatGPT-User
-Disallow: /`;
-    }
-    
-    // Performance monitoring
-    async measureCoreWebVitals() {
-        const metrics = {};
-        
-        // Get navigation timing
-        const nav = performance.getEntriesByType('navigation')[0];
-        if (nav) {
-            metrics['First Paint'] = nav.domContentLoadedEventEnd - nav.fetchStart;
-            metrics['DOM Load'] = nav.domComplete - nav.domLoading;
-            metrics['Page Load'] = nav.loadEventEnd - nav.fetchStart;
-        }
-        
-        // Get Largest Contentful Paint
-        const lcp = await this.getLCP();
-        if (lcp) metrics['Largest Contentful Paint'] = lcp;
-        
-        // Get First Input Delay
-        const fid = await this.getFID();
-        if (fid) metrics['First Input Delay'] = fid;
-        
-        // Get Cumulative Layout Shift
-        const cls = await this.getCLS();
-        if (cls) metrics['Cumulative Layout Shift'] = cls;
-        
-        return metrics;
-    }
-    
-    getLCP() {
-        return new Promise((resolve) => {
-            new PerformanceObserver((entryList) => {
-                const entries = entryList.getEntries();
-                const lastEntry = entries[entries.length - 1];
-                resolve(lastEntry.renderTime || lastEntry.loadTime);
-            }).observe({ type: 'largest-contentful-paint', buffered: true });
-            
-            setTimeout(() => resolve(null), 5000);
-        });
-    }
-    
-    getFID() {
-        return new Promise((resolve) => {
-            new PerformanceObserver((entryList) => {
-                const entries = entryList.getEntries();
-                const firstInput = entries[0];
-                resolve(firstInput.processingStart - firstInput.startTime);
-            }).observe({ type: 'first-input', buffered: true });
-            
-            setTimeout(() => resolve(null), 5000);
-        });
-    }
-    
-    getCLS() {
-        return new Promise((resolve) => {
-            let clsValue = 0;
-            new PerformanceObserver((entryList) => {
-                for (const entry of entryList.getEntries()) {
-                    if (!entry.hadRecentInput) {
-                        clsValue += entry.value;
-                    }
-                }
-                resolve(clsValue);
-            }).observe({ type: 'layout-shift', buffered: true });
-            
-            setTimeout(() => resolve(null), 5000);
-        });
-    }
-    
-    // Keyword analysis
-    analyzeKeywords(content) {
-        const words = content.toLowerCase().match(/\b\w+\b/g) || [];
-        const wordCount = {};
-        
-        words.forEach(word => {
-            if (word.length > 3 && !this.isStopWord(word)) {
-                wordCount[word] = (wordCount[word] || 0) + 1;
-            }
-        });
-        
-        const sorted = Object.entries(wordCount)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 20);
-        
-        return sorted.map(([word, count]) => ({
-            keyword: word,
-            count: count,
-            density: ((count / words.length) * 100).toFixed(2)
-        }));
-    }
-    
-    isStopWord(word) {
-        const stopWords = ['the', 'and', 'for', 'are', 'with', 'this', 'that', 'from', 'your', 'have', 'not', 'was', 'were', 'but', 'they'];
-        return stopWords.includes(word);
-    }
-    
-    // Backlink analysis (simulated)
-    analyzeBacklinks() {
-        return {
-            total: 156,
-            uniqueDomains: 89,
-            dofollow: 112,
-            nofollow: 44,
-            topDomains: [
-                { domain: 'instagram.com', authority: 92, type: 'Social' },
-                { domain: 'facebook.com', authority: 95, type: 'Social' },
-                { domain: 'pinterest.com', authority: 88, type: 'Social' },
-                { domain: 'jewelryblog.com', authority: 65, type: 'Blog' },
-                { domain: 'fashionmagazine.com', authority: 72, type: 'Magazine' }
+            "openingHours": "Mo-Su 10:00-20:00",
+            "paymentAccepted": ["Razorpay", "Credit Card", "Debit Card", "UPI"],
+            "url": this.siteUrl,
+            "logo": this.siteUrl + "logo.png",
+            "sameAs": [
+                "https://www.instagram.com/styleoflife.in",
+                "https://www.facebook.com/styleoflife",
+                "https://twitter.com/styleoflife"
             ]
-        };
-    }
-    
-    // Competitor analysis
-    async analyzeCompetitor(url) {
-        // This would normally call an API
-        return {
-            url: url,
-            domainAuthority: 72,
-            totalBacklinks: 1245,
-            topKeywords: [
-                { keyword: 'diamond rings', position: 3, volume: 1200 },
-                { keyword: 'gold necklace', position: 5, volume: 980 },
-                { keyword: 'bridal jewelry', position: 2, volume: 750 }
-            ],
-            estimatedTraffic: 12500,
-            socialShares: {
-                facebook: 2340,
-                pinterest: 1890,
-                instagram: 4560
-            }
-        };
-    }
-    
-    // Helper functions
-    escapeXml(str) {
-        if (!str) return '';
-        return str.replace(/[<>&]/g, m => {
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            if (m === '&') return '&amp;';
-            return m;
         });
-    }
+        
+        // Remove existing if present
+        const existing = document.querySelector('script[data-schema="jewelry-store"]');
+        if (existing) existing.remove();
+        
+        script.setAttribute('data-schema', 'jewelry-store');
+        document.head.appendChild(script);
+    },
     
-    // Save all SEO data to localStorage
-    saveAll() {
-        const seoData = this.generateAllSEO();
-        localStorage.setItem('seoData', JSON.stringify(seoData));
-        return seoData;
-    }
+    // Product listing schema for shop page
+    addProductListingSchema: function() {
+        // This will be populated dynamically with products
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.setAttribute('data-schema', 'product-listing');
+        script.textContent = JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "Luxury Jewelry Collection",
+            "description": "Shop our exclusive collection of handcrafted luxury jewelry including diamond rings, gold necklaces, earrings, and bracelets.",
+            "url": this.siteUrl + "shop.html",
+            "hasPart": []
+        });
+        
+        const existing = document.querySelector('script[data-schema="product-listing"]');
+        if (existing) existing.remove();
+        
+        document.head.appendChild(script);
+    },
     
-    // Load SEO data
-    loadAll() {
-        const saved = localStorage.getItem('seoData');
-        return saved ? JSON.parse(saved) : this.generateAllSEO();
+    // Organization Schema
+    addOrganizationSchema: function() {
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.textContent = JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": this.siteName,
+            "url": this.siteUrl,
+            "logo": this.siteUrl + "logo.png",
+            "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": this.phone,
+                "contactType": "customer service",
+                "availableLanguage": ["English", "Hindi"],
+                "email": this.email
+            },
+            "sameAs": [
+                "https://www.instagram.com/styleoflife.in",
+                "https://www.facebook.com/styleoflife",
+                "https://twitter.com/styleoflife"
+            ]
+        });
+        
+        const existing = document.querySelector('script[data-schema="organization"]');
+        if (existing) existing.remove();
+        
+        script.setAttribute('data-schema', 'organization');
+        document.head.appendChild(script);
+    },
+    
+    // Breadcrumb Schema
+    addBreadcrumbSchema: function() {
+        const page = window.location.pathname;
+        let items = [];
+        
+        if (page === '/' || page === '/index.html') {
+            items = [
+                { name: "Home", url: this.siteUrl }
+            ];
+        } else if (page === '/shop.html') {
+            items = [
+                { name: "Home", url: this.siteUrl },
+                { name: "Shop", url: this.siteUrl + "shop.html" }
+            ];
+        }
+        
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.textContent = JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": items.map((item, index) => ({
+                "@type": "ListItem",
+                "position": index + 1,
+                "name": item.name,
+                "item": item.url
+            }))
+        });
+        
+        const existing = document.querySelector('script[data-schema="breadcrumb"]');
+        if (existing) existing.remove();
+        
+        script.setAttribute('data-schema', 'breadcrumb');
+        document.head.appendChild(script);
+    },
+    
+    // Website Schema
+    addWebsiteSchema: function() {
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.textContent = JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": this.siteName,
+            "url": this.siteUrl,
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": this.siteUrl + "shop.html?q={search_term_string}"
+                },
+                "query-input": "required name=search_term_string"
+            }
+        });
+        
+        const existing = document.querySelector('script[data-schema="website"]');
+        if (existing) existing.remove();
+        
+        script.setAttribute('data-schema', 'website');
+        document.head.appendChild(script);
+    },
+    
+    // Update product listing with actual products
+    updateProductListing: function(products) {
+        const script = document.querySelector('script[data-schema="product-listing"]');
+        if (script && products && products.length > 0) {
+            const schema = JSON.parse(script.textContent);
+            schema.hasPart = products.slice(0, 10).map(product => ({
+                "@type": "Product",
+                "name": product.name,
+                "url": this.siteUrl + "shop.html?product=" + product.id,
+                "image": product.images?.[0] || this.siteUrl + "images/placeholder.jpg",
+                "description": product.description,
+                "sku": product.sku,
+                "offers": {
+                    "@type": "Offer",
+                    "price": product.price,
+                    "priceCurrency": "INR",
+                    "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+                }
+            }));
+            script.textContent = JSON.stringify(schema);
+            console.log("Product listing schema updated with", products.length, "products");
+        }
+    },
+    
+    // Add product schema for individual product (when modal opens)
+    addProductSchema: function(product) {
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.setAttribute('data-schema', 'product-' + product.id);
+        script.textContent = JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": product.name,
+            "description": product.description,
+            "sku": product.sku,
+            "image": product.image,
+            "offers": {
+                "@type": "Offer",
+                "price": product.price,
+                "priceCurrency": "INR",
+                "availability": "https://schema.org/InStock",
+                "seller": {
+                    "@type": "Organization",
+                    "name": this.siteName
+                }
+            }
+        });
+        
+        // Remove old product schema
+        const existing = document.querySelector(`script[data-schema="product-${product.id}"]`);
+        if (existing) existing.remove();
+        
+        document.head.appendChild(script);
+    },
+    
+    // Update meta tag helper
+    updateMeta: function(name, content) {
+        let meta = document.querySelector(`meta[name="${name}"]`);
+        if (!meta) {
+            meta = document.createElement('meta');
+            meta.name = name;
+            document.head.appendChild(meta);
+        }
+        meta.content = content;
+    },
+    
+    // Update Open Graph
+    updateOG: function(property, content) {
+        let meta = document.querySelector(`meta[property="${property}"]`);
+        if (!meta) {
+            meta = document.createElement('meta');
+            meta.setAttribute('property', property);
+            document.head.appendChild(meta);
+        }
+        meta.content = content;
     }
+};
+
+// Auto-initialize
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => SEOManager.init());
+} else {
+    SEOManager.init();
 }
 
-// Export for use
+// Make global
 window.SEOManager = SEOManager;
-window.seoManager = new SEOManager();
