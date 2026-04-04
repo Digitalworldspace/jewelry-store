@@ -18,6 +18,11 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://styleoflife987-hub.github.io/jewelry-store/">
     
+    <!-- SEO File Connections - ADDED -->
+    <link rel="author" href="humans.txt">
+    <link rel="security-policy" href="security.txt">
+    <link rel="sitemap" type="application/xml" href="sitemap.xml">
+    
     <!-- Open Graph / Facebook Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://styleoflife987-hub.github.io/jewelry-store/">
@@ -131,9 +136,17 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ============================================ -->
+    <!-- SEO & ANALYTICS FILES - ADDED -->
+    <!-- ============================================ -->
     <script src="js/config.js"></script>
+    <script src="js/seo-helper.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/seo-integration.js"></script>
     
     <style>
+        /* Your existing CSS remains exactly the same */
         * {
             margin: 0;
             padding: 0;
@@ -1235,6 +1248,7 @@
     </style>
 </head>
 <body>
+    <!-- All your body content remains exactly the same -->
     <div class="light-bg"></div>
     <div class="floating-particles" id="particles"></div>
     
@@ -1358,7 +1372,7 @@
         </div>
     </div>
     
-    <!-- Footer with SEO Links - FULLY UPDATED WITH WORKING LINKS -->
+    <!-- Footer -->
     <footer class="site-footer" role="contentinfo">
         <div class="footer-content">
             <div class="footer-section">
@@ -1854,6 +1868,17 @@
                 closeProductDetail();
             }
         });
+        
+        // Initialize SEO and Analytics - ADDED
+        if (typeof SEOHelper !== 'undefined' && SEOHelper.init) {
+            SEOHelper.init();
+            console.log('✅ SEO Helper initialized');
+        }
+        
+        if (typeof Analytics !== 'undefined' && Analytics.init) {
+            Analytics.init();
+            console.log('✅ Analytics initialized');
+        }
         
         // Initialize
         loadStoryToggles();
