@@ -118,6 +118,7 @@
             padding: 8px;
             border-radius: 60px;
             border: 1px solid var(--gray-200);
+            flex-wrap: wrap;
         }
         
         .tab {
@@ -128,6 +129,7 @@
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s;
+            min-width: 100px;
         }
         
         .tab.active {
@@ -222,50 +224,6 @@
             color: white;
         }
         
-        /* Meta Tags List */
-        .meta-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .meta-item {
-            background: var(--gray-100);
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .meta-info h4 {
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-        
-        .meta-info p {
-            font-size: 12px;
-            color: var(--gray-600);
-        }
-        
-        .meta-actions {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .icon-btn {
-            background: none;
-            border: none;
-            padding: 8px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-        
-        .icon-btn:hover {
-            background: var(--gray-200);
-        }
-        
         /* Sitemap Section */
         .sitemap-urls {
             max-height: 400px;
@@ -278,6 +236,8 @@
             align-items: center;
             padding: 12px;
             border-bottom: 1px solid var(--gray-200);
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .url-item:last-child {
@@ -287,6 +247,16 @@
         .url-priority {
             font-size: 12px;
             color: var(--primary);
+        }
+        
+        /* Robots.txt Editor */
+        .robots-editor {
+            font-family: monospace;
+            font-size: 13px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 12px;
         }
         
         /* Toast */
@@ -302,16 +272,33 @@
             animation: slideIn 0.3s ease;
         }
         
+        .toast-success { background: var(--success); color: white; }
+        .toast-error { background: var(--danger); color: white; }
+        
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
+        
+        .loading { text-align: center; padding: 20px; }
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
         
         @media (max-width: 768px) {
             .admin-header { flex-direction: column; gap: 15px; padding: 15px; }
             .admin-nav { flex-wrap: wrap; justify-content: center; }
             .form-row { grid-template-columns: 1fr; }
             .container { padding: 15px; }
+            .tabs { flex-direction: column; border-radius: 20px; }
+            .tab { border-radius: 40px; }
         }
     </style>
 </head>
@@ -325,19 +312,20 @@
             <a href="admin.html"><i class="fas fa-chart-line"></i> Dashboard</a>
             <a href="admin-products.html"><i class="fas fa-box"></i> Products</a>
             <a href="admin-orders.html"><i class="fas fa-shopping-cart"></i> Orders</a>
-            <a href="seo-dashboard.html"><i class="fas fa-search"></i> SEO</a>
-            <a href="seo-manager.html" class="active"><i class="fas fa-cog"></i> Settings</a>
+            <a href="seo-dashboard.html"><i class="fas fa-search"></i> SEO Analytics</a>
+            <a href="seo-manager.html" class="active"><i class="fas fa-cog"></i> SEO Manager</a>
         </div>
         <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
 
     <div class="container">
         <div class="tabs">
-            <div class="tab active" onclick="showTab('meta')">Meta Tags</div>
-            <div class="tab" onclick="showTab('sitemap')">Sitemap</div>
-            <div class="tab" onclick="showTab('robots')">Robots.txt</div>
-            <div class="tab" onclick="showTab('schema')">Schema</div>
-            <div class="tab" onclick="showTab('settings')">Settings</div>
+            <div class="tab active" data-tab="meta">📝 Meta Tags</div>
+            <div class="tab" data-tab="sitemap">🗺️ Sitemap</div>
+            <div class="tab" data-tab="robots">🤖 Robots.txt</div>
+            <div class="tab" data-tab="schema">📊 Schema</div>
+            <div class="tab" data-tab="social">📱 Social Media</div>
+            <div class="tab" data-tab="advanced">⚙️ Advanced</div>
         </div>
         
         <!-- Meta Tags Tab -->
@@ -349,15 +337,15 @@
                 </div>
                 <div class="form-group">
                     <label>Site Title</label>
-                    <input type="text" id="siteTitle" value="Style Of Life - Luxury Jewelry Store | Diamond & Gold Jewelry Online">
+                    <input type="text" id="siteTitle" value="Style Of Life - Luxury Jewelry Store | Diamond & Gold Jewelry Online India">
                 </div>
                 <div class="form-group">
                     <label>Meta Description</label>
-                    <textarea id="siteDescription" rows="3">Discover exquisite handcrafted jewelry at Style Of Life. Shop diamond rings, gold necklaces, earrings, and luxury accessories. Free shipping on orders above ₹3000. 15-day exchange policy.</textarea>
+                    <textarea id="siteDescription" rows="3">Discover exquisite handcrafted jewelry at Style Of Life. Shop diamond rings, gold necklaces, earrings, and luxury accessories. Free shipping on orders above ₹3000.</textarea>
                 </div>
                 <div class="form-group">
                     <label>Meta Keywords</label>
-                    <input type="text" id="siteKeywords" value="jewelry, diamond jewelry, gold jewelry, luxury jewelry, engagement rings, necklaces, earrings, bracelets">
+                    <input type="text" id="siteKeywords" value="jewelry, diamond jewelry, gold jewelry, luxury jewelry, engagement rings, necklaces, earrings, bracelets, style of life">
                 </div>
                 <div class="form-group">
                     <label>Author</label>
@@ -428,7 +416,7 @@
                     <button class="btn btn-primary" onclick="saveRobotsTxt()">Save Changes</button>
                 </div>
                 <div class="form-group">
-                    <textarea id="robotsContent" rows="20" style="font-family: monospace; font-size: 12px;"></textarea>
+                    <textarea id="robotsContent" rows="20" style="font-family: monospace; font-size: 13px; background: #1e1e1e; color: #d4d4d4;"></textarea>
                 </div>
                 <p style="font-size: 12px; color: var(--gray-600); margin-top: 10px;">
                     <i class="fas fa-info-circle"></i> The robots.txt file tells search engines which pages to crawl.
@@ -461,16 +449,16 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Phone Number</label>
-                        <input type="text" id="businessPhone" value="+91-9876543210">
+                        <input type="text" id="businessPhone" value="+91-6352925472">
                     </div>
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="email" id="businessEmail" value="support@styleoflife.com">
+                        <input type="email" id="businessEmail" value="styleoflife987@gmail.com">
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Address</label>
-                    <input type="text" id="businessAddress" value="Mumbai, Maharashtra, India">
+                    <input type="text" id="businessAddress" value="Surat, Gujarat, India">
                 </div>
                 <div class="form-group">
                     <label>Price Range</label>
@@ -484,8 +472,38 @@
             </div>
         </div>
         
-        <!-- Settings Tab -->
-        <div id="settingsTab" class="tab-content" style="display: none;">
+        <!-- Social Media Tab -->
+        <div id="socialTab" class="tab-content" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-share-alt"></i> Social Media Links</h2>
+                </div>
+                <div class="form-group">
+                    <label>Instagram URL</label>
+                    <input type="text" id="instagramUrl" placeholder="https://instagram.com/styleoflife.in" value="https://instagram.com/styleoflife.in">
+                </div>
+                <div class="form-group">
+                    <label>Facebook URL</label>
+                    <input type="text" id="facebookUrl" placeholder="https://facebook.com/styleoflife">
+                </div>
+                <div class="form-group">
+                    <label>Twitter URL</label>
+                    <input type="text" id="twitterUrl" placeholder="https://twitter.com/styleoflife">
+                </div>
+                <div class="form-group">
+                    <label>Pinterest URL</label>
+                    <input type="text" id="pinterestUrl" placeholder="https://pinterest.com/styleoflife">
+                </div>
+                <div class="form-group">
+                    <label>YouTube URL</label>
+                    <input type="text" id="youtubeUrl" placeholder="https://youtube.com/c/styleoflife">
+                </div>
+                <button class="btn btn-primary" onclick="saveSocialSettings()">Save Social Links</button>
+            </div>
+        </div>
+        
+        <!-- Advanced Tab -->
+        <div id="advancedTab" class="tab-content" style="display: none;">
             <div class="card">
                 <div class="card-header">
                     <h2><i class="fas fa-chart-line"></i> Google Analytics</h2>
@@ -513,28 +531,6 @@
             
             <div class="card">
                 <div class="card-header">
-                    <h2><i class="fas fa-share-alt"></i> Social Media Links</h2>
-                </div>
-                <div class="form-group">
-                    <label>Instagram URL</label>
-                    <input type="text" id="instagramUrl" placeholder="https://instagram.com/styleoflife">
-                </div>
-                <div class="form-group">
-                    <label>Facebook URL</label>
-                    <input type="text" id="facebookUrl" placeholder="https://facebook.com/styleoflife">
-                </div>
-                <div class="form-group">
-                    <label>Twitter URL</label>
-                    <input type="text" id="twitterUrl" placeholder="https://twitter.com/styleoflife">
-                </div>
-                <div class="form-group">
-                    <label>Pinterest URL</label>
-                    <input type="text" id="pinterestUrl" placeholder="https://pinterest.com/styleoflife">
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
                     <h2><i class="fas fa-database"></i> Advanced Settings</h2>
                 </div>
                 <div class="form-group">
@@ -555,34 +551,48 @@
                         <option value="no">No</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label>Enable Open Graph</label>
+                    <select id="enableOG">
+                        <option value="yes" selected>Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Enable Twitter Cards</label>
+                    <select id="enableTwitter">
+                        <option value="yes" selected>Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
                 <button class="btn btn-primary" onclick="saveAdvancedSettings()">Save All Settings</button>
             </div>
         </div>
     </div>
 
     <script>
-        function showToast(message) {
+        function showToast(message, isError = false) {
             const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            toast.className = `toast ${isError ? 'toast-error' : 'toast-success'}`;
+            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
         
-        function showTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.style.display = 'none';
+        // Tab switching
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.getAttribute('data-tab');
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    document.getElementById(`${tabName}Tab`).style.display = 'block';
+                });
             });
-            
-            // Show selected tab
-            document.getElementById(`${tabName}Tab`).style.display = 'block';
-            
-            // Update active tab styling
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
         }
         
         function saveGlobalMeta() {
@@ -598,50 +608,45 @@
                 twitterDescription: document.getElementById('twitterDescription').value,
                 twitterImage: document.getElementById('twitterImage').value
             };
-            
             localStorage.setItem('seo_meta_settings', JSON.stringify(settings));
             showToast('Meta settings saved successfully!');
+            
+            // Apply to SEO Helper if available
+            if (typeof window.SEOHelper !== 'undefined') {
+                window.SEOHelper.setTitle(settings.siteTitle);
+                window.SEOHelper.setDescription(settings.siteDescription);
+                console.log('SEO settings applied to live site');
+            }
         }
         
         function generateSitemap() {
             const urls = [
-                { url: '/', priority: 1.0, changefreq: 'daily' },
-                { url: '/shop.html', priority: 0.9, changefreq: 'daily' },
-                { url: '/cart.html', priority: 0.6, changefreq: 'weekly' },
-                { url: '/checkout.html', priority: 0.5, changefreq: 'weekly' },
-                { url: '/track.html', priority: 0.5, changefreq: 'weekly' },
-                { url: '/customer-portal.html', priority: 0.6, changefreq: 'weekly' },
-                { url: '/register.html', priority: 0.5, changefreq: 'monthly' }
+                { url: '/', priority: 1.0, changefreq: 'daily', lastmod: '2026-04-05' },
+                { url: '/index.html', priority: 1.0, changefreq: 'daily', lastmod: '2026-04-05' },
+                { url: '/shop.html', priority: 0.9, changefreq: 'daily', lastmod: '2026-04-05' },
+                { url: '/cart.html', priority: 0.6, changefreq: 'weekly', lastmod: '2026-04-05' },
+                { url: '/checkout.html', priority: 0.5, changefreq: 'weekly', lastmod: '2026-04-05' },
+                { url: '/track.html', priority: 0.5, changefreq: 'weekly', lastmod: '2026-04-05' },
+                { url: '/customer-portal.html', priority: 0.6, changefreq: 'weekly', lastmod: '2026-04-05' },
+                { url: '/register.html', priority: 0.5, changefreq: 'monthly', lastmod: '2026-04-05' },
+                { url: '/shipping-policy.html', priority: 0.4, changefreq: 'monthly', lastmod: '2026-04-05' },
+                { url: '/privacy-policy.html', priority: 0.4, changefreq: 'monthly', lastmod: '2026-04-05' },
+                { url: '/terms-conditions.html', priority: 0.4, changefreq: 'monthly', lastmod: '2026-04-05' },
+                { url: '/faq.html', priority: 0.5, changefreq: 'monthly', lastmod: '2026-04-05' }
             ];
             
             const container = document.getElementById('sitemapUrls');
             let html = '';
             for (const u of urls) {
-                html += `
-                    <div class="url-item">
-                        <div>
-                            <strong>${u.url}</strong>
-                            <div style="font-size: 12px; color: var(--gray-600);">Change frequency: ${u.changefreq}</div>
-                        </div>
-                        <div class="url-priority">Priority: ${u.priority}</div>
-                    </div>
-                `;
+                html += `<div class="url-item"><div><strong>${u.url}</strong><div style="font-size: 12px; color: var(--gray-600);">Change frequency: ${u.changefreq} | Last mod: ${u.lastmod}</div></div><div class="url-priority">Priority: ${u.priority}</div></div>`;
             }
             container.innerHTML = html;
             showToast('Sitemap generated successfully!');
         }
         
         function downloadSitemap() {
-            const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <url>
-        <loc>https://styleoflife987-hub.github.io/jewelry-store/</loc>
-        <lastmod>2026-04-01</lastmod>
-        <changefreq>daily</changefreq>
-        <priority>1.0</priority>
-    </url>
-</urlset>`;
-            
+            const today = new Date().toISOString().split('T')[0];
+            const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n    <url>\n        <loc>https://styleoflife987-hub.github.io/jewelry-store/</loc>\n        <lastmod>${today}</lastmod>\n        <changefreq>daily</changefreq>\n        <priority>1.0</priority>\n    </url>\n    <url>\n        <loc>https://styleoflife987-hub.github.io/jewelry-store/shop.html</loc>\n        <lastmod>${today}</lastmod>\n        <changefreq>daily</changefreq>\n        <priority>0.9</priority>\n    </url>\n</urlset>`;
             const blob = new Blob([sitemapXml], { type: 'application/xml' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -672,87 +677,108 @@
             showToast('Schema settings saved!');
         }
         
+        function saveSocialSettings() {
+            const settings = {
+                instagramUrl: document.getElementById('instagramUrl').value,
+                facebookUrl: document.getElementById('facebookUrl').value,
+                twitterUrl: document.getElementById('twitterUrl').value,
+                pinterestUrl: document.getElementById('pinterestUrl').value,
+                youtubeUrl: document.getElementById('youtubeUrl').value
+            };
+            localStorage.setItem('social_settings', JSON.stringify(settings));
+            showToast('Social media settings saved!');
+        }
+        
         function saveAdvancedSettings() {
             const settings = {
                 gaId: document.getElementById('gaId').value,
                 gtmId: document.getElementById('gtmId').value,
                 gscCode: document.getElementById('gscCode').value,
-                instagramUrl: document.getElementById('instagramUrl').value,
-                facebookUrl: document.getElementById('facebookUrl').value,
-                twitterUrl: document.getElementById('twitterUrl').value,
-                pinterestUrl: document.getElementById('pinterestUrl').value,
                 canonicalUrl: document.getElementById('canonicalUrl').value,
                 enableBreadcrumbs: document.getElementById('enableBreadcrumbs').value,
-                enableSchema: document.getElementById('enableSchema').value
+                enableSchema: document.getElementById('enableSchema').value,
+                enableOG: document.getElementById('enableOG').value,
+                enableTwitter: document.getElementById('enableTwitter').value
             };
             localStorage.setItem('advanced_seo_settings', JSON.stringify(settings));
             showToast('Advanced settings saved!');
         }
         
         function loadRobotsTxt() {
-            const defaultRobots = `User-agent: *
-Allow: /
-Disallow: /admin*
-Disallow: /login*
-Sitemap: https://styleoflife987-hub.github.io/jewelry-store/sitemap.xml`;
-            
+            const defaultRobots = `# robots.txt for Style Of Life Jewelry\n\nUser-agent: *\nAllow: /\nDisallow: /admin*\nDisallow: /login*\nDisallow: /register*\n\nSitemap: https://styleoflife987-hub.github.io/jewelry-store/sitemap.xml\n\nUser-agent: Googlebot\nAllow: /\nCrawl-delay: 5\n\nUser-agent: Googlebot-Image\nAllow: /\nAllow: /*.jpg$\nAllow: /*.jpeg$\nAllow: /*.png$`;
             const saved = localStorage.getItem('robots_txt_content');
             document.getElementById('robotsContent').value = saved || defaultRobots;
         }
         
         function loadSavedSettings() {
+            // Load meta settings
             const metaSettings = localStorage.getItem('seo_meta_settings');
             if (metaSettings) {
                 const settings = JSON.parse(metaSettings);
-                document.getElementById('siteTitle').value = settings.siteTitle || '';
-                document.getElementById('siteDescription').value = settings.siteDescription || '';
-                document.getElementById('siteKeywords').value = settings.siteKeywords || '';
-                document.getElementById('siteAuthor').value = settings.siteAuthor || '';
-                document.getElementById('ogTitle').value = settings.ogTitle || '';
-                document.getElementById('ogImage').value = settings.ogImage || '';
-                document.getElementById('ogDescription').value = settings.ogDescription || '';
-                document.getElementById('twitterTitle').value = settings.twitterTitle || '';
-                document.getElementById('twitterDescription').value = settings.twitterDescription || '';
-                document.getElementById('twitterImage').value = settings.twitterImage || '';
+                if (document.getElementById('siteTitle')) document.getElementById('siteTitle').value = settings.siteTitle || '';
+                if (document.getElementById('siteDescription')) document.getElementById('siteDescription').value = settings.siteDescription || '';
+                if (document.getElementById('siteKeywords')) document.getElementById('siteKeywords').value = settings.siteKeywords || '';
+                if (document.getElementById('siteAuthor')) document.getElementById('siteAuthor').value = settings.siteAuthor || 'Style Of Life Jewelry';
+                if (document.getElementById('ogTitle')) document.getElementById('ogTitle').value = settings.ogTitle || '';
+                if (document.getElementById('ogImage')) document.getElementById('ogImage').value = settings.ogImage || '';
+                if (document.getElementById('ogDescription')) document.getElementById('ogDescription').value = settings.ogDescription || '';
+                if (document.getElementById('twitterTitle')) document.getElementById('twitterTitle').value = settings.twitterTitle || '';
+                if (document.getElementById('twitterDescription')) document.getElementById('twitterDescription').value = settings.twitterDescription || '';
+                if (document.getElementById('twitterImage')) document.getElementById('twitterImage').value = settings.twitterImage || '';
             }
             
+            // Load schema settings
             const schemaSettings = localStorage.getItem('schema_settings');
             if (schemaSettings) {
                 const settings = JSON.parse(schemaSettings);
-                document.getElementById('businessType').value = settings.businessType || 'JewelryStore';
-                document.getElementById('businessName').value = settings.businessName || 'Style Of Life';
-                document.getElementById('businessDescription').value = settings.businessDescription || '';
-                document.getElementById('businessPhone').value = settings.businessPhone || '';
-                document.getElementById('businessEmail').value = settings.businessEmail || '';
-                document.getElementById('businessAddress').value = settings.businessAddress || '';
-                document.getElementById('priceRange').value = settings.priceRange || '₹₹₹';
+                if (document.getElementById('businessType')) document.getElementById('businessType').value = settings.businessType || 'JewelryStore';
+                if (document.getElementById('businessName')) document.getElementById('businessName').value = settings.businessName || 'Style Of Life';
+                if (document.getElementById('businessDescription')) document.getElementById('businessDescription').value = settings.businessDescription || '';
+                if (document.getElementById('businessPhone')) document.getElementById('businessPhone').value = settings.businessPhone || '+91-6352925472';
+                if (document.getElementById('businessEmail')) document.getElementById('businessEmail').value = settings.businessEmail || 'styleoflife987@gmail.com';
+                if (document.getElementById('businessAddress')) document.getElementById('businessAddress').value = settings.businessAddress || 'Surat, Gujarat, India';
+                if (document.getElementById('priceRange')) document.getElementById('priceRange').value = settings.priceRange || '₹₹₹';
             }
             
+            // Load social settings
+            const socialSettings = localStorage.getItem('social_settings');
+            if (socialSettings) {
+                const settings = JSON.parse(socialSettings);
+                if (document.getElementById('instagramUrl')) document.getElementById('instagramUrl').value = settings.instagramUrl || '';
+                if (document.getElementById('facebookUrl')) document.getElementById('facebookUrl').value = settings.facebookUrl || '';
+                if (document.getElementById('twitterUrl')) document.getElementById('twitterUrl').value = settings.twitterUrl || '';
+                if (document.getElementById('pinterestUrl')) document.getElementById('pinterestUrl').value = settings.pinterestUrl || '';
+                if (document.getElementById('youtubeUrl')) document.getElementById('youtubeUrl').value = settings.youtubeUrl || '';
+            }
+            
+            // Load advanced settings
             const advancedSettings = localStorage.getItem('advanced_seo_settings');
             if (advancedSettings) {
                 const settings = JSON.parse(advancedSettings);
-                document.getElementById('gaId').value = settings.gaId || '';
-                document.getElementById('gtmId').value = settings.gtmId || '';
-                document.getElementById('gscCode').value = settings.gscCode || '';
-                document.getElementById('instagramUrl').value = settings.instagramUrl || '';
-                document.getElementById('facebookUrl').value = settings.facebookUrl || '';
-                document.getElementById('twitterUrl').value = settings.twitterUrl || '';
-                document.getElementById('pinterestUrl').value = settings.pinterestUrl || '';
-                document.getElementById('canonicalUrl').value = settings.canonicalUrl || '';
-                document.getElementById('enableBreadcrumbs').value = settings.enableBreadcrumbs || 'yes';
-                document.getElementById('enableSchema').value = settings.enableSchema || 'yes';
+                if (document.getElementById('gaId')) document.getElementById('gaId').value = settings.gaId || '';
+                if (document.getElementById('gtmId')) document.getElementById('gtmId').value = settings.gtmId || '';
+                if (document.getElementById('gscCode')) document.getElementById('gscCode').value = settings.gscCode || '';
+                if (document.getElementById('canonicalUrl')) document.getElementById('canonicalUrl').value = settings.canonicalUrl || 'https://styleoflife987-hub.github.io/jewelry-store/';
+                if (document.getElementById('enableBreadcrumbs')) document.getElementById('enableBreadcrumbs').value = settings.enableBreadcrumbs || 'yes';
+                if (document.getElementById('enableSchema')) document.getElementById('enableSchema').value = settings.enableSchema || 'yes';
+                if (document.getElementById('enableOG')) document.getElementById('enableOG').value = settings.enableOG || 'yes';
+                if (document.getElementById('enableTwitter')) document.getElementById('enableTwitter').value = settings.enableTwitter || 'yes';
             }
         }
         
-        window.logout = function() {
+        function logout() {
             sessionStorage.removeItem('adminLoggedIn');
             window.location.href = 'login.html';
-        };
+        }
         
         // Initialize
+        initTabs();
         loadRobotsTxt();
         loadSavedSettings();
         generateSitemap();
+        
+        // Set default active tab
+        document.getElementById('metaTab').style.display = 'block';
         
         // Check authentication
         if (!sessionStorage.getItem('adminLoggedIn')) {
