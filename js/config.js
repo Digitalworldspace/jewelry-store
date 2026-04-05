@@ -1,13 +1,27 @@
 // js/config.js
+// Style Of Life - Main Configuration File
+
 const CONFIG = {
+    // Site Information
     SITE_NAME: "Style Of Life Jewelry",
     SITE_TAGLINE: "Timeless Elegance",
+    SITE_URL: "https://styleoflife987-hub.github.io/jewelry-store/",
+    
+    // Currency Settings
     CURRENCY: "₹",
     CURRENCY_SYMBOL: "₹",
     
-    // Supabase Configuration - YOUR ACTUAL CREDENTIALS
+    // Supabase Configuration
     SUPABASE_URL: "https://kkvgdagjboxhtuyqlomq.supabase.co",
     SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrdmdkYWdqYm94aHR1eXFsb21xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzgyMTksImV4cCI6MjA5MDA1NDIxOX0.5A4UUcvwAi5UM8K81mmrN3lOTmzUYq70qRouaVqpwDA",
+    
+    // Contact Information
+    CONTACT: {
+        PHONE: "+91-6352925472",
+        EMAIL: "styleoflife987@gmail.com",
+        ADDRESS: "Surat, Gujarat, India",
+        INSTAGRAM: "https://instagram.com/styleoflife.in"
+    },
     
     // Shipping Settings
     FREE_SHIPPING_THRESHOLD: 3000,
@@ -29,8 +43,7 @@ const CONFIG = {
     
     // Payment Methods
     PAYMENT_METHODS: {
-        'razorpay': { label: 'Razorpay', icon: '💳', enabled: true },
-        'cod': { label: 'Cash on Delivery', icon: '💵', enabled: true }
+        'razorpay': { label: 'Razorpay', icon: '💳', enabled: true }
     }
 };
 
@@ -39,5 +52,5 @@ window.CONFIG = CONFIG;
 
 // Also store in localStorage for debugging
 console.log('✅ Config loaded');
-console.log('Supabase URL:', CONFIG.SUPABASE_URL);
-console.log('Supabase Key:', CONFIG.SUPABASE_ANON_KEY ? '✓ Present' : '✗ Missing');
+console.log('Site:', CONFIG.SITE_NAME);
+console.log('Supabase URL:', CONFIG.SUPABASE_URL ? '✓ Present' : '✗ Missing');
