@@ -66,35 +66,29 @@
         if (typeof window.SEOHelper !== 'undefined' && window.SEOHelper.init) {
             window.SEOHelper.init();
             console.log('SEO Integration: SEO Helper initialized');
-        } else if (typeof window.seoHelper !== 'undefined' && window.seoHelper.init) {
-            window.seoHelper.init();
-            console.log('SEO Integration: seoHelper initialized');
         }
         
         // 8. Initialize Analytics if available
         if (typeof window.Analytics !== 'undefined' && window.Analytics.init) {
             window.Analytics.init();
             console.log('SEO Integration: Analytics initialized');
-        } else if (typeof window.analytics !== 'undefined' && window.analytics.init) {
-            window.analytics.init();
-            console.log('SEO Integration: analytics initialized');
         }
         
-        // 9. Track product page if product data exists
-        if (window.currentProduct && typeof window.Analytics !== 'undefined') {
-            window.Analytics.trackProductView(window.currentProduct);
-            console.log('SEO Integration: Product view tracked');
+        // 9. Initialize SEO Manager if available
+        if (typeof window.SEOManager !== 'undefined' && window.SEOManager.init) {
+            window.SEOManager.init();
+            console.log('SEO Integration: SEO Manager initialized');
         }
         
-        // 10. Add structured data for contact page if applicable
+        // 10. Add structured data for FAQ page if applicable
+        if (window.location.pathname.includes('faq')) {
+            addFAQPageSchema();
+        }
+        
+        // 11. Add structured data for contact page if applicable
         if (window.location.pathname.includes('contact') || 
             window.location.pathname.includes('customer-portal')) {
             addContactPageSchema();
-        }
-        
-        // 11. Add structured data for FAQ page if applicable
-        if (window.location.pathname.includes('faq')) {
-            addFAQPageSchema();
         }
         
         console.log('SEO Integration - Complete');
@@ -134,7 +128,6 @@
     function addFAQPageSchema() {
         if (document.querySelector('script[data-faq-schema]')) return;
         
-        // Get all FAQ items from the page
         const faqItems = [];
         const faqQuestions = document.querySelectorAll('.faq-question');
         
@@ -171,14 +164,10 @@
         const links = document.querySelectorAll('a[href^="http"]');
         links.forEach(link => {
             if (!link.href.includes(window.location.hostname)) {
-                link.addEventListener('click', function(e) {
+                link.addEventListener('click', function() {
                     if (typeof window.Analytics !== 'undefined') {
-                        window.Analytics.trackEvent('outbound_click', {
-                            url: this.href,
-                            text: this.innerText
-                        });
+                        console.log(`SEO Integration: Outbound link clicked - ${this.href}`);
                     }
-                    console.log(`SEO Integration: Outbound link clicked - ${this.href}`);
                 });
             }
         });
@@ -188,14 +177,10 @@
     function trackDownloads() {
         const downloadLinks = document.querySelectorAll('a[href$=".pdf"], a[href$=".zip"], a[href$=".doc"], a[href$=".jpg"], a[href$=".png"]');
         downloadLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
+            link.addEventListener('click', function() {
                 if (typeof window.Analytics !== 'undefined') {
-                    window.Analytics.trackEvent('download', {
-                        file: this.href,
-                        type: this.href.split('.').pop()
-                    });
+                    console.log(`SEO Integration: Download tracked - ${this.href}`);
                 }
-                console.log(`SEO Integration: Download tracked - ${this.href}`);
             });
         });
     }
@@ -212,7 +197,6 @@
 window.refreshSEOSchemas = function() {
     console.log('SEO Integration: Refreshing schemas...');
     if (window.location.pathname.includes('faq')) {
-        // This will be called by the FAQ page after loading dynamic content
         setTimeout(() => {
             if (typeof addFAQPageSchema === 'function') {
                 addFAQPageSchema();
