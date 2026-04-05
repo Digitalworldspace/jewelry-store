@@ -6,7 +6,6 @@
     <title>SEO Manager - Style Of Life</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -155,11 +154,13 @@
             gap: 15px;
             border: 1px solid var(--gray-200);
             transition: all 0.3s;
+            cursor: pointer;
         }
         
         .stat-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: var(--primary);
         }
         
         .stat-icon {
@@ -187,16 +188,72 @@
             color: var(--gray-800);
         }
         
-        .stat-trend {
-            font-size: 11px;
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+        /* Google Tools Cards */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
         }
         
-        .trend-up { color: var(--success); }
-        .trend-down { color: var(--danger); }
+        .tool-card {
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+        
+        .tool-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-light), rgba(212,175,55,0.1));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .tool-icon i {
+            font-size: 40px;
+            color: var(--primary);
+        }
+        
+        .tool-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .tool-card p {
+            color: var(--gray-600);
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+        
+        .tool-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: var(--dark);
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .tool-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
         
         /* Charts Row */
         .charts-row {
@@ -309,29 +366,26 @@
             color: var(--gray-800);
         }
         
-        .btn-danger {
-            background: var(--danger);
-            color: white;
+        .sitemap-urls {
+            max-height: 400px;
+            overflow-y: auto;
         }
         
-        /* Search Console Connect */
-        .gsc-connect {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            border-radius: 16px;
-            padding: 25px;
-            text-align: center;
-            margin-bottom: 25px;
+        .url-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-200);
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
-        .gsc-connected {
-            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 25px;
+        .url-priority {
+            font-size: 12px;
+            color: var(--primary);
         }
         
-        /* Data Table */
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -348,18 +402,6 @@
             font-weight: 600;
             font-size: 12px;
         }
-        
-        .rank-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        
-        .rank-top { background: #d1fae5; color: #065f46; }
-        .rank-middle { background: #fef3c7; color: #92400e; }
-        .rank-bottom { background: #fee2e2; color: #991b1b; }
         
         .loading {
             text-align: center;
@@ -392,7 +434,6 @@
         
         .toast-success { background: var(--success); color: white; }
         .toast-error { background: var(--danger); color: white; }
-        .toast-info { background: var(--info); color: white; }
         
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
@@ -407,13 +448,14 @@
             .container { padding: 15px; }
             .tabs { flex-direction: column; border-radius: 20px; }
             .tab { border-radius: 40px; }
+            .tools-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <div class="admin-header">
         <div class="logo">
-            <i class="fas fa-chart-line"></i>
+            <i class="fas fa-cog"></i>
             STYLE OF LIFE <span>SEO MANAGER</span>
         </div>
         <div class="admin-nav">
@@ -427,129 +469,17 @@
 
     <div class="container">
         <div class="tabs">
-            <div class="tab active" data-tab="dashboard">📊 Search Console</div>
-            <div class="tab" data-tab="analytics">📈 Analytics</div>
+            <div class="tab active" data-tab="dashboard">📊 Dashboard</div>
+            <div class="tab" data-tab="google">🔍 Google Tools</div>
             <div class="tab" data-tab="meta">📝 Meta Tags</div>
             <div class="tab" data-tab="sitemap">🗺️ Sitemap</div>
             <div class="tab" data-tab="robots">🤖 Robots.txt</div>
             <div class="tab" data-tab="settings">⚙️ Settings</div>
         </div>
         
-        <!-- ==================== SEARCH CONSOLE DASHBOARD ==================== -->
+        <!-- ==================== DASHBOARD TAB ==================== -->
         <div id="dashboardTab" class="tab-content active">
-            <!-- Google Search Console Stats -->
-            <div class="stats-grid" id="gscStats">
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-eye"></i></div>
-                    <div class="stat-info">
-                        <h3>Total Impressions</h3>
-                        <div class="stat-number" id="totalImpressions">--</div>
-                        <div class="stat-trend"><i class="fas fa-arrow-up trend-up"></i> <span id="impressionsTrend">+0%</span></div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-mouse-pointer"></i></div>
-                    <div class="stat-info">
-                        <h3>Total Clicks</h3>
-                        <div class="stat-number" id="totalClicks">--</div>
-                        <div class="stat-trend"><i class="fas fa-arrow-up trend-up"></i> <span id="clicksTrend">+0%</span></div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
-                    <div class="stat-info">
-                        <h3>CTR (Click Rate)</h3>
-                        <div class="stat-number" id="ctr">--</div>
-                        <div class="stat-trend"><i class="fas fa-arrow-up trend-up"></i> <span id="ctrTrend">+0%</span></div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-chart-bar"></i></div>
-                    <div class="stat-info">
-                        <h3>Avg. Position</h3>
-                        <div class="stat-number" id="avgPosition">--</div>
-                        <div class="stat-trend"><i class="fas fa-arrow-down trend-down"></i> <span id="positionTrend">-0</span></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Charts -->
-            <div class="charts-row">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3><i class="fas fa-chart-line"></i> Performance Over Time</h3>
-                        <select id="periodSelect" onchange="loadSearchConsoleData()">
-                            <option value="7">Last 7 Days</option>
-                            <option value="28" selected>Last 28 Days</option>
-                            <option value="90">Last 90 Days</option>
-                        </select>
-                    </div>
-                    <canvas id="performanceChart"></canvas>
-                </div>
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3><i class="fas fa-chart-pie"></i> Device Breakdown</h3>
-                    </div>
-                    <canvas id="deviceChart"></canvas>
-                </div>
-            </div>
-            
-            <!-- Top Queries -->
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-search"></i> Top Search Queries</h2>
-                    <button class="btn btn-secondary" onclick="refreshSearchConsoleData()"><i class="fas fa-sync-alt"></i> Refresh</button>
-                </div>
-                <div style="overflow-x: auto;">
-                    <table class="data-table">
-                        <thead>
-                            <tr><th>Query</th><th>Clicks</th><th>Impressions</th><th>CTR</th><th>Position</th></tr>
-                        </thead>
-                        <tbody id="topQueries">
-                            <tr><td colspan="5" class="loading"><div class="spinner"></div>Loading from Google Search Console...<br><small>Connect your Search Console property below</small></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Top Pages -->
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-file-alt"></i> Top Performing Pages</h2>
-                </div>
-                <div style="overflow-x: auto;">
-                    <table class="data-table">
-                        <thead>
-                            <tr><th>Page URL</th><th>Clicks</th><th>Impressions</th><th>CTR</th><th>Position</th></tr>
-                        </thead>
-                        <tbody id="topPages">
-                            <tr><td colspan="5" class="loading"><div class="spinner"></div>Loading...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Google Search Console Connection -->
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fab fa-google"></i> Google Search Console Connection</h2>
-                </div>
-                <div id="gscConnectionStatus">
-                    <div class="gsc-connect">
-                        <i class="fab fa-google" style="font-size: 48px; color: var(--primary); margin-bottom: 15px; display: block;"></i>
-                        <h3>Connect to Google Search Console</h3>
-                        <p style="margin: 10px 0; color: var(--gray-600);">Connect your Search Console property to see real search performance data.</p>
-                        <button class="btn btn-primary" onclick="connectGoogleSearchConsole()"><i class="fab fa-google"></i> Connect with Google</button>
-                        <p style="margin-top: 15px; font-size: 12px; color: var(--gray-600);">
-                            <i class="fas fa-lock"></i> Your data is secure. We only request read-only access.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- ==================== ANALYTICS TAB ==================== -->
-        <div id="analyticsTab" class="tab-content">
+            <!-- Stats from Database -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-box"></i></div>
@@ -581,6 +511,7 @@
                 </div>
             </div>
             
+            <!-- Charts -->
             <div class="charts-row">
                 <div class="chart-card">
                     <div class="chart-header">
@@ -601,6 +532,7 @@
                 </div>
             </div>
             
+            <!-- Recent Orders -->
             <div class="card">
                 <div class="card-header">
                     <h2><i class="fas fa-clock"></i> Recent Orders</h2>
@@ -608,8 +540,136 @@
                 <div style="overflow-x: auto;">
                     <table class="data-table">
                         <thead><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
-                        <tbody id="recentOrders"><tr><td colspan="5" class="loading"><div class="spinner"></div>Loading...</td></tr>
+                        <tbody id="recentOrders"><tr><td colspan="5" class="loading"><div class="spinner"></div>Loading...</td></tr></tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ==================== GOOGLE TOOLS TAB ==================== -->
+        <div id="googleTab" class="tab-content">
+            <div class="tools-grid">
+                <!-- Google Search Console -->
+                <div class="tool-card" onclick="window.open('https://search.google.com/search-console', '_blank')">
+                    <div class="tool-icon">
+                        <i class="fab fa-google"></i>
+                    </div>
+                    <h3>Google Search Console</h3>
+                    <p>See your search traffic data - clicks, impressions, CTR, and position directly from Google.</p>
+                    <span class="tool-btn">Open Search Console →</span>
+                </div>
+                
+                <!-- Google Analytics -->
+                <div class="tool-card" onclick="window.open('https://analytics.google.com', '_blank')">
+                    <div class="tool-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Google Analytics</h3>
+                    <p>Track your website visitors, page views, bounce rate, and user behavior.</p>
+                    <span class="tool-btn">Open Analytics →</span>
+                </div>
+                
+                <!-- Google PageSpeed Insights -->
+                <div class="tool-card" onclick="window.open('https://pagespeed.web.dev/', '_blank')">
+                    <div class="tool-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h3>PageSpeed Insights</h3>
+                    <p>Check your website speed and get optimization recommendations.</p>
+                    <span class="tool-btn">Check Speed →</span>
+                </div>
+                
+                <!-- Google Business Profile -->
+                <div class="tool-card" onclick="window.open('https://business.google.com/', '_blank')">
+                    <div class="tool-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <h3>Google Business Profile</h3>
+                    <p>Manage how your jewelry store appears on Google Maps and Search.</p>
+                    <span class="tool-btn">Manage Profile →</span>
+                </div>
+                
+                <!-- Google Trends -->
+                <div class="tool-card" onclick="window.open('https://trends.google.com/', '_blank')">
+                    <div class="tool-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Google Trends</h3>
+                    <p>Discover what people are searching for in the jewelry industry.</p>
+                    <span class="tool-btn">Explore Trends →</span>
+                </div>
+                
+                <!-- Google Keyword Planner -->
+                <div class="tool-card" onclick="window.open('https://ads.google.com/home/tools/keyword-planner/', '_blank')">
+                    <div class="tool-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h3>Keyword Planner</h3>
+                    <p>Find the best keywords for your jewelry store SEO strategy.</p>
+                    <span class="tool-btn">Find Keywords →</span>
+                </div>
+            </div>
+            
+            <!-- SEO Checklist -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-check-circle"></i> SEO Checklist</h2>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--gray-100); border-radius: 12px;">
+                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                        <span>Add site to Google Search Console</span>
+                        <a href="https://search.google.com/search-console" target="_blank" style="margin-left: auto; color: var(--primary);">Add Now →</a>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--gray-100); border-radius: 12px;">
+                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                        <span>Submit sitemap.xml to Google</span>
+                        <a href="https://search.google.com/search-console/sitemaps" target="_blank" style="margin-left: auto; color: var(--primary);">Submit →</a>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--gray-100); border-radius: 12px;">
+                        <i class="fas fa-circle" style="color: var(--gray-600);"></i>
+                        <span>Set up Google Analytics</span>
+                        <a href="https://analytics.google.com/" target="_blank" style="margin-left: auto; color: var(--primary);">Set Up →</a>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--gray-100); border-radius: 12px;">
+                        <i class="fas fa-circle" style="color: var(--gray-600);"></i>
+                        <span>Optimize page speed</span>
+                        <a href="https://pagespeed.web.dev/" target="_blank" style="margin-left: auto; color: var(--primary);">Check →</a>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--gray-100); border-radius: 12px;">
+                        <i class="fas fa-circle" style="color: var(--gray-600);"></i>
+                        <span>Add meta descriptions to all pages</span>
+                        <span style="margin-left: auto; font-size: 12px; color: var(--gray-600);">In Progress</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Tips -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-lightbulb"></i> SEO Quick Tips</h2>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                    <div style="padding: 12px; background: var(--gray-100); border-radius: 12px;">
+                        <i class="fas fa-key" style="color: var(--primary); margin-bottom: 8px; display: block;"></i>
+                        <strong>Use keywords naturally</strong>
+                        <p style="font-size: 12px; margin-top: 5px;">Include "jewelry", "diamond rings", "gold necklaces" in your content.</p>
+                    </div>
+                    <div style="padding: 12px; background: var(--gray-100); border-radius: 12px;">
+                        <i class="fas fa-image" style="color: var(--primary); margin-bottom: 8px; display: block;"></i>
+                        <strong>Optimize images</strong>
+                        <p style="font-size: 12px; margin-top: 5px;">Add alt text to all product images.</p>
+                    </div>
+                    <div style="padding: 12px; background: var(--gray-100); border-radius: 12px;">
+                        <i class="fas fa-mobile-alt" style="color: var(--primary); margin-bottom: 8px; display: block;"></i>
+                        <strong>Mobile friendly</strong>
+                        <p style="font-size: 12px; margin-top: 5px;">Your site is already mobile responsive!</p>
+                    </div>
+                    <div style="padding: 12px; background: var(--gray-100); border-radius: 12px;">
+                        <i class="fas fa-link" style="color: var(--primary); margin-bottom: 8px; display: block;"></i>
+                        <strong>Internal linking</strong>
+                        <p style="font-size: 12px; margin-top: 5px;">Link between your product pages.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -710,20 +770,6 @@
         <div id="settingsTab" class="tab-content">
             <div class="card">
                 <div class="card-header">
-                    <h2><i class="fas fa-chart-line"></i> Google Analytics</h2>
-                </div>
-                <div class="form-group">
-                    <label>Google Analytics ID</label>
-                    <input type="text" id="gaId" placeholder="G-XXXXXXXXXX">
-                </div>
-                <div class="form-group">
-                    <label>Google Tag Manager ID</label>
-                    <input type="text" id="gtmId" placeholder="GTM-XXXXXXX">
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
                     <h2><i class="fas fa-database"></i> Advanced Settings</h2>
                 </div>
                 <div class="form-group">
@@ -761,149 +807,46 @@
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         
-        let performanceChart = null;
-        let deviceChart = null;
         let ordersChart = null;
         let statusChart = null;
         
-        // ==================== GOOGLE SEARCH CONSOLE DATA ====================
-        // Store Search Console data (will be populated from API)
-        let searchConsoleData = {
-            impressions: [],
-            clicks: [],
-            ctr: [],
-            position: []
-        };
-        
-        async function loadSearchConsoleData() {
-            const period = parseInt(document.getElementById('periodSelect').value);
-            
-            // Try to get data from localStorage first (cached)
-            const cachedData = localStorage.getItem('gsc_data_' + period);
-            if (cachedData) {
-                const data = JSON.parse(cachedData);
-                displaySearchConsoleData(data);
-            }
-            
-            // In real implementation, this would call the Google Search Console API
-            // For demo, we'll use sample data that can be replaced with real API calls
-            showToast('Connect Google Search Console to see real search data', false, true);
-            
-            // Sample data structure (replace with actual API call)
-            const sampleData = generateSampleData(period);
-            displaySearchConsoleData(sampleData);
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'toast-error' : 'toast-success'}`;
+            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
         
-        function generateSampleData(days) {
-            const labels = [];
-            const impressions = [];
-            const clicks = [];
-            const ctrData = [];
-            const positionData = [];
-            
-            for (let i = days - 1; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                labels.push(date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }));
-                impressions.push(Math.floor(200 + Math.random() * 300));
-                clicks.push(Math.floor(10 + Math.random() * 30));
-                ctrData.push((clicks[clicks.length-1] / impressions[impressions.length-1] * 100).toFixed(1));
-                positionData.push((5 + Math.random() * 10).toFixed(1));
-            }
-            
-            return { labels, impressions, clicks, ctrData, positionData };
-        }
-        
-        function displaySearchConsoleData(data) {
-            // Update stats
-            const totalImpressions = data.impressions.reduce((a,b) => a + b, 0);
-            const totalClicks = data.clicks.reduce((a,b) => a + b, 0);
-            const avgCTR = ((totalClicks / totalImpressions) * 100).toFixed(1);
-            const avgPos = (data.positionData.reduce((a,b) => a + parseFloat(b), 0) / data.positionData.length).toFixed(1);
-            
-            document.getElementById('totalImpressions').textContent = totalImpressions.toLocaleString();
-            document.getElementById('totalClicks').textContent = totalClicks.toLocaleString();
-            document.getElementById('ctr').textContent = `${avgCTR}%`;
-            document.getElementById('avgPosition').textContent = avgPos;
-            
-            // Performance Chart
-            const perfCtx = document.getElementById('performanceChart').getContext('2d');
-            if (performanceChart) performanceChart.destroy();
-            performanceChart = new Chart(perfCtx, {
-                type: 'line',
-                data: {
-                    labels: data.labels,
-                    datasets: [
-                        { label: 'Impressions', data: data.impressions, borderColor: '#d4af37', backgroundColor: 'rgba(212,175,55,0.1)', borderWidth: 2, fill: true, tension: 0.4, yAxisID: 'y' },
-                        { label: 'Clicks', data: data.clicks, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', borderWidth: 2, fill: true, tension: 0.4, yAxisID: 'y' },
-                        { label: 'Position', data: data.positionData, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', borderWidth: 2, fill: true, tension: 0.4, yAxisID: 'y1' }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Count' } },
-                        y1: { position: 'right', beginAtZero: true, title: { display: true, text: 'Position (lower is better)' }, grid: { display: false } }
+        // Tab switching
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.getAttribute('data-tab');
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(`${tabName}Tab`).classList.add('active');
+                    
+                    if (tabName === 'dashboard') {
+                        loadDashboardData();
                     }
-                }
+                });
             });
-            
-            // Device Chart (sample)
-            const deviceCtx = document.getElementById('deviceChart').getContext('2d');
-            if (deviceChart) deviceChart.destroy();
-            deviceChart = new Chart(deviceCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Mobile', 'Desktop', 'Tablet'],
-                    datasets: [{ data: [65, 30, 5], backgroundColor: ['#d4af37', '#3b82f6', '#10b981'], borderWidth: 0 }]
-                },
-                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
-            });
-            
-            // Top Queries
-            const topQueries = [
-                { query: "luxury jewelry online", clicks: 245, impressions: 12500, ctr: 1.96, position: 8.2 },
-                { query: "diamond rings india", clicks: 189, impressions: 8900, ctr: 2.12, position: 6.5 },
-                { query: "gold necklaces", clicks: 156, impressions: 7200, ctr: 2.17, position: 4.8 },
-                { query: "style of life jewelry", clicks: 98, impressions: 3400, ctr: 2.88, position: 3.2 },
-                { query: "engagement rings", clicks: 87, impressions: 5600, ctr: 1.55, position: 11.4 }
-            ];
-            
-            let queriesHtml = '';
-            for (const q of topQueries) {
-                const rankClass = q.position <= 5 ? 'rank-top' : (q.position <= 10 ? 'rank-middle' : 'rank-bottom');
-                queriesHtml += `<tr><td><strong>${q.query}</strong></td><td>${q.clicks}</td><td>${q.impressions.toLocaleString()}</td><td>${q.ctr}%</td><td><span class="rank-badge ${rankClass}">${q.position}</span></td></tr>`;
-            }
-            document.getElementById('topQueries').innerHTML = queriesHtml;
-            
-            // Top Pages
-            const topPages = [
-                { page: "/", clicks: 345, impressions: 18500, ctr: 1.86, position: 5.2 },
-                { page: "/shop.html", clicks: 278, impressions: 14200, ctr: 1.96, position: 6.8 },
-                { page: "/product/diamond-ring", clicks: 89, impressions: 5600, ctr: 1.59, position: 9.5 }
-            ];
-            
-            let pagesHtml = '';
-            for (const p of topPages) {
-                pagesHtml += `<tr><td>${p.page}</td><td>${p.clicks}</td><td>${p.impressions.toLocaleString()}</td><td>${p.ctr}%</td><td>${p.position}</td></tr>`;
-            }
-            document.getElementById('topPages').innerHTML = pagesHtml;
         }
         
-        function refreshSearchConsoleData() {
-            showToast('Refreshing data from Google Search Console...', false, true);
-            loadSearchConsoleData();
+        // Dashboard Functions
+        async function loadDashboardData() {
+            await loadStats();
+            await loadOrdersChart();
+            await loadStatusChart();
+            await loadRecentOrders();
         }
         
-        function connectGoogleSearchConsole() {
-            // In real implementation, this would redirect to Google OAuth
-            window.open('https://search.google.com/search-console', '_blank');
-            showToast('Please add and verify your site in Google Search Console first', false, true);
-        }
-        
-        // ==================== ANALYTICS FUNCTIONS ====================
-        async function loadAnalyticsStats() {
+        async function loadStats() {
             try {
                 const { count: productsCount } = await supabase.from('products').select('*', { count: 'exact', head: true });
                 const { data: orders } = await supabase.from('orders').select('*');
@@ -991,7 +934,7 @@
             } catch (error) { console.error('Error loading recent orders:', error); }
         }
         
-        // ==================== META FUNCTIONS ====================
+        // Meta Functions
         function saveGlobalMeta() {
             const settings = {
                 siteTitle: document.getElementById('siteTitle').value,
@@ -1008,7 +951,7 @@
             showToast('Meta settings saved successfully!');
         }
         
-        // ==================== SITEMAP FUNCTIONS ====================
+        // Sitemap Functions
         function generateSitemap() {
             const urls = [
                 { url: '/', priority: 1.0, changefreq: 'daily' },
@@ -1045,7 +988,7 @@
             showToast('Sitemap downloaded!');
         }
         
-        // ==================== ROBOTS.TXT FUNCTIONS ====================
+        // Robots.txt Functions
         function saveRobotsTxt() {
             const content = document.getElementById('robotsContent').value;
             localStorage.setItem('robots_txt_content', content);
@@ -1058,11 +1001,9 @@
             document.getElementById('robotsContent').value = saved || defaultRobots;
         }
         
-        // ==================== ADVANCED FUNCTIONS ====================
+        // Advanced Functions
         function saveAdvancedSettings() {
             const settings = {
-                gaId: document.getElementById('gaId').value,
-                gtmId: document.getElementById('gtmId').value,
                 canonicalUrl: document.getElementById('canonicalUrl').value,
                 enableBreadcrumbs: document.getElementById('enableBreadcrumbs').value,
                 enableSchema: document.getElementById('enableSchema').value
@@ -1089,40 +1030,10 @@
             const advancedSettings = localStorage.getItem('advanced_seo_settings');
             if (advancedSettings) {
                 const settings = JSON.parse(advancedSettings);
-                if (document.getElementById('gaId')) document.getElementById('gaId').value = settings.gaId || '';
-                if (document.getElementById('gtmId')) document.getElementById('gtmId').value = settings.gtmId || '';
                 if (document.getElementById('canonicalUrl')) document.getElementById('canonicalUrl').value = settings.canonicalUrl || '';
                 if (document.getElementById('enableBreadcrumbs')) document.getElementById('enableBreadcrumbs').value = settings.enableBreadcrumbs || 'yes';
                 if (document.getElementById('enableSchema')) document.getElementById('enableSchema').value = settings.enableSchema || 'yes';
             }
-        }
-        
-        // ==================== TAB FUNCTIONS ====================
-        function initTabs() {
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabName = tab.getAttribute('data-tab');
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    document.querySelectorAll('.tab-content').forEach(content => {
-                        content.classList.remove('active');
-                    });
-                    document.getElementById(`${tabName}Tab`).classList.add('active');
-                    
-                    if (tabName === 'dashboard') loadSearchConsoleData();
-                    if (tabName === 'analytics') { loadAnalyticsStats(); loadOrdersChart(); loadStatusChart(); loadRecentOrders(); }
-                });
-            });
-        }
-        
-        function showToast(message, isError = false, isInfo = false) {
-            const toast = document.createElement('div');
-            if (isInfo) toast.className = 'toast toast-info';
-            else toast.className = `toast ${isError ? 'toast-error' : 'toast-success'}`;
-            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : (isInfo ? 'fa-info-circle' : 'fa-check-circle')}"></i> ${message}`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
         }
         
         function escapeHtml(str) {
@@ -1140,16 +1051,9 @@
         loadRobotsTxt();
         loadSavedSettings();
         generateSitemap();
-        loadSearchConsoleData();
-        loadAnalyticsStats();
-        loadOrdersChart();
-        loadStatusChart();
-        loadRecentOrders();
+        loadDashboardData();
         
         // Global functions
-        window.loadSearchConsoleData = loadSearchConsoleData;
-        window.refreshSearchConsoleData = refreshSearchConsoleData;
-        window.connectGoogleSearchConsole = connectGoogleSearchConsole;
         window.saveGlobalMeta = saveGlobalMeta;
         window.generateSitemap = generateSitemap;
         window.downloadSitemap = downloadSitemap;
