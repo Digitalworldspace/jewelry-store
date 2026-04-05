@@ -2,11 +2,67 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Shop - Style Of Life</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    
+    <!-- Primary SEO Meta Tags -->
+    <title>Shop Luxury Jewelry Online - Style Of Life | Diamond Rings, Gold Necklaces</title>
+    <meta name="description" content="Shop the finest collection of luxury jewelry online at Style Of Life. Browse diamond rings, gold necklaces, earrings, bracelets, and more. Best prices. Free shipping available.">
+    <meta name="keywords" content="buy jewelry online, shop diamond rings, gold jewelry online, luxury jewelry shopping, best jewelry store, style of life shop, jewelry collection, online jewelry store India">
+    <meta name="author" content="Style Of Life Jewelry">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://styleoflife987-hub.github.io/jewelry-store/shop.html">
+    
+    <!-- SEO File Connections -->
+    <link rel="author" href="humans.txt">
+    <link rel="security-policy" href="security.txt">
+    <link rel="sitemap" type="application/xml" href="sitemap.xml">
+    
+    <!-- Open Graph / Facebook Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://styleoflife987-hub.github.io/jewelry-store/shop.html">
+    <meta property="og:title" content="Shop Luxury Jewelry Online - Style Of Life">
+    <meta property="og:description" content="Shop the finest collection of luxury jewelry online. Browse diamond rings, gold necklaces, earrings, bracelets, and more. Best prices. Free shipping available.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Style Of Life Jewelry">
+    <meta property="og:locale" content="en_IN">
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://styleoflife987-hub.github.io/jewelry-store/shop.html">
+    <meta name="twitter:title" content="Shop Luxury Jewelry Online - Style Of Life">
+    <meta name="twitter:description" content="Shop the finest collection of luxury jewelry online. Browse diamond rings, gold necklaces, earrings, bracelets, and more.">
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338">
+    
+    <!-- Meta Theme Color -->
+    <meta name="theme-color" content="#d4af37">
+    <meta name="msapplication-TileColor" content="#d4af37">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
+    
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://kkvgdagjboxhtuyqlomq.supabase.co">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/config.js"></script>
+    
+    <!-- SEO & Analytics Files -->
+    <script src="js/seo-manager.js"></script>
+    <script src="js/seo-helper.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/seo-integration.js"></script>
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -14,6 +70,7 @@
             --primary-dark: #b8962e;
             --primary-light: #f5e6c6;
             --dark: #1a1a1a;
+            --dark-light: #2a2a2a;
             --gray-200: #e9ecef;
             --gray-600: #6c757d;
             --white: #ffffff;
@@ -77,8 +134,12 @@
         .product-info { padding: 12px; }
         .product-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
         .product-price { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+        .product-stock-badge { font-size: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 4px; }
+        .stock-low { color: var(--warning); }
+        .stock-out { color: var(--danger); }
+        .stock-in { color: var(--success); }
         .product-buttons { display: flex; gap: 8px; }
-        .cart-btn, .buy-btn {
+        .quick-add-btn, .quick-buy-btn {
             flex: 1;
             padding: 8px;
             border-radius: 30px;
@@ -88,10 +149,11 @@
             border: none;
             transition: all 0.3s;
         }
-        .cart-btn { background: white; border: 1px solid var(--primary); color: var(--primary); }
-        .buy-btn { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: var(--dark); }
+        .quick-add-btn { background: white; border: 1px solid var(--primary); color: var(--primary); }
+        .quick-buy-btn { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: var(--dark); }
+        .quick-add-btn:hover, .quick-buy-btn:hover { transform: translateY(-2px); }
         
-        /* Product Modal */
+        /* Product Detail Modal */
         .product-modal {
             position: fixed;
             top: 0;
@@ -103,16 +165,18 @@
             display: none;
             justify-content: center;
             align-items: center;
+            animation: fadeIn 0.3s ease;
         }
-        .product-modal.show { display: flex; }
+        .product-modal.active { display: flex; }
         
-        .modal-container {
+        .modal-content {
             background: white;
             border-radius: 28px;
             max-width: 90%;
             width: 400px;
             max-height: 85vh;
             overflow-y: auto;
+            animation: slideUp 0.3s ease;
             position: relative;
         }
         
@@ -121,6 +185,7 @@
             top: 15px;
             right: 15px;
             background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
             color: white;
             width: 36px;
             height: 36px;
@@ -130,19 +195,59 @@
             justify-content: center;
             cursor: pointer;
             z-index: 10;
-            font-size: 20px;
+            font-size: 18px;
+            transition: all 0.3s;
         }
+        .modal-close:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); }
         
-        .modal-image {
+        .modal-gallery {
+            position: relative;
             width: 100%;
             aspect-ratio: 1 / 1;
-            object-fit: cover;
+            overflow: hidden;
             background: #f5f5f5;
+        }
+        .modal-gallery-images {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            height: 100%;
+            scrollbar-width: thin;
+        }
+        .modal-gallery-image {
+            min-width: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            scroll-snap-align: start;
+        }
+        .modal-gallery-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            z-index: 5;
+        }
+        .modal-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .modal-dot.active {
+            width: 24px;
+            border-radius: 4px;
+            background: var(--primary);
         }
         
         .modal-info { padding: 20px; }
-        .modal-name { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-        .modal-sku { font-size: 12px; color: var(--gray-600); margin-bottom: 10px; }
+        .modal-name { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--dark); }
+        .modal-sku { font-size: 12px; color: var(--gray-600); margin-bottom: 12px; }
         .modal-category {
             display: inline-block;
             background: var(--primary-light);
@@ -150,57 +255,97 @@
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 11px;
-            margin-bottom: 12px;
-        }
-        .modal-price { font-size: 28px; font-weight: 700; color: var(--primary); margin-bottom: 15px; }
-        .modal-desc {
-            font-size: 13px;
-            color: var(--gray-600);
-            line-height: 1.5;
+            font-weight: 600;
             margin-bottom: 15px;
+        }
+        .modal-price { font-size: 32px; font-weight: 700; color: var(--primary); margin-bottom: 15px; }
+        .modal-description {
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 1px solid var(--gray-200);
         }
         .modal-stock {
             font-size: 13px;
+            margin-bottom: 20px;
             padding: 10px;
             border-radius: 12px;
             background: var(--gray-100);
-            margin-bottom: 20px;
         }
-        .stock-in { color: var(--success); }
-        .stock-low { color: var(--warning); }
-        .stock-out { color: var(--danger); }
+        .in-stock { color: var(--success); }
+        .low-stock { color: var(--warning); }
+        .out-of-stock { color: var(--danger); }
         
         .modal-buttons {
             display: flex;
             gap: 12px;
+            margin-top: 10px;
         }
-        .modal-buy, .modal-cart {
+        .modal-buy-btn {
             flex: 1;
-            padding: 12px;
-            border-radius: 40px;
-            font-weight: 600;
-            cursor: pointer;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--dark);
+            padding: 14px;
             border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            transition: all 0.3s;
         }
-        .modal-buy { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: var(--dark); }
-        .modal-cart { background: white; border: 1px solid var(--primary); color: var(--primary); }
-        .modal-wishlist {
-            background: white;
-            border: 1px solid var(--gray-200);
-            width: 48px;
+        .modal-cart-btn {
+            flex: 1;
+            background: var(--white);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 14px;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .modal-wishlist-btn {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            color: var(--gray-600);
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s;
         }
-        .modal-wishlist.active { color: var(--danger); border-color: var(--danger); }
+        .modal-wishlist-btn:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            transform: scale(1.05);
+        }
+        .modal-wishlist-btn.active {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: rgba(220,53,69,0.1);
+        }
+        .modal-buy-btn:hover, .modal-cart-btn:hover { transform: translateY(-2px); }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         
         .toast {
             position: fixed;
@@ -213,16 +358,11 @@
             border-radius: 40px;
             z-index: 9999;
             font-size: 12px;
-            animation: fadeUp 0.3s ease;
+            animation: slideUp 0.3s ease;
         }
         .toast-success { background: #28a745; }
         .toast-error { background: #dc3545; }
-        .toast-info { background: #ff9800; }
-        
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
+        .toast-warning { background: #ff9800; }
         
         .loading { text-align: center; padding: 40px; }
         .spinner {
@@ -260,10 +400,49 @@
         .bottom-nav a i { font-size: 20px; }
         .bottom-nav a.active { color: var(--primary); }
         
+        /* Footer */
+        .site-footer {
+            background: var(--dark);
+            color: var(--white);
+            padding: 40px 20px 20px;
+            margin-top: 40px;
+        }
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        .footer-section h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .footer-section p, .footer-section a {
+            color: #999;
+            text-decoration: none;
+            font-size: 13px;
+            line-height: 1.8;
+            display: block;
+        }
+        .footer-section a:hover {
+            color: var(--primary);
+        }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 12px;
+            color: #999;
+        }
+        
         @media (min-width: 768px) {
             .products { grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 30px; }
             .product-image { height: 220px; }
-            .modal-container { width: 500px; }
+            .modal-content { width: 500px; }
+            .footer-content { grid-template-columns: repeat(4, 1fr); }
         }
     </style>
 </head>
@@ -274,28 +453,65 @@
     </header>
     
     <div class="filter-bar" id="filterBar"></div>
-    <div class="products" id="products"></div>
+    <div class="products" id="products"><div class="loading"><div class="spinner"></div><p>Loading products...</p></div></div>
     
-    <!-- Product Modal -->
+    <!-- Product Detail Modal -->
     <div id="productModal" class="product-modal">
-        <div class="modal-container">
-            <div class="modal-close" onclick="closeModal()">&times;</div>
-            <img id="modalImg" class="modal-image" src="" alt="">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeProductModal()">&times;</div>
+            <div class="modal-gallery">
+                <div class="modal-gallery-images" id="modalGallery"></div>
+                <div class="modal-gallery-dots" id="modalGalleryDots"></div>
+            </div>
             <div class="modal-info">
                 <div class="modal-name" id="modalName"></div>
                 <div class="modal-sku" id="modalSku"></div>
                 <div class="modal-category" id="modalCategory"></div>
                 <div class="modal-price" id="modalPrice"></div>
-                <div class="modal-desc" id="modalDesc"></div>
+                <div class="modal-description" id="modalDescription"></div>
                 <div class="modal-stock" id="modalStock"></div>
                 <div class="modal-buttons">
-                    <button class="modal-buy" id="modalBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button>
-                    <button class="modal-cart" id="modalCartBtn"><i class="fas fa-cart-plus"></i> Cart</button>
-                    <button class="modal-wishlist" id="modalWishlistBtn"><i class="far fa-heart"></i></button>
+                    <button class="modal-buy-btn" id="modalBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button>
+                    <button class="modal-cart-btn" id="modalCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                    <button class="modal-wishlist-btn" id="modalWishlistBtn"><i class="far fa-heart"></i></button>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Style Of Life</h4>
+                <p>Discover timeless elegance with our handcrafted jewelry collection. Each piece tells a story of beauty and craftsmanship.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="shop.html">Shop All</a>
+                <a href="track.html">Track Order</a>
+                <a href="customer-portal.html">My Account</a>
+            </div>
+            <div class="footer-section">
+                <h4>Customer Service</h4>
+                <a href="shipping-policy.html">Shipping Policy</a>
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="terms-conditions.html">Terms & Conditions</a>
+                <a href="faq.html">FAQ</a>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Us</h4>
+                <p><i class="fas fa-phone"></i> <a href="tel:+916352925472">+91-6352925472</a></p>
+                <p><i class="fas fa-envelope"></i> <a href="mailto:styleoflife987@gmail.com">styleoflife987@gmail.com</a></p>
+                <p><i class="fas fa-map-marker-alt"></i> Surat, Gujarat, India</p>
+                <p><i class="fab fa-instagram"></i> <a href="https://instagram.com/styleoflife.in" target="_blank">@styleoflife.in</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Style Of Life. All rights reserved. | Crafted with 💎 in India</p>
+        </div>
+    </footer>
     
     <div class="bottom-nav">
         <a href="index.html"><i class="fas fa-home"></i><span>Home</span></a>
@@ -315,6 +531,7 @@
         
         let sessionId = localStorage.getItem('sessionId');
         let allProducts = [];
+        let currentCategory = 'all';
         let currentUser = null;
         let currentProduct = null;
         
@@ -323,26 +540,30 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
-        function showToast(msg, type = 'success') {
+        // Get current user
+        async function getCurrentUser() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+                currentUser = { ...user, profile: profile || {} };
+            }
+            return currentUser;
+        }
+        
+        function showToast(message, isError = false, isWarning = false) {
             const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.textContent = msg;
+            if (isWarning) toast.className = 'toast toast-warning';
+            else toast.className = `toast ${isError ? 'toast-error' : 'toast-success'}`;
+            toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
         
-        // Get current user
-        async function getCurrentUser() {
-            const { data: { user } } = await supabase.auth.getUser();
-            currentUser = user;
-            return currentUser;
-        }
-        
-        // Add to cart
+        // Add to cart function
         async function addToCart(id, name, price, sku, img) {
             const { data: product } = await supabase.from('products').select('stock').eq('id', id).single();
             if (product?.stock <= 0) {
-                showToast(`${name} out of stock!`, 'error');
+                showToast(`${name} is out of stock!`, true);
                 return false;
             }
             
@@ -353,103 +574,117 @@
             else items.push({ id, sku, name, price, quantity: 1, image: img });
             const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
             await supabase.from('carts').upsert({ session_id: sessionId, items, total, updated_at: new Date() }, { onConflict: 'session_id' });
-            showToast(`${name} added to cart!`, 'success');
+            showToast(`${name} added to cart!`);
             return true;
         }
         
-        // Buy now
+        // Buy now function
         async function buyNow(id, name, price, sku, img) {
             const added = await addToCart(id, name, price, sku, img);
             if (added) setTimeout(() => window.location.href = 'checkout.html', 500);
         }
         
-        // Add to wishlist (with login check)
+        // Add to wishlist function
         async function addToWishlist(productId) {
             if (!currentUser) {
-                showToast('Please login to add to wishlist', 'info');
-                setTimeout(() => {
-                    window.location.href = 'customer-portal.html';
-                }, 1500);
+                showToast('Please login to add to wishlist', false, true);
+                setTimeout(() => { window.location.href = 'customer-portal.html'; }, 1500);
                 return false;
             }
             
-            const { data: existing } = await supabase
-                .from('wishlist')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .eq('product_id', productId)
-                .maybeSingle();
-            
+            const { data: existing } = await supabase.from('wishlist').select('*').eq('user_id', currentUser.id).eq('product_id', productId).maybeSingle();
             if (existing) {
-                showToast('Product already in wishlist', 'info');
+                showToast('Product already in wishlist', false, true);
                 return false;
             }
             
-            const { error } = await supabase
-                .from('wishlist')
-                .insert({ user_id: currentUser.id, product_id: productId });
-            
+            const { error } = await supabase.from('wishlist').insert({ user_id: currentUser.id, product_id: productId });
             if (error) {
-                showToast('Failed to add to wishlist', 'error');
+                showToast('Failed to add to wishlist', true);
                 return false;
             }
-            
-            showToast('Added to wishlist! ❤️', 'success');
+            showToast('Added to wishlist! ❤️');
             return true;
         }
         
         // Remove from wishlist
         async function removeFromWishlist(productId) {
             if (!currentUser) return false;
-            
-            const { error } = await supabase
-                .from('wishlist')
-                .delete()
-                .eq('user_id', currentUser.id)
-                .eq('product_id', productId);
-            
+            const { error } = await supabase.from('wishlist').delete().eq('user_id', currentUser.id).eq('product_id', productId);
             if (!error) {
-                showToast('Removed from wishlist', 'success');
+                showToast('Removed from wishlist');
                 return true;
             }
             return false;
         }
         
-        // Check if in wishlist
+        // Check if product is in wishlist
         async function isInWishlist(productId) {
             if (!currentUser) return false;
-            const { data } = await supabase
-                .from('wishlist')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .eq('product_id', productId)
-                .maybeSingle();
+            const { data } = await supabase.from('wishlist').select('*').eq('user_id', currentUser.id).eq('product_id', productId).maybeSingle();
             return !!data;
         }
         
-        // Open modal
-        window.openModal = async function(product) {
+        // Open product modal
+        window.openProductModal = async function(product) {
             currentProduct = product;
             
-            const img = product.images?.[0] || 'https://via.placeholder.com/400x400';
-            document.getElementById('modalImg').src = img;
             document.getElementById('modalName').textContent = product.name;
             document.getElementById('modalSku').textContent = `SKU: ${product.sku}`;
             document.getElementById('modalCategory').textContent = product.category || 'Jewelry';
-            document.getElementById('modalPrice').textContent = `₹${product.price.toLocaleString()}`;
-            document.getElementById('modalDesc').textContent = product.description || 'Exquisite handcrafted jewelry piece.';
+            document.getElementById('modalPrice').textContent = `₹${(product.price || 0).toLocaleString()}`;
+            document.getElementById('modalDescription').textContent = product.description || 'Exquisite handcrafted jewelry piece made with premium quality materials.';
             
             const stockDiv = document.getElementById('modalStock');
             if (product.stock <= 0) {
-                stockDiv.innerHTML = '❌ Out of Stock';
-                stockDiv.className = 'modal-stock stock-out';
+                stockDiv.innerHTML = '<i class="fas fa-times-circle"></i> Out of Stock';
+                stockDiv.className = 'modal-stock out-of-stock';
             } else if (product.stock < 10) {
-                stockDiv.innerHTML = `⚠️ Only ${product.stock} left!`;
-                stockDiv.className = 'modal-stock stock-low';
+                stockDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Only ${product.stock} left in stock - Order soon!`;
+                stockDiv.className = 'modal-stock low-stock';
             } else {
-                stockDiv.innerHTML = `✅ In Stock (${product.stock})`;
-                stockDiv.className = 'modal-stock stock-in';
+                stockDiv.innerHTML = `<i class="fas fa-check-circle"></i> In Stock (${product.stock} available)`;
+                stockDiv.className = 'modal-stock in-stock';
             }
+            
+            const images = product.images || [];
+            const validImages = images.filter(img => img && img.trim() !== '');
+            const displayImages = validImages.length > 0 ? validImages : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
+            
+            const galleryContainer = document.getElementById('modalGallery');
+            const dotsContainer = document.getElementById('modalGalleryDots');
+            
+            galleryContainer.innerHTML = '';
+            dotsContainer.innerHTML = '';
+            
+            displayImages.forEach((img, index) => {
+                const imgElement = document.createElement('img');
+                imgElement.src = img;
+                imgElement.className = 'modal-gallery-image';
+                imgElement.alt = product.name;
+                imgElement.onerror = () => { imgElement.src = 'https://via.placeholder.com/400x400?text=Image+Not+Available'; };
+                galleryContainer.appendChild(imgElement);
+                
+                const dot = document.createElement('div');
+                dot.className = 'modal-dot';
+                if (index === 0) dot.classList.add('active');
+                dot.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    galleryContainer.scrollTo({ left: galleryContainer.clientWidth * index, behavior: 'smooth' });
+                });
+                dotsContainer.appendChild(dot);
+            });
+            
+            galleryContainer.addEventListener('scroll', () => {
+                const scrollPos = galleryContainer.scrollLeft;
+                const itemWidth = galleryContainer.clientWidth;
+                const activeIndex = Math.round(scrollPos / itemWidth);
+                const dots = dotsContainer.querySelectorAll('.modal-dot');
+                dots.forEach((dot, idx) => {
+                    if (idx === activeIndex) dot.classList.add('active');
+                    else dot.classList.remove('active');
+                });
+            });
             
             const buyBtn = document.getElementById('modalBuyBtn');
             const cartBtn = document.getElementById('modalCartBtn');
@@ -459,15 +694,9 @@
             buyBtn.disabled = !canAdd;
             cartBtn.disabled = !canAdd;
             
-            buyBtn.onclick = () => {
-                if (canAdd) buyNow(product.id, product.name, product.price, product.sku, img);
-            };
+            buyBtn.onclick = () => { if (canAdd) buyNow(product.id, product.name, product.price, product.sku, displayImages[0]); };
+            cartBtn.onclick = () => { if (canAdd) addToCart(product.id, product.name, product.price, product.sku, displayImages[0]); };
             
-            cartBtn.onclick = () => {
-                if (canAdd) addToCart(product.id, product.name, product.price, product.sku, img);
-            };
-            
-            // Setup wishlist button
             const inWishlist = await isInWishlist(product.id);
             if (inWishlist) {
                 wishlistBtn.innerHTML = '<i class="fas fa-heart"></i>';
@@ -476,14 +705,6 @@
                     await removeFromWishlist(product.id);
                     wishlistBtn.innerHTML = '<i class="far fa-heart"></i>';
                     wishlistBtn.classList.remove('active');
-                    // Re-attach add handler
-                    wishlistBtn.onclick = async () => {
-                        const added = await addToWishlist(product.id);
-                        if (added) {
-                            wishlistBtn.innerHTML = '<i class="fas fa-heart"></i>';
-                            wishlistBtn.classList.add('active');
-                        }
-                    };
                 };
             } else {
                 wishlistBtn.innerHTML = '<i class="far fa-heart"></i>';
@@ -493,74 +714,85 @@
                     if (added) {
                         wishlistBtn.innerHTML = '<i class="fas fa-heart"></i>';
                         wishlistBtn.classList.add('active');
-                        // Change to remove handler
-                        wishlistBtn.onclick = async () => {
-                            await removeFromWishlist(product.id);
-                            wishlistBtn.innerHTML = '<i class="far fa-heart"></i>';
-                            wishlistBtn.classList.remove('active');
-                        };
                     }
                 };
             }
             
-            document.getElementById('productModal').classList.add('show');
+            document.getElementById('productModal').classList.add('active');
         };
         
-        window.closeModal = function() {
-            document.getElementById('productModal').classList.remove('show');
+        window.closeProductModal = function() {
+            document.getElementById('productModal').classList.remove('active');
+            currentProduct = null;
         };
         
         // Load products
         async function loadProducts() {
-            const container = document.getElementById('products');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading products...</p></div>';
-            
             const { data, error } = await supabase.from('products').select('*').order('id');
             if (error) {
-                container.innerHTML = '<div class="loading">Error loading products</div>';
+                document.getElementById('products').innerHTML = '<div class="empty">Error loading products</div>';
                 return;
             }
-            
             allProducts = data || [];
             
-            // Build categories
             const categories = ['all', ...new Set(allProducts.map(p => p.category).filter(Boolean))];
             document.getElementById('filterBar').innerHTML = categories.map(cat => 
-                `<span class="filter-chip ${cat === 'all' ? 'active' : ''}" data-cat="${cat}">${cat === 'all' ? '✨ All' : cat}</span>`
+                `<span class="filter-chip ${cat === currentCategory ? 'active' : ''}" data-cat="${cat}">${cat === 'all' ? '✨ All' : cat}</span>`
             ).join('');
             
-            // Add filter click handlers
             document.querySelectorAll('.filter-chip').forEach(chip => {
                 chip.addEventListener('click', () => {
                     document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
                     chip.classList.add('active');
-                    const cat = chip.dataset.cat;
-                    renderProducts(cat === 'all' ? allProducts : allProducts.filter(p => p.category === cat));
+                    currentCategory = chip.dataset.cat;
+                    renderProducts();
                 });
             });
             
-            renderProducts(allProducts);
+            renderProducts();
         }
         
-        function renderProducts(products) {
+        function getStockStatus(product) {
+            if (product.stock <= 0) {
+                return { text: 'Out of Stock', class: 'stock-out', disabled: true };
+            } else if (product.stock < 10) {
+                return { text: `⚠️ Only ${product.stock} left`, class: 'stock-low', disabled: false };
+            } else {
+                return { text: `✓ In Stock`, class: 'stock-in', disabled: false };
+            }
+        }
+        
+        function renderProducts() {
             const container = document.getElementById('products');
+            let products = currentCategory === 'all' ? allProducts : allProducts.filter(p => p.category === currentCategory);
+            
             if (!products.length) {
-                container.innerHTML = '<div class="loading">No products found</div>';
+                container.innerHTML = '<div class="empty-state">✨ No products in this category</div>';
                 return;
             }
             
             let html = '';
             for (const p of products) {
                 const img = p.images?.[0] || 'https://via.placeholder.com/300x160';
+                const stock = getStockStatus(p);
+                
                 html += `
-                    <div class="product-card">
-                        <img class="product-image" src="${img}" onerror="this.src='https://via.placeholder.com/300x160'">
+                    <div class="product-card" data-product-id="${p.id}">
+                        <img class="product-image" src="${img}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/300x160'">
                         <div class="product-info">
                             <div class="product-name">${escapeHtml(p.name)}</div>
                             <div class="product-price">₹${(p.price || 0).toLocaleString()}</div>
+                            <div class="product-stock-badge ${stock.class}">
+                                <i class="fas ${p.stock <= 0 ? 'fa-times-circle' : (p.stock < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i>
+                                <span>${stock.text}</span>
+                            </div>
                             <div class="product-buttons">
-                                <button class="cart-btn" data-id="${p.id}" data-name="${escapeHtml(p.name)}" data-price="${p.price}" data-sku="${p.sku}" data-img="${img}">🛒 Cart</button>
-                                <button class="buy-btn" data-id="${p.id}" data-name="${escapeHtml(p.name)}" data-price="${p.price}" data-sku="${p.sku}" data-img="${img}">⚡ Buy</button>
+                                <button class="quick-add-btn" data-id="${p.id}" data-name="${escapeHtml(p.name)}" data-price="${p.price}" data-sku="${p.sku}" data-img="${img}" ${stock.disabled ? 'disabled' : ''}>
+                                    <i class="fas fa-shopping-cart"></i> Cart
+                                </button>
+                                <button class="quick-buy-btn" data-id="${p.id}" data-name="${escapeHtml(p.name)}" data-price="${p.price}" data-sku="${p.sku}" data-img="${img}" ${stock.disabled ? 'disabled' : ''}>
+                                    <i class="fas fa-bolt"></i> Buy
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -569,7 +801,7 @@
             container.innerHTML = html;
             
             // Add event listeners to buttons
-            document.querySelectorAll('.cart-btn').forEach(btn => {
+            document.querySelectorAll('.quick-add-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const id = parseInt(btn.dataset.id);
@@ -581,7 +813,7 @@
                 });
             });
             
-            document.querySelectorAll('.buy-btn').forEach(btn => {
+            document.querySelectorAll('.quick-buy-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const id = parseInt(btn.dataset.id);
@@ -597,9 +829,17 @@
             document.querySelectorAll('.product-card').forEach((card, index) => {
                 card.addEventListener('click', () => {
                     const product = products[index];
-                    openModal(product);
+                    openProductModal(product);
                 });
             });
+            
+            // ============================================
+            // UPDATE SEO MANAGER WITH PRODUCTS
+            // ============================================
+            if (typeof window.SEOManager !== 'undefined' && products && products.length > 0) {
+                window.SEOManager.updateProductListing(products);
+                console.log('✅ SEO Manager updated with', products.length, 'products');
+            }
         }
         
         function escapeHtml(str) {
@@ -609,8 +849,24 @@
         
         // Close modal on outside click
         document.getElementById('productModal').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
+            if (e.target === this) closeProductModal();
         });
+        
+        // Initialize SEO Manager
+        if (typeof SEOManager !== 'undefined' && SEOManager.init) {
+            SEOManager.init();
+            console.log('✅ SEO Manager initialized for Shop page');
+        }
+        
+        if (typeof SEOHelper !== 'undefined' && SEOHelper.init) {
+            SEOHelper.init();
+            console.log('✅ SEO Helper initialized');
+        }
+        
+        if (typeof Analytics !== 'undefined' && Analytics.init) {
+            Analytics.init();
+            console.log('✅ Analytics initialized');
+        }
         
         // Initialize
         await getCurrentUser();
