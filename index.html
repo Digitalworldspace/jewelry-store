@@ -18,7 +18,7 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://styleoflife987-hub.github.io/jewelry-store/">
     
-    <!-- SEO File Connections - ADDED -->
+    <!-- SEO File Connections -->
     <link rel="author" href="humans.txt">
     <link rel="security-policy" href="security.txt">
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
@@ -138,9 +138,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- ============================================ -->
-    <!-- SEO & ANALYTICS FILES - ADDED -->
+    <!-- SEO & ANALYTICS FILES -->
     <!-- ============================================ -->
     <script src="js/config.js"></script>
+    <script src="js/seo-manager.js"></script>
     <script src="js/seo-helper.js"></script>
     <script src="js/analytics.js"></script>
     <script src="js/seo-integration.js"></script>
@@ -1840,6 +1841,14 @@
                     }, 50);
                 }
                 
+                // ============================================
+                // UPDATE SEO MANAGER WITH PRODUCTS
+                // ============================================
+                if (typeof window.SEOManager !== 'undefined' && products && products.length > 0) {
+                    window.SEOManager.updateProductListing(products);
+                    console.log('✅ SEO Manager updated with products');
+                }
+                
             } catch (error) {
                 console.error('Error loading products:', error);
                 container.innerHTML = '<div class="empty-state">Error loading products</div>';
@@ -1869,7 +1878,7 @@
             }
         });
         
-        // Initialize SEO and Analytics - ADDED
+        // Initialize SEO and Analytics
         if (typeof SEOHelper !== 'undefined' && SEOHelper.init) {
             SEOHelper.init();
             console.log('✅ SEO Helper initialized');
@@ -1878,6 +1887,11 @@
         if (typeof Analytics !== 'undefined' && Analytics.init) {
             Analytics.init();
             console.log('✅ Analytics initialized');
+        }
+        
+        if (typeof SEOManager !== 'undefined' && SEOManager.init) {
+            SEOManager.init();
+            console.log('✅ SEO Manager initialized');
         }
         
         // Initialize
