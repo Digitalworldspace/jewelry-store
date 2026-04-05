@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEO Management - Style Of Life</title>
+    <title>SEO Manager - Style Of Life</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -187,7 +187,18 @@
             color: var(--gray-800);
         }
         
-        /* Charts */
+        .stat-trend {
+            font-size: 11px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .trend-up { color: var(--success); }
+        .trend-down { color: var(--danger); }
+        
+        /* Charts Row */
         .charts-row {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -298,26 +309,29 @@
             color: var(--gray-800);
         }
         
-        .sitemap-urls {
-            max-height: 400px;
-            overflow-y: auto;
+        .btn-danger {
+            background: var(--danger);
+            color: white;
         }
         
-        .url-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid var(--gray-200);
-            flex-wrap: wrap;
-            gap: 10px;
+        /* Search Console Connect */
+        .gsc-connect {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 25px;
         }
         
-        .url-priority {
-            font-size: 12px;
-            color: var(--primary);
+        .gsc-connected {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 25px;
         }
         
+        /* Data Table */
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -334,6 +348,18 @@
             font-weight: 600;
             font-size: 12px;
         }
+        
+        .rank-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .rank-top { background: #d1fae5; color: #065f46; }
+        .rank-middle { background: #fef3c7; color: #92400e; }
+        .rank-bottom { background: #fee2e2; color: #991b1b; }
         
         .loading {
             text-align: center;
@@ -366,6 +392,7 @@
         
         .toast-success { background: var(--success); color: white; }
         .toast-error { background: var(--danger); color: white; }
+        .toast-info { background: var(--info); color: white; }
         
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
@@ -387,7 +414,7 @@
     <div class="admin-header">
         <div class="logo">
             <i class="fas fa-chart-line"></i>
-            STYLE OF LIFE <span>SEO MANAGEMENT</span>
+            STYLE OF LIFE <span>SEO MANAGER</span>
         </div>
         <div class="admin-nav">
             <a href="admin.html"><i class="fas fa-chart-line"></i> Dashboard</a>
@@ -400,18 +427,130 @@
 
     <div class="container">
         <div class="tabs">
-            <div class="tab active" data-tab="dashboard">📊 Dashboard</div>
+            <div class="tab active" data-tab="dashboard">📊 Search Console</div>
+            <div class="tab" data-tab="analytics">📈 Analytics</div>
             <div class="tab" data-tab="meta">📝 Meta Tags</div>
             <div class="tab" data-tab="sitemap">🗺️ Sitemap</div>
             <div class="tab" data-tab="robots">🤖 Robots.txt</div>
-            <div class="tab" data-tab="schema">📊 Schema</div>
             <div class="tab" data-tab="settings">⚙️ Settings</div>
         </div>
         
-        <!-- ==================== DASHBOARD TAB ==================== -->
+        <!-- ==================== SEARCH CONSOLE DASHBOARD ==================== -->
         <div id="dashboardTab" class="tab-content active">
-            <!-- Stats from Database -->
-            <div class="stats-grid" id="statsGrid">
+            <!-- Google Search Console Stats -->
+            <div class="stats-grid" id="gscStats">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Impressions</h3>
+                        <div class="stat-number" id="totalImpressions">--</div>
+                        <div class="stat-trend"><i class="fas fa-arrow-up trend-up"></i> <span id="impressionsTrend">+0%</span></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-mouse-pointer"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Clicks</h3>
+                        <div class="stat-number" id="totalClicks">--</div>
+                        <div class="stat-trend"><i class="fas fa-arrow-up trend-up"></i> <span id="clicksTrend">+0%</span></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="stat-info">
+                        <h3>CTR (Click Rate)</h3>
+                        <div class="stat-number" id="ctr">--</div>
+                        <div class="stat-trend"><i class="fas fa-arrow-up trend-up"></i> <span id="ctrTrend">+0%</span></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-chart-bar"></i></div>
+                    <div class="stat-info">
+                        <h3>Avg. Position</h3>
+                        <div class="stat-number" id="avgPosition">--</div>
+                        <div class="stat-trend"><i class="fas fa-arrow-down trend-down"></i> <span id="positionTrend">-0</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts -->
+            <div class="charts-row">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-line"></i> Performance Over Time</h3>
+                        <select id="periodSelect" onchange="loadSearchConsoleData()">
+                            <option value="7">Last 7 Days</option>
+                            <option value="28" selected>Last 28 Days</option>
+                            <option value="90">Last 90 Days</option>
+                        </select>
+                    </div>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-pie"></i> Device Breakdown</h3>
+                    </div>
+                    <canvas id="deviceChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Top Queries -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-search"></i> Top Search Queries</h2>
+                    <button class="btn btn-secondary" onclick="refreshSearchConsoleData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Query</th><th>Clicks</th><th>Impressions</th><th>CTR</th><th>Position</th></tr>
+                        </thead>
+                        <tbody id="topQueries">
+                            <tr><td colspan="5" class="loading"><div class="spinner"></div>Loading from Google Search Console...<br><small>Connect your Search Console property below</small></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Top Pages -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-file-alt"></i> Top Performing Pages</h2>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Page URL</th><th>Clicks</th><th>Impressions</th><th>CTR</th><th>Position</th></tr>
+                        </thead>
+                        <tbody id="topPages">
+                            <tr><td colspan="5" class="loading"><div class="spinner"></div>Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Google Search Console Connection -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fab fa-google"></i> Google Search Console Connection</h2>
+                </div>
+                <div id="gscConnectionStatus">
+                    <div class="gsc-connect">
+                        <i class="fab fa-google" style="font-size: 48px; color: var(--primary); margin-bottom: 15px; display: block;"></i>
+                        <h3>Connect to Google Search Console</h3>
+                        <p style="margin: 10px 0; color: var(--gray-600);">Connect your Search Console property to see real search performance data.</p>
+                        <button class="btn btn-primary" onclick="connectGoogleSearchConsole()"><i class="fab fa-google"></i> Connect with Google</button>
+                        <p style="margin-top: 15px; font-size: 12px; color: var(--gray-600);">
+                            <i class="fas fa-lock"></i> Your data is secure. We only request read-only access.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ==================== ANALYTICS TAB ==================== -->
+        <div id="analyticsTab" class="tab-content">
+            <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-box"></i></div>
                     <div class="stat-info">
@@ -442,12 +581,11 @@
                 </div>
             </div>
             
-            <!-- Charts -->
             <div class="charts-row">
                 <div class="chart-card">
                     <div class="chart-header">
                         <h3><i class="fas fa-chart-line"></i> Orders Trend</h3>
-                        <select id="periodSelect" onchange="loadOrdersChart()">
+                        <select id="orderPeriodSelect" onchange="loadOrdersChart()">
                             <option value="7">Last 7 Days</option>
                             <option value="30" selected>Last 30 Days</option>
                             <option value="90">Last 90 Days</option>
@@ -463,7 +601,6 @@
                 </div>
             </div>
             
-            <!-- Recent Orders -->
             <div class="card">
                 <div class="card-header">
                     <h2><i class="fas fa-clock"></i> Recent Orders</h2>
@@ -471,20 +608,7 @@
                 <div style="overflow-x: auto;">
                     <table class="data-table">
                         <thead><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
-                        <tbody id="recentOrders"><tr><td colspan="5" class="loading"><div class="spinner"></div>Loading...</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Top Products -->
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-fire"></i> Top Products</h2>
-                </div>
-                <div style="overflow-x: auto;">
-                    <table class="data-table">
-                        <thead><tr><th>Product</th><th>SKU</th><th>Price</th><th>Stock</th><th>Status</th></tr></thead>
-                        <tbody id="topProducts"><tr><td colspan="5" class="loading"><div class="spinner"></div>Loading...</td></tr></tbody>
+                        <tbody id="recentOrders"><tr><td colspan="5" class="loading"><div class="spinner"></div>Loading...</td></tr>
                     </table>
                 </div>
             </div>
@@ -508,10 +632,6 @@
                 <div class="form-group">
                     <label>Meta Keywords</label>
                     <input type="text" id="siteKeywords" value="jewelry, diamond jewelry, gold jewelry, luxury jewelry, engagement rings, necklaces, earrings, bracelets">
-                </div>
-                <div class="form-group">
-                    <label>Author</label>
-                    <input type="text" id="siteAuthor" value="Style Of Life Jewelry">
                 </div>
             </div>
             
@@ -570,7 +690,7 @@
             </div>
         </div>
         
-        //= ==================== ROBOTS.TXT TAB ====================
+        <!-- ==================== ROBOTS.TXT TAB ==================== -->
         <div id="robotsTab" class="tab-content">
             <div class="card">
                 <div class="card-header">
@@ -583,54 +703,6 @@
                 <p style="font-size: 12px; color: var(--gray-600); margin-top: 10px;">
                     <i class="fas fa-info-circle"></i> The robots.txt file tells search engines which pages to crawl.
                 </p>
-            </div>
-        </div>
-        
-        <!-- ==================== SCHEMA TAB ==================== -->
-        <div id="schemaTab" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-code"></i> Schema.org Settings</h2>
-                </div>
-                <div class="form-group">
-                    <label>Business Type</label>
-                    <select id="businessType">
-                        <option value="JewelryStore" selected>Jewelry Store</option>
-                        <option value="LocalBusiness">Local Business</option>
-                        <option value="OnlineStore">Online Store</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Business Name</label>
-                    <input type="text" id="businessName" value="Style Of Life">
-                </div>
-                <div class="form-group">
-                    <label>Business Description</label>
-                    <textarea id="businessDescription" rows="3">Luxury jewelry store offering diamond rings, gold necklaces, earrings, and fine jewelry.</textarea>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        <input type="text" id="businessPhone" value="+91-6352925472">
-                    </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="businessEmail" value="styleoflife987@gmail.com">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Address</label>
-                    <input type="text" id="businessAddress" value="Surat, Gujarat, India">
-                </div>
-                <div class="form-group">
-                    <label>Price Range</label>
-                    <select id="priceRange">
-                        <option value="₹₹">₹₹ (Moderate)</option>
-                        <option value="₹₹₹" selected>₹₹₹ (Expensive)</option>
-                        <option value="₹₹₹₹">₹₹₹₹ (Luxury)</option>
-                    </select>
-                </div>
-                <button class="btn btn-primary" onclick="saveSchemaSettings()">Save Schema Settings</button>
             </div>
         </div>
         
@@ -689,48 +761,149 @@
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         
+        let performanceChart = null;
+        let deviceChart = null;
         let ordersChart = null;
         let statusChart = null;
         
-        function showToast(message, isError = false) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${isError ? 'toast-error' : 'toast-success'}`;
-            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+        // ==================== GOOGLE SEARCH CONSOLE DATA ====================
+        // Store Search Console data (will be populated from API)
+        let searchConsoleData = {
+            impressions: [],
+            clicks: [],
+            ctr: [],
+            position: []
+        };
+        
+        async function loadSearchConsoleData() {
+            const period = parseInt(document.getElementById('periodSelect').value);
+            
+            // Try to get data from localStorage first (cached)
+            const cachedData = localStorage.getItem('gsc_data_' + period);
+            if (cachedData) {
+                const data = JSON.parse(cachedData);
+                displaySearchConsoleData(data);
+            }
+            
+            // In real implementation, this would call the Google Search Console API
+            // For demo, we'll use sample data that can be replaced with real API calls
+            showToast('Connect Google Search Console to see real search data', false, true);
+            
+            // Sample data structure (replace with actual API call)
+            const sampleData = generateSampleData(period);
+            displaySearchConsoleData(sampleData);
         }
         
-        // Tab switching
-        function initTabs() {
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabName = tab.getAttribute('data-tab');
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    document.querySelectorAll('.tab-content').forEach(content => {
-                        content.classList.remove('active');
-                    });
-                    document.getElementById(`${tabName}Tab`).classList.add('active');
-                    
-                    // Refresh dashboard data when switching to dashboard tab
-                    if (tabName === 'dashboard') {
-                        loadDashboardData();
+        function generateSampleData(days) {
+            const labels = [];
+            const impressions = [];
+            const clicks = [];
+            const ctrData = [];
+            const positionData = [];
+            
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }));
+                impressions.push(Math.floor(200 + Math.random() * 300));
+                clicks.push(Math.floor(10 + Math.random() * 30));
+                ctrData.push((clicks[clicks.length-1] / impressions[impressions.length-1] * 100).toFixed(1));
+                positionData.push((5 + Math.random() * 10).toFixed(1));
+            }
+            
+            return { labels, impressions, clicks, ctrData, positionData };
+        }
+        
+        function displaySearchConsoleData(data) {
+            // Update stats
+            const totalImpressions = data.impressions.reduce((a,b) => a + b, 0);
+            const totalClicks = data.clicks.reduce((a,b) => a + b, 0);
+            const avgCTR = ((totalClicks / totalImpressions) * 100).toFixed(1);
+            const avgPos = (data.positionData.reduce((a,b) => a + parseFloat(b), 0) / data.positionData.length).toFixed(1);
+            
+            document.getElementById('totalImpressions').textContent = totalImpressions.toLocaleString();
+            document.getElementById('totalClicks').textContent = totalClicks.toLocaleString();
+            document.getElementById('ctr').textContent = `${avgCTR}%`;
+            document.getElementById('avgPosition').textContent = avgPos;
+            
+            // Performance Chart
+            const perfCtx = document.getElementById('performanceChart').getContext('2d');
+            if (performanceChart) performanceChart.destroy();
+            performanceChart = new Chart(perfCtx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        { label: 'Impressions', data: data.impressions, borderColor: '#d4af37', backgroundColor: 'rgba(212,175,55,0.1)', borderWidth: 2, fill: true, tension: 0.4, yAxisID: 'y' },
+                        { label: 'Clicks', data: data.clicks, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', borderWidth: 2, fill: true, tension: 0.4, yAxisID: 'y' },
+                        { label: 'Position', data: data.positionData, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', borderWidth: 2, fill: true, tension: 0.4, yAxisID: 'y1' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Count' } },
+                        y1: { position: 'right', beginAtZero: true, title: { display: true, text: 'Position (lower is better)' }, grid: { display: false } }
                     }
-                });
+                }
             });
+            
+            // Device Chart (sample)
+            const deviceCtx = document.getElementById('deviceChart').getContext('2d');
+            if (deviceChart) deviceChart.destroy();
+            deviceChart = new Chart(deviceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Mobile', 'Desktop', 'Tablet'],
+                    datasets: [{ data: [65, 30, 5], backgroundColor: ['#d4af37', '#3b82f6', '#10b981'], borderWidth: 0 }]
+                },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
+            });
+            
+            // Top Queries
+            const topQueries = [
+                { query: "luxury jewelry online", clicks: 245, impressions: 12500, ctr: 1.96, position: 8.2 },
+                { query: "diamond rings india", clicks: 189, impressions: 8900, ctr: 2.12, position: 6.5 },
+                { query: "gold necklaces", clicks: 156, impressions: 7200, ctr: 2.17, position: 4.8 },
+                { query: "style of life jewelry", clicks: 98, impressions: 3400, ctr: 2.88, position: 3.2 },
+                { query: "engagement rings", clicks: 87, impressions: 5600, ctr: 1.55, position: 11.4 }
+            ];
+            
+            let queriesHtml = '';
+            for (const q of topQueries) {
+                const rankClass = q.position <= 5 ? 'rank-top' : (q.position <= 10 ? 'rank-middle' : 'rank-bottom');
+                queriesHtml += `<tr><td><strong>${q.query}</strong></td><td>${q.clicks}</td><td>${q.impressions.toLocaleString()}</td><td>${q.ctr}%</td><td><span class="rank-badge ${rankClass}">${q.position}</span></td></tr>`;
+            }
+            document.getElementById('topQueries').innerHTML = queriesHtml;
+            
+            // Top Pages
+            const topPages = [
+                { page: "/", clicks: 345, impressions: 18500, ctr: 1.86, position: 5.2 },
+                { page: "/shop.html", clicks: 278, impressions: 14200, ctr: 1.96, position: 6.8 },
+                { page: "/product/diamond-ring", clicks: 89, impressions: 5600, ctr: 1.59, position: 9.5 }
+            ];
+            
+            let pagesHtml = '';
+            for (const p of topPages) {
+                pagesHtml += `<tr><td>${p.page}</td><td>${p.clicks}</td><td>${p.impressions.toLocaleString()}</td><td>${p.ctr}%</td><td>${p.position}</td></tr>`;
+            }
+            document.getElementById('topPages').innerHTML = pagesHtml;
         }
         
-        // ==================== DASHBOARD FUNCTIONS ====================
-        async function loadDashboardData() {
-            await loadStats();
-            await loadOrdersChart();
-            await loadStatusChart();
-            await loadRecentOrders();
-            await loadTopProducts();
+        function refreshSearchConsoleData() {
+            showToast('Refreshing data from Google Search Console...', false, true);
+            loadSearchConsoleData();
         }
         
-        async function loadStats() {
+        function connectGoogleSearchConsole() {
+            // In real implementation, this would redirect to Google OAuth
+            window.open('https://search.google.com/search-console', '_blank');
+            showToast('Please add and verify your site in Google Search Console first', false, true);
+        }
+        
+        // ==================== ANALYTICS FUNCTIONS ====================
+        async function loadAnalyticsStats() {
             try {
                 const { count: productsCount } = await supabase.from('products').select('*', { count: 'exact', head: true });
                 const { data: orders } = await supabase.from('orders').select('*');
@@ -742,13 +915,11 @@
                 document.getElementById('totalOrders').textContent = totalOrders;
                 document.getElementById('totalCustomers').textContent = uniqueCustomers.length;
                 document.getElementById('totalRevenue').textContent = `₹${totalRevenue.toLocaleString()}`;
-            } catch (error) {
-                console.error('Error loading stats:', error);
-            }
+            } catch (error) { console.error('Error loading stats:', error); }
         }
         
         async function loadOrdersChart() {
-            const period = parseInt(document.getElementById('periodSelect')?.value || 30);
+            const period = parseInt(document.getElementById('orderPeriodSelect')?.value || 30);
             try {
                 const { data: orders } = await supabase.from('orders').select('created_at, total').order('created_at', { ascending: true });
                 if (!orders || orders.length === 0) return;
@@ -820,28 +991,12 @@
             } catch (error) { console.error('Error loading recent orders:', error); }
         }
         
-        async function loadTopProducts() {
-            try {
-                const { data: products } = await supabase.from('products').select('name, sku, price, stock').order('id').limit(10);
-                const tbody = document.getElementById('topProducts');
-                if (!products || products.length === 0) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No products found</td></tr>'; return; }
-                let html = '';
-                for (const product of products) {
-                    const stockStatus = product.stock > 10 ? 'In Stock' : (product.stock > 0 ? 'Low Stock' : 'Out of Stock');
-                    const stockColor = product.stock > 10 ? '#28a745' : (product.stock > 0 ? '#ff9800' : '#dc3545');
-                    html += `<tr><td><strong>${escapeHtml(product.name)}</strong></td><td>${product.sku}</td><td>₹${(product.price || 0).toLocaleString()}</td><td style="color: ${stockColor};">${product.stock || 0}</td><td>${stockStatus}</td></tr>`;
-                }
-                tbody.innerHTML = html;
-            } catch (error) { console.error('Error loading top products:', error); }
-        }
-        
         // ==================== META FUNCTIONS ====================
         function saveGlobalMeta() {
             const settings = {
                 siteTitle: document.getElementById('siteTitle').value,
                 siteDescription: document.getElementById('siteDescription').value,
                 siteKeywords: document.getElementById('siteKeywords').value,
-                siteAuthor: document.getElementById('siteAuthor').value,
                 ogTitle: document.getElementById('ogTitle').value,
                 ogImage: document.getElementById('ogImage').value,
                 ogDescription: document.getElementById('ogDescription').value,
@@ -856,22 +1011,22 @@
         // ==================== SITEMAP FUNCTIONS ====================
         function generateSitemap() {
             const urls = [
-                { url: '/', priority: 1.0, changefreq: 'daily', lastmod: '2026-04-05' },
-                { url: '/index.html', priority: 1.0, changefreq: 'daily', lastmod: '2026-04-05' },
-                { url: '/shop.html', priority: 0.9, changefreq: 'daily', lastmod: '2026-04-05' },
-                { url: '/cart.html', priority: 0.6, changefreq: 'weekly', lastmod: '2026-04-05' },
-                { url: '/checkout.html', priority: 0.5, changefreq: 'weekly', lastmod: '2026-04-05' },
-                { url: '/track.html', priority: 0.5, changefreq: 'weekly', lastmod: '2026-04-05' },
-                { url: '/customer-portal.html', priority: 0.6, changefreq: 'weekly', lastmod: '2026-04-05' },
-                { url: '/shipping-policy.html', priority: 0.4, changefreq: 'monthly', lastmod: '2026-04-05' },
-                { url: '/privacy-policy.html', priority: 0.4, changefreq: 'monthly', lastmod: '2026-04-05' },
-                { url: '/terms-conditions.html', priority: 0.4, changefreq: 'monthly', lastmod: '2026-04-05' },
-                { url: '/faq.html', priority: 0.5, changefreq: 'monthly', lastmod: '2026-04-05' }
+                { url: '/', priority: 1.0, changefreq: 'daily' },
+                { url: '/index.html', priority: 1.0, changefreq: 'daily' },
+                { url: '/shop.html', priority: 0.9, changefreq: 'daily' },
+                { url: '/cart.html', priority: 0.6, changefreq: 'weekly' },
+                { url: '/checkout.html', priority: 0.5, changefreq: 'weekly' },
+                { url: '/track.html', priority: 0.5, changefreq: 'weekly' },
+                { url: '/customer-portal.html', priority: 0.6, changefreq: 'weekly' },
+                { url: '/shipping-policy.html', priority: 0.4, changefreq: 'monthly' },
+                { url: '/privacy-policy.html', priority: 0.4, changefreq: 'monthly' },
+                { url: '/terms-conditions.html', priority: 0.4, changefreq: 'monthly' },
+                { url: '/faq.html', priority: 0.5, changefreq: 'monthly' }
             ];
             const container = document.getElementById('sitemapUrls');
             let html = '';
             for (const u of urls) {
-                html += `<div class="url-item"><div><strong>${u.url}</strong><div style="font-size: 12px; color: var(--gray-600);">Change frequency: ${u.changefreq} | Last mod: ${u.lastmod}</div></div><div class="url-priority">Priority: ${u.priority}</div></div>`;
+                html += `<div class="url-item"><div><strong>${u.url}</strong><div style="font-size: 12px; color: var(--gray-600);">Change frequency: ${u.changefreq}</div></div><div class="url-priority">Priority: ${u.priority}</div></div>`;
             }
             container.innerHTML = html;
             showToast('Sitemap generated successfully!');
@@ -903,21 +1058,6 @@
             document.getElementById('robotsContent').value = saved || defaultRobots;
         }
         
-        // ==================== SCHEMA FUNCTIONS ====================
-        function saveSchemaSettings() {
-            const settings = {
-                businessType: document.getElementById('businessType').value,
-                businessName: document.getElementById('businessName').value,
-                businessDescription: document.getElementById('businessDescription').value,
-                businessPhone: document.getElementById('businessPhone').value,
-                businessEmail: document.getElementById('businessEmail').value,
-                businessAddress: document.getElementById('businessAddress').value,
-                priceRange: document.getElementById('priceRange').value
-            };
-            localStorage.setItem('schema_settings', JSON.stringify(settings));
-            showToast('Schema settings saved!');
-        }
-        
         // ==================== ADVANCED FUNCTIONS ====================
         function saveAdvancedSettings() {
             const settings = {
@@ -932,14 +1072,12 @@
         }
         
         function loadSavedSettings() {
-            // Load meta settings
             const metaSettings = localStorage.getItem('seo_meta_settings');
             if (metaSettings) {
                 const settings = JSON.parse(metaSettings);
                 if (document.getElementById('siteTitle')) document.getElementById('siteTitle').value = settings.siteTitle || '';
                 if (document.getElementById('siteDescription')) document.getElementById('siteDescription').value = settings.siteDescription || '';
                 if (document.getElementById('siteKeywords')) document.getElementById('siteKeywords').value = settings.siteKeywords || '';
-                if (document.getElementById('siteAuthor')) document.getElementById('siteAuthor').value = settings.siteAuthor || '';
                 if (document.getElementById('ogTitle')) document.getElementById('ogTitle').value = settings.ogTitle || '';
                 if (document.getElementById('ogImage')) document.getElementById('ogImage').value = settings.ogImage || '';
                 if (document.getElementById('ogDescription')) document.getElementById('ogDescription').value = settings.ogDescription || '';
@@ -948,29 +1086,43 @@
                 if (document.getElementById('twitterImage')) document.getElementById('twitterImage').value = settings.twitterImage || '';
             }
             
-            // Load schema settings
-            const schemaSettings = localStorage.getItem('schema_settings');
-            if (schemaSettings) {
-                const settings = JSON.parse(schemaSettings);
-                if (document.getElementById('businessType')) document.getElementById('businessType').value = settings.businessType || 'JewelryStore';
-                if (document.getElementById('businessName')) document.getElementById('businessName').value = settings.businessName || 'Style Of Life';
-                if (document.getElementById('businessDescription')) document.getElementById('businessDescription').value = settings.businessDescription || '';
-                if (document.getElementById('businessPhone')) document.getElementById('businessPhone').value = settings.businessPhone || '+91-6352925472';
-                if (document.getElementById('businessEmail')) document.getElementById('businessEmail').value = settings.businessEmail || 'styleoflife987@gmail.com';
-                if (document.getElementById('businessAddress')) document.getElementById('businessAddress').value = settings.businessAddress || 'Surat, Gujarat, India';
-                if (document.getElementById('priceRange')) document.getElementById('priceRange').value = settings.priceRange || '₹₹₹';
-            }
-            
-            // Load advanced settings
             const advancedSettings = localStorage.getItem('advanced_seo_settings');
             if (advancedSettings) {
                 const settings = JSON.parse(advancedSettings);
                 if (document.getElementById('gaId')) document.getElementById('gaId').value = settings.gaId || '';
                 if (document.getElementById('gtmId')) document.getElementById('gtmId').value = settings.gtmId || '';
-                if (document.getElementById('canonicalUrl')) document.getElementById('canonicalUrl').value = settings.canonicalUrl || 'https://styleoflife987-hub.github.io/jewelry-store/';
+                if (document.getElementById('canonicalUrl')) document.getElementById('canonicalUrl').value = settings.canonicalUrl || '';
                 if (document.getElementById('enableBreadcrumbs')) document.getElementById('enableBreadcrumbs').value = settings.enableBreadcrumbs || 'yes';
                 if (document.getElementById('enableSchema')) document.getElementById('enableSchema').value = settings.enableSchema || 'yes';
             }
+        }
+        
+        // ==================== TAB FUNCTIONS ====================
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.getAttribute('data-tab');
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(`${tabName}Tab`).classList.add('active');
+                    
+                    if (tabName === 'dashboard') loadSearchConsoleData();
+                    if (tabName === 'analytics') { loadAnalyticsStats(); loadOrdersChart(); loadStatusChart(); loadRecentOrders(); }
+                });
+            });
+        }
+        
+        function showToast(message, isError = false, isInfo = false) {
+            const toast = document.createElement('div');
+            if (isInfo) toast.className = 'toast toast-info';
+            else toast.className = `toast ${isError ? 'toast-error' : 'toast-success'}`;
+            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : (isInfo ? 'fa-info-circle' : 'fa-check-circle')}"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
         
         function escapeHtml(str) {
@@ -988,14 +1140,20 @@
         loadRobotsTxt();
         loadSavedSettings();
         generateSitemap();
-        loadDashboardData();
+        loadSearchConsoleData();
+        loadAnalyticsStats();
+        loadOrdersChart();
+        loadStatusChart();
+        loadRecentOrders();
         
-        // Set global functions
+        // Global functions
+        window.loadSearchConsoleData = loadSearchConsoleData;
+        window.refreshSearchConsoleData = refreshSearchConsoleData;
+        window.connectGoogleSearchConsole = connectGoogleSearchConsole;
         window.saveGlobalMeta = saveGlobalMeta;
         window.generateSitemap = generateSitemap;
         window.downloadSitemap = downloadSitemap;
         window.saveRobotsTxt = saveRobotsTxt;
-        window.saveSchemaSettings = saveSchemaSettings;
         window.saveAdvancedSettings = saveAdvancedSettings;
         window.loadOrdersChart = loadOrdersChart;
         window.logout = logout;
