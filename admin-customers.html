@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <meta name="theme-color" content="#FFFFFF">
+    <meta name="theme-color" content="#d4af37">
     <title>Customer Management - Style Of Life</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/config.js"></script>
     <style>
@@ -105,7 +105,7 @@
             background: var(--white);
             z-index: 1000;
             transition: left 0.3s ease;
-            box-shadow: var(--shadow-xl);
+            box-shadow: var(--shadow-lg);
             overflow-y: auto;
         }
         
@@ -233,6 +233,11 @@
             padding: 18px;
             border: 1px solid var(--gray-200);
             box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
         .stat-icon {
             width: 45px;
@@ -271,6 +276,7 @@
             border: 1px solid var(--gray-200);
             border-radius: 40px;
             font-size: 14px;
+            min-width: 150px;
         }
         .search-input:focus {
             outline: none;
@@ -282,6 +288,21 @@
             border-radius: 40px;
             background: var(--white);
             font-size: 13px;
+            cursor: pointer;
+        }
+        .refresh-btn {
+            padding: 10px 18px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .refresh-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
         
         /* Customers Table */
@@ -327,6 +348,9 @@
             color: var(--gray-500);
             text-transform: uppercase;
         }
+        .admin-table tr:hover {
+            background: var(--gray-50);
+        }
         .customer-avatar {
             width: 36px;
             height: 36px;
@@ -347,25 +371,55 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
+            display: inline-block;
         }
         .total-spent { font-weight: 600; color: var(--primary-dark); }
         
         .action-btn {
             background: none;
             border: none;
-            padding: 6px;
+            padding: 8px 12px;
             cursor: pointer;
             color: var(--gray-600);
             transition: all 0.2s;
             border-radius: 8px;
+            font-size: 13px;
         }
         .action-btn:hover { background: var(--gray-100); color: var(--primary); }
+        
+        /* Mobile Card View */
+        .mobile-customer-card {
+            display: none;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid var(--gray-200);
+        }
+        .mobile-customer-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        .mobile-customer-row:last-child {
+            border-bottom: none;
+        }
+        .mobile-customer-label {
+            color: var(--gray-500);
+            font-size: 12px;
+        }
+        .mobile-customer-value {
+            font-weight: 500;
+            text-align: right;
+        }
         
         .pagination {
             display: flex;
             justify-content: center;
             gap: 8px;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
         .pagination button {
             padding: 8px 12px;
@@ -373,11 +427,59 @@
             background: var(--white);
             border-radius: 8px;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+        .pagination button:hover {
+            background: var(--gray-100);
         }
         .pagination button.active {
             background: var(--primary);
             color: var(--white);
             border-color: var(--primary);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--white);
+            border-radius: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 25px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .modal-header h3 {
+            color: var(--primary);
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray-600);
         }
         
         .empty-state { text-align: center; padding: 60px; color: var(--gray-500); }
@@ -414,9 +516,11 @@
             color: var(--gray-500);
             text-decoration: none;
             font-size: 10px;
+            transition: all 0.2s;
         }
         .bottom-nav a i { font-size: 20px; }
         .bottom-nav a.active { color: var(--primary); }
+        .bottom-nav a:hover { color: var(--primary); }
         
         .toast {
             position: fixed;
@@ -438,6 +542,21 @@
         @keyframes slideUp {
             from { opacity: 0; transform: translateX(-50%) translateY(20px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .admin-table {
+                display: none;
+            }
+            .mobile-customer-card {
+                display: block;
+            }
+            .search-bar {
+                flex-direction: column;
+            }
+            .search-input, .filter-select, .refresh-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -463,6 +582,7 @@
             <a href="admin-products.html"><i class="fas fa-box"></i> Products</a>
             <a href="admin-orders.html"><i class="fas fa-shopping-cart"></i> Orders</a>
             <a href="admin-customers.html" class="active"><i class="fas fa-users"></i> Customers</a>
+            <a href="admin-analytics.html"><i class="fas fa-chart-pie"></i> Analytics</a>
             <div class="logout-mobile"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
         </div>
     </div>
@@ -481,6 +601,7 @@
                 <a href="admin-products.html"><i class="fas fa-box"></i> Products</a>
                 <a href="admin-orders.html"><i class="fas fa-shopping-cart"></i> Orders</a>
                 <a href="admin-customers.html" class="active"><i class="fas fa-users"></i> Customers</a>
+                <a href="admin-analytics.html"><i class="fas fa-chart-pie"></i> Analytics</a>
             </div>
             <div class="logout-desktop">
                 <a href="#" onclick="logout()" style="display: flex; align-items: center; gap: 12px; padding: 12px 15px; color: var(--danger); text-decoration: none;">
@@ -532,6 +653,7 @@
                         <option value="most_orders">Most Orders</option>
                         <option value="highest_spent">Highest Spent</option>
                     </select>
+                    <button class="refresh-btn" onclick="refreshCustomers()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 </div>
                 
                 <!-- Customers Table -->
@@ -547,6 +669,17 @@
                     <div id="pagination" class="pagination"></div>
                 </div>
             </div>
+        </div>
+    </div>
+    
+    <!-- Customer Orders Modal -->
+    <div id="customerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-receipt"></i> Customer Orders</h3>
+                <button class="close-modal" onclick="closeCustomerModal()">&times;</button>
+            </div>
+            <div id="modalContent"></div>
         </div>
     </div>
     
@@ -600,9 +733,9 @@
                     if (!customerMap.has(key) && (email || phone)) {
                         customerMap.set(key, {
                             id: key,
-                            name: order.customer_name,
-                            email: email,
-                            phone: phone,
+                            name: order.customer_name || 'Guest',
+                            email: email || 'No email',
+                            phone: phone || 'No phone',
                             orders: [],
                             totalSpent: 0,
                             firstOrder: order.created_at,
@@ -634,6 +767,7 @@
             } catch (error) {
                 console.error('Error loading customers:', error);
                 document.getElementById('customersList').innerHTML = '<div class="empty-state">Error loading customers</div>';
+                showToast('Error loading customers', true);
             }
         }
         
@@ -663,7 +797,7 @@
                 filtered = filtered.filter(c => 
                     c.name?.toLowerCase().includes(searchTerm) ||
                     c.email?.toLowerCase().includes(searchTerm) ||
-                    c.phone?.includes(searchTerm)
+                    c.phone?.toLowerCase().includes(searchTerm)
                 );
             }
             
@@ -687,6 +821,52 @@
             return filtered;
         }
         
+        function renderMobileCustomer(customer) {
+            const initials = customer.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
+            const memberDate = new Date(customer.firstOrder).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
+            
+            return `
+                <div class="mobile-customer-card">
+                    <div class="mobile-customer-row">
+                        <span class="mobile-customer-label">Customer</span>
+                        <span class="mobile-customer-value">
+                            <div style="display: flex; align-items: center; gap: 8px; justify-content: flex-end;">
+                                <div class="customer-avatar" style="width: 30px; height: 30px; font-size: 12px;">${initials}</div>
+                                <div>
+                                    <div class="customer-name">${escapeHtml(customer.name)}</div>
+                                    <div class="customer-email">${escapeHtml(customer.email)}</div>
+                                </div>
+                            </div>
+                        </span>
+                    </div>
+                    <div class="mobile-customer-row">
+                        <span class="mobile-customer-label">Phone</span>
+                        <span class="mobile-customer-value">${customer.phone}</span>
+                    </div>
+                    <div class="mobile-customer-row">
+                        <span class="mobile-customer-label">Orders</span>
+                        <span class="mobile-customer-value"><span class="order-count">${customer.orders.length}</span></span>
+                    </div>
+                    <div class="mobile-customer-row">
+                        <span class="mobile-customer-label">Total Spent</span>
+                        <span class="mobile-customer-value total-spent">₹${customer.totalSpent.toLocaleString()}</span>
+                    </div>
+                    <div class="mobile-customer-row">
+                        <span class="mobile-customer-label">Member Since</span>
+                        <span class="mobile-customer-value">${memberDate}</span>
+                    </div>
+                    <div class="mobile-customer-row">
+                        <span class="mobile-customer-label">Actions</span>
+                        <span class="mobile-customer-value">
+                            <button class="action-btn" onclick="viewCustomerOrders('${customer.id}')">
+                                <i class="fas fa-eye"></i> View Orders
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            `;
+        }
+        
         function renderCustomers() {
             const filtered = filterAndSortCustomers();
             const totalPages = Math.ceil(filtered.length / itemsPerPage);
@@ -701,47 +881,75 @@
                 return;
             }
             
-            let html = '<table class="admin-table"><thead><tr><th>Customer</th><th>Contact</th><th>Orders</th><th>Total Spent</th><th>Member Since</th><th>Actions</th></tr></thead><tbody>';
+            // Desktop Table View
+            let desktopHtml = '<table class="admin-table"><thead><tr><th>Customer</th><th>Contact</th><th>Orders</th><th>Total Spent</th><th>Member Since</th><th>Actions</th></tr></thead><tbody>';
+            
+            // Mobile Card View
+            let mobileHtml = '';
             
             paginatedCustomers.forEach(c => {
                 const initials = c.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
                 const memberDate = new Date(c.firstOrder).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
                 
-                html += `
+                desktopHtml += `
                     <tr>
                         <td>
                             <div style="display: flex; align-items: center; gap: 12px;">
                                 <div class="customer-avatar">${initials}</div>
                                 <div>
-                                    <div class="customer-name">${c.name || 'Guest'}</div>
-                                    <div class="customer-email">${c.email || 'No email'}</div>
+                                    <div class="customer-name">${escapeHtml(c.name)}</div>
+                                    <div class="customer-email">${escapeHtml(c.email)}</div>
                                 </div>
                             </div>
                         </td>
-                        <td>${c.phone || 'No phone'}</td>
+                        <td>${c.phone}</td>
                         <td><span class="order-count">${c.orders.length}</span></td>
                         <td class="total-spent">₹${c.totalSpent.toLocaleString()}</td>
                         <td>${memberDate}</td>
                         <td>
                             <button class="action-btn" onclick="viewCustomerOrders('${c.id}')" title="View Orders">
-                                <i class="fas fa-eye"></i>
+                                <i class="fas fa-eye"></i> View
                             </button>
                         </td>
                     </tr>
                 `;
+                
+                mobileHtml += renderMobileCustomer(c);
             });
             
-            html += '</tbody></table>';
-            container.innerHTML = html;
+            desktopHtml += '</tbody></table>';
+            
+            container.innerHTML = desktopHtml + `<div class="mobile-customers-container">${mobileHtml}</div>`;
+            
+            // Add mobile view styles
+            const style = document.createElement('style');
+            style.textContent = `
+                @media (max-width: 768px) {
+                    .admin-table { display: none; }
+                    .mobile-customers-container { display: block; }
+                }
+                @media (min-width: 769px) {
+                    .mobile-customers-container { display: none; }
+                }
+            `;
+            document.head.appendChild(style);
             
             // Pagination
             let paginationHtml = '<div class="pagination">';
-            for (let i = 1; i <= Math.min(totalPages, 5); i++) {
-                paginationHtml += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
-            }
-            if (totalPages > 5) {
-                paginationHtml += `<span>...</span>`;
-                paginationHtml += `<button onclick="goToPage(${totalPages})">${totalPages}</button>`;
+            if (totalPages > 1) {
+                if (currentPage > 1) {
+                    paginationHtml += `<button onclick="goToPage(${currentPage - 1})"><i class="fas fa-chevron-left"></i></button>`;
+                }
+                for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+                    paginationHtml += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                }
+                if (totalPages > 5) {
+                    paginationHtml += `<span>...</span>`;
+                    paginationHtml += `<button onclick="goToPage(${totalPages})">${totalPages}</button>`;
+                }
+                if (currentPage < totalPages) {
+                    paginationHtml += `<button onclick="goToPage(${currentPage + 1})"><i class="fas fa-chevron-right"></i></button>`;
+                }
             }
             paginationHtml += '</div>';
             document.getElementById('pagination').innerHTML = paginationHtml;
@@ -752,22 +960,82 @@
             renderCustomers();
         };
         
+        window.refreshCustomers = function() {
+            currentPage = 1;
+            document.getElementById('searchInput').value = '';
+            document.getElementById('sortSelect').value = 'newest';
+            loadCustomers();
+            showToast('Customers refreshed');
+        };
+        
         window.viewCustomerOrders = async function(customerId) {
             const customer = allCustomers.find(c => c.id === customerId);
             if (!customer) return;
             
-            let ordersHtml = '';
-            customer.orders.forEach(o => {
-                ordersHtml += `
-                    <div style="border-bottom: 1px solid var(--gray-200); padding: 12px 0;">
-                        <div><strong>${o.order_id}</strong> - ${new Date(o.created_at).toLocaleDateString()}</div>
-                        <div>Total: ₹${(o.total || 0).toLocaleString()} | Status: ${o.status || 'Pending'}</div>
-                        <div style="font-size: 12px;">Items: ${o.items?.map(i => `${i.name} x${i.quantity}`).join(', ')}</div>
-                    </div>
-                `;
-            });
+            let ordersHtml = '<div style="max-height: 500px; overflow-y: auto;">';
+            if (customer.orders.length === 0) {
+                ordersHtml += '<div class="empty-state">No orders found for this customer</div>';
+            } else {
+                customer.orders.forEach(o => {
+                    const statusClass = o.status?.toLowerCase() === 'delivered' ? 'success' : 
+                                      (o.status?.toLowerCase() === 'cancelled' ? 'danger' : 'warning');
+                    ordersHtml += `
+                        <div style="border-bottom: 1px solid var(--gray-200); padding: 15px 0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <strong>${o.order_id}</strong>
+                                <span class="status-badge" style="background: rgba(212,175,55,0.1); color: var(--primary-dark); padding: 2px 8px; border-radius: 20px; font-size: 11px;">${o.status || 'Pending'}</span>
+                            </div>
+                            <div style="font-size: 12px; color: var(--gray-500); margin-bottom: 8px;">
+                                ${new Date(o.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                            <div style="font-size: 13px; margin-bottom: 8px;">
+                                <strong>Total:</strong> ₹${(o.total || 0).toLocaleString()}
+                            </div>
+                            <div style="font-size: 12px;">
+                                <strong>Items:</strong> ${o.items?.map(i => `${i.name} x${i.quantity}`).join(', ') || 'No items'}
+                            </div>
+                            <div style="margin-top: 8px;">
+                                <a href="track.html?order=${o.order_id}" target="_blank" style="color: var(--primary); font-size: 11px; text-decoration: none;">
+                                    <i class="fas fa-truck"></i> Track Order
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            ordersHtml += '</div>';
             
-            alert(`Customer: ${customer.name}\n\nOrders:\n${ordersHtml.replace(/<[^>]*>/g, '\n')}`);
+            document.getElementById('modalContent').innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                        <div class="customer-avatar" style="width: 50px; height: 50px; font-size: 20px;">
+                            ${customer.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
+                        </div>
+                        <div>
+                            <h4>${escapeHtml(customer.name)}</h4>
+                            <p style="font-size: 12px; color: var(--gray-500);">${customer.email} | ${customer.phone}</p>
+                        </div>
+                    </div>
+                    <div style="background: var(--gray-50); padding: 12px; border-radius: 12px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>Total Orders:</span>
+                            <strong>${customer.orders.length}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Total Spent:</span>
+                            <strong style="color: var(--primary);">₹${customer.totalSpent.toLocaleString()}</strong>
+                        </div>
+                    </div>
+                </div>
+                <h4 style="margin-bottom: 10px;">Order History</h4>
+                ${ordersHtml}
+            `;
+            
+            document.getElementById('customerModal').classList.add('active');
+        };
+        
+        window.closeCustomerModal = function() {
+            document.getElementById('customerModal').classList.remove('active');
         };
         
         window.openSidebar = function() {
@@ -786,6 +1054,11 @@
             setTimeout(() => window.location.href = 'login.html', 500);
         };
         
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+        }
+        
         // Event listeners
         document.getElementById('searchInput').addEventListener('input', () => {
             currentPage = 1;
@@ -794,6 +1067,13 @@
         document.getElementById('sortSelect').addEventListener('change', () => {
             currentPage = 1;
             renderCustomers();
+        });
+        
+        // Close modal on outside click
+        document.getElementById('customerModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCustomerModal();
+            }
         });
         
         loadCustomers();
