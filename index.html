@@ -24,6 +24,11 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://styleoflife987-hub.github.io/jewelry-store/">
     
+    <!-- SEO File Connections -->
+    <link rel="author" href="humans.txt">
+    <link rel="security-policy" href="security.txt">
+    <link rel="sitemap" type="application/xml" href="sitemap.xml">
+    
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://styleoflife987-hub.github.io/jewelry-store/">
@@ -42,7 +47,7 @@
     <meta name="twitter:description" content="Discover exquisite handcrafted jewelry at Style Of Life. Shop diamond rings, gold necklaces, earrings, and luxury accessories.">
     <meta name="twitter:image" content="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338">
     
-    <!-- JSON-LD Structured Data -->
+    <!-- JSON-LD Structured Data (Only for Homepage - Fixed) -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -64,6 +69,37 @@
     }
     </script>
     
+    <!-- Organization Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Style Of Life Jewelry",
+        "url": "https://styleoflife987-hub.github.io/jewelry-store/",
+        "logo": "https://styleoflife987-hub.github.io/jewelry-store/logo.png",
+        "sameAs": [
+            "https://www.instagram.com/styleoflife.in",
+            "https://www.facebook.com/styleoflife",
+            "https://twitter.com/styleoflife"
+        ]
+    }
+    </script>
+    
+    <!-- Website Schema (Replaces Product Schema) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Style Of Life",
+        "url": "https://styleoflife987-hub.github.io/jewelry-store/",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://styleoflife987-hub.github.io/jewelry-store/shop.html?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+    
     <meta name="theme-color" content="#d4af37">
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
     
@@ -78,13 +114,12 @@
     <script src="js/config.js"></script>
     
     <!-- SEO & Analytics Files -->
-    <script src="js/seo-manager.js"></script>
-    <script src="js/seo-helper.js"></script>
-    <script src="js/analytics.js"></script>
-    <script src="js/seo-integration.js"></script>
+    <script src="js/seo-manager.js" defer></script>
+    <script src="js/seo-helper.js" defer></script>
+    <script src="js/analytics.js" defer></script>
+    <script src="js/seo-integration.js" defer></script>
     
     <style>
-        /* Your existing CSS remains exactly the same */
         * {
             margin: 0;
             padding: 0;
@@ -148,7 +183,6 @@
             50% { transform: translateY(-50px) translateX(30px); opacity: 0.3; }
         }
         
-        /* Instagram Stories Section */
         .stories-section {
             padding: 15px 0;
             background: var(--white);
@@ -203,7 +237,6 @@
             background: var(--white);
         }
         
-        /* Instagram Story Modal */
         .instagram-story-modal {
             position: fixed;
             top: 0;
@@ -398,7 +431,6 @@
             to { opacity: 1; }
         }
         
-        /* Header */
         .instagram-header {
             display: flex;
             justify-content: space-between;
@@ -492,7 +524,6 @@
             50% { transform: scale(1.1); }
         }
         
-        /* Featured Section */
         .featured-section {
             padding: 20px 15px;
             background: linear-gradient(135deg, rgba(212,175,55,0.05), rgba(212,175,55,0.02));
@@ -559,7 +590,6 @@
             margin-bottom: 10px;
         }
         
-        /* Product Detail Modal */
         .product-detail-modal {
             position: fixed;
             top: 0;
@@ -689,7 +719,6 @@
             }
         }
         
-        /* Products Section */
         .products-section {
             padding: 20px 15px;
         }
@@ -890,7 +919,6 @@
             color: var(--white);
         }
         
-        /* Share Modal */
         .share-modal {
             position: fixed;
             bottom: 0;
@@ -1027,7 +1055,6 @@
             font-size: 12px;
         }
         
-        /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -1066,7 +1093,6 @@
             transform: translateY(-3px);
         }
         
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 70px;
@@ -1127,7 +1153,6 @@
             50% { transform: scale(1.3); }
         }
         
-        /* Footer */
         .site-footer {
             background: var(--black);
             color: var(--white);
@@ -1184,18 +1209,15 @@
     </style>
 </head>
 <body>
-    <!-- Your existing body content remains exactly the same -->
     <div class="light-bg"></div>
     <div class="floating-particles" id="particles"></div>
     
-    <!-- Instagram Stories Section -->
     <div class="stories-section">
         <div class="stories-container" id="storiesContainer">
             <div class="loading"><div class="spinner"></div></div>
         </div>
     </div>
     
-    <!-- Instagram Story Modal -->
     <div id="instagramStoryModal" class="instagram-story-modal">
         <div class="story-header">
             <div class="story-user">
@@ -1205,7 +1227,7 @@
                     <p id="storyUserTime">Just now</p>
                 </div>
             </div>
-            <button class="story-close" onclick="closeInstagramStory()">✕</button>
+            <button class="story-close" aria-label="Close story" onclick="closeInstagramStory()">✕</button>
         </div>
         <div class="story-progress-bar" id="storyProgressBar"></div>
         <div class="story-content">
@@ -1216,16 +1238,15 @@
             <div class="story-product-price" id="storyProductPrice"></div>
             <div class="story-product-desc" id="storyProductDesc"></div>
             <div class="story-buttons">
-                <button class="story-buy" id="storyBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button>
-                <button class="story-cart" id="storyCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                <button class="story-buy" id="storyBuyBtn" aria-label="Buy now"><i class="fas fa-bolt"></i> Buy Now</button>
+                <button class="story-cart" id="storyCartBtn" aria-label="Add to cart"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
             </div>
         </div>
     </div>
     
-    <!-- Product Detail Modal -->
     <div id="productDetailModal" class="product-detail-modal">
         <div class="product-detail-content">
-            <div class="product-detail-close" onclick="closeProductDetail()">&times;</div>
+            <button class="product-detail-close" aria-label="Close" onclick="closeProductDetail()">&times;</button>
             <img id="detailImage" class="product-detail-image" src="" alt="Product detail">
             <div class="product-detail-info">
                 <div class="product-detail-name" id="detailName"></div>
@@ -1233,49 +1254,47 @@
                 <div class="product-detail-price" id="detailPrice"></div>
                 <div class="product-detail-desc" id="detailDesc"></div>
                 <div class="product-detail-buttons">
-                    <button class="product-detail-buy" id="detailBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button>
-                    <button class="product-detail-cart" id="detailCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                    <button class="product-detail-buy" id="detailBuyBtn" aria-label="Buy now"><i class="fas fa-bolt"></i> Buy Now</button>
+                    <button class="product-detail-cart" id="detailCartBtn" aria-label="Add to cart"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Share Modal -->
     <div id="shareModal" class="share-modal">
         <div class="share-modal-header">
             <h4><i class="fas fa-share-alt" style="color: var(--gold);"></i> Share this beauty</h4>
-            <button class="close-share" onclick="closeShareModal()">&times;</button>
+            <button class="close-share" aria-label="Close" onclick="closeShareModal()">&times;</button>
         </div>
         <div id="shareProductInfo" class="share-product-info"></div>
         <div class="share-options-grid">
-            <div class="share-option" onclick="shareToWhatsApp()">
+            <button class="share-option" onclick="shareToWhatsApp()" aria-label="Share on WhatsApp">
                 <div class="share-option-icon share-whatsapp-icon"><i class="fab fa-whatsapp"></i></div>
                 <span>WhatsApp</span>
-            </div>
-            <div class="share-option" onclick="shareToInstagram()">
+            </button>
+            <button class="share-option" onclick="shareToInstagram()" aria-label="Share on Instagram">
                 <div class="share-option-icon share-instagram-icon"><i class="fab fa-instagram"></i></div>
                 <span>Instagram</span>
-            </div>
-            <div class="share-option" onclick="shareToFacebook()">
+            </button>
+            <button class="share-option" onclick="shareToFacebook()" aria-label="Share on Facebook">
                 <div class="share-option-icon share-facebook-icon"><i class="fab fa-facebook-f"></i></div>
                 <span>Facebook</span>
-            </div>
-            <div class="share-option" onclick="shareToTwitter()">
+            </button>
+            <button class="share-option" onclick="shareToTwitter()" aria-label="Share on Twitter">
                 <div class="share-option-icon share-twitter-icon"><i class="fab fa-twitter"></i></div>
                 <span>Twitter</span>
-            </div>
-            <div class="share-option" onclick="copyProductLink()">
+            </button>
+            <button class="share-option" onclick="copyProductLink()" aria-label="Copy link">
                 <div class="share-option-icon share-copy-icon"><i class="fas fa-link"></i></div>
                 <span>Copy Link</span>
-            </div>
+            </button>
         </div>
         <div class="share-link-container">
-            <input type="text" id="shareLinkInput" class="share-link-input" readonly>
+            <input type="text" id="shareLinkInput" class="share-link-input" readonly aria-label="Share link">
             <button class="copy-link-btn" onclick="copyProductLink()">Copy Link</button>
         </div>
     </div>
     
-    <!-- Header -->
     <div class="instagram-header">
         <div class="animated-logo">
             <div class="logo-container">
@@ -1290,7 +1309,6 @@
         </div>
     </div>
     
-    <!-- You May Also Like Section -->
     <div class="featured-section">
         <div class="featured-title">✨ You May Also Like</div>
         <div class="random-products" id="randomProducts">
@@ -1298,7 +1316,6 @@
         </div>
     </div>
     
-    <!-- Products Section -->
     <div class="products-section">
         <div class="section-title">
             <h3>All Products</h3>
@@ -1308,7 +1325,6 @@
         </div>
     </div>
     
-    <!-- Footer -->
     <footer class="site-footer" role="contentinfo">
         <div class="footer-content">
             <div class="footer-section">
@@ -1334,7 +1350,7 @@
                 <p><i class="fas fa-phone"></i> <a href="tel:+916352925472">+91-6352925472</a></p>
                 <p><i class="fas fa-envelope"></i> <a href="mailto:styleoflife987@gmail.com">styleoflife987@gmail.com</a></p>
                 <p><i class="fas fa-map-marker-alt"></i> Surat, Gujarat, India</p>
-                <p><i class="fab fa-instagram"></i> <a href="https://instagram.com/styleoflife.in" target="_blank">@styleoflife.in</a></p>
+                <p><i class="fab fa-instagram"></i> <a href="https://instagram.com/styleoflife.in" target="_blank" rel="noopener">@styleoflife.in</a></p>
             </div>
         </div>
         <div class="footer-bottom">
@@ -1342,7 +1358,6 @@
         </div>
     </footer>
     
-    <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <a href="index.html" class="active"><i class="fas fa-home"></i><span>Home</span></a>
         <a href="shop.html"><i class="fas fa-search"></i><span>Explore</span></a>
@@ -1367,7 +1382,6 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
-        // Create floating particles
         function createParticles() {
             const container = document.getElementById('particles');
             for (let i = 0; i < 30; i++) {
@@ -1454,9 +1468,9 @@
         
         window.shareToWhatsApp = () => { if (currentShareProduct) { const text = `✨ Check out ${currentShareProduct.name} from Style Of Life! ✨\nPrice: ₹${currentShareProduct.price.toLocaleString()}\n\n${window.location.origin}${window.location.pathname}?product=${currentShareProduct.id}`; window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank'); showToast('Opening WhatsApp...'); closeShareModal(); } };
         window.shareToInstagram = () => { if (currentShareProduct) { const text = `${currentShareProduct.name} - ₹${currentShareProduct.price.toLocaleString()}\n\n${window.location.origin}${window.location.pathname}?product=${currentShareProduct.id}`; navigator.clipboard.writeText(text); showToast('Link copied! Share on Instagram ✨'); closeShareModal(); } };
-        window.shareToFacebook = () => { if (currentShareProduct) { const url = `${window.location.origin}${window.location.pathname}?product=${currentShareProduct.id}`; window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank'); showToast('Opening Facebook...'); closeShareModal(); } };
-        window.shareToTwitter = () => { if (currentShareProduct) { const text = `✨ ${currentShareProduct.name} ✨`; const url = `${window.location.origin}${window.location.pathname}?product=${currentShareProduct.id}`; window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank'); showToast('Opening Twitter...'); closeShareModal(); } };
-        window.copyProductLink = () => { const linkInput = document.getElementById('shareLinkInput'); linkInput.select(); navigator.clipboard.writeText(linkInput.value); showToast('Link copied to clipboard! ✨'); };
+        window.shareToFacebook = () => { if (currentShareProduct) { const url = `${window.location.origin}${window.location.pathname}?product=${currentShareProduct.id}`; window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank'); closeShareModal(); } };
+        window.shareToTwitter = () => { if (currentShareProduct) { const text = `✨ ${currentShareProduct.name} ✨`; const url = `${window.location.origin}${window.location.pathname}?product=${currentShareProduct.id}`; window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank'); closeShareModal(); } };
+        window.copyProductLink = () => { const linkInput = document.getElementById('shareLinkInput'); linkInput.select(); navigator.clipboard.writeText(linkInput.value); showToast('Link copied! ✨'); };
         
         function showStoryInModal(product) {
             document.getElementById('storyUserAvatar').src = product.image;
@@ -1555,7 +1569,8 @@
                     const desc = p.description || 'Exquisite handcrafted jewelry piece made with premium quality materials and finest craftsmanship. Perfect for special occasions.';
                     const galleryId = `gallery-${p.id}`;
                     const dotId = `dots-${p.id}`;
-                    html += `<div class="product-item" itemscope itemtype="https://schema.org/Product"><div class="product-gallery" id="${galleryId}"></div><div class="gallery-dots" id="${dotId}"></div><div class="product-item-info"><div class="product-item-name" itemprop="name">${escapeHtml(p.name)}</div><div class="product-item-sku" itemprop="sku">SKU: ${p.sku} | ${p.category || 'Jewelry'}</div><div class="product-item-desc" itemprop="description">${escapeHtml(desc.substring(0, 120))}${desc.length > 120 ? '...' : ''}</div><div class="product-item-price" itemprop="price" content="${p.price}">₹${(p.price || 0).toLocaleString()}</div><div class="product-item-buttons"><button class="product-buy-btn" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')"><i class="fas fa-bolt"></i> Buy Now</button><button class="product-cart-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')"><i class="fas fa-shopping-cart"></i></button><button class="product-share-btn" onclick="openShareModal({ id: ${p.id}, name: '${escapeHtml(p.name)}', price: ${p.price}, image: '${displayImages[0]}', sku: '${p.sku}' })"><i class="fas fa-share-alt"></i></button></div></div></div>`;
+                    // Removed itemprop attributes to fix Google schema errors
+                    html += `<div class="product-item"><div class="product-gallery" id="${galleryId}"></div><div class="gallery-dots" id="${dotId}"></div><div class="product-item-info"><div class="product-item-name">${escapeHtml(p.name)}</div><div class="product-item-sku">SKU: ${p.sku} | ${p.category || 'Jewelry'}</div><div class="product-item-desc">${escapeHtml(desc.substring(0, 120))}${desc.length > 120 ? '...' : ''}</div><div class="product-item-price">₹${(p.price || 0).toLocaleString()}</div><div class="product-item-buttons"><button class="product-buy-btn" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')" aria-label="Buy now"><i class="fas fa-bolt"></i> Buy Now</button><button class="product-cart-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')" aria-label="Add to cart"><i class="fas fa-shopping-cart"></i></button><button class="product-share-btn" onclick="openShareModal({ id: ${p.id}, name: '${escapeHtml(p.name)}', price: ${p.price}, image: '${displayImages[0]}', sku: '${p.sku}' })" aria-label="Share"><i class="fas fa-share-alt"></i></button></div></div></div>`;
                 }
                 container.innerHTML = html;
                 for (let i = 0; i < products.length; i++) {
@@ -1567,9 +1582,7 @@
                     const dotId = `dots-${p.id}`;
                     setTimeout(() => { initGallery(galleryId, displayImages, dotId); }, 50);
                 }
-                if (typeof window.SEOManager !== 'undefined' && products && products.length > 0) {
-                    window.SEOManager.updateProductListing(products);
-                }
+                // Removed SEOManager.updateProductListing to prevent product schema errors
             } catch (error) { console.error('Error loading products:', error); container.innerHTML = '<div class="empty-state">Error loading products</div>'; }
         }
         
