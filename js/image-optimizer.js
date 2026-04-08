@@ -1,59 +1,40 @@
-// js/image-optimizer.js
-// Image optimization helper
-
+// Enhanced image optimization
 const ImageOptimizer = {
-    // Convert images to WebP format
-    init: function() {
-        this.optimizeProductImages();
-        this.addLazyLoading();
+    // Convert to WebP if supported
+    toWebP: function(url) {
+        return supportsWebP() ? url.replace(/\.(jpg|jpeg|png)$/, '.webp') : url;
     },
     
-    optimizeProductImages: function() {
-        document.querySelectorAll('img').forEach(img => {
-            // Add loading lazy
-            if (!img.hasAttribute('loading')) {
-                img.setAttribute('loading', 'lazy');
-            }
-            
-            // Add decoding async
-            if (!img.hasAttribute('decoding')) {
-                img.setAttribute('decoding', 'async');
-            }
-            
-            // Add width and height to prevent layout shift
-            if (!img.hasAttribute('width') && img.naturalWidth) {
-                img.setAttribute('width', img.naturalWidth);
-                img.setAttribute('height', img.naturalHeight);
-            }
-        });
+    // Generate responsive srcset
+    getSrcSet: function(url, widths = [300, 600, 900]) {
+        return widths.map(w => `${url}?w=${w} ${w}w`).join(', ');
     },
     
-    addLazyLoading: function() {
-        // Use Intersection Observer for lazy loading
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    if (img.dataset.src) {
-                        img.src = img.dataset.src;
-                        img.removeAttribute('data-src');
+    // Compress images before upload
+    compressImage: function(file, maxWidth = 1200, quality = 0.8) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    if (width > maxWidth) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
                     }
-                    observer.unobserve(img);
-                }
-            });
-        });
-        
-        document.querySelectorAll('img[data-src]').forEach(img => {
-            observer.observe(img);
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    canvas.toBlob(resolve, 'image/jpeg', quality);
+                };
+            };
         });
     }
 };
-
-// Initialize
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => ImageOptimizer.init());
-} else {
-    ImageOptimizer.init();
-}
-
-window.ImageOptimizer = ImageOptimizer;
