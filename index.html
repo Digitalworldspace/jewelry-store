@@ -74,53 +74,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/config.js"></script>
     
-    <!-- Performance fix CSS - prevents layout shift -->
+    <!-- CRITICAL FIX: Prevent layout shift and image delays -->
     <style>
-        /* Prevent layout shift - added without changing design */
-        img, video, iframe {
-            content-visibility: auto;
-            contain-intrinsic-size: auto 300px;
-        }
-        
-        .product-image, .random-product-image, .product-item-image, .gallery-image {
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-            background-color: #f5f5f5;
-        }
-        
-        .story-thumbnail {
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-        }
-        
-        .cart-item-image, .product-detail-image, .share-product-image {
-            background-color: #f5f5f5;
-        }
-        
-        /* Skeleton loading effect - subtle, doesn't change design */
-        .product-card, .random-product-card {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        
-        /* Remove skeleton after images load */
-        .product-card img.loaded, .random-product-card img.loaded {
-            animation: none;
-            background: transparent;
-        }
-    </style>
-    
-    <style>
+        /* Fix layout shift */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+        
+        /* Force all images to have reserved space */
+        img:not([width]), .story-thumbnail, .random-product-image, .gallery-image, .product-detail-image {
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+        }
+        
+        /* Show placeholder while loading */
+        img {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loadingPulse 1.5s infinite;
+        }
+        
+        @keyframes loadingPulse {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Remove animation once loaded */
+        img.loaded {
+            animation: none;
+            background: transparent;
         }
         
         :root {
@@ -1324,25 +1308,27 @@
         window.openStory = (product) => { showStoryInModal(product); document.getElementById('instagramStoryModal').classList.add('active'); };
         window.closeInstagramStory = () => { document.getElementById('instagramStoryModal').classList.remove('active'); };
         
+        // Load story toggles with pagination
         async function loadStoryToggles() {
             const container = document.getElementById('storiesContainer');
             try {
-                const { data: products, error } = await supabase.from('products').select('*').order('id').limit(8);
+                const { data: products, error } = await supabase.from('products').select('id, name, sku, price, images').order('id').limit(8);
                 if (error) throw error;
                 if (!products || products.length === 0) { container.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; return; }
                 let html = '';
                 for (const product of products) {
                     const thumbnail = product.images?.[0] || 'https://via.placeholder.com/70x70?text=Style';
-                    html += `<div class="story-toggle" onclick="openStory({ id: ${product.id}, name: '${escapeHtml(product.name)}', sku: '${product.sku}', price: ${product.price}, image: '${thumbnail}', description: '${escapeHtml(product.description || 'Exquisite handcrafted jewelry piece.')}' })"><div class="story-ring"><img class="story-thumbnail" src="${thumbnail}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async" width="70" height="70"></div></div>`;
+                    html += `<div class="story-toggle" onclick="openStory({ id: ${product.id}, name: '${escapeHtml(product.name)}', sku: '${product.sku}', price: ${product.price}, image: '${thumbnail}', description: '${escapeHtml(product.description || 'Exquisite handcrafted jewelry piece.')}' })"><div class="story-ring"><img class="story-thumbnail" src="${thumbnail}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async" width="70" height="70" onload="this.classList.add('loaded')"></div></div>`;
                 }
                 container.innerHTML = html;
             } catch (error) { console.error('Error loading story toggles:', error); container.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; }
         }
         
+        // Load random products with image optimization
         async function loadRandomProducts() {
             const container = document.getElementById('randomProducts');
             try {
-                const { data: products, error } = await supabase.from('products').select('*');
+                const { data: products, error } = await supabase.from('products').select('id, name, sku, price, images, description').limit(20);
                 if (error) throw error;
                 if (!products || products.length === 0) { container.innerHTML = '<div class="empty-state">✨ Coming soon</div>'; return; }
                 const shuffled = [...products];
@@ -1351,7 +1337,7 @@
                 let html = '';
                 for (const p of randomProducts) {
                     const img = p.images?.[0] || 'https://via.placeholder.com/300x150?text=Style+Of+Life';
-                    html += `<div class="random-product-card" onclick="openProductDetail({ id: ${p.id}, name: '${escapeHtml(p.name)}', sku: '${p.sku}', price: ${p.price}, image: '${img}', description: '${escapeHtml(p.description || 'Exquisite handcrafted jewelry piece.')}' })"><img class="random-product-image" src="${img}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" width="300" height="150"><div class="random-product-info"><div class="random-product-name">${escapeHtml(p.name)}</div><div class="random-product-price">₹${(p.price || 0).toLocaleString()}</div></div></div>`;
+                    html += `<div class="random-product-card" onclick="openProductDetail({ id: ${p.id}, name: '${escapeHtml(p.name)}', sku: '${p.sku}', price: ${p.price}, image: '${img}', description: '${escapeHtml(p.description || 'Exquisite handcrafted jewelry piece.')}' })"><img class="random-product-image" src="${img}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" width="300" height="150" onload="this.classList.add('loaded')"><div class="random-product-info"><div class="random-product-name">${escapeHtml(p.name)}</div><div class="random-product-price">₹${(p.price || 0).toLocaleString()}</div></div></div>`;
                 }
                 container.innerHTML = html;
             } catch (error) { console.error('Error loading random products:', error); container.innerHTML = '<div class="empty-state">Unable to load recommendations</div>'; }
@@ -1373,6 +1359,7 @@
                 imgElement.width = 400;
                 imgElement.height = 400;
                 imgElement.onerror = () => { imgElement.src = 'https://via.placeholder.com/400x400?text=Image+Not+Available'; };
+                imgElement.onload = () => { imgElement.classList.add('loaded'); };
                 gallery.appendChild(imgElement);
                 const dot = document.createElement('div');
                 dot.className = 'gallery-dot';
@@ -1389,11 +1376,13 @@
             });
         }
         
+        // Load products with LIMIT and pagination
         async function loadProducts() {
             const container = document.getElementById('productsGrid');
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading products...</p></div>';
             try {
-                const { data: products, error } = await supabase.from('products').select('*').order('id').limit(12);
+                // CRITICAL FIX: Limit to 8 products initially
+                const { data: products, error } = await supabase.from('products').select('*').order('id').limit(8);
                 if (error) throw error;
                 if (!products || products.length === 0) { container.innerHTML = '<div class="empty-state">✨ No products found</div>'; return; }
                 let html = '';
@@ -1429,50 +1418,115 @@
         document.getElementById('shareModal').addEventListener('click', function(e) { if (e.target === this) { closeShareModal(); } });
         document.getElementById('productDetailModal').addEventListener('click', function(e) { if (e.target === this) { closeProductDetail(); } });
         
+        // Load everything in sequence to avoid blocking
         loadStoryToggles();
         await updateCartCount();
         await loadRandomProducts();
         await loadProducts();
     </script>
     
-    <!-- Emergency performance fix - lazy loads all images -->
+    <!-- AGGRESSIVE IMAGE LOADING FIX: Load only visible images -->
     <script>
     (function() {
-        // Mark first image as high priority
-        const firstImage = document.querySelector('.story-thumbnail, .random-product-image, .product-image');
-        if (firstImage) {
-            firstImage.setAttribute('fetchpriority', 'high');
-        }
+        // Mark first visible images as high priority
+        const firstStoryImage = document.querySelector('.story-thumbnail');
+        const firstRandomImage = document.querySelector('.random-product-image');
+        const firstProductImage = document.querySelector('.gallery-image');
         
-        // Defer all other images
-        const images = document.querySelectorAll('img');
-        images.forEach((img, index) => {
-            if (index > 0 && !img.hasAttribute('fetchpriority')) {
-                const originalSrc = img.src;
-                if (originalSrc && !originalSrc.includes('placeholder')) {
-                    img.removeAttribute('src');
-                    img.setAttribute('data-src', originalSrc);
-                    img.style.background = '#f5f5f5';
-                }
+        if (firstStoryImage) firstStoryImage.setAttribute('fetchpriority', 'high');
+        if (firstRandomImage) firstRandomImage.setAttribute('fetchpriority', 'high');
+        if (firstProductImage) firstProductImage.setAttribute('fetchpriority', 'high');
+        
+        // Defer ALL other images
+        const allImages = document.querySelectorAll('img');
+        allImages.forEach((img, index) => {
+            // Skip images that already have fetchpriority
+            if (img.hasAttribute('fetchpriority')) return;
+            
+            const originalSrc = img.src;
+            if (originalSrc && !originalSrc.includes('placeholder') && originalSrc !== '') {
+                // Store original source
+                img.setAttribute('data-src', originalSrc);
+                // Remove src to prevent loading
+                img.removeAttribute('src');
+                // Add placeholder background
+                img.style.backgroundColor = '#f5f5f5';
             }
         });
         
-        // Load images when they come into view
+        // Intersection Observer - load images when they come into view
         if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver((entries) => {
+            const imageObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const img = entry.target;
-                        if (img.dataset.src) {
-                            img.src = img.dataset.src;
+                        const dataSrc = img.getAttribute('data-src');
+                        if (dataSrc) {
+                            img.src = dataSrc;
                             img.removeAttribute('data-src');
+                            img.classList.add('loaded');
                         }
-                        observer.unobserve(img);
+                        imageObserver.unobserve(img);
                     }
                 });
-            }, { rootMargin: '200px' });
+            }, {
+                rootMargin: '200px', // Load 200px before visible
+                threshold: 0.01
+            });
             
-            document.querySelectorAll('img[data-src]').forEach(img => observer.observe(img));
+            // Observe all images with data-src
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                imageObserver.observe(img);
+            });
+        } else {
+            // Fallback for older browsers
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                img.src = img.getAttribute('data-src');
+                img.removeAttribute('data-src');
+            });
+        }
+        
+        // Load more products when user scrolls near bottom
+        let loadingMore = false;
+        let currentPage = 1;
+        const loadMoreProducts = async () => {
+            if (loadingMore) return;
+            loadingMore = true;
+            
+            try {
+                const { data: products, error } = await supabase.from('products').select('*').order('id').range(currentPage * 8, (currentPage + 1) * 8 - 1);
+                if (error || !products || products.length === 0) {
+                    loadingMore = false;
+                    return;
+                }
+                
+                // Append products to grid
+                const container = document.getElementById('productsGrid');
+                let html = '';
+                for (const p of products) {
+                    const images = p.images || [];
+                    const validImages = images.filter(img => img && img.trim() !== '');
+                    const displayImages = validImages.length > 0 ? validImages : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
+                    html += `<div class="product-item"><div class="product-gallery" id="gallery-${p.id}"></div><div class="gallery-dots" id="dots-${p.id}"></div><div class="product-item-info"><div class="product-item-name">${escapeHtml(p.name)}</div><div class="product-item-sku">SKU: ${p.sku}</div><div class="product-item-price">₹${(p.price || 0).toLocaleString()}</div><div class="product-item-buttons"><button class="product-buy-btn" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')">Buy Now</button><button class="product-cart-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')"><i class="fas fa-shopping-cart"></i></button></div></div></div>`;
+                }
+                container.insertAdjacentHTML('beforeend', html);
+                currentPage++;
+                loadingMore = false;
+            } catch (error) {
+                loadingMore = false;
+            }
+        };
+        
+        // Infinite scroll
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+                loadMoreProducts();
+            }
+        });
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
         }
     })();
     </script>
