@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) -->
+    <!-- Google tag (gtag.js) - Load with defer -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-HG35DX3D4J"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -28,16 +28,16 @@
     <meta property="og:url" content="https://styleoflife987-hub.github.io/jewelry-store/">
     <meta property="og:title" content="Style Of Life - Luxury Jewelry Store">
     <meta property="og:description" content="Discover exquisite handcrafted jewelry at Style Of Life. Shop diamond rings, gold necklaces, earrings, and luxury accessories. Summer Sale 2026!">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1200&h=630&fit=crop">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&h=800&fit=crop&q=80">
+    <meta property="og:image:width" content="800">
+    <meta property="og:image:height" content="800">
     <meta property="og:site_name" content="Style Of Life Jewelry">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Style Of Life - Luxury Jewelry Store">
     <meta name="twitter:description" content="Discover exquisite handcrafted jewelry at Style Of Life.">
-    <meta name="twitter:image" content="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1200&h=630&fit=crop">
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&h=800&fit=crop&q=80">
     
     <!-- Simple JSON-LD Schema -->
     <script type="application/ld+json">
@@ -64,47 +64,59 @@
     <meta name="theme-color" content="#d4af37">
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
     
-    <!-- Preconnect for Performance -->
+    <!-- CRITICAL: Preconnect to essential origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://kkvgdagjboxhtuyqlomq.supabase.co">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CRITICAL LCP FIX: Preload the LCP image (first visible product image) -->
+    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop&q=80" fetchpriority="high">
+    
+    <!-- Fonts - Load with font-display swap to prevent FOIT -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome - Load async -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    
     <script src="js/config.js"></script>
     
-    <!-- CRITICAL FIX: Prevent layout shift and image delays -->
+    <!-- CRITICAL CSS - Inlined to eliminate render-blocking -->
     <style>
-        /* Fix layout shift */
+        /* Critical reset and LCP optimization */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         
-        /* Force all images to have reserved space */
-        img:not([width]), .story-thumbnail, .random-product-image, .gallery-image, .product-detail-image {
+        /* Force images to have reserved space - prevents CLS and helps LCP */
+        img {
             aspect-ratio: 1 / 1;
             object-fit: cover;
+            background: #f5f5f5;
+            display: block;
         }
         
-        /* Show placeholder while loading */
-        img {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loadingPulse 1.5s infinite;
+        /* Remove animation for faster rendering */
+        .loading {
+            text-align: center;
+            padding: 40px;
         }
         
-        @keyframes loadingPulse {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #e9ecef;
+            border-top-color: #D4AF37;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
         }
         
-        /* Remove animation once loaded */
-        img.loaded {
-            animation: none;
-            background: transparent;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         :root {
@@ -138,203 +150,7 @@
             background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
         }
         
-        .stories-section {
-            padding: 15px 0;
-            background: var(--white);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .stories-container {
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            padding: 0 15px;
-            scrollbar-width: none;
-        }
-        
-        .stories-container::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .story-toggle {
-            text-align: center;
-            min-width: 70px;
-            cursor: pointer;
-        }
-        
-        .story-ring {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            padding: 2px;
-        }
-        
-        .story-thumbnail {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            background: var(--white);
-        }
-        
-        .instagram-story-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-        }
-        
-        .instagram-story-modal.active {
-            display: flex;
-        }
-        
-        .story-header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
-            z-index: 10;
-        }
-        
-        .story-user {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .story-user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--gold);
-            object-fit: cover;
-        }
-        
-        .story-user-info h4 {
-            color: white;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        
-        .story-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .story-content {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .story-content-image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        
-        .story-progress-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            gap: 4px;
-            padding: 12px 15px;
-            z-index: 10;
-        }
-        
-        .story-progress-segment {
-            flex: 1;
-            height: 3px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-        
-        .story-progress-fill {
-            height: 100%;
-            width: 0%;
-            background: white;
-            transition: width 0.1s linear;
-        }
-        
-        .story-product-info {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            padding: 60px 20px 30px;
-            color: white;
-        }
-        
-        .story-product-name {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        
-        .story-product-price {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--gold);
-            margin: 10px 0;
-        }
-        
-        .story-buttons {
-            display: flex;
-            gap: 12px;
-        }
-        
-        .story-buy, .story-cart {
-            flex: 1;
-            padding: 12px;
-            border-radius: 40px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .story-buy {
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: var(--black);
-            border: none;
-        }
-        
-        .story-cart {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid var(--gold);
-            color: var(--gold);
-        }
-        
+        /* Header - Critical for LCP */
         .instagram-header {
             display: flex;
             justify-content: space-between;
@@ -342,17 +158,6 @@
             padding: 12px 15px;
             background: var(--white);
             border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        
-        .animated-logo {
-            position: relative;
-            cursor: pointer;
-        }
-        
-        .logo-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
         
         .logo-main {
@@ -375,20 +180,6 @@
             color: var(--gold);
             margin-top: -2px;
             opacity: 0.8;
-        }
-        
-        .logo-diamond {
-            position: absolute;
-            top: -12px;
-            right: -20px;
-            font-size: 14px;
-            color: var(--gold);
-            animation: diamondSpin 3s linear infinite;
-        }
-        
-        @keyframes diamondSpin {
-            0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.6; }
-            50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
         }
         
         .header-icons {
@@ -415,6 +206,7 @@
             font-weight: bold;
         }
         
+        /* Featured Section - Part of LCP */
         .featured-section {
             padding: 20px 15px;
             background: linear-gradient(135deg, rgba(212,175,55,0.05), rgba(212,175,55,0.02));
@@ -443,12 +235,6 @@
             cursor: pointer;
         }
         
-        .random-product-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
-            border-color: var(--gold);
-        }
-        
         .random-product-image {
             width: 100%;
             height: 150px;
@@ -473,122 +259,7 @@
             color: var(--gold);
         }
         
-        .product-detail-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 3000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .product-detail-modal.active {
-            display: flex;
-        }
-        
-        .product-detail-content {
-            background: var(--white);
-            border-radius: 28px;
-            max-width: 90%;
-            width: 400px;
-            max-height: 85vh;
-            overflow-y: auto;
-            position: relative;
-        }
-        
-        .product-detail-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-            font-size: 18px;
-        }
-        
-        .product-detail-image {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-        }
-        
-        .product-detail-info {
-            padding: 20px;
-        }
-        
-        .product-detail-name {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        
-        .product-detail-sku {
-            font-size: 12px;
-            color: var(--gray-light);
-            margin-bottom: 12px;
-        }
-        
-        .product-detail-price {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--gold);
-            margin-bottom: 15px;
-        }
-        
-        .product-detail-desc {
-            font-size: 13px;
-            color: var(--gray);
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-        
-        .product-detail-buttons {
-            display: flex;
-            gap: 12px;
-        }
-        
-        .product-detail-buy {
-            flex: 1;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: var(--white);
-            padding: 14px;
-            border: none;
-            border-radius: 40px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .product-detail-cart {
-            flex: 1;
-            background: var(--white-light);
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            padding: 14px;
-            border-radius: 40px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
+        /* Products Section - Main LCP element */
         .products-section {
             padding: 20px 15px;
         }
@@ -645,10 +316,6 @@
             cursor: grab;
         }
         
-        .product-gallery:active {
-            cursor: grabbing;
-        }
-        
         .gallery-image {
             min-width: 100%;
             width: 100%;
@@ -699,17 +366,6 @@
             margin-bottom: 10px;
         }
         
-        .product-item-desc {
-            font-size: 13px;
-            color: var(--gray);
-            line-height: 1.5;
-            margin-bottom: 15px;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
         .product-item-price {
             font-size: 22px;
             font-weight: 700;
@@ -735,7 +391,6 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: all 0.2s;
         }
         
         .product-cart-btn {
@@ -748,135 +403,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-        }
-        
-        .product-share-btn {
-            background: var(--white-light);
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        
-        .product-buy-btn:hover, .product-cart-btn:hover, .product-share-btn:hover {
-            transform: translateY(-2px);
-        }
-        
-        .product-cart-btn:hover, .product-share-btn:hover {
-            background: var(--gold);
-            color: var(--white);
-        }
-        
-        .share-modal {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--white);
-            border-radius: 24px 24px 0 0;
-            padding: 25px;
-            z-index: 3000;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-        }
-        
-        .share-modal.active {
-            transform: translateY(0);
-        }
-        
-        .share-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        
-        .close-share {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        
-        .share-product-info {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .share-product-image {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            object-fit: cover;
-        }
-        
-        .share-options-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .share-option {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            padding: 12px;
-            border-radius: 16px;
-            cursor: pointer;
-            background: var(--white-light);
-        }
-        
-        .share-option-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-        }
-        
-        .share-whatsapp-icon { background: #25D366; }
-        .share-instagram-icon { background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
-        .share-facebook-icon { background: #1877F2; }
-        .share-twitter-icon { background: #1DA1F2; }
-        .share-copy-icon { background: var(--gray); }
-        
-        .share-link-container {
-            background: var(--white-light);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .share-link-input {
-            flex: 1;
-            background: none;
-            border: none;
-            font-size: 12px;
-            word-break: break-all;
-        }
-        
-        .copy-link-btn {
-            background: var(--gold);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 40px;
-            font-weight: 600;
             cursor: pointer;
         }
         
@@ -943,23 +469,57 @@
             }
         }
         
-        .loading {
+        @media (min-width: 768px) {
+            .random-products {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Stories section - Minimal to not block LCP */
+        .stories-section {
+            padding: 15px 0;
+            background: var(--white);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .stories-container {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 0 15px;
+            scrollbar-width: none;
+        }
+        
+        .stories-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .story-toggle {
             text-align: center;
-            padding: 40px;
+            min-width: 70px;
+            cursor: pointer;
         }
         
-        .spinner {
-            width: 30px;
-            height: 30px;
-            border: 2px solid var(--white-light);
-            border-top-color: var(--gold);
+        .story-ring {
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 10px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            padding: 2px;
         }
         
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .story-thumbnail {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--white);
         }
         
         .site-footer {
@@ -991,10 +551,6 @@
             display: block;
         }
         
-        .footer-section a:hover {
-            color: var(--gold);
-        }
-        
         .footer-bottom {
             text-align: center;
             padding-top: 30px;
@@ -1005,12 +561,6 @@
         }
         
         @media (min-width: 768px) {
-            .random-products {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            .products-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
             .footer-content {
                 grid-template-columns: repeat(4, 1fr);
             }
@@ -1020,96 +570,13 @@
 <body>
     <div class="light-bg"></div>
     
-    <div class="stories-section">
-        <div class="stories-container" id="storiesContainer">
-            <div class="loading"><div class="spinner"></div></div>
-        </div>
-    </div>
-    
-    <div id="instagramStoryModal" class="instagram-story-modal">
-        <div class="story-header">
-            <div class="story-user">
-                <img id="storyUserAvatar" class="story-user-avatar" src="" alt="Product story" loading="lazy">
-                <div class="story-user-info">
-                    <h4 id="storyUserName">Style Of Life</h4>
-                    <p id="storyUserTime">Just now</p>
-                </div>
-            </div>
-            <button class="story-close" onclick="closeInstagramStory()">✕</button>
-        </div>
-        <div class="story-progress-bar" id="storyProgressBar"></div>
-        <div class="story-content">
-            <img id="storyContentImage" class="story-content-image" src="" alt="Story content" loading="lazy">
-        </div>
-        <div class="story-product-info">
-            <div class="story-product-name" id="storyProductName"></div>
-            <div class="story-product-price" id="storyProductPrice"></div>
-            <div class="story-product-desc" id="storyProductDesc"></div>
-            <div class="story-buttons">
-                <button class="story-buy" id="storyBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button>
-                <button class="story-cart" id="storyCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="productDetailModal" class="product-detail-modal">
-        <div class="product-detail-content">
-            <div class="product-detail-close" onclick="closeProductDetail()">&times;</div>
-            <img id="detailImage" class="product-detail-image" src="" alt="Product detail" loading="lazy">
-            <div class="product-detail-info">
-                <div class="product-detail-name" id="detailName"></div>
-                <div class="product-detail-sku" id="detailSku"></div>
-                <div class="product-detail-price" id="detailPrice"></div>
-                <div class="product-detail-desc" id="detailDesc"></div>
-                <div class="product-detail-buttons">
-                    <button class="product-detail-buy" id="detailBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button>
-                    <button class="product-detail-cart" id="detailCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div id="shareModal" class="share-modal">
-        <div class="share-modal-header">
-            <h4><i class="fas fa-share-alt" style="color: var(--gold);"></i> Share this beauty</h4>
-            <button class="close-share" onclick="closeShareModal()">&times;</button>
-        </div>
-        <div id="shareProductInfo" class="share-product-info"></div>
-        <div class="share-options-grid">
-            <div class="share-option" onclick="shareToWhatsApp()">
-                <div class="share-option-icon share-whatsapp-icon"><i class="fab fa-whatsapp"></i></div>
-                <span>WhatsApp</span>
-            </div>
-            <div class="share-option" onclick="shareToInstagram()">
-                <div class="share-option-icon share-instagram-icon"><i class="fab fa-instagram"></i></div>
-                <span>Instagram</span>
-            </div>
-            <div class="share-option" onclick="shareToFacebook()">
-                <div class="share-option-icon share-facebook-icon"><i class="fab fa-facebook-f"></i></div>
-                <span>Facebook</span>
-            </div>
-            <div class="share-option" onclick="shareToTwitter()">
-                <div class="share-option-icon share-twitter-icon"><i class="fab fa-twitter"></i></div>
-                <span>Twitter</span>
-            </div>
-            <div class="share-option" onclick="copyProductLink()">
-                <div class="share-option-icon share-copy-icon"><i class="fas fa-link"></i></div>
-                <span>Copy Link</span>
-            </div>
-        </div>
-        <div class="share-link-container">
-            <input type="text" id="shareLinkInput" class="share-link-input" readonly>
-            <button class="copy-link-btn" onclick="copyProductLink()">Copy Link</button>
-        </div>
-    </div>
-    
+    <!-- Header - Immediately visible -->
     <div class="instagram-header">
         <div class="animated-logo">
             <div class="logo-container">
                 <div class="logo-main">STYLE<span class="logo-gold">OF</span>LIFE</div>
                 <div class="logo-sub">LUXURY JEWELRY</div>
             </div>
-            <i class="fas fa-gem logo-diamond"></i>
         </div>
         <div class="header-icons">
             <a href="cart.html"><i class="fas fa-shopping-bag"></i><span class="cart-badge" id="cartCount">0</span></a>
@@ -1117,6 +584,7 @@
         </div>
     </div>
     
+    <!-- Featured Section - Loads immediately -->
     <div class="featured-section">
         <div class="featured-title">✨ You May Also Like</div>
         <div class="random-products" id="randomProducts">
@@ -1124,6 +592,7 @@
         </div>
     </div>
     
+    <!-- Products Section - Main LCP content -->
     <div class="products-section">
         <div class="section-title">
             <h3>All Products</h3>
@@ -1133,6 +602,14 @@
         </div>
     </div>
     
+    <!-- Stories Section - Loads after LCP -->
+    <div class="stories-section">
+        <div class="stories-container" id="storiesContainer">
+            <div class="loading"><div class="spinner"></div></div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
     <footer class="site-footer">
         <div class="footer-content">
             <div class="footer-section">
@@ -1166,6 +643,7 @@
         </div>
     </footer>
     
+    <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <a href="index.html" class="active"><i class="fas fa-home"></i><span>Home</span></a>
         <a href="shop.html"><i class="fas fa-search"></i><span>Explore</span></a>
@@ -1174,10 +652,89 @@
         <a href="customer-portal.html"><i class="fas fa-user"></i><span>Profile</span></a>
     </div>
     
+    <!-- Modals (Hidden initially) -->
+    <div id="instagramStoryModal" class="instagram-story-modal" style="display: none;">
+        <div class="story-header">
+            <div class="story-user">
+                <img id="storyUserAvatar" class="story-user-avatar" src="" alt="Product story">
+                <div class="story-user-info">
+                    <h4 id="storyUserName">Style Of Life</h4>
+                    <p id="storyUserTime">Just now</p>
+                </div>
+            </div>
+            <button class="story-close" onclick="closeInstagramStory()">✕</button>
+        </div>
+        <div class="story-progress-bar" id="storyProgressBar"></div>
+        <div class="story-content">
+            <img id="storyContentImage" class="story-content-image" src="" alt="Story content">
+        </div>
+        <div class="story-product-info">
+            <div class="story-product-name" id="storyProductName"></div>
+            <div class="story-product-price" id="storyProductPrice"></div>
+            <div class="story-product-desc" id="storyProductDesc"></div>
+            <div class="story-buttons">
+                <button class="story-buy" id="storyBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button>
+                <button class="story-cart" id="storyCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="productDetailModal" class="product-detail-modal" style="display: none;">
+        <div class="product-detail-content">
+            <div class="product-detail-close" onclick="closeProductDetail()">&times;</div>
+            <img id="detailImage" class="product-detail-image" src="" alt="Product detail">
+            <div class="product-detail-info">
+                <div class="product-detail-name" id="detailName"></div>
+                <div class="product-detail-sku" id="detailSku"></div>
+                <div class="product-detail-price" id="detailPrice"></div>
+                <div class="product-detail-desc" id="detailDesc"></div>
+                <div class="product-detail-buttons">
+                    <button class="product-detail-buy" id="detailBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button>
+                    <button class="product-detail-cart" id="detailCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="shareModal" class="share-modal" style="display: none;">
+        <div class="share-modal-header">
+            <h4><i class="fas fa-share-alt" style="color: var(--gold);"></i> Share this beauty</h4>
+            <button class="close-share" onclick="closeShareModal()">&times;</button>
+        </div>
+        <div id="shareProductInfo" class="share-product-info"></div>
+        <div class="share-options-grid">
+            <div class="share-option" onclick="shareToWhatsApp()">
+                <div class="share-option-icon share-whatsapp-icon"><i class="fab fa-whatsapp"></i></div>
+                <span>WhatsApp</span>
+            </div>
+            <div class="share-option" onclick="shareToInstagram()">
+                <div class="share-option-icon share-instagram-icon"><i class="fab fa-instagram"></i></div>
+                <span>Instagram</span>
+            </div>
+            <div class="share-option" onclick="shareToFacebook()">
+                <div class="share-option-icon share-facebook-icon"><i class="fab fa-facebook-f"></i></div>
+                <span>Facebook</span>
+            </div>
+            <div class="share-option" onclick="shareToTwitter()">
+                <div class="share-option-icon share-twitter-icon"><i class="fab fa-twitter"></i></div>
+                <span>Twitter</span>
+            </div>
+            <div class="share-option" onclick="copyProductLink()">
+                <div class="share-option-icon share-copy-icon"><i class="fas fa-link"></i></div>
+                <span>Copy Link</span>
+            </div>
+        </div>
+        <div class="share-link-container">
+            <input type="text" id="shareLinkInput" class="share-link-input" readonly>
+            <button class="copy-link-btn" onclick="copyProductLink()">Copy Link</button>
+        </div>
+    </div>
+    
     <script type="importmap">
         { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
     </script>
     <script type="module">
+        // CRITICAL: Optimized loading order for LCP
         import { createClient } from '@supabase/supabase-js';
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
@@ -1238,19 +795,19 @@
             const cartBtn = document.getElementById('detailCartBtn');
             buyBtn.onclick = () => buyNow(product.id, product.name, product.price, product.sku, product.image);
             cartBtn.onclick = () => addToCart(product.id, product.name, product.price, product.sku, product.image);
-            document.getElementById('productDetailModal').classList.add('active');
+            document.getElementById('productDetailModal').style.display = 'flex';
         };
         
-        window.closeProductDetail = () => { document.getElementById('productDetailModal').classList.remove('active'); };
+        window.closeProductDetail = () => { document.getElementById('productDetailModal').style.display = 'none'; };
         
         window.openShareModal = (product) => {
             const shareInfo = document.getElementById('shareProductInfo');
             shareInfo.innerHTML = `<img class="share-product-image" src="${product.image}" onerror="this.src='https://via.placeholder.com/60x60'"><div class="share-product-details"><h5>${escapeHtml(product.name)}</h5><p>₹${product.price.toLocaleString()}</p></div>`;
             document.getElementById('shareLinkInput').value = `${window.location.origin}${window.location.pathname}?product=${product.id}`;
-            document.getElementById('shareModal').classList.add('active');
+            document.getElementById('shareModal').style.display = 'block';
         };
         
-        window.closeShareModal = () => { document.getElementById('shareModal').classList.remove('active'); };
+        window.closeShareModal = () => { document.getElementById('shareModal').style.display = 'none'; };
         
         window.shareToWhatsApp = () => { 
             const shareInput = document.getElementById('shareLinkInput');
@@ -1292,7 +849,7 @@
             showToast('Link copied! ✨');
         };
         
-        function showStoryInModal(product) {
+        window.openStory = (product) => {
             document.getElementById('storyUserAvatar').src = product.image;
             document.getElementById('storyUserName').textContent = product.name;
             document.getElementById('storyContentImage').src = product.image;
@@ -1303,28 +860,180 @@
             const cartBtn = document.getElementById('storyCartBtn');
             buyBtn.onclick = () => buyNow(product.id, product.name, product.price, product.sku, product.image);
             cartBtn.onclick = () => addToCart(product.id, product.name, product.price, product.sku, product.image);
+            document.getElementById('instagramStoryModal').style.display = 'flex';
+        };
+        
+        window.closeInstagramStory = () => { document.getElementById('instagramStoryModal').style.display = 'none'; };
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
         }
         
-        window.openStory = (product) => { showStoryInModal(product); document.getElementById('instagramStoryModal').classList.add('active'); };
-        window.closeInstagramStory = () => { document.getElementById('instagramStoryModal').classList.remove('active'); };
-        
-        // Load story toggles with pagination
-        async function loadStoryToggles() {
-            const container = document.getElementById('storiesContainer');
+        // CRITICAL LCP FIX: Load only 4 products first for fastest LCP
+        async function loadProductsForLCP() {
+            const container = document.getElementById('productsGrid');
+            
             try {
-                const { data: products, error } = await supabase.from('products').select('id, name, sku, price, images').order('id').limit(8);
+                // Load only 4 products first for LCP
+                const { data: products, error } = await supabase.from('products').select('*').order('id').limit(4);
                 if (error) throw error;
-                if (!products || products.length === 0) { container.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; return; }
+                
+                if (!products || products.length === 0) {
+                    container.innerHTML = '<div class="empty-state">✨ No products found</div>';
+                    return;
+                }
+                
                 let html = '';
-                for (const product of products) {
-                    const thumbnail = product.images?.[0] || 'https://via.placeholder.com/70x70?text=Style';
-                    html += `<div class="story-toggle" onclick="openStory({ id: ${product.id}, name: '${escapeHtml(product.name)}', sku: '${product.sku}', price: ${product.price}, image: '${thumbnail}', description: '${escapeHtml(product.description || 'Exquisite handcrafted jewelry piece.')}' })"><div class="story-ring"><img class="story-thumbnail" src="${thumbnail}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async" width="70" height="70" onload="this.classList.add('loaded')"></div></div>`;
+                for (let i = 0; i < products.length; i++) {
+                    const p = products[i];
+                    const images = p.images || [];
+                    const validImages = images.filter(img => img && img.trim() !== '');
+                    const displayImages = validImages.length > 0 ? validImages : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
+                    const galleryId = `gallery-${p.id}`;
+                    const dotId = `dots-${p.id}`;
+                    
+                    // CRITICAL: First product image gets high priority
+                    const imgPriority = i === 0 ? 'fetchpriority="high"' : 'loading="lazy"';
+                    
+                    html += `<div class="product-item">
+                        <div class="product-gallery" id="${galleryId}"></div>
+                        <div class="gallery-dots" id="${dotId}"></div>
+                        <div class="product-item-info">
+                            <div class="product-item-name">${escapeHtml(p.name)}</div>
+                            <div class="product-item-sku">SKU: ${p.sku} | ${p.category || 'Jewelry'}</div>
+                            <div class="product-item-price">₹${(p.price || 0).toLocaleString()}</div>
+                            <div class="product-item-buttons">
+                                <button class="product-buy-btn" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')"><i class="fas fa-bolt"></i> Buy Now</button>
+                                <button class="product-cart-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')"><i class="fas fa-shopping-cart"></i></button>
+                                <button class="product-share-btn" onclick="openShareModal({ id: ${p.id}, name: '${escapeHtml(p.name)}', price: ${p.price}, image: '${displayImages[0]}', sku: '${p.sku}' })"><i class="fas fa-share-alt"></i></button>
+                            </div>
+                        </div>
+                    </div>`;
                 }
                 container.innerHTML = html;
-            } catch (error) { console.error('Error loading story toggles:', error); container.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; }
+                
+                // Initialize galleries
+                for (let i = 0; i < products.length; i++) {
+                    const p = products[i];
+                    const images = p.images || [];
+                    const validImages = images.filter(img => img && img.trim() !== '');
+                    const displayImages = validImages.length > 0 ? validImages : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
+                    const galleryId = `gallery-${p.id}`;
+                    const dotId = `dots-${p.id}`;
+                    
+                    const gallery = document.getElementById(galleryId);
+                    const dotContainer = document.getElementById(dotId);
+                    if (gallery && dotContainer) {
+                        displayImages.forEach((img, idx) => {
+                            const imgElement = document.createElement('img');
+                            imgElement.src = img;
+                            imgElement.className = 'gallery-image';
+                            imgElement.alt = p.name;
+                            if (idx === 0 && i === 0) {
+                                imgElement.setAttribute('fetchpriority', 'high');
+                            } else {
+                                imgElement.loading = 'lazy';
+                            }
+                            gallery.appendChild(imgElement);
+                            
+                            const dot = document.createElement('div');
+                            dot.className = 'gallery-dot';
+                            if (idx === 0) dot.classList.add('active');
+                            dot.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                gallery.scrollTo({ left: gallery.clientWidth * idx, behavior: 'smooth' });
+                            });
+                            dotContainer.appendChild(dot);
+                        });
+                        
+                        gallery.addEventListener('scroll', () => {
+                            const scrollPos = gallery.scrollLeft;
+                            const itemWidth = gallery.clientWidth;
+                            const activeIndex = Math.round(scrollPos / itemWidth);
+                            const dots = dotContainer.querySelectorAll('.gallery-dot');
+                            dots.forEach((dot, idx) => {
+                                if (idx === activeIndex) dot.classList.add('active');
+                                else dot.classList.remove('active');
+                            });
+                        });
+                    }
+                }
+                
+                // Load remaining products after LCP is done
+                setTimeout(async () => {
+                    const { data: moreProducts } = await supabase.from('products').select('*').order('id').range(4, 11);
+                    if (moreProducts && moreProducts.length > 0) {
+                        let moreHtml = '';
+                        for (const p of moreProducts) {
+                            const images = p.images || [];
+                            const validImages = images.filter(img => img && img.trim() !== '');
+                            const displayImages = validImages.length > 0 ? validImages : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
+                            moreHtml += `<div class="product-item">
+                                <div class="product-gallery" id="gallery-more-${p.id}"></div>
+                                <div class="gallery-dots" id="dots-more-${p.id}"></div>
+                                <div class="product-item-info">
+                                    <div class="product-item-name">${escapeHtml(p.name)}</div>
+                                    <div class="product-item-sku">SKU: ${p.sku} | ${p.category || 'Jewelry'}</div>
+                                    <div class="product-item-price">₹${(p.price || 0).toLocaleString()}</div>
+                                    <div class="product-item-buttons">
+                                        <button class="product-buy-btn" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')"><i class="fas fa-bolt"></i> Buy Now</button>
+                                        <button class="product-cart-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')"><i class="fas fa-shopping-cart"></i></button>
+                                        <button class="product-share-btn" onclick="openShareModal({ id: ${p.id}, name: '${escapeHtml(p.name)}', price: ${p.price}, image: '${displayImages[0]}', sku: '${p.sku}' })"><i class="fas fa-share-alt"></i></button>
+                                    </div>
+                                </div>
+                            </div>`;
+                        }
+                        container.insertAdjacentHTML('beforeend', moreHtml);
+                        
+                        // Initialize galleries for more products
+                        for (const p of moreProducts) {
+                            const images = p.images || [];
+                            const validImages = images.filter(img => img && img.trim() !== '');
+                            const displayImages = validImages.length > 0 ? validImages : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
+                            const gallery = document.getElementById(`gallery-more-${p.id}`);
+                            const dotContainer = document.getElementById(`dots-more-${p.id}`);
+                            if (gallery && dotContainer) {
+                                displayImages.forEach((img, idx) => {
+                                    const imgElement = document.createElement('img');
+                                    imgElement.src = img;
+                                    imgElement.className = 'gallery-image';
+                                    imgElement.alt = p.name;
+                                    imgElement.loading = 'lazy';
+                                    gallery.appendChild(imgElement);
+                                    
+                                    const dot = document.createElement('div');
+                                    dot.className = 'gallery-dot';
+                                    if (idx === 0) dot.classList.add('active');
+                                    dot.addEventListener('click', (e) => {
+                                        e.stopPropagation();
+                                        gallery.scrollTo({ left: gallery.clientWidth * idx, behavior: 'smooth' });
+                                    });
+                                    dotContainer.appendChild(dot);
+                                });
+                                
+                                gallery.addEventListener('scroll', () => {
+                                    const scrollPos = gallery.scrollLeft;
+                                    const itemWidth = gallery.clientWidth;
+                                    const activeIndex = Math.round(scrollPos / itemWidth);
+                                    const dots = dotContainer.querySelectorAll('.gallery-dot');
+                                    dots.forEach((dot, idx) => {
+                                        if (idx === activeIndex) dot.classList.add('active');
+                                        else dot.classList.remove('active');
+                                    });
+                                });
+                            }
+                        }
+                    }
+                }, 100);
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+                container.innerHTML = '<div class="empty-state">Error loading products</div>';
+            }
         }
         
-        // Load random products with image optimization
+        // Load random products (non-critical)
         async function loadRandomProducts() {
             const container = document.getElementById('randomProducts');
             try {
@@ -1337,198 +1046,285 @@
                 let html = '';
                 for (const p of randomProducts) {
                     const img = p.images?.[0] || 'https://via.placeholder.com/300x150?text=Style+Of+Life';
-                    html += `<div class="random-product-card" onclick="openProductDetail({ id: ${p.id}, name: '${escapeHtml(p.name)}', sku: '${p.sku}', price: ${p.price}, image: '${img}', description: '${escapeHtml(p.description || 'Exquisite handcrafted jewelry piece.')}' })"><img class="random-product-image" src="${img}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" width="300" height="150" onload="this.classList.add('loaded')"><div class="random-product-info"><div class="random-product-name">${escapeHtml(p.name)}</div><div class="random-product-price">₹${(p.price || 0).toLocaleString()}</div></div></div>`;
+                    html += `<div class="random-product-card" onclick="openProductDetail({ id: ${p.id}, name: '${escapeHtml(p.name)}', sku: '${p.sku}', price: ${p.price}, image: '${img}', description: '${escapeHtml(p.description || 'Exquisite handcrafted jewelry piece.')}' })"><img class="random-product-image" src="${img}" alt="${escapeHtml(p.name)}" loading="lazy" width="300" height="150"><div class="random-product-info"><div class="random-product-name">${escapeHtml(p.name)}</div><div class="random-product-price">₹${(p.price || 0).toLocaleString()}</div></div></div>`;
                 }
                 container.innerHTML = html;
             } catch (error) { console.error('Error loading random products:', error); container.innerHTML = '<div class="empty-state">Unable to load recommendations</div>'; }
         }
         
-        function initGallery(galleryId, images, dotContainerId) {
-            const gallery = document.getElementById(galleryId);
-            const dotContainer = document.getElementById(dotContainerId);
-            if (!gallery || !dotContainer) return;
-            gallery.innerHTML = '';
-            dotContainer.innerHTML = '';
-            images.forEach((img, index) => {
-                const imgElement = document.createElement('img');
-                imgElement.src = img;
-                imgElement.className = 'gallery-image';
-                imgElement.alt = 'Product image';
-                imgElement.loading = 'lazy';
-                imgElement.decoding = 'async';
-                imgElement.width = 400;
-                imgElement.height = 400;
-                imgElement.onerror = () => { imgElement.src = 'https://via.placeholder.com/400x400?text=Image+Not+Available'; };
-                imgElement.onload = () => { imgElement.classList.add('loaded'); };
-                gallery.appendChild(imgElement);
-                const dot = document.createElement('div');
-                dot.className = 'gallery-dot';
-                if (index === 0) dot.classList.add('active');
-                dot.addEventListener('click', (e) => { e.stopPropagation(); gallery.scrollTo({ left: gallery.clientWidth * index, behavior: 'smooth' }); });
-                dotContainer.appendChild(dot);
-            });
-            gallery.addEventListener('scroll', () => {
-                const scrollPosition = gallery.scrollLeft;
-                const itemWidth = gallery.clientWidth;
-                const activeIndex = Math.round(scrollPosition / itemWidth);
-                const dots = dotContainer.querySelectorAll('.gallery-dot');
-                dots.forEach((dot, idx) => { if (idx === activeIndex) { dot.classList.add('active'); } else { dot.classList.remove('active'); } });
-            });
-        }
-        
-        // Load products with LIMIT and pagination
-        async function loadProducts() {
-            const container = document.getElementById('productsGrid');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading products...</p></div>';
+        // Load stories (non-critical, after LCP)
+        async function loadStories() {
+            const container = document.getElementById('storiesContainer');
             try {
-                // CRITICAL FIX: Limit to 8 products initially
-                const { data: products, error } = await supabase.from('products').select('*').order('id').limit(8);
+                const { data: products, error } = await supabase.from('products').select('id, name, sku, price, images').order('id').limit(8);
                 if (error) throw error;
-                if (!products || products.length === 0) { container.innerHTML = '<div class="empty-state">✨ No products found</div>'; return; }
+                if (!products || products.length === 0) { container.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; return; }
                 let html = '';
-                for (let i = 0; i < products.length; i++) {
-                    const p = products[i];
-                    const images = p.images || [];
-                    const validImages = images.filter(img => img && img.trim() !== '');
-                    const displayImages = validImages.length > 0 ? validImages : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
-                    const desc = p.description || 'Exquisite handcrafted jewelry piece.';
-                    const galleryId = `gallery-${p.id}`;
-                    const dotId = `dots-${p.id}`;
-                    html += `<div class="product-item"><div class="product-gallery" id="${galleryId}"></div><div class="gallery-dots" id="${dotId}"></div><div class="product-item-info"><div class="product-item-name">${escapeHtml(p.name)}</div><div class="product-item-sku">SKU: ${p.sku} | ${p.category || 'Jewelry'}</div><div class="product-item-desc">${escapeHtml(desc.substring(0, 120))}${desc.length > 120 ? '...' : ''}</div><div class="product-item-price">₹${(p.price || 0).toLocaleString()}</div><div class="product-item-buttons"><button class="product-buy-btn" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')"><i class="fas fa-bolt"></i> Buy Now</button><button class="product-cart-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')"><i class="fas fa-shopping-cart"></i></button><button class="product-share-btn" onclick="openShareModal({ id: ${p.id}, name: '${escapeHtml(p.name)}', price: ${p.price}, image: '${displayImages[0]}', sku: '${p.sku}' })"><i class="fas fa-share-alt"></i></button></div></div></div>`;
+                for (const product of products) {
+                    const thumbnail = product.images?.[0] || 'https://via.placeholder.com/70x70?text=Style';
+                    html += `<div class="story-toggle" onclick="openStory({ id: ${product.id}, name: '${escapeHtml(product.name)}', sku: '${product.sku}', price: ${product.price}, image: '${thumbnail}', description: '${escapeHtml(product.description || 'Exquisite handcrafted jewelry piece.')}' })"><div class="story-ring"><img class="story-thumbnail" src="${thumbnail}" alt="${escapeHtml(product.name)}" loading="lazy" width="70" height="70"></div></div>`;
                 }
                 container.innerHTML = html;
-                for (let i = 0; i < products.length; i++) {
-                    const p = products[i];
-                    const images = p.images || [];
-                    const validImages = images.filter(img => img && img.trim() !== '');
-                    const displayImages = validImages.length > 0 ? validImages : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
-                    const galleryId = `gallery-${p.id}`;
-                    const dotId = `dots-${p.id}`;
-                    setTimeout(() => { initGallery(galleryId, displayImages, dotId); }, 50);
-                }
-            } catch (error) { console.error('Error loading products:', error); container.innerHTML = '<div class="empty-state">Error loading products</div>'; }
+            } catch (error) { console.error('Error loading stories:', error); container.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; }
         }
         
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
-        }
+        // CRITICAL: Load order optimized for LCP
+        // 1. First load products (LCP element)
+        await loadProductsForLCP();
         
-        document.getElementById('instagramStoryModal').addEventListener('click', function(e) { if (e.target === this) { closeInstagramStory(); } });
-        document.getElementById('shareModal').addEventListener('click', function(e) { if (e.target === this) { closeShareModal(); } });
-        document.getElementById('productDetailModal').addEventListener('click', function(e) { if (e.target === this) { closeProductDetail(); } });
-        
-        // Load everything in sequence to avoid blocking
-        loadStoryToggles();
-        await updateCartCount();
+        // 2. Then load random products
         await loadRandomProducts();
-        await loadProducts();
+        
+        // 3. Update cart count
+        await updateCartCount();
+        
+        // 4. Finally load stories (non-critical, after LCP)
+        setTimeout(() => {
+            loadStories();
+        }, 500);
+        
+        // Close modals on outside click
+        document.getElementById('instagramStoryModal')?.addEventListener('click', function(e) { if (e.target === this) closeInstagramStory(); });
+        document.getElementById('shareModal')?.addEventListener('click', function(e) { if (e.target === this) closeShareModal(); });
+        document.getElementById('productDetailModal')?.addEventListener('click', function(e) { if (e.target === this) closeProductDetail(); });
     </script>
     
-    <!-- AGGRESSIVE IMAGE LOADING FIX: Load only visible images -->
-    <script>
-    (function() {
-        // Mark first visible images as high priority
-        const firstStoryImage = document.querySelector('.story-thumbnail');
-        const firstRandomImage = document.querySelector('.random-product-image');
-        const firstProductImage = document.querySelector('.gallery-image');
-        
-        if (firstStoryImage) firstStoryImage.setAttribute('fetchpriority', 'high');
-        if (firstRandomImage) firstRandomImage.setAttribute('fetchpriority', 'high');
-        if (firstProductImage) firstProductImage.setAttribute('fetchpriority', 'high');
-        
-        // Defer ALL other images
-        const allImages = document.querySelectorAll('img');
-        allImages.forEach((img, index) => {
-            // Skip images that already have fetchpriority
-            if (img.hasAttribute('fetchpriority')) return;
-            
-            const originalSrc = img.src;
-            if (originalSrc && !originalSrc.includes('placeholder') && originalSrc !== '') {
-                // Store original source
-                img.setAttribute('data-src', originalSrc);
-                // Remove src to prevent loading
-                img.removeAttribute('src');
-                // Add placeholder background
-                img.style.backgroundColor = '#f5f5f5';
-            }
-        });
-        
-        // Intersection Observer - load images when they come into view
-        if ('IntersectionObserver' in window) {
-            const imageObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        const dataSrc = img.getAttribute('data-src');
-                        if (dataSrc) {
-                            img.src = dataSrc;
-                            img.removeAttribute('data-src');
-                            img.classList.add('loaded');
-                        }
-                        imageObserver.unobserve(img);
-                    }
-                });
-            }, {
-                rootMargin: '200px', // Load 200px before visible
-                threshold: 0.01
-            });
-            
-            // Observe all images with data-src
-            document.querySelectorAll('img[data-src]').forEach(img => {
-                imageObserver.observe(img);
-            });
-        } else {
-            // Fallback for older browsers
-            document.querySelectorAll('img[data-src]').forEach(img => {
-                img.src = img.getAttribute('data-src');
-                img.removeAttribute('data-src');
-            });
+    <style>
+        /* Modal styles (non-critical, loaded after LCP) */
+        .instagram-story-modal, .product-detail-modal, .share-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
         }
         
-        // Load more products when user scrolls near bottom
-        let loadingMore = false;
-        let currentPage = 1;
-        const loadMoreProducts = async () => {
-            if (loadingMore) return;
-            loadingMore = true;
-            
-            try {
-                const { data: products, error } = await supabase.from('products').select('*').order('id').range(currentPage * 8, (currentPage + 1) * 8 - 1);
-                if (error || !products || products.length === 0) {
-                    loadingMore = false;
-                    return;
-                }
-                
-                // Append products to grid
-                const container = document.getElementById('productsGrid');
-                let html = '';
-                for (const p of products) {
-                    const images = p.images || [];
-                    const validImages = images.filter(img => img && img.trim() !== '');
-                    const displayImages = validImages.length > 0 ? validImages : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
-                    html += `<div class="product-item"><div class="product-gallery" id="gallery-${p.id}"></div><div class="gallery-dots" id="dots-${p.id}"></div><div class="product-item-info"><div class="product-item-name">${escapeHtml(p.name)}</div><div class="product-item-sku">SKU: ${p.sku}</div><div class="product-item-price">₹${(p.price || 0).toLocaleString()}</div><div class="product-item-buttons"><button class="product-buy-btn" onclick="buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')">Buy Now</button><button class="product-cart-btn" onclick="addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')"><i class="fas fa-shopping-cart"></i></button></div></div></div>`;
-                }
-                container.insertAdjacentHTML('beforeend', html);
-                currentPage++;
-                loadingMore = false;
-            } catch (error) {
-                loadingMore = false;
-            }
-        };
-        
-        // Infinite scroll
-        window.addEventListener('scroll', () => {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
-                loadMoreProducts();
-            }
-        });
-        
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
+        .product-detail-content, .share-modal {
+            background: white;
+            border-radius: 24px;
+            max-width: 90%;
+            width: 400px;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
         }
-    })();
-    </script>
+        
+        .product-detail-close, .close-share {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            border: none;
+        }
+        
+        .share-options-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            background: #f8f9fa;
+        }
+        
+        .share-option-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .share-whatsapp-icon { background: #25D366; }
+        .share-instagram-icon { background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
+        .share-facebook-icon { background: #1877F2; }
+        .share-twitter-icon { background: #1DA1F2; }
+        .share-copy-icon { background: #6c757d; }
+        
+        .share-link-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .share-link-input {
+            flex: 1;
+            background: none;
+            border: none;
+            font-size: 12px;
+        }
+        
+        .copy-link-btn {
+            background: #D4AF37;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        
+        .story-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+            z-index: 10;
+        }
+        
+        .story-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+        }
+        
+        .story-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #D4AF37;
+        }
+        
+        .story-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .story-content-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .story-product-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 60px 20px 30px;
+            color: white;
+        }
+        
+        .story-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .story-buy, .story-cart {
+            flex: 1;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        
+        .story-buy {
+            background: linear-gradient(135deg, #D4AF37, #B8962E);
+            border: none;
+            color: #1A1A1A;
+        }
+        
+        .story-cart {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid #D4AF37;
+            color: #D4AF37;
+        }
+        
+        .product-detail-image {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+        }
+        
+        .product-detail-info {
+            padding: 20px;
+        }
+        
+        .product-detail-name {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .product-detail-price {
+            font-size: 28px;
+            font-weight: 700;
+            color: #D4AF37;
+            margin: 15px 0;
+        }
+        
+        .product-detail-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .product-detail-buy, .product-detail-cart {
+            flex: 1;
+            padding: 14px;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        
+        .product-detail-buy {
+            background: linear-gradient(135deg, #D4AF37, #B8962E);
+            border: none;
+            color: #1A1A1A;
+        }
+        
+        .product-detail-cart {
+            background: white;
+            border: 1px solid #D4AF37;
+            color: #D4AF37;
+        }
+        
+        .share-product-info {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .share-product-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+    </style>
 </body>
 </html>
