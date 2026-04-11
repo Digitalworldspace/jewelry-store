@@ -155,40 +155,89 @@
             100% { left: 100%; }
         }
         
-        /* ========== GOOGLE GEMINI STYLE LOGO ========== */
+        /* ========== SIMPLE GOOGLE GEMINI STAR LOGO ========== */
         .gemini-logo {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
             font-family: 'Playfair Display', serif;
-            padding: 10px 0;
-            background: linear-gradient(135deg, var(--white) 0%, var(--white-light) 100%);
+            padding: 12px 0;
+            background: var(--white);
             border-bottom: 1px solid rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
         
-        .gemini-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, #4285F4, #EA4335, #FBBC05, #34A853);
-            border-radius: 50%;
+        .gemini-logo:hover {
+            background: linear-gradient(135deg, var(--white), var(--white-light));
+        }
+        
+        /* White Star with Colored Border - Simple Gemini Style */
+        .gemini-star {
+            width: 40px;
+            height: 40px;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0 2px 10px rgba(66,133,244,0.3);
+        }
+        
+        .gemini-star svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            animation: starPulse 2s ease-in-out infinite;
+        }
+        
+        .gemini-star svg .star-outline {
+            stroke: url(#geminiGradient);
+            stroke-width: 2;
+            fill: white;
+        }
+        
+        @keyframes starPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.08);
+                opacity: 0.9;
+            }
+        }
+        
+        /* Rotating border animation */
+        @keyframes borderRotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
         
         .gemini-text {
             font-size: 20px;
             font-weight: 700;
             letter-spacing: 1px;
-            background: linear-gradient(135deg, #4285F4, #EA4335, #FBBC05, #34A853);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            color: var(--black);
+            position: relative;
+        }
+        
+        .gemini-text::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #4285F4, #EA4335, #FBBC05, #34A853);
+            transition: width 0.3s ease;
+        }
+        
+        .gemini-logo:hover .gemini-text::after {
+            width: 100%;
         }
         
         .gemini-sub {
@@ -1316,10 +1365,20 @@
         <span>✦ FREE SHIPPING ON ORDERS ABOVE ₹3000 ✦ CASH ON DELIVERY AVAILABLE ✦</span>
     </div>
     
-    <!-- Google Gemini Style Logo -->
+    <!-- Simple Google Gemini Style Logo - White Star with Colored Border -->
     <div class="gemini-logo" data-page="home">
-        <div class="gemini-icon">
-            <span>✨</span>
+        <div class="gemini-star">
+            <svg viewBox="0 0 24 24" width="100%" height="100%">
+                <defs>
+                    <linearGradient id="geminiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#4285F4;stop-opacity:1" />
+                        <stop offset="33%" style="stop-color:#EA4335;stop-opacity:1" />
+                        <stop offset="66%" style="stop-color:#FBBC05;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#34A853;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path class="star-outline" d="M12 2L15 9H22L16 14L19 21L12 16.5L5 21L8 14L2 9H9L12 2Z" fill="white" stroke="url(#geminiGradient)" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
         </div>
         <div>
             <span class="gemini-text">Style Of Life</span>
