@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Style Of Life - Shop | Luxury Jewelry Collection</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -35,57 +35,85 @@
             padding-bottom: 70px;
         }
         
-        /* Header */
-        .shop-header {
-            background: var(--white);
-            padding: 15px 20px;
+        /* Google Gemini Style Logo */
+        .gemini-logo {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        
-        .logo-main {
+            justify-content: center;
+            gap: 10px;
             font-family: 'Playfair Display', serif;
-            font-size: 20px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: var(--black);
+            padding: 12px 0;
+            background: var(--white);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
             cursor: pointer;
+            transition: all 0.3s ease;
         }
         
-        .logo-gold {
-            color: var(--gold);
-            font-weight: 900;
+        .gemini-logo:hover {
+            background: linear-gradient(135deg, var(--white), var(--white-light));
         }
         
-        .header-icons {
-            display: flex;
-            gap: 20px;
-        }
-        
-        .header-icons a {
-            color: var(--black);
-            font-size: 20px;
-            text-decoration: none;
+        .gemini-star {
+            width: 40px;
+            height: 40px;
             position: relative;
-            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .cart-badge {
+        .gemini-star svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            animation: starPulse 2s ease-in-out infinite;
+        }
+        
+        .gemini-star svg .star-outline {
+            stroke: url(#geminiGradient);
+            stroke-width: 2;
+            fill: white;
+        }
+        
+        @keyframes starPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.08);
+                opacity: 0.9;
+            }
+        }
+        
+        .gemini-text {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--black);
+            position: relative;
+        }
+        
+        .gemini-text::after {
+            content: '';
             position: absolute;
-            top: -8px;
-            right: -12px;
-            background: var(--gold);
-            color: var(--white);
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 50%;
-            font-weight: bold;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #4285F4, #EA4335, #FBBC05, #34A853);
+            transition: width 0.3s ease;
+        }
+        
+        .gemini-logo:hover .gemini-text::after {
+            width: 100%;
+        }
+        
+        .gemini-sub {
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--gray);
+            margin-left: 5px;
         }
         
         /* Filter Bar */
@@ -97,7 +125,7 @@
             overflow-x: auto;
             border-bottom: 1px solid rgba(0,0,0,0.05);
             position: sticky;
-            top: 60px;
+            top: 0;
             z-index: 99;
             scrollbar-width: none;
         }
@@ -197,8 +225,8 @@
             transform: scale(1.05);
         }
         
-        /* Wishlist Button on Image */
-        .wishlist-btn {
+        /* Share Button on Image */
+        .share-image-btn {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -214,18 +242,14 @@
             z-index: 5;
         }
         
-        .wishlist-btn i {
+        .share-image-btn i {
             color: #999;
             font-size: 16px;
             transition: all 0.3s;
         }
         
-        .wishlist-btn:hover i {
-            color: #ff4444;
-        }
-        
-        .wishlist-btn.active i {
-            color: #ff4444;
+        .share-image-btn:hover i {
+            color: var(--gold);
         }
         
         /* Product Info */
@@ -390,6 +414,281 @@
             font-size: 60px;
             color: var(--gray-light);
             margin-bottom: 15px;
+        }
+        
+        /* ========== FLOATING CART BUTTON ========== */
+        .floating-cart {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(212,175,55,0.4);
+            transition: all 0.3s;
+        }
+        
+        .floating-cart:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(212,175,55,0.5);
+        }
+        
+        .floating-cart i {
+            font-size: 24px;
+            color: var(--black);
+        }
+        
+        .floating-cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--black);
+            color: var(--gold);
+            font-size: 11px;
+            font-weight: bold;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* ========== IPHONE 5 STYLE SWIPE TO UNLOCK CART WITH SWIPE DOWN TO HIDE ========== */
+        .swipe-cart-overlay {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border-radius: 30px 30px 0 0;
+            padding: 20px;
+            padding-bottom: 30px;
+            touch-action: pan-y pinch-zoom;
+        }
+        
+        .swipe-cart-overlay.active {
+            transform: translateY(0);
+        }
+        
+        .swipe-cart-overlay.hiding {
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        
+        .swipe-handle {
+            width: 50px;
+            height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            margin: 0 auto 20px;
+            cursor: grab;
+            touch-action: pan-y;
+        }
+        
+        .swipe-handle:active {
+            cursor: grabbing;
+        }
+        
+        .swipe-title {
+            text-align: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .swipe-container {
+            background: rgba(255,255,255,0.1);
+            border-radius: 50px;
+            padding: 4px;
+            margin: 20px 0;
+            position: relative;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+        }
+        
+        .swipe-container:active {
+            cursor: grabbing;
+        }
+        
+        .swipe-track {
+            background: rgba(255,255,255,0.2);
+            border-radius: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .swipe-thumb {
+            width: 70px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: grab;
+            transition: transform 0.05s linear;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .swipe-thumb:active {
+            cursor: grabbing;
+        }
+        
+        .swipe-thumb i {
+            font-size: 20px;
+            color: var(--black);
+        }
+        
+        .swipe-thumb span {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--black);
+        }
+        
+        .swipe-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border-radius: 50px;
+            width: 0%;
+            transition: width 0.05s linear;
+            z-index: 1;
+        }
+        
+        .swipe-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .cart-preview {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .cart-preview-item {
+            display: flex;
+            gap: 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .cart-preview-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        
+        .cart-preview-item-details {
+            flex: 1;
+        }
+        
+        .cart-preview-item-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .cart-preview-item-price {
+            font-size: 12px;
+            color: var(--gold);
+        }
+        
+        .cart-preview-total {
+            text-align: center;
+            padding: 15px;
+            color: white;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 10px;
+        }
+        
+        .cart-preview-total span {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--gold);
+        }
+        
+        /* ========== DO SOMETHING SECTION - ONLY CLEAR CART ========== */
+        .do-something-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+        }
+        
+        .do-something-title {
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+        
+        .action-buttons-grid {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .action-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 15px 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.05);
+            min-width: 150px;
+        }
+        
+        .action-card:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            border-color: var(--gold);
+        }
+        
+        .action-icon {
+            font-size: 28px;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+        
+        .action-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+        }
+        
+        .action-desc {
+            font-size: 10px;
+            color: rgba(255,255,255,0.5);
         }
         
         /* Bottom Navigation */
@@ -635,12 +934,24 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="shop-header">
-        <div class="logo-main" data-page="home">STYLE<span class="logo-gold">OF</span>LIFE</div>
-        <div class="header-icons">
-            <a data-page="cart"><i class="fas fa-shopping-bag"></i><span class="cart-badge" id="cartCount">0</span></a>
-            <a data-page="account"><i class="fas fa-user-circle"></i></a>
+    <!-- Google Gemini Style Logo -->
+    <div class="gemini-logo" data-page="home">
+        <div class="gemini-star">
+            <svg viewBox="0 0 24 24" width="100%" height="100%">
+                <defs>
+                    <linearGradient id="geminiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#4285F4;stop-opacity:1" />
+                        <stop offset="33%" style="stop-color:#EA4335;stop-opacity:1" />
+                        <stop offset="66%" style="stop-color:#FBBC05;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#34A853;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path class="star-outline" d="M12 2L15 9H22L16 14L19 21L12 16.5L5 21L8 14L2 9H9L12 2Z" fill="white" stroke="url(#geminiGradient)" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div>
+            <span class="gemini-text">Style Of Life</span>
+            <span class="gemini-sub">LUXURY JEWELRY</span>
         </div>
     </div>
     
@@ -658,6 +969,51 @@
             <div class="loading">
                 <div class="spinner"></div>
                 <p>Loading beautiful products...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Floating Cart Button -->
+    <div class="floating-cart" id="floatingCartBtn">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="floating-cart-badge" id="cartCount">0</span>
+    </div>
+    
+    <!-- iPhone 5 Style Swipe to Unlock Cart with SWIPE DOWN TO HIDE -->
+    <div id="swipeCartOverlay" class="swipe-cart-overlay">
+        <div class="swipe-handle" id="swipeHandle"></div>
+        <div class="swipe-title">
+            <i class="fas fa-shopping-bag" style="color: var(--gold);"></i> Your Cart
+        </div>
+        <div id="cartPreviewContent" class="cart-preview">
+            <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">
+                <i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 15px;"></i>
+                <p>Your cart is empty</p>
+            </div>
+        </div>
+        
+        <!-- DO SOMETHING SECTION - ONLY CLEAR CART BUTTON -->
+        <div class="do-something-section">
+            <div class="do-something-title">
+                <i class="fas fa-bolt"></i> DO SOMETHING <i class="fas fa-bolt"></i>
+            </div>
+            <div class="action-buttons-grid">
+                <div class="action-card" id="clearCartBtn">
+                    <div class="action-icon"><i class="fas fa-trash-alt"></i></div>
+                    <div class="action-title">Clear Cart</div>
+                    <div class="action-desc">Remove all items from cart</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="swipe-container" id="swipeContainer">
+            <div class="swipe-track">
+                <div class="swipe-progress" id="swipeProgress"></div>
+                <div class="swipe-thumb" id="swipeThumb">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Slide to Checkout</span>
+                </div>
+                <div class="swipe-text" id="swipeText">→ Swipe to checkout →</div>
             </div>
         </div>
     </div>
@@ -688,7 +1044,7 @@
         <a data-page="shop" class="active"><i class="fas fa-search"></i><span>Shop</span></a>
         <a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Cart</span></a>
         <a data-page="track"><i class="fas fa-truck"></i><span>Track</span></a>
-        <a data-page="account"><i class="fas fa-user"></i><span>Account</span></a>
+        <a data-page="customer-portal"><i class="fas fa-user"></i><span>Profile</span></a>
     </div>
     
     <script type="importmap">
@@ -708,6 +1064,7 @@
         
         let allProducts = [];
         let currentCategory = 'all';
+        let currentCart = [];
         
         // Navigation
         function navigateTo(page) {
@@ -742,10 +1099,101 @@
                 const { data, error } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
                 if (error) throw error;
                 const items = data?.items || [];
+                currentCart = items;
                 const total = items.reduce((s, i) => s + i.quantity, 0);
                 const badge = document.getElementById('cartCount');
                 if (badge) badge.textContent = total;
-            } catch (error) {}
+                return items;
+            } catch (error) {
+                return [];
+            }
+        }
+        
+        // Update Cart Preview for Swipe Modal
+        async function updateCartPreview() {
+            const cartItems = await updateCartCount();
+            const previewContainer = document.getElementById('cartPreviewContent');
+            const swipeContainer = document.getElementById('swipeContainer');
+            
+            if (!cartItems.length) {
+                previewContainer.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">
+                        <i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <p>Your cart is empty</p>
+                    </div>
+                `;
+                if (swipeContainer) swipeContainer.style.opacity = '0.5';
+                return;
+            }
+            
+            if (swipeContainer) swipeContainer.style.opacity = '1';
+            
+            let subtotal = 0;
+            let itemsHtml = '';
+            for (const item of cartItems) {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                itemsHtml += `
+                    <div class="cart-preview-item">
+                        <img src="${item.image}" onerror="this.src='https://via.placeholder.com/50x50'">
+                        <div class="cart-preview-item-details">
+                            <div class="cart-preview-item-name">${escapeHtml(item.name)}</div>
+                            <div class="cart-preview-item-price">₹${item.price.toLocaleString()} × ${item.quantity}</div>
+                        </div>
+                        <div style="color: var(--gold); font-weight: bold;">₹${itemTotal.toLocaleString()}</div>
+                    </div>
+                `;
+            }
+            
+            const tax = Math.round(subtotal * 0.18);
+            const shipping = subtotal >= 3000 ? 0 : 100;
+            const total = subtotal + tax + shipping;
+            
+            previewContainer.innerHTML = `
+                ${itemsHtml}
+                <div class="cart-preview-total">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Subtotal</span>
+                        <span>₹${subtotal.toLocaleString()}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Shipping</span>
+                        <span>₹${shipping}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>GST (18%)</span>
+                        <span>₹${tax.toLocaleString()}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 18px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <span>Total</span>
+                        <span style="color: var(--gold);">₹${total.toLocaleString()}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Clear Cart Action
+        async function clearCartFromSwipe() {
+            if (!currentCart.length) {
+                showToast('Cart is already empty', true);
+                return;
+            }
+            
+            if (confirm('Clear all items from your cart?')) {
+                try {
+                    await supabase.from('carts').upsert({ 
+                        session_id: sessionId, 
+                        items: [], 
+                        total: 0, 
+                        updated_at: new Date().toISOString() 
+                    }, { onConflict: 'session_id' });
+                    showToast('Cart cleared! 🗑️');
+                    await updateCartPreview();
+                    closeSwipeCart();
+                } catch (error) {
+                    showToast('Failed to clear cart', true);
+                }
+            }
         }
         
         // Add to Cart
@@ -769,7 +1217,7 @@
                 }, { onConflict: 'session_id' });
                 if (saveError) throw saveError;
                 showToast(`${name} added to cart! ✨`);
-                await updateCartCount();
+                await updateCartPreview();
                 return true;
             } catch (error) {
                 showToast('Failed to add', true);
@@ -787,7 +1235,7 @@
         
         // Share Product
         window.shareProduct = (name, price, img) => {
-            const text = `Check out ${name} at Style Of Life! Price: ₹${price.toLocaleString()}`;
+            const text = `✨ Discover ${name} at Style Of Life! Price: ₹${price.toLocaleString()}`;
             if (navigator.share) {
                 navigator.share({
                     title: name,
@@ -795,11 +1243,11 @@
                     url: window.location.href
                 }).catch(() => {
                     navigator.clipboard.writeText(text);
-                    showToast('Link copied! Share with friends ✨');
+                    showToast('Link copied! Share the elegance ✨');
                 });
             } else {
                 navigator.clipboard.writeText(text);
-                showToast('Link copied! Share with friends ✨');
+                showToast('Link copied! Share the elegance ✨');
             }
         };
         
@@ -870,7 +1318,7 @@
                     <div class="product-card" data-product-id="${p.id}">
                         <div class="product-image-container">
                             <img class="product-image" src="${img}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/400x400?text=Image+Not+Available'">
-                            <div class="wishlist-btn" onclick="event.stopPropagation(); shareProduct('${escapeHtml(p.name)}', ${p.price}, '${img}')">
+                            <div class="share-image-btn" onclick="event.stopPropagation(); shareProduct('${escapeHtml(p.name)}', ${p.price}, '${img}')">
                                 <i class="fas fa-share-alt"></i>
                             </div>
                         </div>
@@ -959,6 +1407,190 @@
             });
         }
         
+        // ========== SWIPE CART FUNCTIONALITY ==========
+        // Swipe to Checkout
+        let isDragging = false;
+        let startX = 0;
+        let currentTranslate = 0;
+        let swipeThumb = document.getElementById('swipeThumb');
+        let swipeProgress = document.getElementById('swipeProgress');
+        let swipeContainer = document.getElementById('swipeContainer');
+        let swipeTrack = document.querySelector('.swipe-track');
+        let maxSwipe = 0;
+        
+        function initSwipe() {
+            if (!swipeThumb || !swipeContainer) return;
+            
+            const trackRect = swipeTrack.getBoundingClientRect();
+            maxSwipe = trackRect.width - 70;
+            
+            swipeThumb.addEventListener('mousedown', startDrag);
+            swipeThumb.addEventListener('touchstart', startDrag);
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('touchmove', onDrag);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+        }
+        
+        function startDrag(e) {
+            isDragging = true;
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            startX = clientX - currentTranslate;
+            swipeThumb.style.transition = 'none';
+            swipeProgress.style.transition = 'none';
+            e.stopPropagation();
+        }
+        
+        function onDrag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            let newTranslate = clientX - startX;
+            newTranslate = Math.max(0, Math.min(newTranslate, maxSwipe));
+            currentTranslate = newTranslate;
+            
+            const percent = (currentTranslate / maxSwipe) * 100;
+            swipeThumb.style.transform = `translateX(${currentTranslate}px)`;
+            swipeProgress.style.width = `${percent}%`;
+            
+            if (percent >= 95) {
+                completeSwipe();
+            }
+        }
+        
+        function endDrag() {
+            isDragging = false;
+            swipeThumb.style.transition = 'transform 0.3s ease';
+            swipeProgress.style.transition = 'width 0.3s ease';
+            
+            if (currentTranslate < maxSwipe * 0.95) {
+                resetSwipe();
+            }
+        }
+        
+        function resetSwipe() {
+            currentTranslate = 0;
+            swipeThumb.style.transform = `translateX(0px)`;
+            swipeProgress.style.width = `0%`;
+        }
+        
+        function completeSwipe() {
+            resetSwipe();
+            closeSwipeCart();
+            navigateTo('checkout');
+        }
+        
+        // Swipe Down to Hide
+        let touchStartY = 0;
+        let touchCurrentY = 0;
+        let isSwipingDown = false;
+        let overlay = document.getElementById('swipeCartOverlay');
+        let handle = document.getElementById('swipeHandle');
+        
+        function setupSwipeToHide() {
+            if (!overlay) return;
+            
+            overlay.addEventListener('touchstart', function(e) {
+                touchStartY = e.touches[0].clientY;
+                isSwipingDown = true;
+                overlay.classList.add('hiding');
+            });
+            
+            overlay.addEventListener('touchmove', function(e) {
+                if (!isSwipingDown) return;
+                touchCurrentY = e.touches[0].clientY;
+                let deltaY = touchCurrentY - touchStartY;
+                
+                if (deltaY > 0) {
+                    let translateY = deltaY;
+                    if (translateY > 300) translateY = 300;
+                    overlay.style.transform = `translateY(${translateY}px)`;
+                    e.preventDefault();
+                }
+            });
+            
+            overlay.addEventListener('touchend', function(e) {
+                if (!isSwipingDown) return;
+                let deltaY = touchCurrentY - touchStartY;
+                
+                if (deltaY > 100) {
+                    closeSwipeCart();
+                } else {
+                    overlay.style.transform = '';
+                }
+                
+                isSwipingDown = false;
+                setTimeout(() => {
+                    overlay.classList.remove('hiding');
+                }, 300);
+            });
+            
+            // Mouse events for desktop
+            let mouseStartY = 0;
+            let isMouseSwiping = false;
+            
+            handle.addEventListener('mousedown', function(e) {
+                mouseStartY = e.clientY;
+                isMouseSwiping = true;
+                overlay.classList.add('hiding');
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isMouseSwiping) return;
+                let deltaY = e.clientY - mouseStartY;
+                if (deltaY > 0) {
+                    let translateY = deltaY;
+                    if (translateY > 300) translateY = 300;
+                    overlay.style.transform = `translateY(${translateY}px)`;
+                }
+            });
+            
+            document.addEventListener('mouseup', function(e) {
+                if (!isMouseSwiping) return;
+                let deltaY = e.clientY - mouseStartY;
+                
+                if (deltaY > 100) {
+                    closeSwipeCart();
+                } else {
+                    overlay.style.transform = '';
+                }
+                
+                isMouseSwiping = false;
+                setTimeout(() => {
+                    overlay.classList.remove('hiding');
+                }, 300);
+            });
+        }
+        
+        function openSwipeCart() {
+            const overlay = document.getElementById('swipeCartOverlay');
+            overlay.classList.add('active');
+            overlay.style.transform = '';
+            updateCartPreview();
+            setTimeout(() => {
+                initSwipe();
+            }, 100);
+        }
+        
+        function closeSwipeCart() {
+            const overlay = document.getElementById('swipeCartOverlay');
+            overlay.classList.remove('active');
+            overlay.style.transform = '';
+            resetSwipe();
+        }
+        
+        document.getElementById('floatingCartBtn')?.addEventListener('click', () => {
+            openSwipeCart();
+        });
+        
+        document.getElementById('clearCartBtn')?.addEventListener('click', () => {
+            clearCartFromSwipe();
+        });
+        
+        setupSwipeToHide();
+        
         // Observer for dynamically added product cards
         const observer = new MutationObserver(() => {
             addProductCardClickHandlers();
@@ -976,7 +1608,7 @@
         });
         
         // Initialize
-        updateCartCount();
+        updateCartPreview();
         loadCategories();
         loadProducts();
     </script>
