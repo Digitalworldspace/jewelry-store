@@ -335,7 +335,7 @@
             justify-content: center;
         }
         
-        /* ========== IPHONE 5 STYLE SWIPE TO UNLOCK CART ========== */
+        /* ========== IPHONE 5 STYLE SWIPE TO UNLOCK CART WITH SWIPE DOWN TO HIDE ========== */
         .swipe-cart-overlay {
             position: fixed;
             bottom: 0;
@@ -349,10 +349,15 @@
             border-radius: 30px 30px 0 0;
             padding: 20px;
             padding-bottom: 30px;
+            touch-action: pan-y pinch-zoom;
         }
         
         .swipe-cart-overlay.active {
             transform: translateY(0);
+        }
+        
+        .swipe-cart-overlay.hiding {
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
         
         .swipe-handle {
@@ -361,6 +366,12 @@
             background: rgba(255,255,255,0.3);
             border-radius: 3px;
             margin: 0 auto 20px;
+            cursor: grab;
+            touch-action: pan-y;
+        }
+        
+        .swipe-handle:active {
+            cursor: grabbing;
         }
         
         .swipe-title {
@@ -500,7 +511,7 @@
             color: var(--gold);
         }
         
-        /* ========== DO SOMETHING BUTTONS SECTION ========== */
+        /* ========== DO SOMETHING SECTION - ONLY CLEAR CART ========== */
         .do-something-section {
             margin-top: 20px;
             padding-top: 15px;
@@ -516,19 +527,19 @@
         }
         
         .action-buttons-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            display: flex;
+            justify-content: center;
         }
         
         .action-card {
             background: rgba(255,255,255,0.1);
             border-radius: 16px;
-            padding: 12px 8px;
+            padding: 15px 25px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 1px solid rgba(255,255,255,0.05);
+            min-width: 150px;
         }
         
         .action-card:hover {
@@ -538,20 +549,20 @@
         }
         
         .action-icon {
-            font-size: 24px;
+            font-size: 28px;
             color: var(--gold);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
         
         .action-title {
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 600;
             color: white;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
         
         .action-desc {
-            font-size: 9px;
+            font-size: 10px;
             color: rgba(255,255,255,0.5);
         }
         
@@ -1437,9 +1448,9 @@
         <span class="floating-cart-badge" id="cartCount">0</span>
     </div>
     
-    <!-- iPhone 5 Style Swipe to Unlock Cart with DO SOMETHING Section -->
+    <!-- iPhone 5 Style Swipe to Unlock Cart with SWIPE DOWN TO HIDE -->
     <div id="swipeCartOverlay" class="swipe-cart-overlay">
-        <div class="swipe-handle"></div>
+        <div class="swipe-handle" id="swipeHandle"></div>
         <div class="swipe-title">
             <i class="fas fa-shopping-bag" style="color: var(--gold);"></i> Your Cart
         </div>
@@ -1450,7 +1461,7 @@
             </div>
         </div>
         
-        <!-- DO SOMETHING SECTION - Action Buttons -->
+        <!-- DO SOMETHING SECTION - ONLY CLEAR CART BUTTON -->
         <div class="do-something-section">
             <div class="do-something-title">
                 <i class="fas fa-bolt"></i> DO SOMETHING <i class="fas fa-bolt"></i>
@@ -1459,17 +1470,7 @@
                 <div class="action-card" onclick="clearCartFromSwipe()">
                     <div class="action-icon"><i class="fas fa-trash-alt"></i></div>
                     <div class="action-title">Clear Cart</div>
-                    <div class="action-desc">Remove all items</div>
-                </div>
-                <div class="action-card" onclick="saveCartForLater()">
-                    <div class="action-icon"><i class="fas fa-clock"></i></div>
-                    <div class="action-title">Save for Later</div>
-                    <div class="action-desc">Save to wishlist</div>
-                </div>
-                <div class="action-card" onclick="applyCouponCode()">
-                    <div class="action-icon"><i class="fas fa-tag"></i></div>
-                    <div class="action-title">Apply Coupon</div>
-                    <div class="action-desc">Get discount</div>
+                    <div class="action-desc">Remove all items from cart</div>
                 </div>
             </div>
         </div>
@@ -1745,7 +1746,7 @@
             `;
         }
         
-        // ========== DO SOMETHING ACTIONS ==========
+        // ========== CLEAR CART ACTION ==========
         window.clearCartFromSwipe = async function() {
             if (!currentCart.length) {
                 showToast('Cart is already empty', true);
@@ -1766,28 +1767,6 @@
                 } catch (error) {
                     showToast('Failed to clear cart', true);
                 }
-            }
-        };
-        
-        window.saveCartForLater = async function() {
-            if (!currentCart.length) {
-                showToast('Your cart is empty', true);
-                return;
-            }
-            
-            // Save to localStorage for later
-            localStorage.setItem('savedCart', JSON.stringify(currentCart));
-            showToast('Cart saved for later! You can restore it anytime 💾');
-        };
-        
-        window.applyCouponCode = function() {
-            const coupon = prompt('Enter coupon code:');
-            if (coupon && coupon.toUpperCase() === 'WELCOME10') {
-                showToast('Coupon applied! 10% discount on your order 🎉');
-            } else if (coupon && coupon.toUpperCase() === 'FREESHIP') {
-                showToast('Free shipping applied! 🚚');
-            } else if (coupon) {
-                showToast('Invalid coupon code', true);
             }
         };
         
@@ -1838,6 +1817,92 @@
             }
         };
         
+        // ========== SWIPE DOWN TO HIDE FUNCTIONALITY ==========
+        let touchStartY = 0;
+        let touchCurrentY = 0;
+        let isSwipingDown = false;
+        let overlay = document.getElementById('swipeCartOverlay');
+        let handle = document.getElementById('swipeHandle');
+        
+        function setupSwipeToHide() {
+            if (!overlay) return;
+            
+            // Touch events for swipe down to hide
+            overlay.addEventListener('touchstart', function(e) {
+                touchStartY = e.touches[0].clientY;
+                isSwipingDown = true;
+                overlay.classList.add('hiding');
+            });
+            
+            overlay.addEventListener('touchmove', function(e) {
+                if (!isSwipingDown) return;
+                touchCurrentY = e.touches[0].clientY;
+                let deltaY = touchCurrentY - touchStartY;
+                
+                if (deltaY > 0) {
+                    // Swiping down - hide the overlay
+                    let translateY = deltaY;
+                    if (translateY > 300) translateY = 300;
+                    overlay.style.transform = `translateY(${translateY}px)`;
+                    e.preventDefault();
+                }
+            });
+            
+            overlay.addEventListener('touchend', function(e) {
+                if (!isSwipingDown) return;
+                let deltaY = touchCurrentY - touchStartY;
+                
+                if (deltaY > 100) {
+                    // Swiped down enough - close the cart
+                    closeSwipeCart();
+                } else {
+                    // Not enough - reset position
+                    overlay.style.transform = '';
+                }
+                
+                isSwipingDown = false;
+                setTimeout(() => {
+                    overlay.classList.remove('hiding');
+                }, 300);
+            });
+            
+            // Mouse events for desktop swipe down
+            let mouseStartY = 0;
+            let isMouseSwiping = false;
+            
+            handle.addEventListener('mousedown', function(e) {
+                mouseStartY = e.clientY;
+                isMouseSwiping = true;
+                overlay.classList.add('hiding');
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isMouseSwiping) return;
+                let deltaY = e.clientY - mouseStartY;
+                if (deltaY > 0) {
+                    let translateY = deltaY;
+                    if (translateY > 300) translateY = 300;
+                    overlay.style.transform = `translateY(${translateY}px)`;
+                }
+            });
+            
+            document.addEventListener('mouseup', function(e) {
+                if (!isMouseSwiping) return;
+                let deltaY = e.clientY - mouseStartY;
+                
+                if (deltaY > 100) {
+                    closeSwipeCart();
+                } else {
+                    overlay.style.transform = '';
+                }
+                
+                isMouseSwiping = false;
+                setTimeout(() => {
+                    overlay.classList.remove('hiding');
+                }, 300);
+            });
+        }
+        
         // ========== IPHONE 5 STYLE SWIPE TO UNLOCK ==========
         let isDragging = false;
         let startX = 0;
@@ -1868,11 +1933,13 @@
             startX = clientX - currentTranslate;
             swipeThumb.style.transition = 'none';
             swipeProgress.style.transition = 'none';
+            e.stopPropagation();
         }
         
         function onDrag(e) {
             if (!isDragging) return;
             e.preventDefault();
+            e.stopPropagation();
             
             const clientX = e.clientX || (e.touches && e.touches[0].clientX);
             let newTranslate = clientX - startX;
@@ -1913,6 +1980,7 @@
         function openSwipeCart() {
             const overlay = document.getElementById('swipeCartOverlay');
             overlay.classList.add('active');
+            overlay.style.transform = '';
             updateCartPreview();
             setTimeout(() => {
                 initSwipe();
@@ -1922,6 +1990,7 @@
         function closeSwipeCart() {
             const overlay = document.getElementById('swipeCartOverlay');
             overlay.classList.remove('active');
+            overlay.style.transform = '';
             resetSwipe();
         }
         
@@ -1929,6 +1998,10 @@
             openSwipeCart();
         });
         
+        // Setup swipe to hide
+        setupSwipeToHide();
+        
+        // Close on handle click
         document.querySelector('.swipe-handle')?.addEventListener('click', closeSwipeCart);
         document.getElementById('swipeCartOverlay')?.addEventListener('click', (e) => {
             if (e.target === document.getElementById('swipeCartOverlay')) {
