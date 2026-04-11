@@ -38,7 +38,7 @@
     <meta name="twitter:title" content="Style Of Life - Luxury Jewelry">
     
     <meta name="theme-color" content="#d4af37">
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
     
     <!-- Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -71,7 +71,7 @@
     </script>
     
     <style>
-        /* ========== UNIQUE DESIGN - NO HEADER ========== */
+        /* ========== UNIQUE DESIGN ========== */
         * {
             margin: 0;
             padding: 0;
@@ -153,6 +153,49 @@
         
         @keyframes shimmer {
             100% { left: 100%; }
+        }
+        
+        /* ========== GOOGLE GEMINI STYLE LOGO ========== */
+        .gemini-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Playfair Display', serif;
+            padding: 10px 0;
+            background: linear-gradient(135deg, var(--white) 0%, var(--white-light) 100%);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .gemini-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #4285F4, #EA4335, #FBBC05, #34A853);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(66,133,244,0.3);
+        }
+        
+        .gemini-text {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #4285F4, #EA4335, #FBBC05, #34A853);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .gemini-sub {
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--gray);
+            margin-left: 5px;
         }
         
         /* ========== STORIES SECTION ========== */
@@ -254,33 +297,168 @@
             justify-content: center;
         }
         
-        /* ========== FLOATING USER BUTTON (customer-portal) ========== */
-        .floating-user {
+        /* ========== IPHONE 5 STYLE SWIPE TO UNLOCK CART ========== */
+        .swipe-cart-overlay {
             position: fixed;
-            bottom: 80px;
-            right: 90px;
-            width: 55px;
-            height: 55px;
-            background: var(--white);
-            border-radius: 50%;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border-radius: 30px 30px 0 0;
+            padding: 20px;
+        }
+        
+        .swipe-cart-overlay.active {
+            transform: translateY(0);
+        }
+        
+        .swipe-handle {
+            width: 50px;
+            height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            margin: 0 auto 20px;
+        }
+        
+        .swipe-title {
+            text-align: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .swipe-container {
+            background: rgba(255,255,255,0.1);
+            border-radius: 50px;
+            padding: 4px;
+            margin: 20px 0;
+            position: relative;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+        }
+        
+        .swipe-container:active {
+            cursor: grabbing;
+        }
+        
+        .swipe-track {
+            background: rgba(255,255,255,0.2);
+            border-radius: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .swipe-thumb {
+            width: 70px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border-radius: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-            transition: all 0.3s;
-            border: 1px solid rgba(212,175,55,0.3);
+            gap: 5px;
+            cursor: grab;
+            transition: transform 0.05s linear;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
         }
         
-        .floating-user:hover {
-            transform: scale(1.1);
-            border-color: var(--gold);
+        .swipe-thumb:active {
+            cursor: grabbing;
         }
         
-        .floating-user i {
-            font-size: 24px;
+        .swipe-thumb i {
+            font-size: 20px;
             color: var(--black);
+        }
+        
+        .swipe-thumb span {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--black);
+        }
+        
+        .swipe-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border-radius: 50px;
+            width: 0%;
+            transition: width 0.05s linear;
+            z-index: 1;
+        }
+        
+        .swipe-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .cart-preview {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .cart-preview-item {
+            display: flex;
+            gap: 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .cart-preview-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        
+        .cart-preview-item-details {
+            flex: 1;
+        }
+        
+        .cart-preview-item-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .cart-preview-item-price {
+            font-size: 12px;
+            color: var(--gold);
+        }
+        
+        .cart-preview-total {
+            text-align: center;
+            padding: 15px;
+            color: white;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 10px;
+        }
+        
+        .cart-preview-total span {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--gold);
         }
         
         /* ========== HERO SECTION ========== */
@@ -478,6 +656,7 @@
             border: 1px solid rgba(0,0,0,0.05);
             transition: all 0.4s ease;
             cursor: pointer;
+            position: relative;
         }
         
         .product-card:hover {
@@ -486,16 +665,28 @@
             border-color: var(--gold);
         }
         
-        .product-gallery {
+        /* Gallery with Arrow Buttons */
+        .product-gallery-container {
             position: relative;
             width: 100%;
             aspect-ratio: 1 / 1;
+            overflow: hidden;
+        }
+        
+        .product-gallery {
+            width: 100%;
+            height: 100%;
             overflow-x: auto;
             overflow-y: hidden;
             scroll-snap-type: x mandatory;
             display: flex;
-            scrollbar-width: thin;
+            scrollbar-width: none;
             cursor: grab;
+            scroll-behavior: smooth;
+        }
+        
+        .product-gallery::-webkit-scrollbar {
+            display: none;
         }
         
         .gallery-image {
@@ -504,6 +695,41 @@
             height: 100%;
             object-fit: cover;
             scroll-snap-align: start;
+        }
+        
+        /* Gallery Navigation Arrows */
+        .gallery-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s;
+            color: white;
+            font-size: 16px;
+            border: none;
+        }
+        
+        .gallery-arrow:hover {
+            background: var(--gold);
+            color: var(--black);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .gallery-arrow-left {
+            left: 10px;
+        }
+        
+        .gallery-arrow-right {
+            right: 10px;
         }
         
         .gallery-dots {
@@ -1074,8 +1300,10 @@
         }
         
         @media (max-width: 768px) {
-            .floating-user {
-                right: 90px;
+            .gallery-arrow {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
             }
         }
     </style>
@@ -1088,15 +1316,45 @@
         <span>✦ FREE SHIPPING ON ORDERS ABOVE ₹3000 ✦ CASH ON DELIVERY AVAILABLE ✦</span>
     </div>
     
+    <!-- Google Gemini Style Logo -->
+    <div class="gemini-logo" data-page="home">
+        <div class="gemini-icon">
+            <span>✨</span>
+        </div>
+        <div>
+            <span class="gemini-text">Style Of Life</span>
+            <span class="gemini-sub">LUXURY JEWELRY</span>
+        </div>
+    </div>
+    
     <!-- Floating Cart Button -->
-    <div class="floating-cart" data-page="cart">
+    <div class="floating-cart" id="floatingCartBtn">
         <i class="fas fa-shopping-bag"></i>
         <span class="floating-cart-badge" id="cartCount">0</span>
     </div>
     
-    <!-- Floating User Button - Navigates to customer-portal.html -->
-    <div class="floating-user" data-page="customer-portal">
-        <i class="fas fa-user-circle"></i>
+    <!-- iPhone 5 Style Swipe to Unlock Cart -->
+    <div id="swipeCartOverlay" class="swipe-cart-overlay">
+        <div class="swipe-handle"></div>
+        <div class="swipe-title">
+            <i class="fas fa-shopping-bag" style="color: var(--gold);"></i> Your Cart
+        </div>
+        <div id="cartPreviewContent" class="cart-preview">
+            <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">
+                <i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 15px;"></i>
+                <p>Your cart is empty</p>
+            </div>
+        </div>
+        <div class="swipe-container" id="swipeContainer">
+            <div class="swipe-track">
+                <div class="swipe-progress" id="swipeProgress"></div>
+                <div class="swipe-thumb" id="swipeThumb">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Slide to Checkout</span>
+                </div>
+                <div class="swipe-text" id="swipeText">→ Swipe to checkout →</div>
+            </div>
+        </div>
     </div>
     
     <!-- Stories Section -->
@@ -1250,7 +1508,9 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
-        // Navigation - customer-portal.html instead of account
+        let currentCart = [];
+        
+        // Navigation
         function navigateTo(page) {
             if (window.parent !== window) {
                 window.parent.postMessage({ page: page }, '*');
@@ -1283,10 +1543,77 @@
                 const { data, error } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
                 if (error) throw error;
                 const items = data?.items || [];
+                currentCart = items;
                 const total = items.reduce((s, i) => s + i.quantity, 0);
                 const badge = document.getElementById('cartCount');
                 if (badge) badge.textContent = total;
-            } catch (error) {}
+                return items;
+            } catch (error) {
+                return [];
+            }
+        }
+        
+        // Update Cart Preview for Swipe Modal
+        async function updateCartPreview() {
+            const cartItems = await updateCartCount();
+            const previewContainer = document.getElementById('cartPreviewContent');
+            const swipeContainer = document.getElementById('swipeContainer');
+            
+            if (!cartItems.length) {
+                previewContainer.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">
+                        <i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <p>Your cart is empty</p>
+                    </div>
+                `;
+                if (swipeContainer) swipeContainer.style.opacity = '0.5';
+                return;
+            }
+            
+            if (swipeContainer) swipeContainer.style.opacity = '1';
+            
+            let subtotal = 0;
+            let itemsHtml = '';
+            for (const item of cartItems) {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                itemsHtml += `
+                    <div class="cart-preview-item">
+                        <img src="${item.image}" onerror="this.src='https://via.placeholder.com/50x50'">
+                        <div class="cart-preview-item-details">
+                            <div class="cart-preview-item-name">${escapeHtml(item.name)}</div>
+                            <div class="cart-preview-item-price">₹${item.price.toLocaleString()} × ${item.quantity}</div>
+                        </div>
+                        <div style="color: var(--gold); font-weight: bold;">₹${itemTotal.toLocaleString()}</div>
+                    </div>
+                `;
+            }
+            
+            const tax = Math.round(subtotal * 0.18);
+            const shipping = subtotal >= 3000 ? 0 : 100;
+            const total = subtotal + tax + shipping;
+            
+            previewContainer.innerHTML = `
+                ${itemsHtml}
+                <div class="cart-preview-total">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Subtotal</span>
+                        <span>₹${subtotal.toLocaleString()}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Shipping</span>
+                        <span>₹${shipping}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>GST (18%)</span>
+                        <span>₹${tax.toLocaleString()}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 18px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <span>Total</span>
+                        <span style="color: var(--gold);">₹${total.toLocaleString()}</span>
+                    </div>
+                </div>
+            `;
         }
         
         // Add to Cart
@@ -1302,7 +1629,7 @@
                 const { error: saveError } = await supabase.from('carts').upsert({ session_id: sessionId, items: items, total: total, updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
                 if (saveError) throw saveError;
                 showToast(`${name} added to cart! ✨`);
-                await updateCartCount();
+                await updateCartPreview();
                 return true;
             } catch (error) { 
                 showToast('Failed to add', true); 
@@ -1335,6 +1662,165 @@
                 showToast('Link copied! Share the elegance ✨');
             }
         };
+        
+        // ========== IPHONE 5 STYLE SWIPE TO UNLOCK ==========
+        let isDragging = false;
+        let startX = 0;
+        let currentTranslate = 0;
+        let swipeThumb = document.getElementById('swipeThumb');
+        let swipeProgress = document.getElementById('swipeProgress');
+        let swipeContainer = document.getElementById('swipeContainer');
+        let swipeTrack = document.querySelector('.swipe-track');
+        let maxSwipe = 0;
+        
+        function initSwipe() {
+            if (!swipeThumb || !swipeContainer) return;
+            
+            const trackRect = swipeTrack.getBoundingClientRect();
+            maxSwipe = trackRect.width - 70;
+            
+            // Mouse/Touch events
+            swipeThumb.addEventListener('mousedown', startDrag);
+            swipeThumb.addEventListener('touchstart', startDrag);
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('touchmove', onDrag);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+        }
+        
+        function startDrag(e) {
+            isDragging = true;
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            startX = clientX - currentTranslate;
+            swipeThumb.style.transition = 'none';
+            swipeProgress.style.transition = 'none';
+        }
+        
+        function onDrag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            let newTranslate = clientX - startX;
+            newTranslate = Math.max(0, Math.min(newTranslate, maxSwipe));
+            currentTranslate = newTranslate;
+            
+            const percent = (currentTranslate / maxSwipe) * 100;
+            swipeThumb.style.transform = `translateX(${currentTranslate}px)`;
+            swipeProgress.style.width = `${percent}%`;
+            
+            // Check if swiped completely
+            if (percent >= 95) {
+                completeSwipe();
+            }
+        }
+        
+        function endDrag() {
+            isDragging = false;
+            swipeThumb.style.transition = 'transform 0.3s ease';
+            swipeProgress.style.transition = 'width 0.3s ease';
+            
+            // Reset if not completed
+            if (currentTranslate < maxSwipe * 0.95) {
+                resetSwipe();
+            }
+        }
+        
+        function resetSwipe() {
+            currentTranslate = 0;
+            swipeThumb.style.transform = `translateX(0px)`;
+            swipeProgress.style.width = `0%`;
+        }
+        
+        function completeSwipe() {
+            // Reset swipe UI
+            resetSwipe();
+            // Close the swipe overlay
+            closeSwipeCart();
+            // Navigate to checkout
+            navigateTo('checkout');
+        }
+        
+        // Swipe Cart Overlay Controls
+        function openSwipeCart() {
+            const overlay = document.getElementById('swipeCartOverlay');
+            overlay.classList.add('active');
+            updateCartPreview();
+            setTimeout(() => {
+                initSwipe();
+            }, 100);
+        }
+        
+        function closeSwipeCart() {
+            const overlay = document.getElementById('swipeCartOverlay');
+            overlay.classList.remove('active');
+            resetSwipe();
+        }
+        
+        // Floating cart button click
+        document.getElementById('floatingCartBtn')?.addEventListener('click', () => {
+            openSwipeCart();
+        });
+        
+        // Close on handle click or outside
+        document.querySelector('.swipe-handle')?.addEventListener('click', closeSwipeCart);
+        document.getElementById('swipeCartOverlay')?.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('swipeCartOverlay')) {
+                closeSwipeCart();
+            }
+        });
+        
+        // ========== GALLERY ARROW FUNCTIONS ==========
+        window.scrollGallery = function(galleryId, direction) {
+            const gallery = document.getElementById(galleryId);
+            if (!gallery) return;
+            const scrollAmount = gallery.clientWidth;
+            if (direction === 'left') {
+                gallery.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            } else {
+                gallery.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
+        };
+        
+        // Initialize Gallery with Arrows
+        function initGalleryWithArrows(galleryId, images, dotContainerId) {
+            const gallery = document.getElementById(galleryId);
+            const dotContainer = document.getElementById(dotContainerId);
+            if (!gallery || !dotContainer) return;
+            
+            gallery.innerHTML = '';
+            dotContainer.innerHTML = '';
+            
+            images.forEach((img, index) => {
+                const imgElement = document.createElement('img');
+                imgElement.src = img;
+                imgElement.className = 'gallery-image';
+                imgElement.alt = 'Product image';
+                imgElement.loading = 'lazy';
+                imgElement.onerror = () => { imgElement.src = 'https://via.placeholder.com/400x400?text=Style+Of+Life'; };
+                gallery.appendChild(imgElement);
+                
+                const dot = document.createElement('div');
+                dot.className = 'gallery-dot';
+                if (index === 0) dot.classList.add('active');
+                dot.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    gallery.scrollTo({ left: gallery.clientWidth * index, behavior: 'smooth' });
+                });
+                dotContainer.appendChild(dot);
+            });
+            
+            gallery.addEventListener('scroll', () => {
+                const scrollPos = gallery.scrollLeft;
+                const itemWidth = gallery.clientWidth;
+                const activeIndex = Math.round(scrollPos / itemWidth);
+                const dots = dotContainer.querySelectorAll('.gallery-dot');
+                dots.forEach((dot, idx) => {
+                    if (idx === activeIndex) dot.classList.add('active');
+                    else dot.classList.remove('active');
+                });
+            });
+        }
         
         // Load Stories
         async function loadStories() {
@@ -1396,46 +1882,6 @@
             }
         }
         
-        // Initialize Gallery
-        function initGallery(galleryId, images, dotContainerId) {
-            const gallery = document.getElementById(galleryId);
-            const dotContainer = document.getElementById(dotContainerId);
-            if (!gallery || !dotContainer) return;
-            
-            gallery.innerHTML = '';
-            dotContainer.innerHTML = '';
-            
-            images.forEach((img, index) => {
-                const imgElement = document.createElement('img');
-                imgElement.src = img;
-                imgElement.className = 'gallery-image';
-                imgElement.alt = 'Product image';
-                imgElement.loading = 'lazy';
-                imgElement.onerror = () => { imgElement.src = 'https://via.placeholder.com/400x400?text=Style+Of+Life'; };
-                gallery.appendChild(imgElement);
-                
-                const dot = document.createElement('div');
-                dot.className = 'gallery-dot';
-                if (index === 0) dot.classList.add('active');
-                dot.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    gallery.scrollTo({ left: gallery.clientWidth * index, behavior: 'smooth' });
-                });
-                dotContainer.appendChild(dot);
-            });
-            
-            gallery.addEventListener('scroll', () => {
-                const scrollPos = gallery.scrollLeft;
-                const itemWidth = gallery.clientWidth;
-                const activeIndex = Math.round(scrollPos / itemWidth);
-                const dots = dotContainer.querySelectorAll('.gallery-dot');
-                dots.forEach((dot, idx) => {
-                    if (idx === activeIndex) dot.classList.add('active');
-                    else dot.classList.remove('active');
-                });
-            });
-        }
-        
         // Load All Products
         async function loadProducts() {
             const container = document.getElementById('productsGrid');
@@ -1462,8 +1908,16 @@
                     const dotId = `dots-${p.id}`;
                     
                     html += `<div class="product-card">
-                        <div class="product-gallery" id="${galleryId}"></div>
-                        <div class="gallery-dots" id="${dotId}"></div>
+                        <div class="product-gallery-container">
+                            <div class="product-gallery" id="${galleryId}"></div>
+                            <button class="gallery-arrow gallery-arrow-left" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'left')">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="gallery-arrow gallery-arrow-right" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'right')">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <div class="gallery-dots" id="${dotId}"></div>
+                        </div>
                         <div class="product-info">
                             <div class="product-name">${escapeHtml(p.name)}</div>
                             <div class="product-sku">${p.sku} | ${p.category || 'Fine Jewelry'}</div>
@@ -1486,7 +1940,7 @@
                     const displayImages = validImages.length > 0 ? validImages : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
                     const galleryId = `gallery-${p.id}`;
                     const dotId = `dots-${p.id}`;
-                    setTimeout(() => initGallery(galleryId, displayImages, dotId), 50);
+                    setTimeout(() => initGalleryWithArrows(galleryId, displayImages, dotId), 50);
                 }
             } catch (error) {
                 console.error('Error loading products:', error);
@@ -1531,7 +1985,7 @@
         });
         
         // Initialize
-        updateCartCount();
+        updateCartPreview();
         loadStories();
         loadFeaturedProducts();
         loadProducts();
