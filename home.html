@@ -165,6 +165,7 @@
             padding: 10px 0;
             background: linear-gradient(135deg, var(--white) 0%, var(--white-light) 100%);
             border-bottom: 1px solid rgba(0,0,0,0.05);
+            cursor: pointer;
         }
         
         .gemini-icon {
@@ -253,7 +254,7 @@
             background: var(--white);
         }
         
-        /* ========== FLOATING CART BUTTON ========== */
+        /* ========== FLOATING CART BUTTON (Simple, no swipe) ========== */
         .floating-cart {
             position: fixed;
             bottom: 80px;
@@ -297,66 +298,33 @@
             justify-content: center;
         }
         
-        /* ========== IPHONE 5 STYLE SWIPE TO UNLOCK CART ========== */
-        .swipe-cart-overlay {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(20px);
-            z-index: 2000;
-            transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            border-radius: 30px 30px 0 0;
-            padding: 20px;
-        }
-        
-        .swipe-cart-overlay.active {
-            transform: translateY(0);
-        }
-        
-        .swipe-handle {
-            width: 50px;
-            height: 5px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 3px;
-            margin: 0 auto 20px;
-        }
-        
-        .swipe-title {
-            text-align: center;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-        
-        .swipe-container {
-            background: rgba(255,255,255,0.1);
+        /* ========== IPHONE 5 STYLE SWIPE TO UNLOCK FOR PRODUCT CARD ========== */
+        .product-swipe-container {
+            margin-top: 10px;
+            background: rgba(0,0,0,0.05);
             border-radius: 50px;
-            padding: 4px;
-            margin: 20px 0;
+            padding: 3px;
             position: relative;
             cursor: grab;
             user-select: none;
             touch-action: none;
+            display: none;
         }
         
-        .swipe-container:active {
-            cursor: grabbing;
+        .product-swipe-container.active {
+            display: block;
         }
         
-        .swipe-track {
-            background: rgba(255,255,255,0.2);
+        .product-swipe-track {
+            background: rgba(0,0,0,0.1);
             border-radius: 50px;
             position: relative;
             overflow: hidden;
         }
         
-        .swipe-thumb {
-            width: 70px;
-            height: 50px;
+        .product-swipe-thumb {
+            width: 60px;
+            height: 40px;
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             border-radius: 50px;
             display: flex;
@@ -365,27 +333,27 @@
             gap: 5px;
             cursor: grab;
             transition: transform 0.05s linear;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             position: relative;
             z-index: 2;
         }
         
-        .swipe-thumb:active {
+        .product-swipe-thumb:active {
             cursor: grabbing;
         }
         
-        .swipe-thumb i {
-            font-size: 20px;
+        .product-swipe-thumb i {
+            font-size: 14px;
             color: var(--black);
         }
         
-        .swipe-thumb span {
-            font-size: 12px;
+        .product-swipe-thumb span {
+            font-size: 10px;
             font-weight: 600;
             color: var(--black);
         }
         
-        .swipe-progress {
+        .product-swipe-progress {
             position: absolute;
             top: 0;
             left: 0;
@@ -397,68 +365,17 @@
             z-index: 1;
         }
         
-        .swipe-text {
+        .product-swipe-text {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: rgba(255,255,255,0.6);
-            font-size: 14px;
+            color: rgba(0,0,0,0.5);
+            font-size: 11px;
             font-weight: 500;
             white-space: nowrap;
             z-index: 1;
             pointer-events: none;
-        }
-        
-        .cart-preview {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top: 20px;
-        }
-        
-        .cart-preview-item {
-            display: flex;
-            gap: 12px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .cart-preview-item img {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-        
-        .cart-preview-item-details {
-            flex: 1;
-        }
-        
-        .cart-preview-item-name {
-            font-size: 13px;
-            font-weight: 600;
-            color: white;
-        }
-        
-        .cart-preview-item-price {
-            font-size: 12px;
-            color: var(--gold);
-        }
-        
-        .cart-preview-total {
-            text-align: center;
-            padding: 15px;
-            color: white;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            margin-top: 10px;
-        }
-        
-        .cart-preview-total span {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--gold);
         }
         
         /* ========== HERO SECTION ========== */
@@ -795,6 +712,7 @@
         .product-buttons {
             display: flex;
             gap: 12px;
+            flex-wrap: wrap;
         }
         
         .btn-buy {
@@ -1327,34 +1245,10 @@
         </div>
     </div>
     
-    <!-- Floating Cart Button -->
-    <div class="floating-cart" id="floatingCartBtn">
+    <!-- Floating Cart Button (Simple, no swipe) -->
+    <div class="floating-cart" data-page="cart">
         <i class="fas fa-shopping-bag"></i>
         <span class="floating-cart-badge" id="cartCount">0</span>
-    </div>
-    
-    <!-- iPhone 5 Style Swipe to Unlock Cart -->
-    <div id="swipeCartOverlay" class="swipe-cart-overlay">
-        <div class="swipe-handle"></div>
-        <div class="swipe-title">
-            <i class="fas fa-shopping-bag" style="color: var(--gold);"></i> Your Cart
-        </div>
-        <div id="cartPreviewContent" class="cart-preview">
-            <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">
-                <i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 15px;"></i>
-                <p>Your cart is empty</p>
-            </div>
-        </div>
-        <div class="swipe-container" id="swipeContainer">
-            <div class="swipe-track">
-                <div class="swipe-progress" id="swipeProgress"></div>
-                <div class="swipe-thumb" id="swipeThumb">
-                    <i class="fas fa-chevron-right"></i>
-                    <span>Slide to Checkout</span>
-                </div>
-                <div class="swipe-text" id="swipeText">→ Swipe to checkout →</div>
-            </div>
-        </div>
     </div>
     
     <!-- Stories Section -->
@@ -1508,8 +1402,6 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
-        let currentCart = [];
-        
         // Navigation
         function navigateTo(page) {
             if (window.parent !== window) {
@@ -1543,7 +1435,6 @@
                 const { data, error } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
                 if (error) throw error;
                 const items = data?.items || [];
-                currentCart = items;
                 const total = items.reduce((s, i) => s + i.quantity, 0);
                 const badge = document.getElementById('cartCount');
                 if (badge) badge.textContent = total;
@@ -1553,71 +1444,8 @@
             }
         }
         
-        // Update Cart Preview for Swipe Modal
-        async function updateCartPreview() {
-            const cartItems = await updateCartCount();
-            const previewContainer = document.getElementById('cartPreviewContent');
-            const swipeContainer = document.getElementById('swipeContainer');
-            
-            if (!cartItems.length) {
-                previewContainer.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">
-                        <i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 15px;"></i>
-                        <p>Your cart is empty</p>
-                    </div>
-                `;
-                if (swipeContainer) swipeContainer.style.opacity = '0.5';
-                return;
-            }
-            
-            if (swipeContainer) swipeContainer.style.opacity = '1';
-            
-            let subtotal = 0;
-            let itemsHtml = '';
-            for (const item of cartItems) {
-                const itemTotal = item.price * item.quantity;
-                subtotal += itemTotal;
-                itemsHtml += `
-                    <div class="cart-preview-item">
-                        <img src="${item.image}" onerror="this.src='https://via.placeholder.com/50x50'">
-                        <div class="cart-preview-item-details">
-                            <div class="cart-preview-item-name">${escapeHtml(item.name)}</div>
-                            <div class="cart-preview-item-price">₹${item.price.toLocaleString()} × ${item.quantity}</div>
-                        </div>
-                        <div style="color: var(--gold); font-weight: bold;">₹${itemTotal.toLocaleString()}</div>
-                    </div>
-                `;
-            }
-            
-            const tax = Math.round(subtotal * 0.18);
-            const shipping = subtotal >= 3000 ? 0 : 100;
-            const total = subtotal + tax + shipping;
-            
-            previewContainer.innerHTML = `
-                ${itemsHtml}
-                <div class="cart-preview-total">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>Subtotal</span>
-                        <span>₹${subtotal.toLocaleString()}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>Shipping</span>
-                        <span>₹${shipping}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>GST (18%)</span>
-                        <span>₹${tax.toLocaleString()}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 18px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
-                        <span>Total</span>
-                        <span style="color: var(--gold);">₹${total.toLocaleString()}</span>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // Add to Cart
-        window.addToCart = async (id, name, price, sku, img) => {
+        // Add to Cart (called after swipe completion)
+        async function addToCartDirect(id, name, price, sku, img) {
             try {
                 let { data: cartData, error: fetchError } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
                 if (fetchError) throw fetchError;
@@ -1629,17 +1457,17 @@
                 const { error: saveError } = await supabase.from('carts').upsert({ session_id: sessionId, items: items, total: total, updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
                 if (saveError) throw saveError;
                 showToast(`${name} added to cart! ✨`);
-                await updateCartPreview();
+                await updateCartCount();
                 return true;
             } catch (error) { 
                 showToast('Failed to add', true); 
                 return false;
             }
-        };
+        }
         
         // Buy Now
         window.buyNow = async (id, name, price, sku, img) => {
-            const added = await addToCart(id, name, price, sku, img);
+            const added = await addToCartDirect(id, name, price, sku, img);
             if (added) {
                 setTimeout(() => { navigateTo('checkout'); }, 500);
             }
@@ -1663,163 +1491,116 @@
             }
         };
         
-        // ========== IPHONE 5 STYLE SWIPE TO UNLOCK ==========
-        let isDragging = false;
-        let startX = 0;
-        let currentTranslate = 0;
-        let swipeThumb = document.getElementById('swipeThumb');
-        let swipeProgress = document.getElementById('swipeProgress');
-        let swipeContainer = document.getElementById('swipeContainer');
-        let swipeTrack = document.querySelector('.swipe-track');
-        let maxSwipe = 0;
+        // ========== IPHONE 5 STYLE SWIPE TO UNLOCK FOR EACH PRODUCT ==========
+        let activeSwipes = {};
         
-        function initSwipe() {
-            if (!swipeThumb || !swipeContainer) return;
+        function initProductSwipe(productId, productName, productPrice, productSku, productImg, onComplete) {
+            const container = document.getElementById(`swipe-container-${productId}`);
+            const thumb = document.getElementById(`swipe-thumb-${productId}`);
+            const progress = document.getElementById(`swipe-progress-${productId}`);
+            const track = document.querySelector(`#swipe-container-${productId} .product-swipe-track`);
             
-            const trackRect = swipeTrack.getBoundingClientRect();
-            maxSwipe = trackRect.width - 70;
+            if (!container || !thumb || !progress || !track) return;
             
-            // Mouse/Touch events
-            swipeThumb.addEventListener('mousedown', startDrag);
-            swipeThumb.addEventListener('touchstart', startDrag);
+            let isDragging = false;
+            let startX = 0;
+            let currentTranslate = 0;
+            let maxSwipe = 0;
+            
+            function updateMaxSwipe() {
+                const trackRect = track.getBoundingClientRect();
+                maxSwipe = trackRect.width - 60;
+            }
+            
+            updateMaxSwipe();
+            window.addEventListener('resize', updateMaxSwipe);
+            
+            function startDrag(e) {
+                isDragging = true;
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                startX = clientX - currentTranslate;
+                thumb.style.transition = 'none';
+                progress.style.transition = 'none';
+            }
+            
+            function onDrag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                let newTranslate = clientX - startX;
+                newTranslate = Math.max(0, Math.min(newTranslate, maxSwipe));
+                currentTranslate = newTranslate;
+                
+                const percent = (currentTranslate / maxSwipe) * 100;
+                thumb.style.transform = `translateX(${currentTranslate}px)`;
+                progress.style.width = `${percent}%`;
+                
+                if (percent >= 95) {
+                    completeSwipe();
+                }
+            }
+            
+            function endDrag() {
+                isDragging = false;
+                thumb.style.transition = 'transform 0.3s ease';
+                progress.style.transition = 'width 0.3s ease';
+                
+                if (currentTranslate < maxSwipe * 0.95) {
+                    resetSwipe();
+                }
+            }
+            
+            function resetSwipe() {
+                currentTranslate = 0;
+                thumb.style.transform = `translateX(0px)`;
+                progress.style.width = `0%`;
+            }
+            
+            function completeSwipe() {
+                resetSwipe();
+                // Hide the swipe container and show buttons again
+                const swipeContainer = document.getElementById(`swipe-wrapper-${productId}`);
+                const buttonsContainer = document.getElementById(`buttons-wrapper-${productId}`);
+                if (swipeContainer) swipeContainer.classList.remove('active');
+                if (buttonsContainer) buttonsContainer.style.display = 'flex';
+                // Execute the add to cart action
+                onComplete();
+            }
+            
+            thumb.addEventListener('mousedown', startDrag);
+            thumb.addEventListener('touchstart', startDrag);
             document.addEventListener('mousemove', onDrag);
             document.addEventListener('touchmove', onDrag);
             document.addEventListener('mouseup', endDrag);
             document.addEventListener('touchend', endDrag);
+            
+            activeSwipes[productId] = { reset: resetSwipe };
         }
         
-        function startDrag(e) {
-            isDragging = true;
-            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            startX = clientX - currentTranslate;
-            swipeThumb.style.transition = 'none';
-            swipeProgress.style.transition = 'none';
-        }
-        
-        function onDrag(e) {
-            if (!isDragging) return;
-            e.preventDefault();
+        // Show swipe UI for a specific product
+        function showSwipeForProduct(productId) {
+            const swipeContainer = document.getElementById(`swipe-wrapper-${productId}`);
+            const buttonsContainer = document.getElementById(`buttons-wrapper-${productId}`);
             
-            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            let newTranslate = clientX - startX;
-            newTranslate = Math.max(0, Math.min(newTranslate, maxSwipe));
-            currentTranslate = newTranslate;
-            
-            const percent = (currentTranslate / maxSwipe) * 100;
-            swipeThumb.style.transform = `translateX(${currentTranslate}px)`;
-            swipeProgress.style.width = `${percent}%`;
-            
-            // Check if swiped completely
-            if (percent >= 95) {
-                completeSwipe();
+            if (swipeContainer && buttonsContainer) {
+                swipeContainer.classList.add('active');
+                buttonsContainer.style.display = 'none';
             }
         }
         
-        function endDrag() {
-            isDragging = false;
-            swipeThumb.style.transition = 'transform 0.3s ease';
-            swipeProgress.style.transition = 'width 0.3s ease';
+        // Cancel swipe and show buttons again
+        function cancelSwipe(productId) {
+            const swipeContainer = document.getElementById(`swipe-wrapper-${productId}`);
+            const buttonsContainer = document.getElementById(`buttons-wrapper-${productId}`);
             
-            // Reset if not completed
-            if (currentTranslate < maxSwipe * 0.95) {
-                resetSwipe();
+            if (swipeContainer && buttonsContainer) {
+                swipeContainer.classList.remove('active');
+                buttonsContainer.style.display = 'flex';
+                if (activeSwipes[productId]) {
+                    activeSwipes[productId].reset();
+                }
             }
-        }
-        
-        function resetSwipe() {
-            currentTranslate = 0;
-            swipeThumb.style.transform = `translateX(0px)`;
-            swipeProgress.style.width = `0%`;
-        }
-        
-        function completeSwipe() {
-            // Reset swipe UI
-            resetSwipe();
-            // Close the swipe overlay
-            closeSwipeCart();
-            // Navigate to checkout
-            navigateTo('checkout');
-        }
-        
-        // Swipe Cart Overlay Controls
-        function openSwipeCart() {
-            const overlay = document.getElementById('swipeCartOverlay');
-            overlay.classList.add('active');
-            updateCartPreview();
-            setTimeout(() => {
-                initSwipe();
-            }, 100);
-        }
-        
-        function closeSwipeCart() {
-            const overlay = document.getElementById('swipeCartOverlay');
-            overlay.classList.remove('active');
-            resetSwipe();
-        }
-        
-        // Floating cart button click
-        document.getElementById('floatingCartBtn')?.addEventListener('click', () => {
-            openSwipeCart();
-        });
-        
-        // Close on handle click or outside
-        document.querySelector('.swipe-handle')?.addEventListener('click', closeSwipeCart);
-        document.getElementById('swipeCartOverlay')?.addEventListener('click', (e) => {
-            if (e.target === document.getElementById('swipeCartOverlay')) {
-                closeSwipeCart();
-            }
-        });
-        
-        // ========== GALLERY ARROW FUNCTIONS ==========
-        window.scrollGallery = function(galleryId, direction) {
-            const gallery = document.getElementById(galleryId);
-            if (!gallery) return;
-            const scrollAmount = gallery.clientWidth;
-            if (direction === 'left') {
-                gallery.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-            } else {
-                gallery.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-            }
-        };
-        
-        // Initialize Gallery with Arrows
-        function initGalleryWithArrows(galleryId, images, dotContainerId) {
-            const gallery = document.getElementById(galleryId);
-            const dotContainer = document.getElementById(dotContainerId);
-            if (!gallery || !dotContainer) return;
-            
-            gallery.innerHTML = '';
-            dotContainer.innerHTML = '';
-            
-            images.forEach((img, index) => {
-                const imgElement = document.createElement('img');
-                imgElement.src = img;
-                imgElement.className = 'gallery-image';
-                imgElement.alt = 'Product image';
-                imgElement.loading = 'lazy';
-                imgElement.onerror = () => { imgElement.src = 'https://via.placeholder.com/400x400?text=Style+Of+Life'; };
-                gallery.appendChild(imgElement);
-                
-                const dot = document.createElement('div');
-                dot.className = 'gallery-dot';
-                if (index === 0) dot.classList.add('active');
-                dot.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    gallery.scrollTo({ left: gallery.clientWidth * index, behavior: 'smooth' });
-                });
-                dotContainer.appendChild(dot);
-            });
-            
-            gallery.addEventListener('scroll', () => {
-                const scrollPos = gallery.scrollLeft;
-                const itemWidth = gallery.clientWidth;
-                const activeIndex = Math.round(scrollPos / itemWidth);
-                const dots = dotContainer.querySelectorAll('.gallery-dot');
-                dots.forEach((dot, idx) => {
-                    if (idx === activeIndex) dot.classList.add('active');
-                    else dot.classList.remove('active');
-                });
-            });
         }
         
         // Load Stories
@@ -1882,6 +1663,58 @@
             }
         }
         
+        // Initialize Gallery with Arrows
+        function initGalleryWithArrows(galleryId, images, dotContainerId) {
+            const gallery = document.getElementById(galleryId);
+            const dotContainer = document.getElementById(dotContainerId);
+            if (!gallery || !dotContainer) return;
+            
+            gallery.innerHTML = '';
+            dotContainer.innerHTML = '';
+            
+            images.forEach((img, index) => {
+                const imgElement = document.createElement('img');
+                imgElement.src = img;
+                imgElement.className = 'gallery-image';
+                imgElement.alt = 'Product image';
+                imgElement.loading = 'lazy';
+                imgElement.onerror = () => { imgElement.src = 'https://via.placeholder.com/400x400?text=Style+Of+Life'; };
+                gallery.appendChild(imgElement);
+                
+                const dot = document.createElement('div');
+                dot.className = 'gallery-dot';
+                if (index === 0) dot.classList.add('active');
+                dot.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    gallery.scrollTo({ left: gallery.clientWidth * index, behavior: 'smooth' });
+                });
+                dotContainer.appendChild(dot);
+            });
+            
+            gallery.addEventListener('scroll', () => {
+                const scrollPos = gallery.scrollLeft;
+                const itemWidth = gallery.clientWidth;
+                const activeIndex = Math.round(scrollPos / itemWidth);
+                const dots = dotContainer.querySelectorAll('.gallery-dot');
+                dots.forEach((dot, idx) => {
+                    if (idx === activeIndex) dot.classList.add('active');
+                    else dot.classList.remove('active');
+                });
+            });
+        }
+        
+        // Scroll Gallery
+        window.scrollGallery = function(galleryId, direction) {
+            const gallery = document.getElementById(galleryId);
+            if (!gallery) return;
+            const scrollAmount = gallery.clientWidth;
+            if (direction === 'left') {
+                gallery.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            } else {
+                gallery.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
+        };
+        
         // Load All Products
         async function loadProducts() {
             const container = document.getElementById('productsGrid');
@@ -1906,6 +1739,8 @@
                     const desc = p.description || 'Exquisite handcrafted masterpiece.';
                     const galleryId = `gallery-${p.id}`;
                     const dotId = `dots-${p.id}`;
+                    const swipeId = p.id;
+                    const imgUrl = displayImages[0];
                     
                     html += `<div class="product-card">
                         <div class="product-gallery-container">
@@ -1923,16 +1758,36 @@
                             <div class="product-sku">${p.sku} | ${p.category || 'Fine Jewelry'}</div>
                             <div class="product-desc">${escapeHtml(desc.substring(0, 100))}${desc.length > 100 ? '...' : ''}</div>
                             <div class="product-price">₹${(p.price || 0).toLocaleString()}</div>
-                            <div class="product-buttons">
-                                <button class="btn-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')"><i class="fas fa-bolt"></i> Buy Now</button>
-                                <button class="btn-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')"><i class="fas fa-shopping-cart"></i></button>
+                            
+                            <!-- Normal Buttons -->
+                            <div id="buttons-wrapper-${swipeId}" class="product-buttons">
+                                <button class="btn-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${imgUrl}')"><i class="fas fa-bolt"></i> Buy Now</button>
+                                <button class="btn-cart" onclick="event.stopPropagation(); showSwipeForProduct(${swipeId})"><i class="fas fa-shopping-cart"></i></button>
                                 <button class="btn-share" onclick="event.stopPropagation(); shareProduct(${JSON.stringify(p).replace(/"/g, '&quot;')})"><i class="fas fa-share-alt"></i></button>
+                            </div>
+                            
+                            <!-- iPhone 5 Style Swipe to Add to Cart -->
+                            <div id="swipe-wrapper-${swipeId}" class="product-swipe-container">
+                                <div id="swipe-container-${swipeId}" class="product-swipe-container-inner">
+                                    <div class="product-swipe-track">
+                                        <div class="product-swipe-progress" id="swipe-progress-${swipeId}"></div>
+                                        <div class="product-swipe-thumb" id="swipe-thumb-${swipeId}">
+                                            <i class="fas fa-chevron-right"></i>
+                                            <span>Slide to Add</span>
+                                        </div>
+                                        <div class="product-swipe-text">→ Swipe to add to cart →</div>
+                                    </div>
+                                </div>
+                                <div style="text-align: center; margin-top: 5px;">
+                                    <span style="font-size: 10px; color: var(--gray); cursor: pointer;" onclick="cancelSwipe(${swipeId})">Cancel</span>
+                                </div>
                             </div>
                         </div>
                     </div>`;
                 }
                 container.innerHTML = html;
                 
+                // Initialize galleries and swipes
                 for (let i = 0; i < products.length; i++) {
                     const p = products[i];
                     const images = p.images || [];
@@ -1940,7 +1795,14 @@
                     const displayImages = validImages.length > 0 ? validImages : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
                     const galleryId = `gallery-${p.id}`;
                     const dotId = `dots-${p.id}`;
+                    const imgUrl = displayImages[0];
+                    
                     setTimeout(() => initGalleryWithArrows(galleryId, displayImages, dotId), 50);
+                    
+                    // Initialize swipe for this product
+                    initProductSwipe(p.id, p.name, p.price, p.sku, imgUrl, () => {
+                        addToCartDirect(p.id, p.name, p.price, p.sku, imgUrl);
+                    });
                 }
             } catch (error) {
                 console.error('Error loading products:', error);
@@ -1965,7 +1827,7 @@
             const buyBtn = document.getElementById('modalBuyBtn');
             const cartBtn = document.getElementById('modalCartBtn');
             buyBtn.onclick = () => buyNow(product.id, product.name, product.price, product.sku, img);
-            cartBtn.onclick = () => addToCart(product.id, product.name, product.price, product.sku, img);
+            cartBtn.onclick = () => addToCartDirect(product.id, product.name, product.price, product.sku, img);
             
             document.getElementById('productModal').classList.add('active');
         };
@@ -1985,7 +1847,7 @@
         });
         
         // Initialize
-        updateCartPreview();
+        updateCartCount();
         loadStories();
         loadFeaturedProducts();
         loadProducts();
