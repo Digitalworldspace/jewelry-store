@@ -2,41 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <meta name="theme-color" content="#d4af37">
-    <title>Track Order - Style Of Life</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Of Life - Track Order</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary: #d4af37;
-            --dark: #1a1a1a;
-            --gray-200: #e9ecef;
-            --gray-600: #6c757d;
+            --gold: #D4AF37;
+            --gold-dark: #B8962E;
+            --white: #FFFFFF;
+            --white-light: #F8F9FA;
+            --black: #1A1A1A;
+            --gray: #666666;
         }
-        body { font-family: 'Inter', sans-serif; background: #faf7f2; padding-bottom: 70px; }
-        
-        header {
-            background: white;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--white-light);
+            padding-bottom: 70px;
         }
-        .logo { font-size: 20px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
-        
-        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
+        .track-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
         .track-box {
             background: white;
-            border-radius: 20px;
-            padding: 25px;
+            border-radius: 24px;
+            padding: 40px;
             text-align: center;
-            border: 1px solid var(--gray-200);
+            border: 1px solid rgba(0,0,0,0.05);
         }
-        h1 { font-size: 24px; margin-bottom: 15px; color: var(--primary); }
-        
+        h2 {
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
         .track-form {
             display: flex;
             flex-direction: column;
@@ -45,26 +47,29 @@
         }
         .track-input {
             padding: 14px;
-            border: 1px solid var(--gray-200);
+            border: 1px solid #ddd;
             border-radius: 40px;
             font-size: 14px;
         }
         .track-btn {
             padding: 14px;
-            background: var(--primary);
+            background: var(--gold);
             border: none;
             border-radius: 40px;
             font-weight: 600;
             cursor: pointer;
         }
-        
         .order-details {
-            margin-top: 20px;
             text-align: left;
+            margin-top: 20px;
+        }
+        .info-row {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
         }
         .status-badge {
             display: inline-block;
-            padding: 5px 12px;
+            padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
@@ -73,14 +78,7 @@
         .status-processing { background: #d1ecf1; color: #0c5460; }
         .status-shipped { background: #d4edda; color: #155724; }
         .status-delivered { background: #c3e6cb; color: #155724; }
-        
-        .info-row { padding: 8px 0; border-bottom: 1px solid var(--gray-200); }
-        .error { text-align: center; padding: 30px; color: #dc3545; }
-        
-        .loading { text-align: center; padding: 30px; }
-        .spinner { width: 30px; height: 30px; border: 2px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
+        .error { color: #dc3545; text-align: center; padding: 20px; }
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -89,84 +87,151 @@
             background: white;
             display: flex;
             justify-content: space-around;
-            padding: 8px 20px 15px;
-            border-top: 1px solid var(--gray-200);
+            padding: 10px 20px 20px;
+            border-top: 1px solid rgba(0,0,0,0.05);
             z-index: 100;
         }
         .bottom-nav a {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 3px;
-            color: var(--gray-600);
+            gap: 4px;
+            color: var(--gray);
             text-decoration: none;
             font-size: 10px;
+            cursor: pointer;
         }
-        .bottom-nav a i { font-size: 20px; }
-        .bottom-nav a.active { color: var(--primary); }
+        .bottom-nav a i { font-size: 22px; }
+        .bottom-nav a.active, .bottom-nav a:hover { color: var(--gold); }
+        .loading { text-align: center; padding: 40px; }
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #e9ecef;
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .toast {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--black);
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 9999;
+            font-size: 13px;
+            font-weight: 700;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
     </style>
 </head>
 <body>
-    <header>
-        <a href="index.html" class="logo">STYLE·OF·LIFE</a>
-        <div></div>
-    </header>
-    
-    <div class="container">
+    <div class="track-container">
         <div class="track-box">
-            <h1>🔍 Track Order</h1>
-            <p>Enter your Order ID</p>
+            <h2><i class="fas fa-truck"></i> Track Order</h2>
+            <p>Enter your Order ID to track status</p>
             <div class="track-form">
                 <input type="text" id="orderId" class="track-input" placeholder="e.g., ORD1739876543210">
                 <button class="track-btn" onclick="trackOrder()">Track →</button>
             </div>
-            <div id="result"></div>
+            <div id="trackResult"></div>
         </div>
     </div>
     
     <div class="bottom-nav">
-        <a href="index.html"><i class="fas fa-home"></i><span>Home</span></a>
-        <a href="shop.html"><i class="fas fa-search"></i><span>Shop</span></a>
-        <a href="cart.html"><i class="fas fa-shopping-bag"></i><span>Cart</span></a>
-        <a href="track.html" class="active"><i class="fas fa-truck"></i><span>Track</span></a>
-        <a href="customer-portal.html"><i class="fas fa-user"></i><span>Account</span></a>
+        <a data-page="home"><i class="fas fa-home"></i><span>Home</span></a>
+        <a data-page="shop"><i class="fas fa-search"></i><span>Shop</span></a>
+        <a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Cart</span></a>
+        <a data-page="track" class="active"><i class="fas fa-truck"></i><span>Track</span></a>
+        <a data-page="account"><i class="fas fa-user"></i><span>Account</span></a>
     </div>
     
-    <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
+    <script type="importmap">
+        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
+    </script>
+    
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
+        
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        
+        function navigateTo(page) {
+            if (window.parent !== window) {
+                window.parent.postMessage({ page: page }, '*');
+            } else {
+                window.location.href = page + '.html';
+            }
+        }
+        
+        document.querySelectorAll('[data-page]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = el.getAttribute('data-page');
+                navigateTo(page);
+            });
+        });
         
         window.trackOrder = async function() {
             const orderId = document.getElementById('orderId').value.trim();
-            if (!orderId) { alert('Enter Order ID'); return; }
-            
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Searching...</p></div>';
-            
-            const { data, error } = await supabase.from('orders').select('*').eq('order_id', orderId);
-            if (error || !data?.length) {
-                resultDiv.innerHTML = '<div class="error">❌ Order not found</div>';
+            if (!orderId) {
+                showToast('Enter Order ID', true);
                 return;
             }
             
-            const o = data[0];
-            resultDiv.innerHTML = `
-                <div class="order-details">
-                    <div class="info-row"><strong>Order ID:</strong> ${o.order_id}</div>
-                    <div class="info-row"><strong>Date:</strong> ${new Date(o.created_at).toLocaleDateString()}</div>
-                    <div class="info-row"><strong>Customer:</strong> ${escapeHtml(o.customer_name)}</div>
-                    <div class="info-row"><strong>Phone:</strong> ${o.phone || o.customer_phone}</div>
-                    <div class="info-row"><strong>Address:</strong> ${escapeHtml(o.address)}</div>
-                    <div class="info-row"><strong>Status:</strong> <span class="status-badge status-${o.status?.toLowerCase()}">${o.status || 'Pending'}</span></div>
-                    <div class="info-row"><strong>Total:</strong> ₹${(o.total || 0).toLocaleString()}</div>
-                    <div class="info-row"><strong>Items:</strong> ${o.items?.map(i => `${i.name} x${i.quantity}`).join(', ')}</div>
-                </div>
-            `;
+            const resultDiv = document.getElementById('trackResult');
+            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Searching...</p></div>';
+            
+            try {
+                const { data, error } = await supabase.from('orders').select('*').eq('order_id', orderId);
+                if (error || !data || data.length === 0) {
+                    resultDiv.innerHTML = '<div class="error">❌ Order not found. Please check your Order ID.</div>';
+                    return;
+                }
+                
+                const o = data[0];
+                const statusClass = `status-${(o.status || 'pending').toLowerCase()}`;
+                
+                resultDiv.innerHTML = `
+                    <div class="order-details">
+                        <div class="info-row"><strong>Order ID:</strong> ${o.order_id}</div>
+                        <div class="info-row"><strong>Date:</strong> ${new Date(o.created_at).toLocaleDateString()}</div>
+                        <div class="info-row"><strong>Customer:</strong> ${escapeHtml(o.customer_name)}</div>
+                        <div class="info-row"><strong>Phone:</strong> ${o.phone || o.customer_phone || 'N/A'}</div>
+                        <div class="info-row"><strong>Address:</strong> ${escapeHtml(o.address || 'N/A')}</div>
+                        <div class="info-row"><strong>Status:</strong> <span class="status-badge ${statusClass}">${o.status || 'Pending'}</span></div>
+                        <div class="info-row"><strong>Total:</strong> ₹${(o.total || 0).toLocaleString()}</div>
+                        <div class="info-row"><strong>Items:</strong> ${o.items?.map(i => `${i.name} x${i.quantity}`).join(', ') || 'No items'}</div>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="error">Error tracking order. Please try again.</div>';
+            }
         };
         
-        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m))); }
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            if (isError) toast.style.background = '#dc3545';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
         
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
+        }
+        
+        // Check URL for order parameter
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('order')) {
             document.getElementById('orderId').value = urlParams.get('order');
