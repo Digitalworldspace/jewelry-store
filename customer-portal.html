@@ -2,314 +2,80 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <meta name="theme-color" content="#d4af37">
-    <title>My Account - Style Of Life</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Of Life - My Account</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary: #d4af37;
-            --primary-dark: #b8962e;
-            --dark: #1a1a1a;
-            --light: #ffffff;
-            --gray-100: #f8f9fa;
-            --gray-200: #e9ecef;
-            --gray-600: #6c757d;
-            --success: #28a745;
-            --danger: #dc3545;
+            --gold: #D4AF37;
+            --gold-dark: #B8962E;
+            --white: #FFFFFF;
+            --white-light: #F8F9FA;
+            --black: #1A1A1A;
+            --gray: #666666;
         }
-        body { font-family: 'Inter', sans-serif; background: #faf7f2; padding-bottom: 70px; }
-        
-        header {
-            background: white;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--white-light);
+            padding-bottom: 70px;
         }
-        .logo { font-size: 20px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
-        
-        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
-        
-        /* Login Section */
-        .login-section {
+        .account-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .account-box {
             background: white;
             border-radius: 24px;
-            padding: 30px 20px;
+            padding: 40px;
             text-align: center;
-            border: 1px solid var(--gray-200);
+            border: 1px solid rgba(0,0,0,0.05);
         }
-        .login-section h2 {
-            color: var(--primary);
-            margin-bottom: 10px;
+        h2 {
+            color: var(--gold);
+            margin-bottom: 15px;
         }
-        .login-section p {
-            color: var(--gray-600);
-            font-size: 13px;
-            margin-bottom: 25px;
-        }
-        .login-form .form-group {
+        .form-group {
             margin-bottom: 15px;
             text-align: left;
         }
-        .login-form label {
+        .form-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: 500;
+            color: var(--gray);
             font-size: 13px;
-            color: var(--gray-600);
         }
-        .login-form input {
+        .form-group input {
             width: 100%;
             padding: 12px;
-            border: 1px solid var(--gray-200);
+            border: 1px solid #ddd;
             border-radius: 12px;
             font-size: 14px;
         }
-        .login-form input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        .login-btn {
+        .login-btn, .register-btn {
             width: 100%;
-            padding: 12px;
-            background: var(--primary);
+            padding: 14px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             border: none;
             border-radius: 40px;
             font-weight: 600;
             cursor: pointer;
             margin-top: 10px;
-            transition: all 0.3s;
         }
-        .login-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-        .login-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-        .register-link {
+        .switch-link {
             margin-top: 20px;
             font-size: 13px;
         }
-        .register-link a {
-            color: var(--primary);
+        .switch-link a {
+            color: var(--gold);
+            cursor: pointer;
             text-decoration: none;
-            font-weight: 600;
         }
-        
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .stat-card {
-            background: white;
-            border-radius: 16px;
-            padding: 15px;
-            text-align: center;
-            border: 1px solid var(--gray-200);
-        }
-        .stat-number {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        .stat-label {
-            font-size: 11px;
-            color: var(--gray-600);
-            margin-top: 5px;
-        }
-        
-        /* Welcome Card */
-        .welcome-card {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: var(--dark);
-            padding: 15px 20px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .welcome-text h3 { font-size: 16px; margin-bottom: 4px; }
-        .welcome-text p { font-size: 12px; opacity: 0.9; }
-        .welcome-icon { font-size: 40px; opacity: 0.8; }
-        
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 5px;
-            background: white;
-            padding: 5px;
-            border-radius: 50px;
-            margin-bottom: 20px;
-            border: 1px solid var(--gray-200);
-        }
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            border-radius: 40px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .tab.active {
-            background: var(--primary);
-            color: var(--dark);
-        }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid var(--gray-200);
-        }
-        
-        .order-item {
-            border-bottom: 1px solid var(--gray-200);
-            padding: 12px 0;
-        }
-        .order-item:last-child { border-bottom: none; }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .status-pending { background: #fff3cd; color: #856404; }
-        .status-processing { background: #d1ecf1; color: #0c5460; }
-        .status-shipped { background: #d4edda; color: #155724; }
-        .status-delivered { background: #c3e6cb; color: #155724; }
-        .status-cancelled { background: #f8d7da; color: #721c24; }
-        
-        .price-breakdown {
-            background: var(--gray-100);
-            border-radius: 12px;
-            padding: 12px;
-            margin-top: 10px;
-            font-size: 12px;
-        }
-        .price-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-        }
-        .price-row.total {
-            border-top: 1px solid var(--gray-200);
-            margin-top: 5px;
-            padding-top: 8px;
-            font-weight: bold;
-            color: var(--primary);
-        }
-        
-        .wishlist-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-        .wishlist-item {
-            background: var(--gray-100);
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-        }
-        .wishlist-item img { width: 100%; height: 120px; object-fit: cover; }
-        .wishlist-info { padding: 8px; }
-        .wishlist-name { font-size: 12px; font-weight: 600; }
-        .wishlist-price { font-size: 12px; color: var(--primary); font-weight: 600; }
-        .remove-wishlist {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(0,0,0,0.5);
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
-        .profile-form input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 12px;
-            border: 1px solid var(--gray-200);
-            border-radius: 40px;
-        }
-        .save-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary);
-            border: none;
-            border-radius: 40px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .logout-btn {
-            background: transparent;
-            border: 1px solid var(--danger);
-            color: var(--danger);
-            padding: 10px;
-            border-radius: 40px;
-            width: 100%;
-            margin-top: 15px;
-            cursor: pointer;
-        }
-        
-        .empty { text-align: center; padding: 40px; color: var(--gray-600); }
-        
-        .loading { text-align: center; padding: 40px; }
-        .spinner {
-            width: 30px;
-            height: 30px;
-            border: 2px solid var(--gray-200);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 10px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--dark);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 40px;
-            z-index: 9999;
-            font-size: 12px;
-            animation: slideUp 0.3s ease;
-        }
-        .toast-success { background: var(--success); }
-        .toast-error { background: var(--danger); }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-        
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -318,129 +84,141 @@
             background: white;
             display: flex;
             justify-content: space-around;
-            padding: 8px 20px 15px;
-            border-top: 1px solid var(--gray-200);
+            padding: 10px 20px 20px;
+            border-top: 1px solid rgba(0,0,0,0.05);
             z-index: 100;
         }
         .bottom-nav a {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 3px;
-            color: var(--gray-600);
+            gap: 4px;
+            color: var(--gray);
             text-decoration: none;
             font-size: 10px;
+            cursor: pointer;
         }
-        .bottom-nav a i { font-size: 20px; }
-        .bottom-nav a.active { color: var(--primary); }
-        
-        @media (min-width: 768px) {
-            .wishlist-grid { grid-template-columns: repeat(4, 1fr); }
-            .container { max-width: 1000px; }
+        .bottom-nav a i { font-size: 22px; }
+        .bottom-nav a.active, .bottom-nav a:hover { color: var(--gold); }
+        .toast {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--black);
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 9999;
+            font-size: 13px;
+            font-weight: 700;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
     </style>
 </head>
 <body>
-    <header>
-        <a href="index.html" class="logo">STYLE·OF·LIFE</a>
-        <a href="cart.html"><i class="fas fa-shopping-bag" style="font-size: 20px; color: var(--gray-600);"></i></a>
-    </header>
-    
-    <div class="container">
-        <div id="loginSection" class="login-section">
-            <h2><i class="fas fa-user-circle"></i> Welcome Back!</h2>
-            <p>Login to view your orders, wishlist and manage your account</p>
-            <form id="loginForm" class="login-form">
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" id="loginEmail" required placeholder="your@email.com">
+    <div class="account-container">
+        <div id="accountContent">
+            <div class="account-box">
+                <h2><i class="fas fa-user-circle"></i> My Account</h2>
+                <div id="loginForm">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="loginEmail" placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter password">
+                    </div>
+                    <button class="login-btn" onclick="handleLogin()">Login →</button>
+                    <div class="switch-link">
+                        <p>New customer? <a onclick="showRegister()">Create an account</a></p>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="loginPassword" required placeholder="Enter your password">
+                <div id="registerForm" style="display: none;">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="regName" placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="regEmail" placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="regPhone" maxlength="10" placeholder="10-digit mobile number">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="regPassword" placeholder="Create password (min 6 characters)">
+                    </div>
+                    <button class="register-btn" onclick="handleRegister()">Create Account →</button>
+                    <div class="switch-link">
+                        <p>Already have account? <a onclick="showLogin()">Sign In</a></p>
+                    </div>
                 </div>
-                <button type="submit" class="login-btn">Login →</button>
-            </form>
-            <div class="register-link">
-                <p>New customer? <a href="register.html">Create an account</a></p>
-            </div>
-        </div>
-        
-        <div id="dashboardContent" style="display: none;">
-            <div class="welcome-card">
-                <div class="welcome-text">
-                    <h3 id="welcomeUserName">Welcome back!</h3>
-                    <p id="welcomeUserEmail"></p>
-                </div>
-                <div class="welcome-icon"><i class="fas fa-gem"></i></div>
-            </div>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalOrders">0</div>
-                    <div class="stat-label">Total Orders</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="totalSpent">₹0</div>
-                    <div class="stat-label">Total Spent</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="pendingOrders">0</div>
-                    <div class="stat-label">Pending</div>
-                </div>
-            </div>
-            
-            <div class="tabs">
-                <div class="tab active" data-tab="orders">📦 Orders</div>
-                <div class="tab" data-tab="wishlist">❤️ Wishlist</div>
-                <div class="tab" data-tab="profile">👤 Profile</div>
-            </div>
-            
-            <div id="orders" class="tab-content active">
-                <div id="ordersList"><div class="loading"><div class="spinner"></div><p>Loading orders...</p></div></div>
-            </div>
-            <div id="wishlist" class="tab-content">
-                <div id="wishlistList"><div class="loading"><div class="spinner"></div><p>Loading wishlist...</p></div></div>
-            </div>
-            <div id="profile" class="tab-content">
-                <div id="profileContent"><div class="loading"><div class="spinner"></div><p>Loading profile...</p></div></div>
             </div>
         </div>
     </div>
     
     <div class="bottom-nav">
-        <a href="index.html"><i class="fas fa-home"></i><span>Home</span></a>
-        <a href="shop.html"><i class="fas fa-search"></i><span>Shop</span></a>
-        <a href="cart.html"><i class="fas fa-shopping-bag"></i><span>Cart</span></a>
-        <a href="track.html"><i class="fas fa-truck"></i><span>Track</span></a>
-        <a href="customer-portal.html" class="active"><i class="fas fa-user"></i><span>Account</span></a>
+        <a data-page="home"><i class="fas fa-home"></i><span>Home</span></a>
+        <a data-page="shop"><i class="fas fa-search"></i><span>Shop</span></a>
+        <a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Cart</span></a>
+        <a data-page="track"><i class="fas fa-truck"></i><span>Track</span></a>
+        <a data-page="account" class="active"><i class="fas fa-user"></i><span>Account</span></a>
     </div>
     
     <script type="importmap">
         { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
     </script>
+    
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let currentUser = null;
-        let sessionId = localStorage.getItem('sessionId');
         
-        if (!sessionId) {
-            sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('sessionId', sessionId);
+        function navigateTo(page) {
+            if (window.parent !== window) {
+                window.parent.postMessage({ page: page }, '*');
+            } else {
+                window.location.href = page + '.html';
+            }
         }
+        
+        document.querySelectorAll('[data-page]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = el.getAttribute('data-page');
+                navigateTo(page);
+            });
+        });
         
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
-            toast.className = `toast ${isError ? 'toast-error' : 'toast-success'}`;
+            toast.className = 'toast';
+            if (isError) toast.style.background = '#dc3545';
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
         
-        async function handleLogin(event) {
-            event.preventDefault();
+        window.showLogin = function() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+        };
+        
+        window.showRegister = function() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        };
+        
+        window.handleLogin = async function() {
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
             
@@ -449,181 +227,70 @@
                 return;
             }
             
-            const btn = document.querySelector('.login-btn');
-            btn.disabled = true;
-            btn.textContent = 'Logging in...';
-            
             try {
                 const { data, error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
                 
-                if (data.user) {
-                    const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
-                    currentUser = { ...data.user, profile: profile || {} };
-                    localStorage.setItem('customerUser', JSON.stringify(currentUser));
-                    
-                    showToast('Login successful!');
-                    document.getElementById('loginSection').style.display = 'none';
-                    document.getElementById('dashboardContent').style.display = 'block';
-                    document.getElementById('welcomeUserName').textContent = `Welcome, ${currentUser.profile?.full_name || currentUser.email?.split('@')[0]}!`;
-                    document.getElementById('welcomeUserEmail').textContent = currentUser.email;
-                    
-                    await loadOrders();
-                    await loadWishlist();
-                    await loadProfile();
-                }
+                showToast('Login successful!');
+                setTimeout(() => navigateTo('account'), 1000);
             } catch (error) {
                 showToast(error.message || 'Login failed', true);
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Login →';
             }
-        }
+        };
         
-        async function handleLogout() {
-            await supabase.auth.signOut();
-            localStorage.removeItem('customerUser');
-            currentUser = null;
-            document.getElementById('loginSection').style.display = 'block';
-            document.getElementById('dashboardContent').style.display = 'none';
-            showToast('Logged out successfully');
-        }
-        
-        async function loadOrders() {
-            if (!currentUser) return;
-            const { data, error } = await supabase.from('orders').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-            if (error) { document.getElementById('ordersList').innerHTML = '<div class="empty">Error loading orders</div>'; return; }
+        window.handleRegister = async function() {
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const password = document.getElementById('regPassword').value;
             
-            document.getElementById('totalOrders').textContent = data?.length || 0;
-            document.getElementById('totalSpent').textContent = `₹${(data?.reduce((s, o) => s + (o.total || 0), 0) || 0).toLocaleString()}`;
-            document.getElementById('pendingOrders').textContent = data?.filter(o => o.status === 'pending').length || 0;
-            
-            if (!data?.length) {
-                document.getElementById('ordersList').innerHTML = '<div class="empty">✨ No orders yet. Start shopping!</div>';
+            if (!name || !email || !password) {
+                showToast('Please fill all required fields', true);
                 return;
             }
             
-            let html = '';
-            for (const o of data) {
-                html += `
-                    <div class="card order-item">
-                        <div style="display: flex; justify-content: space-between;">
-                            <strong>${o.order_id}</strong>
-                            <span class="status-badge status-${o.status || 'pending'}">${o.status || 'Pending'}</span>
-                        </div>
-                        <div style="font-size: 12px; color: var(--gray-600); margin: 5px 0;">${new Date(o.created_at).toLocaleDateString()}</div>
-                        <div style="font-size: 12px;">${o.items?.slice(0, 2).map(i => `${i.name} x${i.quantity}`).join(', ')}${o.items?.length > 2 ? ` +${o.items.length - 2} more` : ''}</div>
-                        <div class="price-breakdown">
-                            <div class="price-row"><span>Total</span><span>₹${(o.total || 0).toLocaleString()}</span></div>
-                        </div>
-                        <a href="track.html?order=${o.order_id}" style="color: var(--primary); font-size: 12px;">Track Order →</a>
-                    </div>
-                `;
-            }
-            document.getElementById('ordersList').innerHTML = html;
-        }
-        
-        async function loadWishlist() {
-            if (!currentUser) return;
-            const { data, error } = await supabase.from('wishlist').select('*, products(*)').eq('user_id', currentUser.id);
-            if (error) { document.getElementById('wishlistList').innerHTML = '<div class="empty">Error loading wishlist</div>'; return; }
-            
-            if (!data?.length) {
-                document.getElementById('wishlistList').innerHTML = '<div class="empty">❤️ Your wishlist is empty.</div>';
+            if (password.length < 6) {
+                showToast('Password must be at least 6 characters', true);
                 return;
             }
             
-            let html = '<div class="wishlist-grid">';
-            for (const w of data) {
-                const p = w.products;
-                const img = p?.images?.[0] || 'https://via.placeholder.com/200x120';
-                html += `
-                    <div class="wishlist-item">
-                        <img src="${img}" onerror="this.src='https://via.placeholder.com/200x120'">
-                        <div class="remove-wishlist" onclick="removeFromWishlist(${w.product_id})"><i class="fas fa-times"></i></div>
-                        <div class="wishlist-info">
-                            <div class="wishlist-name">${escapeHtml(p?.name || 'Product')}</div>
-                            <div class="wishlist-price">₹${(p?.price || 0).toLocaleString()}</div>
-                            <button onclick="addToCart(${p?.id}, '${escapeHtml(p?.name)}', ${p?.price}, '${p?.sku}', '${img}')" style="width:100%; margin-top:8px; padding:5px; background: var(--primary); border:none; border-radius:20px; cursor:pointer;">Add to Cart</button>
-                        </div>
-                    </div>
-                `;
+            if (phone && (phone.length !== 10 || !/^\d+$/.test(phone))) {
+                showToast('Enter valid 10-digit phone number', true);
+                return;
             }
-            html += '</div>';
-            document.getElementById('wishlistList').innerHTML = html;
-        }
-        
-        window.removeFromWishlist = async function(productId) {
-            if (!currentUser) return;
-            await supabase.from('wishlist').delete().eq('user_id', currentUser.id).eq('product_id', productId);
-            showToast('Removed from wishlist');
-            await loadWishlist();
+            
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: { data: { full_name: name, phone: phone } }
+                });
+                if (error) throw error;
+                
+                showToast('Registration successful! Please check your email to verify.');
+                setTimeout(() => showLogin(), 2000);
+            } catch (error) {
+                showToast(error.message || 'Registration failed', true);
+            }
         };
         
-        window.addToCart = async function(id, name, price, sku, img) {
-            let { data: cartData } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
-            let items = cartData?.items || [];
-            const existing = items.find(i => i.id === id);
-            if (existing) existing.quantity += 1;
-            else items.push({ id, sku, name, price, quantity: 1, image: img });
-            const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
-            await supabase.from('carts').upsert({ session_id: sessionId, items, total, updated_at: new Date() }, { onConflict: 'session_id' });
-            showToast(`${name} added to cart!`);
-            await loadWishlist();
-        };
-        
-        async function loadProfile() {
-            if (!currentUser) return;
-            document.getElementById('profileContent').innerHTML = `
-                <div class="card">
-                    <form id="profileForm">
-                        <input type="text" name="full_name" value="${currentUser.profile?.full_name || ''}" placeholder="Full Name">
-                        <input type="tel" name="phone" value="${currentUser.profile?.phone || ''}" placeholder="Phone Number">
-                        <input type="email" value="${currentUser.email}" disabled>
-                        <button type="submit" class="save-btn">Save Changes</button>
-                    </form>
-                    <button class="logout-btn" onclick="handleLogout()">Logout</button>
-                </div>
-            `;
-            document.getElementById('profileForm')?.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const { error } = await supabase.from('profiles').update({ full_name: formData.get('full_name'), phone: formData.get('phone') }).eq('id', currentUser.id);
-                if (error) showToast('Error updating profile', true);
-                else { showToast('Profile updated!'); currentUser.profile = { ...currentUser.profile, full_name: formData.get('full_name'), phone: formData.get('phone') }; }
-            });
-        }
-        
-        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
-        
-        document.getElementById('loginForm').addEventListener('submit', handleLogin);
-        window.handleLogout = handleLogout;
-        
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                document.getElementById(tab.dataset.tab).classList.add('active');
-                if (tab.dataset.tab === 'orders') loadOrders();
-                if (tab.dataset.tab === 'wishlist') loadWishlist();
-                if (tab.dataset.tab === 'profile') loadProfile();
-            });
-        });
-        
+        // Check if already logged in
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-            const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-            currentUser = { ...user, profile: profile || {} };
-            localStorage.setItem('customerUser', JSON.stringify(currentUser));
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('dashboardContent').style.display = 'block';
-            document.getElementById('welcomeUserName').textContent = `Welcome, ${currentUser.profile?.full_name || currentUser.email?.split('@')[0]}!`;
-            document.getElementById('welcomeUserEmail').textContent = currentUser.email;
-            await loadOrders();
-            await loadWishlist();
-            await loadProfile();
+            document.getElementById('accountContent').innerHTML = `
+                <div class="account-box">
+                    <h2><i class="fas fa-user-circle"></i> Welcome ${user.email?.split('@')[0]}!</h2>
+                    <p style="margin: 15px 0;">You are logged in to your account.</p>
+                    <button class="login-btn" onclick="handleLogout()" style="background: #dc3545;">Logout</button>
+                </div>
+            `;
         }
+        
+        window.handleLogout = async function() {
+            await supabase.auth.signOut();
+            showToast('Logged out successfully');
+            setTimeout(() => navigateTo('account'), 500);
+        };
     </script>
 </body>
 </html>
