@@ -3,25 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Style Of Life</title>
+    <title>Style Of Life - Admin Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { 
-            --primary: #d4af37; 
-            --primary-dark: #b8962e;
-            --dark: #1a1a1a; 
-            --darker: #0a0a0a; 
-            --light: #ffffff; 
-            --gray-200: #e9ecef;
-            --gray-600: #6c757d;
-        }
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%); 
-            min-height: 100vh; 
-            display: flex; 
-            align-items: center; 
+        :root { --primary: #d4af37; --primary-dark: #b8962e; --dark: #1a1a1a; --darker: #0a0a0a; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
             justify-content: center;
             padding: 20px;
         }
@@ -44,37 +36,18 @@
             font-weight: 600;
             letter-spacing: 2px;
         }
-        .login-header p {
-            color: var(--gray-600);
-            margin-top: 8px;
-            font-size: 14px;
-        }
-        .login-body {
-            padding: 40px;
-        }
-        .form-group {
-            margin-bottom: 25px;
-        }
-        label {
-            display: block;
-            color: var(--gray-600);
-            margin-bottom: 8px;
-            font-weight: 500;
-            font-size: 14px;
-        }
+        .login-header p { color: #6c757d; margin-top: 8px; font-size: 14px; }
+        .login-body { padding: 40px; }
+        .form-group { margin-bottom: 25px; }
+        label { display: block; color: #6c757d; margin-bottom: 8px; font-weight: 500; font-size: 14px; }
         input {
             width: 100%;
             padding: 14px 16px;
-            border: 1px solid var(--gray-200);
+            border: 1px solid #e9ecef;
             border-radius: 12px;
             font-size: 14px;
-            transition: all 0.3s;
         }
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(212,175,55,0.1);
-        }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
         button {
             width: 100%;
             padding: 14px;
@@ -85,13 +58,9 @@
             font-weight: 600;
             font-size: 16px;
             cursor: pointer;
-            transition: all 0.3s;
             margin-top: 10px;
         }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(212,175,55,0.3);
-        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
         .error-message {
             background: #f8d7da;
             color: #721c24;
@@ -102,21 +71,8 @@
             text-align: center;
             display: none;
         }
-        .hint {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-            color: var(--gray-600);
-            padding-top: 20px;
-            border-top: 1px solid var(--gray-200);
-        }
-        .hint strong {
-            color: var(--primary);
-        }
-        @media (max-width: 480px) {
-            .login-header { padding: 30px; }
-            .login-body { padding: 30px; }
-        }
+        .hint { text-align: center; margin-top: 20px; font-size: 12px; color: #6c757d; padding-top: 20px; border-top: 1px solid #e9ecef; }
+        .hint strong { color: var(--primary); }
     </style>
 </head>
 <body>
@@ -150,41 +106,20 @@
             const errorDiv = document.getElementById('errorMessage');
             
             if (username === 'admin' && password === '1234') {
-                // Set session storage
                 sessionStorage.setItem('adminLoggedIn', 'true');
-                sessionStorage.setItem('adminName', 'Administrator');
-                sessionStorage.setItem('adminLoginTime', new Date().toISOString());
-                
-                // Redirect to admin dashboard
                 window.location.href = 'admin.html';
             } else {
                 errorDiv.style.display = 'block';
                 errorDiv.textContent = '❌ Invalid username or password. Please try again.';
-                
-                // Clear password field
                 document.getElementById('password').value = '';
-                
-                // Auto hide error after 3 seconds
-                setTimeout(() => {
-                    errorDiv.style.display = 'none';
-                }, 3000);
+                setTimeout(() => { errorDiv.style.display = 'none'; }, 3000);
             }
         }
         
-        // Enter key support
         document.getElementById('password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                login();
-            }
+            if (e.key === 'Enter') login();
         });
         
-        document.getElementById('username').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                login();
-            }
-        });
-        
-        // Check if already logged in
         if (sessionStorage.getItem('adminLoggedIn') === 'true') {
             window.location.href = 'admin.html';
         }
