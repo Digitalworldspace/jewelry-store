@@ -173,7 +173,6 @@
             background: linear-gradient(135deg, var(--white), var(--white-light));
         }
         
-        /* White Star with Colored Border - Simple Gemini Style */
         .gemini-star {
             width: 40px;
             height: 40px;
@@ -204,16 +203,6 @@
             50% {
                 transform: scale(1.08);
                 opacity: 0.9;
-            }
-        }
-        
-        /* Rotating border animation */
-        @keyframes borderRotate {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
             }
         }
         
@@ -352,13 +341,14 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             backdrop-filter: blur(20px);
             z-index: 2000;
             transform: translateY(100%);
             transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             border-radius: 30px 30px 0 0;
             padding: 20px;
+            padding-bottom: 30px;
         }
         
         .swipe-cart-overlay.active {
@@ -508,6 +498,61 @@
             font-size: 18px;
             font-weight: bold;
             color: var(--gold);
+        }
+        
+        /* ========== DO SOMETHING BUTTONS SECTION ========== */
+        .do-something-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+        }
+        
+        .do-something-title {
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+        
+        .action-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        
+        .action-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .action-card:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            border-color: var(--gold);
+        }
+        
+        .action-icon {
+            font-size: 24px;
+            color: var(--gold);
+            margin-bottom: 6px;
+        }
+        
+        .action-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 3px;
+        }
+        
+        .action-desc {
+            font-size: 9px;
+            color: rgba(255,255,255,0.5);
         }
         
         /* ========== HERO SECTION ========== */
@@ -1392,7 +1437,7 @@
         <span class="floating-cart-badge" id="cartCount">0</span>
     </div>
     
-    <!-- iPhone 5 Style Swipe to Unlock Cart -->
+    <!-- iPhone 5 Style Swipe to Unlock Cart with DO SOMETHING Section -->
     <div id="swipeCartOverlay" class="swipe-cart-overlay">
         <div class="swipe-handle"></div>
         <div class="swipe-title">
@@ -1404,6 +1449,31 @@
                 <p>Your cart is empty</p>
             </div>
         </div>
+        
+        <!-- DO SOMETHING SECTION - Action Buttons -->
+        <div class="do-something-section">
+            <div class="do-something-title">
+                <i class="fas fa-bolt"></i> DO SOMETHING <i class="fas fa-bolt"></i>
+            </div>
+            <div class="action-buttons-grid">
+                <div class="action-card" onclick="clearCartFromSwipe()">
+                    <div class="action-icon"><i class="fas fa-trash-alt"></i></div>
+                    <div class="action-title">Clear Cart</div>
+                    <div class="action-desc">Remove all items</div>
+                </div>
+                <div class="action-card" onclick="saveCartForLater()">
+                    <div class="action-icon"><i class="fas fa-clock"></i></div>
+                    <div class="action-title">Save for Later</div>
+                    <div class="action-desc">Save to wishlist</div>
+                </div>
+                <div class="action-card" onclick="applyCouponCode()">
+                    <div class="action-icon"><i class="fas fa-tag"></i></div>
+                    <div class="action-title">Apply Coupon</div>
+                    <div class="action-desc">Get discount</div>
+                </div>
+            </div>
+        </div>
+        
         <div class="swipe-container" id="swipeContainer">
             <div class="swipe-track">
                 <div class="swipe-progress" id="swipeProgress"></div>
@@ -1675,6 +1745,52 @@
             `;
         }
         
+        // ========== DO SOMETHING ACTIONS ==========
+        window.clearCartFromSwipe = async function() {
+            if (!currentCart.length) {
+                showToast('Cart is already empty', true);
+                return;
+            }
+            
+            if (confirm('Clear all items from your cart?')) {
+                try {
+                    await supabase.from('carts').upsert({ 
+                        session_id: sessionId, 
+                        items: [], 
+                        total: 0, 
+                        updated_at: new Date().toISOString() 
+                    }, { onConflict: 'session_id' });
+                    showToast('Cart cleared! 🗑️');
+                    await updateCartPreview();
+                    closeSwipeCart();
+                } catch (error) {
+                    showToast('Failed to clear cart', true);
+                }
+            }
+        };
+        
+        window.saveCartForLater = async function() {
+            if (!currentCart.length) {
+                showToast('Your cart is empty', true);
+                return;
+            }
+            
+            // Save to localStorage for later
+            localStorage.setItem('savedCart', JSON.stringify(currentCart));
+            showToast('Cart saved for later! You can restore it anytime 💾');
+        };
+        
+        window.applyCouponCode = function() {
+            const coupon = prompt('Enter coupon code:');
+            if (coupon && coupon.toUpperCase() === 'WELCOME10') {
+                showToast('Coupon applied! 10% discount on your order 🎉');
+            } else if (coupon && coupon.toUpperCase() === 'FREESHIP') {
+                showToast('Free shipping applied! 🚚');
+            } else if (coupon) {
+                showToast('Invalid coupon code', true);
+            }
+        };
+        
         // Add to Cart
         window.addToCart = async (id, name, price, sku, img) => {
             try {
@@ -1738,7 +1854,6 @@
             const trackRect = swipeTrack.getBoundingClientRect();
             maxSwipe = trackRect.width - 70;
             
-            // Mouse/Touch events
             swipeThumb.addEventListener('mousedown', startDrag);
             swipeThumb.addEventListener('touchstart', startDrag);
             document.addEventListener('mousemove', onDrag);
@@ -1768,7 +1883,6 @@
             swipeThumb.style.transform = `translateX(${currentTranslate}px)`;
             swipeProgress.style.width = `${percent}%`;
             
-            // Check if swiped completely
             if (percent >= 95) {
                 completeSwipe();
             }
@@ -1779,7 +1893,6 @@
             swipeThumb.style.transition = 'transform 0.3s ease';
             swipeProgress.style.transition = 'width 0.3s ease';
             
-            // Reset if not completed
             if (currentTranslate < maxSwipe * 0.95) {
                 resetSwipe();
             }
@@ -1792,15 +1905,11 @@
         }
         
         function completeSwipe() {
-            // Reset swipe UI
             resetSwipe();
-            // Close the swipe overlay
             closeSwipeCart();
-            // Navigate to checkout
             navigateTo('checkout');
         }
         
-        // Swipe Cart Overlay Controls
         function openSwipeCart() {
             const overlay = document.getElementById('swipeCartOverlay');
             overlay.classList.add('active');
@@ -1816,12 +1925,10 @@
             resetSwipe();
         }
         
-        // Floating cart button click
         document.getElementById('floatingCartBtn')?.addEventListener('click', () => {
             openSwipeCart();
         });
         
-        // Close on handle click or outside
         document.querySelector('.swipe-handle')?.addEventListener('click', closeSwipeCart);
         document.getElementById('swipeCartOverlay')?.addEventListener('click', (e) => {
             if (e.target === document.getElementById('swipeCartOverlay')) {
@@ -1829,7 +1936,7 @@
             }
         });
         
-        // ========== GALLERY ARROW FUNCTIONS ==========
+        // ========== GALLERY FUNCTIONS ==========
         window.scrollGallery = function(galleryId, direction) {
             const gallery = document.getElementById(galleryId);
             if (!gallery) return;
@@ -1841,7 +1948,6 @@
             }
         };
         
-        // Initialize Gallery with Arrows
         function initGalleryWithArrows(galleryId, images, dotContainerId) {
             const gallery = document.getElementById(galleryId);
             const dotContainer = document.getElementById(dotContainerId);
@@ -2038,7 +2144,6 @@
             return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
         }
         
-        // Close modal on outside click
         document.getElementById('productModal')?.addEventListener('click', function(e) {
             if (e.target === this) closeProductModal();
         });
