@@ -2,196 +2,127 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <meta name="theme-color" content="#000000">
-    <title>Cart - Style Of Life</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Of Life - Cart | Shopping Bag</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --gold: #D4AF37;
             --gold-dark: #B8962E;
-            --black: #000000;
-            --black-light: #1A1A1A;
-            --gray: #2A2A2A;
-            --gray-light: #3A3A3A;
             --white: #FFFFFF;
-            --danger: #f44336;
-            --success: #4CAF50;
+            --white-light: #F8F9FA;
+            --black: #1A1A1A;
+            --gray: #666666;
         }
-        body { font-family: 'Inter', sans-serif; background: var(--black); color: var(--white); padding-bottom: 70px; }
-
-        .header {
-            position: sticky;
-            top: 0;
-            background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(212,175,55,0.2);
-            z-index: 100;
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--white-light);
+            padding-bottom: 70px;
         }
-        .logo { font-size: 20px; font-weight: 600; color: var(--gold); font-family: 'Playfair Display', serif; text-decoration: none; }
-        .back-btn { color: var(--gold); font-size: 20px; text-decoration: none; }
-
-        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
-        h1 { font-size: 24px; margin-bottom: 20px; color: var(--gold); }
-
+        .cart-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        h2 {
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
         .cart-item {
-            background: var(--black-light);
-            border-radius: 16px;
-            padding: 15px;
-            margin-bottom: 12px;
             display: flex;
             gap: 15px;
-            position: relative;
-            border: 1px solid rgba(212,175,55,0.2);
+            background: white;
+            padding: 15px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(0,0,0,0.05);
         }
-        .cart-item-image { width: 70px; height: 70px; object-fit: cover; border-radius: 12px; }
+        .cart-item-image {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
         .cart-item-details { flex: 1; }
-        .cart-item-details h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-        .cart-item-sku { font-size: 10px; color: var(--gray-light); }
-        .cart-item-price { color: var(--gold); font-weight: 600; margin: 8px 0; font-size: 14px; }
-
-        .quantity-control { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
-        .qty-btn {
-            width: 28px; height: 28px;
-            background: var(--gray);
-            border: 1px solid rgba(212,175,55,0.3);
-            border-radius: 8px;
-            cursor: pointer;
-            color: var(--white);
-        }
-        .qty-input {
-            width: 45px; height: 28px;
-            text-align: center;
-            background: var(--gray);
-            border: 1px solid rgba(212,175,55,0.3);
-            border-radius: 8px;
-            color: var(--white);
-        }
-        .cart-item-total { font-weight: 700; margin-top: 8px; font-size: 13px; }
-        .remove-item {
-            position: absolute;
-            top: 15px;
-            right: 15px;
+        .cart-item-name { font-weight: 600; margin-bottom: 4px; }
+        .cart-item-price { color: var(--gold); font-weight: 600; margin: 8px 0; }
+        .cart-item-total { font-weight: bold; margin-top: 8px; }
+        .remove-btn {
             background: none;
             border: none;
-            color: var(--danger);
+            color: #dc3545;
             cursor: pointer;
+            font-size: 18px;
         }
-
-        .empty-cart {
-            text-align: center;
-            padding: 60px 20px;
-            background: var(--black-light);
-            border-radius: 16px;
-        }
-        .empty-cart i { font-size: 60px; color: var(--gray); margin-bottom: 15px; }
-        .continue-shopping {
-            display: inline-block;
-            background: var(--gold);
-            color: var(--black);
-            padding: 10px 25px;
-            border-radius: 40px;
-            text-decoration: none;
-            font-weight: 600;
-            margin-top: 15px;
-        }
-
         .cart-summary {
-            background: var(--black-light);
+            background: white;
             border-radius: 16px;
             padding: 20px;
             margin-top: 20px;
-            border: 1px solid rgba(212,175,55,0.2);
+            border: 1px solid rgba(0,0,0,0.05);
         }
         .summary-row {
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid rgba(212,175,55,0.1);
+            border-bottom: 1px solid #eee;
         }
         .summary-row.total {
             border-bottom: none;
             font-size: 18px;
             font-weight: bold;
             color: var(--gold);
-            padding-top: 12px;
-        }
-        .shipping-info {
-            background: var(--gray);
-            padding: 10px;
-            border-radius: 12px;
-            margin: 12px 0;
-            font-size: 12px;
-        }
-        .shipping-progress {
-            margin-top: 8px;
-            height: 4px;
-            background: var(--gray-light);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        .shipping-progress-fill {
-            height: 100%;
-            background: var(--gold);
-            width: 0%;
+            padding-top: 15px;
         }
         .checkout-btn {
-            display: block;
             width: 100%;
             padding: 14px;
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: var(--black);
-            text-align: center;
+            border: none;
             border-radius: 40px;
             font-weight: 600;
-            margin: 15px 0 10px;
-            text-decoration: none;
-            border: none;
             cursor: pointer;
+            margin-top: 15px;
         }
         .clear-cart-btn {
             width: 100%;
             padding: 12px;
             background: transparent;
-            border: 1px solid var(--danger);
-            color: var(--danger);
+            border: 1px solid #dc3545;
+            color: #dc3545;
             border-radius: 40px;
             cursor: pointer;
+            margin-top: 10px;
         }
-
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--gold);
-            color: var(--black);
-            padding: 10px 20px;
-            border-radius: 40px;
-            z-index: 9999;
-            font-size: 13px;
-            font-weight: 600;
+        .empty-cart {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 16px;
         }
-        .toast-error { background: var(--danger); color: white; }
-
+        .empty-cart i { font-size: 60px; color: #ccc; margin-bottom: 15px; }
+        .continue-shop {
+            display: inline-block;
+            margin-top: 15px;
+            color: var(--gold);
+            cursor: pointer;
+            text-decoration: underline;
+        }
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(10px);
+            background: white;
             display: flex;
             justify-content: space-around;
             padding: 10px 20px 20px;
-            border-top: 1px solid rgba(212,175,55,0.2);
+            border-top: 1px solid rgba(0,0,0,0.05);
             z-index: 100;
         }
         .bottom-nav a {
@@ -199,46 +130,67 @@
             flex-direction: column;
             align-items: center;
             gap: 4px;
-            color: var(--gray-light);
+            color: var(--gray);
             text-decoration: none;
             font-size: 10px;
+            cursor: pointer;
         }
-        .bottom-nav a i { font-size: 20px; }
+        .bottom-nav a i { font-size: 22px; }
         .bottom-nav a.active, .bottom-nav a:hover { color: var(--gold); }
-
-        @media (min-width: 768px) {
-            .container { max-width: 1000px; }
-            .cart-item-image { width: 100px; height: 100px; }
+        .loading { text-align: center; padding: 40px; }
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #e9ecef;
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .toast {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--black);
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 9999;
+            font-size: 13px;
+            font-weight: 700;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-        <a href="index.html" class="logo">STYLE·OF·LIFE</a>
-        <div style="width: 24px;"></div>
-    </div>
-
-    <div class="container">
-        <h1>Shopping Cart</h1>
+    <div class="cart-container">
+        <h2><i class="fas fa-shopping-bag"></i> Shopping Cart</h2>
         <div id="cartItems"></div>
         <div id="cartSummary"></div>
     </div>
-
+    
     <div class="bottom-nav">
-        <a href="index.html"><i class="fas fa-home"></i><span>Home</span></a>
-        <a href="shop.html"><i class="fas fa-search"></i><span>Shop</span></a>
-        <a href="cart.html" class="active"><i class="fas fa-shopping-bag"></i><span>Cart</span></a>
-        <a href="track.html"><i class="fas fa-truck"></i><span>Track</span></a>
-        <a href="customer-portal.html"><i class="fas fa-user"></i><span>Account</span></a>
+        <a data-page="home"><i class="fas fa-home"></i><span>Home</span></a>
+        <a data-page="shop"><i class="fas fa-search"></i><span>Shop</span></a>
+        <a data-page="cart" class="active"><i class="fas fa-shopping-bag"></i><span>Cart</span></a>
+        <a data-page="track"><i class="fas fa-truck"></i><span>Track</span></a>
+        <a data-page="account"><i class="fas fa-user"></i><span>Account</span></a>
     </div>
-
-    <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
+    
+    <script type="importmap">
+        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
+    </script>
+    
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-        let cart = [];
         let sessionId = localStorage.getItem('sessionId');
         
         if (!sessionId) {
@@ -246,147 +198,129 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
-        const FREE_SHIPPING = 3000;
+        // URL Masking Navigation
+        function navigateTo(page) {
+            if (window.parent !== window) {
+                window.parent.postMessage({ page: page }, '*');
+            } else {
+                window.location.href = page + '.html';
+            }
+        }
         
-        function showToast(msg, isError = false) {
+        document.querySelectorAll('[data-page]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = el.getAttribute('data-page');
+                navigateTo(page);
+            });
+        });
+        
+        function showToast(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast';
-            if (isError) toast.classList.add('toast-error');
-            toast.textContent = msg;
+            if (isError) toast.style.background = '#dc3545';
+            toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
         
         async function loadCart() {
             try {
-                const { data, error } = await supabase
-                    .from('carts')
-                    .select('items')
-                    .eq('session_id', sessionId)
-                    .maybeSingle();
+                const { data, error } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
                 if (error) throw error;
-                cart = data?.items || [];
-                renderCart();
-                updateSummary();
-                updateCartBadge();
-            } catch (error) {
-                cart = [];
-                renderCart();
-            }
-        }
-        
-        async function saveCart() {
-            try {
-                const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-                await supabase
-                    .from('carts')
-                    .upsert({
-                        session_id: sessionId,
-                        items: cart,
-                        total: total,
-                        updated_at: new Date().toISOString()
-                    }, { onConflict: 'session_id' });
-                renderCart();
-                updateSummary();
-                updateCartBadge();
-                return true;
-            } catch (error) {
-                showToast('Failed to save', true);
-                return false;
-            }
-        }
-        
-        function updateCartBadge() {
-            const total = cart.reduce((s, i) => s + i.quantity, 0);
-            const badges = document.querySelectorAll('.cart-count');
-            badges.forEach(b => { if (b) b.textContent = total; });
-        }
-        
-        function updateSummary() {
-            const div = document.getElementById('cartSummary');
-            if (!cart.length) { div.innerHTML = ''; return; }
-            
-            let subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-            const tax = Math.round(subtotal * 0.18);
-            let shipping = subtotal >= FREE_SHIPPING ? 0 : 100;
-            const total = subtotal + tax + shipping;
-            const remaining = FREE_SHIPPING - subtotal;
-            const progress = Math.min(100, (subtotal / FREE_SHIPPING) * 100);
-            
-            div.innerHTML = `
-                <div class="cart-summary">
-                    <div class="summary-row"><span>Subtotal</span><span>₹${subtotal.toLocaleString()}</span></div>
-                    <div class="shipping-info">
-                        <i class="fas fa-truck"></i> 
-                        ${subtotal >= FREE_SHIPPING ? '🎉 FREE Shipping!' : `Add ₹${remaining} more for FREE shipping`}
-                        <div class="shipping-progress"><div class="shipping-progress-fill" style="width: ${progress}%"></div></div>
-                    </div>
-                    <div class="summary-row"><span>Shipping</span><span>₹${shipping}</span></div>
-                    <div class="summary-row"><span>GST (18%)</span><span>₹${tax.toLocaleString()}</span></div>
-                    <div class="summary-row total"><span>Total</span><span>₹${total.toLocaleString()}</span></div>
-                    <button class="checkout-btn" onclick="window.location.href='checkout.html'">Checkout →</button>
-                    <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
-                </div>
-            `;
-        }
-        
-        window.updateQty = async (id, qty) => {
-            qty = parseInt(qty);
-            if (qty < 1) qty = 1;
-            const item = cart.find(i => i.id === id);
-            if (item) {
-                item.quantity = qty;
-                await saveCart();
-                showToast('Quantity updated');
-            }
-        };
-        
-        window.removeItem = async (id) => {
-            cart = cart.filter(i => i.id !== id);
-            await saveCart();
-            showToast('Item removed');
-        };
-        
-        window.clearCart = async () => {
-            if (!cart.length) { showToast('Cart empty', true); return; }
-            if (confirm('Remove all items?')) {
-                cart = [];
-                await saveCart();
-                showToast('Cart cleared');
-            }
-        };
-        
-        function renderCart() {
-            const container = document.getElementById('cartItems');
-            if (!cart.length) {
-                container.innerHTML = `<div class="empty-cart"><i class="fas fa-shopping-cart"></i><h3>Cart empty</h3><a href="shop.html" class="continue-shopping">Shop Now →</a></div>`;
-                return;
-            }
-            
-            let html = '';
-            cart.forEach(item => {
-                html += `
-                    <div class="cart-item">
-                        <img class="cart-item-image" src="${item.image || 'https://via.placeholder.com/70x70'}" onerror="this.src='https://via.placeholder.com/70x70'">
-                        <div class="cart-item-details">
-                            <h4>${escapeHtml(item.name)}</h4>
-                            <div class="cart-item-sku">${item.sku}</div>
-                            <div class="cart-item-price">₹${item.price.toLocaleString()}</div>
-                            <div class="quantity-control">
-                                <button class="qty-btn" onclick="updateQty(${item.id}, ${item.quantity-1})">−</button>
-                                <input type="number" class="qty-input" value="${item.quantity}" onchange="updateQty(${item.id}, this.value)">
-                                <button class="qty-btn" onclick="updateQty(${item.id}, ${item.quantity+1})">+</button>
-                            </div>
-                            <div class="cart-item-total">Total: ₹${(item.price * item.quantity).toLocaleString()}</div>
+                const cart = data?.items || [];
+                
+                if (!cart.length) {
+                    document.getElementById('cartItems').innerHTML = `
+                        <div class="empty-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <h3>Your cart is empty</h3>
+                            <a class="continue-shop" data-page="shop">Continue Shopping →</a>
                         </div>
-                        <button class="remove-item" onclick="removeItem(${item.id})"><i class="fas fa-trash-alt"></i></button>
+                    `;
+                    document.getElementById('cartSummary').innerHTML = '';
+                    document.querySelectorAll('.continue-shop').forEach(el => {
+                        el.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            navigateTo('shop');
+                        });
+                    });
+                    return;
+                }
+                
+                let itemsHtml = '';
+                let subtotal = 0;
+                for (const item of cart) {
+                    const itemTotal = item.price * item.quantity;
+                    subtotal += itemTotal;
+                    itemsHtml += `
+                        <div class="cart-item">
+                            <img class="cart-item-image" src="${item.image}" onerror="this.src='https://via.placeholder.com/70x70'">
+                            <div class="cart-item-details">
+                                <div class="cart-item-name">${escapeHtml(item.name)}</div>
+                                <div class="cart-item-sku">SKU: ${item.sku}</div>
+                                <div class="cart-item-price">₹${item.price.toLocaleString()} × ${item.quantity}</div>
+                                <div class="cart-item-total">Total: ₹${itemTotal.toLocaleString()}</div>
+                            </div>
+                            <button class="remove-btn" onclick="removeItem(${item.id})"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    `;
+                }
+                
+                const tax = Math.round(subtotal * 0.18);
+                const shipping = subtotal >= 3000 ? 0 : 100;
+                const total = subtotal + tax + shipping;
+                
+                document.getElementById('cartItems').innerHTML = itemsHtml;
+                document.getElementById('cartSummary').innerHTML = `
+                    <div class="cart-summary">
+                        <div class="summary-row"><span>Subtotal</span><span>₹${subtotal.toLocaleString()}</span></div>
+                        <div class="summary-row"><span>Shipping</span><span>₹${shipping}</span></div>
+                        <div class="summary-row"><span>GST (18%)</span><span>₹${tax.toLocaleString()}</span></div>
+                        <div class="summary-row total"><span>Total</span><span>₹${total.toLocaleString()}</span></div>
+                        <button class="checkout-btn" onclick="checkout()">Proceed to Checkout →</button>
+                        <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
                     </div>
                 `;
-            });
-            container.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading cart:', error);
+            }
         }
         
-        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m))); }
+        window.removeItem = async function(id) {
+            try {
+                const { data, error } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
+                if (error) throw error;
+                let items = data?.items || [];
+                items = items.filter(i => i.id !== id);
+                const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
+                await supabase.from('carts').upsert({ session_id: sessionId, items: items, total: total, updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
+                showToast('Item removed');
+                loadCart();
+            } catch (error) {
+                showToast('Failed to remove', true);
+            }
+        };
+        
+        window.clearCart = async function() {
+            if (!confirm('Clear all items from cart?')) return;
+            try {
+                await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
+                showToast('Cart cleared');
+                loadCart();
+            } catch (error) {
+                showToast('Failed to clear', true);
+            }
+        };
+        
+        window.checkout = function() {
+            navigateTo('checkout');
+        };
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
+        }
         
         loadCart();
     </script>
