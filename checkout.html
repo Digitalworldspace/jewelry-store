@@ -3,187 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - Style Of Life</title>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <title>Style Of Life - Checkout | Secure Payment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary: #d4af37;
-            --primary-dark: #b8962e;
-            --dark: #1a1a1a;
-            --light: #ffffff;
-            --gray-200: #e9ecef;
-            --gray-600: #6c757d;
-            --success: #28a745;
-            --danger: #dc3545;
+            --gold: #D4AF37;
+            --gold-dark: #B8962E;
+            --white: #FFFFFF;
+            --white-light: #F8F9FA;
+            --black: #1A1A1A;
+            --gray: #666666;
         }
-        body { font-family: 'Inter', sans-serif; background: #faf7f2; }
-        
-        header {
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--white-light);
+            padding-bottom: 70px;
+        }
+        .checkout-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        h2 {
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .form-box, .summary-box {
             background: white;
-            padding: 20px 50px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--gray);
+            font-size: 13px;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+        .summary-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
         }
-        .logo { font-size: 28px; font-weight: 600; color: var(--primary); font-family: 'Playfair Display', serif; text-decoration: none; }
-        nav a { color: var(--gray-600); text-decoration: none; margin-left: 30px; font-weight: 500; }
-        nav a:hover { color: var(--primary); }
-        
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-        h1 { color: var(--primary); margin-bottom: 30px; }
-        
-        .checkout-grid { display: grid; grid-template-columns: 1fr 380px; gap: 30px; }
-        .form-box, .summary-box { background: white; padding: 30px; border-radius: 16px; border: 1px solid var(--gray-200); }
-        
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; color: var(--primary); margin-bottom: 8px; font-weight: 500; }
-        .form-group input { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; }
-        .form-group input:focus { outline: none; border-color: var(--primary); }
-        
-        .summary-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--gray-200); }
-        .summary-row.total { border-bottom: none; font-size: 20px; font-weight: bold; color: var(--primary); padding-top: 15px; }
-        
+        .summary-row.total {
+            border-bottom: none;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--gold);
+            padding-top: 15px;
+        }
         .place-order-btn {
             width: 100%;
             padding: 14px;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             border: none;
             border-radius: 40px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 15px;
         }
-        .place-order-btn:hover { background: var(--primary-dark); }
-        .place-order-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        
-        .loading-overlay {
+        .bottom-nav {
             position: fixed;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 20px 20px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            z-index: 100;
         }
-        .loading-content { background: white; padding: 30px; border-radius: 16px; text-align: center; }
+        .bottom-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        .bottom-nav a i { font-size: 22px; }
+        .bottom-nav a.active, .bottom-nav a:hover { color: var(--gold); }
+        .loading { text-align: center; padding: 40px; }
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--gray-200);
-            border-top-color: var(--primary);
+            width: 30px;
+            height: 30px;
+            border: 2px solid #e9ecef;
+            border-top-color: var(--gold);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
-            margin: 0 auto 15px;
+            margin: 0 auto 10px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
         .toast {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--dark);
-            color: var(--primary);
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--black);
             padding: 12px 24px;
             border-radius: 40px;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
+            z-index: 9999;
+            font-size: 13px;
+            font-weight: 700;
+            animation: slideUp 0.3s ease;
         }
-        .toast-error { background: var(--danger); color: white; }
-        .toast-success { background: var(--success); color: white; }
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        footer { background: var(--dark); color: white; text-align: center; padding: 40px; margin-top: 60px; }
-        
-        @media (max-width: 768px) {
-            header { flex-direction: column; padding: 15px; }
-            .checkout-grid { grid-template-columns: 1fr; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
     </style>
 </head>
 <body>
-    <header>
-        <a href="index.html" class="logo">STYLE OF LIFE</a>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="cart.html">Cart</a>
-            <a href="track.html">Track Order</a>
-        </nav>
-    </header>
-
-    <div class="container">
-        <h1>Secure Checkout</h1>
-        <div class="checkout-grid">
-            <div class="form-box">
-                <h3>Shipping Information</h3>
-                <div class="form-group">
-                    <label>Full Name *</label>
-                    <input type="text" id="name" placeholder="Enter your full name">
-                </div>
-                <div class="form-group">
-                    <label>Phone Number *</label>
-                    <input type="tel" id="phone" maxlength="10" placeholder="10-digit mobile number">
-                </div>
-                <div class="form-group">
-                    <label>Email Address *</label>
-                    <input type="email" id="email" placeholder="your@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Street Address *</label>
-                    <input type="text" id="address" placeholder="House number, street">
-                </div>
-                <div class="form-group">
-                    <label>City *</label>
-                    <input type="text" id="city" placeholder="City">
-                </div>
-                <div class="form-group">
-                    <label>Pincode *</label>
-                    <input type="text" id="pincode" maxlength="6" placeholder="6-digit pincode">
-                </div>
-            </div>
-            <div class="summary-box">
-                <h3>Order Summary</h3>
-                <div id="orderItems"></div>
-                <div id="orderTotals"></div>
-                <button class="place-order-btn" id="payBtn" onclick="initiatePayment()">Proceed to Pay</button>
-                <p style="font-size: 11px; text-align: center; margin-top: 12px;">🔒 Secure payment by Razorpay</p>
-            </div>
+    <div class="checkout-container">
+        <h2><i class="fas fa-lock"></i> Secure Checkout</h2>
+        <div id="checkoutContent">
+            <div class="loading"><div class="spinner"></div><p>Loading...</p></div>
         </div>
     </div>
-
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <h3>Processing your order...</h3>
-            <p>Please don't close this window</p>
-        </div>
+    
+    <div class="bottom-nav">
+        <a data-page="home"><i class="fas fa-home"></i><span>Home</span></a>
+        <a data-page="shop"><i class="fas fa-search"></i><span>Shop</span></a>
+        <a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Cart</span></a>
+        <a data-page="track"><i class="fas fa-truck"></i><span>Track</span></a>
+        <a data-page="account"><i class="fas fa-user"></i><span>Account</span></a>
     </div>
-
-    <footer>
-        <p>© 2026 STYLE OF LIFE. All rights reserved.</p>
-    </footer>
-
+    
     <script type="importmap">
         { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
     </script>
+    
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
-        // 🔴 REPLACE WITH YOUR RAZORPAY KEY
-        const RAZORPAY_KEY = "rzp_live_Sa1tFsYEgmLi8S";
-        
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-        let cart = [];
         let sessionId = localStorage.getItem('sessionId');
         
         if (!sessionId) {
@@ -191,222 +170,148 @@
             localStorage.setItem('sessionId', sessionId);
         }
         
+        // URL Masking Navigation
+        function navigateTo(page) {
+            if (window.parent !== window) {
+                window.parent.postMessage({ page: page }, '*');
+            } else {
+                window.location.href = page + '.html';
+            }
+        }
+        
+        document.querySelectorAll('[data-page]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = el.getAttribute('data-page');
+                navigateTo(page);
+            });
+        });
+        
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast';
-            if (isError) toast.classList.add('toast-error');
-            else toast.classList.add('toast-success');
+            if (isError) toast.style.background = '#dc3545';
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
         
-        function showLoading(show) {
-            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
-            document.getElementById('payBtn').disabled = show;
-        }
-        
-        async function loadCart() {
+        async function loadCheckout() {
             try {
-                const { data, error } = await supabase
-                    .from('carts')
-                    .select('items')
-                    .eq('session_id', sessionId)
-                    .maybeSingle();
-                
+                const { data, error } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
                 if (error) throw error;
-                cart = data?.items || [];
-                updateOrderSummary();
+                const cart = data?.items || [];
+                
+                if (!cart.length) {
+                    document.getElementById('checkoutContent').innerHTML = `
+                        <div class="form-box" style="text-align:center;">
+                            <i class="fas fa-shopping-cart" style="font-size: 60px; color: #ccc;"></i>
+                            <h3 style="margin: 15px 0;">Your cart is empty</h3>
+                            <a data-page="shop" style="color: var(--gold); cursor: pointer;">Continue Shopping →</a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+                let tax = Math.round(subtotal * 0.18);
+                let shipping = subtotal >= 3000 ? 0 : 100;
+                let total = subtotal + tax + shipping;
+                
+                document.getElementById('checkoutContent').innerHTML = `
+                    <div class="form-box">
+                        <h3 style="margin-bottom: 15px;">Shipping Information</h3>
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" id="fullName" placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number *</label>
+                            <input type="tel" id="phone" maxlength="10" placeholder="10-digit mobile number">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address *</label>
+                            <input type="email" id="email" placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Full Address *</label>
+                            <textarea id="address" rows="3" placeholder="House number, street, city, pincode"></textarea>
+                        </div>
+                    </div>
+                    <div class="summary-box">
+                        <h3 style="margin-bottom: 15px;">Order Summary</h3>
+                        <div class="summary-row"><span>Subtotal</span><span>₹${subtotal.toLocaleString()}</span></div>
+                        <div class="summary-row"><span>Shipping</span><span>₹${shipping}</span></div>
+                        <div class="summary-row"><span>GST (18%)</span><span>₹${tax.toLocaleString()}</span></div>
+                        <div class="summary-row total"><span>Total</span><span>₹${total.toLocaleString()}</span></div>
+                        <button class="place-order-btn" onclick="placeOrder()">Place Order (COD) →</button>
+                    </div>
+                `;
             } catch (error) {
-                console.error('Error loading cart:', error);
-                cart = [];
-                updateOrderSummary();
+                console.error('Error loading checkout:', error);
             }
         }
         
-        function updateOrderSummary() {
-            if (!cart || cart.length === 0) {
-                document.getElementById('orderItems').innerHTML = '<div style="text-align:center; padding:40px;">Your cart is empty</div>';
-                document.getElementById('orderTotals').innerHTML = '';
-                document.getElementById('payBtn').disabled = true;
-                return;
-            }
+        window.placeOrder = async function() {
+            const name = document.getElementById('fullName')?.value.trim();
+            const phone = document.getElementById('phone')?.value.trim();
+            const email = document.getElementById('email')?.value.trim();
+            const address = document.getElementById('address')?.value.trim();
             
-            document.getElementById('payBtn').disabled = false;
-            
-            let subtotal = 0;
-            let itemsHtml = '';
-            
-            cart.forEach(item => {
-                const itemTotal = item.price * item.quantity;
-                subtotal += itemTotal;
-                itemsHtml += `<div class="summary-row"><span>${escapeHtml(item.name)} x ${item.quantity}</span><span>₹${itemTotal.toLocaleString()}</span></div>`;
-            });
-            
-            const tax = Math.round(subtotal * 0.18);
-            const shipping = 100;
-            const total = subtotal + tax + shipping;
-            
-            document.getElementById('orderItems').innerHTML = itemsHtml;
-            document.getElementById('orderTotals').innerHTML = `
-                <div class="summary-row"><span>Subtotal</span><span>₹${subtotal.toLocaleString()}</span></div>
-                <div class="summary-row"><span>Shipping</span><span>₹${shipping.toLocaleString()}</span></div>
-                <div class="summary-row"><span>GST (18%)</span><span>₹${tax.toLocaleString()}</span></div>
-                <div class="summary-row total"><span>Total</span><span>₹${total.toLocaleString()}</span></div>
-            `;
-            
-            window.orderTotal = total;
-        }
-        
-        function getShippingDetails() {
-            const name = document.getElementById('name').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const address = document.getElementById('address').value.trim();
-            const city = document.getElementById('city').value.trim();
-            const pincode = document.getElementById('pincode').value.trim();
-            
-            if (!name || !phone || !email || !address || !city || !pincode) {
+            if (!name || !phone || !email || !address) {
                 showToast('Please fill all fields', true);
-                return null;
+                return;
             }
+            
             if (phone.length !== 10 || !/^\d+$/.test(phone)) {
-                showToast('Enter valid 10-digit phone', true);
-                return null;
-            }
-            if (pincode.length !== 6 || !/^\d+$/.test(pincode)) {
-                showToast('Enter valid 6-digit pincode', true);
-                return null;
+                showToast('Enter valid 10-digit phone number', true);
+                return;
             }
             
-            return { name, phone, email, address: `${address}, ${city} - ${pincode}` };
-        }
-        
-        async function createOrder(orderData) {
-            const orderId = 'ORD' + Date.now();
-            const items = cart.map(item => ({
-                id: item.id, sku: item.sku, name: item.name, price: item.price, quantity: item.quantity
-            }));
-            const subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-            const tax = Math.round(subtotal * 0.18);
-            const total = subtotal + tax + 100;
-            
-            const order = {
-                order_id: orderId,
-                customer_name: orderData.name,
-                phone: orderData.phone,
-                email: orderData.email,
-                address: orderData.address,
-                items: items,
-                subtotal: subtotal,
-                tax: tax,
-                shipping: 100,
-                total: total,
-                status: 'Pending',
-                payment_status: 'pending',
-                created_at: new Date().toISOString()
-            };
-            
-            const { error } = await supabase.from('orders').insert([order]);
-            if (error) throw error;
-            return orderId;
-        }
-        
-        async function clearCartAfterOrder() {
             try {
-                const { error } = await supabase
-                    .from('carts')
-                    .upsert({
-                        session_id: sessionId,
-                        items: [],
-                        total: 0,
-                        updated_at: new Date().toISOString()
-                    });
-                
+                const { data, error } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
                 if (error) throw error;
-                cart = [];
-                localStorage.setItem('cartCleared', Date.now().toString());
-                return true;
-            } catch (error) {
-                console.error('Error clearing cart:', error);
-                return false;
-            }
-        }
-        
-        window.initiatePayment = async function() {
-            if (RAZORPAY_KEY === "rzp_test_YourTestKeyHere") {
-                showToast('Please add your Razorpay key', true);
-                return;
-            }
-            
-            const shipping = getShippingDetails();
-            if (!shipping) return;
-            if (!cart || cart.length === 0) {
-                showToast('Your cart is empty', true);
-                return;
-            }
-            
-            showLoading(true);
-            
-            try {
-                const orderId = await createOrder(shipping);
-                const total = window.orderTotal;
+                const cart = data?.items || [];
                 
-                const options = {
-                    key: RAZORPAY_KEY,
-                    amount: total * 100,
-                    currency: "INR",
-                    name: "Style Of Life",
-                    description: `Order #${orderId}`,
-                    prefill: { name: shipping.name, email: shipping.email, contact: shipping.phone },
-                    notes: { order_id: orderId },
-                    theme: { color: "#d4af37" },
-                    handler: async function(response) {
-                        await clearCartAfterOrder();
-                        showToast(`✅ Payment successful! Order ID: ${orderId}`);
-                        showLoading(false);
-                        setTimeout(() => {
-                            window.location.href = `track.html?order=${orderId}`;
-                        }, 2000);
-                    },
-                    modal: {
-                        ondismiss: function() {
-                            showLoading(false);
-                            showToast('Payment cancelled', true);
-                            supabase.from('orders').delete().eq('order_id', orderId);
-                        }
-                    }
+                if (!cart.length) {
+                    showToast('Cart is empty', true);
+                    return;
+                }
+                
+                const orderId = 'ORD' + Date.now();
+                const subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+                const tax = Math.round(subtotal * 0.18);
+                const shipping = subtotal >= 3000 ? 0 : 100;
+                const total = subtotal + tax + shipping;
+                
+                const order = {
+                    order_id: orderId,
+                    customer_name: name,
+                    phone: phone,
+                    email: email,
+                    address: address,
+                    items: cart,
+                    subtotal: subtotal,
+                    tax: tax,
+                    shipping: shipping,
+                    total: total,
+                    status: 'Pending',
+                    payment_status: 'cod',
+                    created_at: new Date().toISOString()
                 };
                 
-                const rzp = new Razorpay(options);
-                rzp.on('payment.failed', function(response) {
-                    showToast(`Payment failed: ${response.error?.description}`, true);
-                    showLoading(false);
-                    supabase.from('orders').update({ payment_status: 'failed' }).eq('order_id', orderId);
-                });
-                rzp.open();
+                await supabase.from('orders').insert([order]);
+                await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
                 
+                showToast(`✅ Order placed! ID: ${orderId}`);
+                setTimeout(() => navigateTo('track'), 2000);
             } catch (error) {
-                console.error('Error:', error);
-                showLoading(false);
-                showToast('Failed to initiate payment', true);
+                console.error('Error placing order:', error);
+                showToast('Failed to place order', true);
             }
         };
         
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
-        
-        loadCart();
-        
-        document.getElementById('phone').addEventListener('input', e => e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0,10));
-        document.getElementById('pincode').addEventListener('input', e => e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0,6));
+        loadCheckout();
     </script>
 </body>
 </html>
