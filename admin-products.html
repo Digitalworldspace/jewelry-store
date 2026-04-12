@@ -36,6 +36,18 @@
         input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; transition: all 0.3s; }
         input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
         
+        /* GST Badge */
+        .gst-badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
         /* D360° Badge */
         .d360-badge {
             position: absolute;
@@ -127,6 +139,7 @@
         .product-name { font-size: 18px; font-weight: 600; margin-bottom: 5px; }
         .product-sku { font-size: 12px; color: var(--gray-600); margin-bottom: 8px; }
         .product-price { font-size: 24px; font-weight: 700; color: var(--primary); margin: 10px 0; }
+        .product-price small { font-size: 12px; color: var(--gray); font-weight: normal; }
         .product-stock { font-size: 13px; margin-bottom: 15px; }
         .in-stock { color: var(--success); }
         .low-stock { color: #ff9800; }
@@ -194,7 +207,7 @@
             <div id="bulkResult"></div>
         </div>
         
-        <!-- Add/Edit Product Form -->
+        <!-- Add/Edit Product Form with GST Field -->
         <div id="productForm" class="form-card" style="display: none;">
             <h2 style="margin-bottom: 20px; color: var(--primary);" id="formTitle">Add New Product</h2>
             <input type="hidden" id="productId">
@@ -220,12 +233,35 @@
                     <input type="number" id="price" step="0.01" placeholder="0">
                 </div>
                 <div class="form-group">
+                    <label>GST Percentage (%)</label>
+                    <input type="number" id="gst" step="0.01" placeholder="18" value="18">
+                    <small style="color: var(--gray-600); font-size: 10px;">Default: 18%</small>
+                </div>
+                <div class="form-group">
                     <label>Stock Quantity *</label>
                     <input type="number" id="stock" placeholder="0">
                 </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea id="description" rows="2" placeholder="Product description..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="description" rows="2" placeholder="Product description..."></textarea>
+            </div>
+            
+            <!-- GST Calculation Preview -->
+            <div style="background: var(--gray-100); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                <h4 style="margin-bottom: 10px; color: var(--primary);">💰 GST Calculation Preview</h4>
+                <div style="display: flex; justify-content: space-between; padding: 5px 0;">
+                    <span>Product Price:</span>
+                    <span id="previewPrice">₹0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 5px 0;">
+                    <span>GST (<span id="previewGstPercent">18</span>%):</span>
+                    <span id="previewGstAmount">₹0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--gray-200); font-weight: bold; color: var(--primary);">
+                    <span>Total Price (Incl. GST):</span>
+                    <span id="previewTotal">₹0</span>
                 </div>
             </div>
             
@@ -315,6 +351,24 @@
             return url.match(/\.(mp4|webm|ogg|mov|avi|wmv|flv)$/i) || 
                    url.includes('youtube.com') || url.includes('youtu.be') || 
                    url.includes('vimeo.com');
+        }
+        
+        // ========== GST CALCULATION FUNCTIONS ==========
+        function calculateGST(price, gstPercent) {
+            const gstAmount = (price * gstPercent) / 100;
+            const total = price + gstAmount;
+            return { gstAmount, total };
+        }
+        
+        function updateGSTPreview() {
+            const price = parseFloat(document.getElementById('price').value) || 0;
+            const gstPercent = parseFloat(document.getElementById('gst').value) || 0;
+            const { gstAmount, total } = calculateGST(price, gstPercent);
+            
+            document.getElementById('previewPrice').textContent = `₹${price.toLocaleString()}`;
+            document.getElementById('previewGstPercent').textContent = gstPercent;
+            document.getElementById('previewGstAmount').textContent = `₹${gstAmount.toLocaleString()}`;
+            document.getElementById('previewTotal').textContent = `₹${total.toLocaleString()}`;
         }
         
         // Initialize image upload grid
@@ -534,13 +588,14 @@
             return uploadedUrls;
         }
         
-        // Save product
+        // Save product (with GST)
         window.saveProduct = async function() {
             const productId = document.getElementById('productId').value;
             const sku = document.getElementById('sku').value.trim();
             const name = document.getElementById('name').value.trim();
             const category = document.getElementById('category').value.trim();
             const price = parseFloat(document.getElementById('price').value);
+            const gst = parseFloat(document.getElementById('gst').value) || 18;
             const stock = parseInt(document.getElementById('stock').value);
             const description = document.getElementById('description').value.trim();
             
@@ -549,7 +604,7 @@
                 return;
             }
             
-            const productData = { sku, name, category, price, stock, description };
+            const productData = { sku, name, category, price, gst, stock, description };
             
             try {
                 let result;
@@ -581,12 +636,14 @@
                 document.getElementById('name').value = '';
                 document.getElementById('category').value = '';
                 document.getElementById('price').value = '';
+                document.getElementById('gst').value = '18';
                 document.getElementById('stock').value = '';
                 document.getElementById('description').value = '';
                 imageFiles = new Array(5).fill(null);
                 currentImages = [];
                 mediaUrls = [];
                 updateMediaPreview();
+                updateGSTPreview();
                 
             } catch (error) {
                 console.error('Save error:', error);
@@ -594,7 +651,7 @@
             }
         };
         
-        // Load products (with D360° embedded directly - NO CLICK NEEDED)
+        // Load products (with GST display)
         async function loadProducts() {
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>Loading products...</p></div>';
@@ -616,6 +673,8 @@
                 const firstMedia = p.images && p.images[0] ? p.images[0] : 'https://via.placeholder.com/300x250?text=No+Media';
                 const isD360 = isD360Viewer(firstMedia);
                 const isVideo = !isD360 && isVideoUrl(firstMedia);
+                const gstPercent = p.gst || 18;
+                const { gstAmount, total } = calculateGST(p.price || 0, gstPercent);
                 const imageCount = p.images ? p.images.length : 0;
                 const stockClass = p.stock <= 0 ? 'out-of-stock' : (p.stock < 10 ? 'low-stock' : 'in-stock');
                 const stockText = p.stock <= 0 ? 'Out of Stock' : (p.stock < 10 ? `Low Stock (${p.stock})` : `In Stock (${p.stock})`);
@@ -623,20 +682,13 @@
                 let mediaHtml = '';
                 
                 if (isD360) {
-                    // D360° interactive viewer - embedded directly (NO CLICK NEEDED)
                     mediaHtml = `
                         <div class="product-d360-container">
-                            <iframe 
-                                src="${firstMedia}" 
-                                class="product-d360-iframe"
-                                frameborder="0" 
-                                allowfullscreen>
-                            </iframe>
+                            <iframe src="${firstMedia}" class="product-d360-iframe" frameborder="0" allowfullscreen></iframe>
                             <div class="d360-label">🔄 360° Interactive View</div>
                         </div>
                     `;
                 } else if (isVideo) {
-                    // Video content
                     mediaHtml = `
                         <div class="product-image-container">
                             <video src="${firstMedia}" style="width: 100%; height: 100%; object-fit: cover;" controls></video>
@@ -644,7 +696,6 @@
                         </div>
                     `;
                 } else {
-                    // Regular image
                     mediaHtml = `
                         <div class="product-image-container">
                             <img class="product-image" src="${firstMedia}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300x250?text=No+Media'">
@@ -657,9 +708,14 @@
                     <div class="product-card">
                         ${mediaHtml}
                         <div class="product-info">
-                            <div class="product-name">${escapeHtml(p.name)}</div>
+                            <div class="product-name">${escapeHtml(p.name)} <span class="gst-badge">GST ${gstPercent}%</span></div>
                             <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
-                            <div class="product-price">₹${(p.price || 0).toLocaleString()}</div>
+                            <div class="product-price">
+                                ₹${(p.price || 0).toLocaleString()} <small>(Excl. GST)</small>
+                            </div>
+                            <div class="product-price" style="font-size: 18px; margin-top: -5px;">
+                                ₹${total.toLocaleString()} <small>(Incl. ${gstPercent}% GST)</small>
+                            </div>
                             <div class="product-stock ${stockClass}">${stockText}</div>
                             <div class="card-actions">
                                 <button class="edit-btn" onclick="editProduct(${p.id})">✏️ Edit</button>
@@ -672,7 +728,7 @@
             grid.innerHTML = html;
         }
         
-        // Edit product (with D360° and video support)
+        // Edit product (with GST support)
         window.editProduct = async function(id) {
             const { data, error } = await supabase.from('products').select('*').eq('id', id);
             if (error || !data || data.length === 0) return;
@@ -683,6 +739,7 @@
             document.getElementById('name').value = product.name;
             document.getElementById('category').value = product.category || '';
             document.getElementById('price').value = product.price;
+            document.getElementById('gst').value = product.gst || 18;
             document.getElementById('stock').value = product.stock;
             document.getElementById('description').value = product.description || '';
             
@@ -690,7 +747,6 @@
             imageFiles = new Array(5).fill(null);
             mediaUrls = [];
             
-            // Check if any existing images are D360° URLs or videos
             for (const img of currentImages) {
                 if (isD360Viewer(img)) {
                     mediaUrls.push({ type: 'd360', url: img });
@@ -703,6 +759,7 @@
             
             initImageUploadGrid(currentImages);
             updateMediaPreview();
+            updateGSTPreview();
             
             document.getElementById('formTitle').textContent = 'Edit Product';
             document.getElementById('productForm').style.display = 'block';
@@ -716,7 +773,6 @@
                 if (data && data[0] && data[0].images) {
                     const images = data[0].images;
                     for (const imageUrl of images) {
-                        // Only try to delete from storage if it's not a D360° URL or external URL
                         if (!isD360Viewer(imageUrl) && !isVideoUrl(imageUrl) && !imageUrl.startsWith('http')) {
                             const path = imageUrl.split('/').pop();
                             if (path && !path.includes('d360.tech') && !path.includes('http')) {
@@ -739,13 +795,13 @@
             showModal('Delete this product? This action cannot be undone.');
         };
         
-        // Download sample CSV (with D360° example)
+        // Download sample CSV (with GST column)
         window.downloadSampleCSV = function() {
             const sampleData = [
-                ['sku', 'name', 'category', 'price', 'stock', 'description', 'images'],
-                ['RING-001', 'Diamond Ring', 'Rings', '29999', '50', 'Beautiful certified diamond engagement ring', 'https://d360.tech/view.html?d=315-MP-CP-2021'],
-                ['NECK-001', 'Gold Necklace', 'Necklaces', '45999', '30', '24k pure gold necklace with pendant', 'https://d360.tech/imaged/315-MP-CP-2021/still.jpg'],
-                ['EARR-001', 'Silver Earrings', 'Earrings', '8999', '100', 'Elegant sterling silver earrings', 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400']
+                ['sku', 'name', 'category', 'price', 'gst', 'stock', 'description', 'images'],
+                ['RING-001', 'Diamond Ring', 'Rings', '29999', '18', '50', 'Beautiful certified diamond engagement ring', 'https://d360.tech/view.html?d=315-MP-CP-2021'],
+                ['NECK-001', 'Gold Necklace', 'Necklaces', '45999', '18', '30', '24k pure gold necklace with pendant', 'https://d360.tech/imaged/315-MP-CP-2021/still.jpg'],
+                ['EARR-001', 'Silver Earrings', 'Earrings', '8999', '12', '100', 'Elegant sterling silver earrings', 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400']
             ];
             
             let csvContent = sampleData.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
@@ -760,7 +816,7 @@
             URL.revokeObjectURL(url);
         };
         
-        // Handle bulk upload - Supports CSV, XLSX, XLS files
+        // Handle bulk upload (with GST support)
         window.handleBulkUpload = async function(input) {
             const file = input.files[0];
             if (!file) return;
@@ -828,6 +884,7 @@
                     'name': findColumnIndex(headers, ['name', 'product_name', 'title', 'product name']),
                     'category': findColumnIndex(headers, ['category', 'cat', 'product_category', 'type']),
                     'price': findColumnIndex(headers, ['price', 'product_price', 'cost', 'amount', 'selling price']),
+                    'gst': findColumnIndex(headers, ['gst', 'gst_percent', 'tax', 'gst%']),
                     'stock': findColumnIndex(headers, ['stock', 'quantity', 'qty', 'inventory', 'stock_quantity']),
                     'description': findColumnIndex(headers, ['description', 'desc', 'product_description', 'details']),
                     'images': findColumnIndex(headers, ['images', 'image', 'image_url', 'image urls', 'photo', 'pictures'])
@@ -837,7 +894,7 @@
                 const missingFields = requiredFields.filter(f => columnMapping[f] === -1);
                 
                 if (missingFields.length > 0) {
-                    throw new Error(`Missing required columns: ${missingFields.join(', ')}.\n\nFound headers: ${headers.join(', ')}\n\nRequired columns: sku, name, category, price, stock, description, images`);
+                    throw new Error(`Missing required columns: ${missingFields.join(', ')}.\n\nFound headers: ${headers.join(', ')}\n\nRequired columns: sku, name, category, price, gst, stock, description, images`);
                 }
                 
                 const totalRows = dataRows.length;
@@ -853,6 +910,7 @@
                         const name = getCellValue(row, columnMapping['name']);
                         const category = getCellValue(row, columnMapping['category']);
                         const price = parseFloat(getCellValue(row, columnMapping['price']));
+                        const gst = parseFloat(getCellValue(row, columnMapping['gst'])) || 18;
                         const stock = parseInt(getCellValue(row, columnMapping['stock'])) || 0;
                         const description = getCellValue(row, columnMapping['description']) || '';
                         let images = [];
@@ -885,6 +943,7 @@
                             name: name,
                             category: category,
                             price: price,
+                            gst: gst,
                             stock: stock,
                             description: description,
                             images: images
@@ -944,9 +1003,9 @@
                 resultDiv.innerHTML = `<div style="background: #f8d7da; padding: 15px; border-radius: 8px; margin-top: 10px; color: #721c24;">
                     <strong>❌ Error:</strong> ${escapeHtml(error.message)}<br><br>
                     <strong>📋 Required Excel/CSV Format:</strong><br>
-                    First row must contain column headers: <strong>sku, name, category, price, stock, description, images</strong><br><br>
-                    <strong>Example with D360°:</strong><br>
-                    <code>"RING-001","Diamond Ring","Rings","29999","50","Beautiful ring","https://d360.tech/view.html?d=315-MP-CP-2021"</code>
+                    First row must contain column headers: <strong>sku, name, category, price, gst, stock, description, images</strong><br><br>
+                    <strong>Example:</strong><br>
+                    <code>"RING-001","Diamond Ring","Rings","29999","18","50","Beautiful ring","https://d360.tech/view.html?d=315-MP-CP-2021"</code>
                 </div>`;
             }
             
@@ -1046,6 +1105,7 @@
                 document.getElementById('name').value = '';
                 document.getElementById('category').value = '';
                 document.getElementById('price').value = '';
+                document.getElementById('gst').value = '18';
                 document.getElementById('stock').value = '';
                 document.getElementById('description').value = '';
                 currentImages = [];
@@ -1053,6 +1113,7 @@
                 mediaUrls = [];
                 initImageUploadGrid([]);
                 updateMediaPreview();
+                updateGSTPreview();
                 document.getElementById('formTitle').textContent = 'Add New Product';
                 form.style.display = 'block';
                 bulkSection.style.display = 'none';
@@ -1076,6 +1137,10 @@
                 return m;
             });
         }
+        
+        // Add event listeners for GST preview
+        document.getElementById('price')?.addEventListener('input', updateGSTPreview);
+        document.getElementById('gst')?.addEventListener('input', updateGSTPreview);
         
         initImageUploadGrid([]);
         loadProducts();
