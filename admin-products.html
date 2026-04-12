@@ -19,18 +19,15 @@
         .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
         h1 { color: var(--primary); margin-bottom: 30px; }
         
-        /* Toolbar */
         .toolbar { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; }
         .toolbar-left { display: flex; gap: 15px; flex-wrap: wrap; }
         .toolbar-right { display: flex; gap: 15px; flex-wrap: wrap; }
         .btn { background: var(--primary); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
         .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
         .btn-secondary { background: var(--gray-600); }
-        .btn-danger { background: var(--danger); }
         .btn-success { background: var(--success); }
         .btn-warning { background: var(--warning); color: var(--dark); }
         
-        /* Form Card */
         .form-card { background: white; border-radius: 16px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--gray-200); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
         .form-group { margin-bottom: 20px; }
@@ -38,7 +35,6 @@
         input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; transition: all 0.3s; }
         input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
         
-        /* Media URL Section */
         .media-url-section { margin-top: 15px; padding: 15px; background: var(--gray-100); border-radius: 12px; }
         .url-input-group { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
         .url-input-group input { flex: 1; min-width: 200px; }
@@ -48,7 +44,6 @@
         .media-preview-item img, .media-preview-item video { width: 100%; height: 100%; object-fit: cover; }
         .media-preview-item .remove-media { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: white; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; }
         
-        /* Image Upload Styles */
         .image-upload-section { margin: 20px 0; }
         .image-upload-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; margin-top: 15px; }
         .upload-card { border: 2px dashed var(--gray-200); border-radius: 12px; padding: 15px; text-align: center; transition: all 0.3s; background: var(--gray-100); }
@@ -64,7 +59,6 @@
         .upload-progress.active { display: block; }
         .upload-progress-bar { width: 0%; height: 100%; background: var(--primary); transition: width 0.3s; }
         
-        /* Bulk Upload Section */
         .bulk-upload-section { background: var(--gray-100); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
         .bulk-upload-area { border: 2px dashed var(--gray-300); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; }
         .bulk-upload-area:hover { border-color: var(--primary); background: rgba(212,175,55,0.05); }
@@ -75,7 +69,6 @@
         .error-log { max-height: 200px; overflow-y: auto; font-size: 12px; margin-top: 10px; }
         .error-item { padding: 5px; border-bottom: 1px solid #eee; color: var(--danger); }
         
-        /* Products Grid */
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
         .product-card { background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; }
         .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
@@ -101,7 +94,6 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         footer { background: var(--darker); color: white; text-align: center; padding: 30px; margin-top: 60px; }
         
-        /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
         .modal-content { background: white; border-radius: 16px; max-width: 500px; width: 90%; padding: 25px; }
@@ -603,7 +595,7 @@
             showModal('Delete this product? This action cannot be undone.');
         };
         
-        // Download sample CSV - CORRECT FORMAT
+        // Download sample CSV - CORRECT FORMAT for Supabase
         window.downloadSampleCSV = function() {
             const sampleData = [
                 ['sku', 'name', 'category', 'price', 'stock', 'description', 'images'],
@@ -625,7 +617,7 @@
             URL.revokeObjectURL(url);
         };
         
-        // Handle bulk upload - FIXED VERSION
+        // Handle bulk upload - FIXED with better column mapping
         window.handleBulkUpload = async function(input) {
             const file = input.files[0];
             if (!file) return;
@@ -653,27 +645,49 @@
                     throw new Error('File is empty');
                 }
                 
-                // Parse headers (first line)
-                const headers = parseCSVLine(lines[0]);
-                console.log('Headers found:', headers);
+                // Show first line for debugging
+                console.log('First line of CSV:', lines[0]);
                 
-                // Expected headers mapping (case insensitive)
-                const expectedHeaders = ['sku', 'name', 'category', 'price', 'stock', 'description', 'images'];
-                const headerMap = {};
+                // Parse headers (first line) - handle BOM and quotes
+                let firstLine = lines[0];
+                // Remove BOM if present
+                if (firstLine.charCodeAt(0) === 0xFEFF) {
+                    firstLine = firstLine.substring(1);
+                }
+                const headers = parseCSVLine(firstLine);
+                console.log('Parsed headers:', headers);
                 
+                // Expected headers mapping (case insensitive and with possible variations)
+                const headerVariations = {
+                    'sku': ['sku', 'product_sku', 'code', 'product code'],
+                    'name': ['name', 'product_name', 'title', 'product name', 'product title'],
+                    'category': ['category', 'cat', 'product_category', 'type'],
+                    'price': ['price', 'product_price', 'cost', 'amount', 'selling price'],
+                    'stock': ['stock', 'quantity', 'qty', 'inventory', 'stock_quantity', 'available'],
+                    'description': ['description', 'desc', 'product_description', 'details', 'about'],
+                    'images': ['images', 'image', 'image_url', 'image urls', 'photo', 'pictures']
+                };
+                
+                // Build column mapping
+                const columnMap = {};
                 headers.forEach((header, idx) => {
                     const lowerHeader = header.toLowerCase().replace(/"/g, '').trim();
-                    if (expectedHeaders.includes(lowerHeader)) {
-                        headerMap[lowerHeader] = idx;
+                    for (const [dbField, variations] of Object.entries(headerVariations)) {
+                        if (variations.includes(lowerHeader)) {
+                            columnMap[dbField] = idx;
+                            break;
+                        }
                     }
                 });
                 
-                // Check required headers
-                const requiredHeaders = ['sku', 'name', 'category', 'price'];
-                const missingHeaders = requiredHeaders.filter(h => headerMap[h] === undefined);
+                console.log('Column mapping:', columnMap);
                 
-                if (missingHeaders.length > 0) {
-                    throw new Error(`Missing required columns: ${missingHeaders.join(', ')}. Please use the sample CSV format.`);
+                // Check required headers
+                const requiredFields = ['sku', 'name', 'category', 'price'];
+                const missingFields = requiredFields.filter(f => columnMap[f] === undefined);
+                
+                if (missingFields.length > 0) {
+                    throw new Error(`Missing required columns: ${missingFields.join(', ')}.\n\nFound headers: ${headers.join(', ')}\n\nRequired format: sku, name, category, price, stock, description, images`);
                 }
                 
                 const totalRows = lines.length - 1;
@@ -687,23 +701,41 @@
                     progressText.textContent = `Processing row ${i} of ${totalRows}... (${successCount} added, ${errorCount} failed)`;
                     
                     try {
-                        const sku = values[headerMap['sku']]?.replace(/"/g, '').trim();
-                        const name = values[headerMap['name']]?.replace(/"/g, '').trim();
-                        const category = values[headerMap['category']]?.replace(/"/g, '').trim();
-                        const price = parseFloat(values[headerMap['price']]?.replace(/"/g, '').trim());
-                        const stock = parseInt(values[headerMap['stock']]?.replace(/"/g, '').trim()) || 0;
-                        const description = values[headerMap['description']]?.replace(/"/g, '').trim() || '';
+                        const sku = values[columnMap['sku']]?.replace(/"/g, '').trim();
+                        const name = values[columnMap['name']]?.replace(/"/g, '').trim();
+                        const category = values[columnMap['category']]?.replace(/"/g, '').trim();
+                        const price = parseFloat(values[columnMap['price']]?.replace(/"/g, '').trim());
+                        const stock = parseInt(values[columnMap['stock']]?.replace(/"/g, '').trim()) || 0;
+                        const description = values[columnMap['description']]?.replace(/"/g, '').trim() || '';
                         let images = [];
                         
-                        if (headerMap['images'] !== undefined && values[headerMap['images']]) {
-                            const imagesStr = values[headerMap['images']].replace(/"/g, '').trim();
+                        if (columnMap['images'] !== undefined && values[columnMap['images']]) {
+                            const imagesStr = values[columnMap['images']].replace(/"/g, '').trim();
                             if (imagesStr) {
-                                images = imagesStr.split(',').map(u => u.trim()).filter(u => u);
+                                images = imagesStr.split(',').map(u => u.trim()).filter(u => u && u.startsWith('http'));
                             }
                         }
                         
-                        if (!sku || !name || !category || isNaN(price)) {
-                            errors.push(`Row ${i}: Missing required fields (sku, name, category, price)`);
+                        if (!sku) {
+                            errors.push(`Row ${i}: SKU is missing`);
+                            errorCount++;
+                            continue;
+                        }
+                        
+                        if (!name) {
+                            errors.push(`Row ${i}: Product name is missing for SKU "${sku}"`);
+                            errorCount++;
+                            continue;
+                        }
+                        
+                        if (!category) {
+                            errors.push(`Row ${i}: Category is missing for SKU "${sku}"`);
+                            errorCount++;
+                            continue;
+                        }
+                        
+                        if (isNaN(price) || price <= 0) {
+                            errors.push(`Row ${i}: Invalid price for SKU "${sku}" (price: ${values[columnMap['price']]})`);
                             errorCount++;
                             continue;
                         }
@@ -786,8 +818,9 @@
                 resultDiv.innerHTML = `<div style="background: #f8d7da; padding: 15px; border-radius: 8px; margin-top: 10px; color: #721c24;">
                     <strong>❌ Error:</strong> ${escapeHtml(error.message)}<br><br>
                     <strong>📋 Required CSV format:</strong><br>
-                    First line must be: sku,name,category,price,stock,description,images<br>
-                    Example: "RING-001","Diamond Ring","Rings","29999","50","Beautiful ring","https://example.com/image.jpg"
+                    First line must be: <strong>sku,name,category,price,stock,description,images</strong><br><br>
+                    <strong>Example:</strong><br>
+                    "RING-001","Diamond Ring","Rings","29999","50","Beautiful ring","https://example.com/image.jpg"
                 </div>`;
             }
             
