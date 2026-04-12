@@ -196,14 +196,8 @@
         }
         
         @keyframes starPulse {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.08);
-                opacity: 0.9;
-            }
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 0.9; }
         }
         
         .gemini-text {
@@ -335,7 +329,7 @@
             justify-content: center;
         }
         
-        /* ========== IPHONE 5 STYLE SWIPE TO UNLOCK CART WITH SWIPE DOWN TO HIDE ========== */
+        /* ========== IPHONE 5 STYLE SWIPE TO UNLOCK CART ========== */
         .swipe-cart-overlay {
             position: fixed;
             bottom: 0;
@@ -564,6 +558,41 @@
         .action-desc {
             font-size: 10px;
             color: rgba(255,255,255,0.5);
+        }
+        
+        /* ========== D360° VIEWER STYLES ========== */
+        .d360-item {
+            position: relative;
+            background: #1a1a1a;
+            border-radius: 16px;
+            overflow: hidden;
+            min-height: 400px;
+        }
+        
+        .d360-badge {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: var(--gold);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            z-index: 5;
+            pointer-events: none;
+        }
+        
+        .d360-item iframe {
+            width: 100%;
+            height: 450px;
+            border: none;
+        }
+        
+        @media (max-width: 768px) {
+            .d360-item iframe {
+                height: 350px;
+            }
         }
         
         /* ========== HERO SECTION ========== */
@@ -1448,7 +1477,7 @@
         <span class="floating-cart-badge" id="cartCount">0</span>
     </div>
     
-    <!-- iPhone 5 Style Swipe to Unlock Cart with SWIPE DOWN TO HIDE -->
+    <!-- iPhone 5 Style Swipe to Unlock Cart -->
     <div id="swipeCartOverlay" class="swipe-cart-overlay">
         <div class="swipe-handle" id="swipeHandle"></div>
         <div class="swipe-title">
@@ -1467,7 +1496,7 @@
                 <i class="fas fa-bolt"></i> DO SOMETHING <i class="fas fa-bolt"></i>
             </div>
             <div class="action-buttons-grid">
-                <div class="action-card" onclick="clearCartFromSwipe()">
+                <div class="action-card" id="clearCartSwipeBtn">
                     <div class="action-icon"><i class="fas fa-trash-alt"></i></div>
                     <div class="action-title">Clear Cart</div>
                     <div class="action-desc">Remove all items from cart</div>
@@ -1597,8 +1626,8 @@
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <a data-page="home" class="active"><i class="fas fa-home"></i><span>Home</span></a>
-        <a data-page="shop"><i class="fas fa-search"></i><span>Shop</span></a>
-        <a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Cart</span></a>
+        <a data-page="shop"><i class="fas fa-search"></i><span>Discover</span></a>
+        <a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Bag</span></a>
         <a data-page="track"><i class="fas fa-truck"></i><span>Track</span></a>
         <a data-page="customer-portal"><i class="fas fa-user"></i><span>Profile</span></a>
     </div>
@@ -1607,7 +1636,7 @@
     <div id="productModal" class="product-modal">
         <div class="modal-container">
             <button class="modal-close" onclick="closeProductModal()">&times;</button>
-            <img id="modalImage" class="modal-image" src="" alt="Product detail">
+            <div id="modalMediaContainer" class="modal-media-container"></div>
             <div class="modal-info">
                 <div class="modal-name" id="modalName"></div>
                 <div class="modal-sku" id="modalSku"></div>
@@ -1639,6 +1668,38 @@
         }
         
         let currentCart = [];
+        
+        // ========== D360° URL DETECTION FUNCTIONS ==========
+        function isD360Viewer(url) {
+            return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d='));
+        }
+        
+        function isD360Image(url) {
+            return url && url.includes('d360.tech/imaged/');
+        }
+        
+        function getD360HTML(url, width = '100%', height = '400px') {
+            if (isD360Viewer(url)) {
+                return `<div class="d360-item">
+                            <iframe 
+                                src="${url}" 
+                                width="${width}" 
+                                height="${height}" 
+                                frameborder="0" 
+                                allowfullscreen
+                                style="border-radius: 16px; background: #1a1a1a;">
+                            </iframe>
+                            <div class="d360-badge">✨ 360° Interactive View</div>
+                        </div>`;
+            } else if (isD360Image(url)) {
+                return `<img 
+                            src="${url}" 
+                            alt="Product 360° View" 
+                            style="width: 100%; height: auto; border-radius: 16px;"
+                            onerror="this.src='https://via.placeholder.com/500x500?text=Image+Not+Available'">`;
+            }
+            return null;
+        }
         
         // Navigation
         function navigateTo(page) {
@@ -1746,8 +1807,8 @@
             `;
         }
         
-        // ========== CLEAR CART ACTION ==========
-        window.clearCartFromSwipe = async function() {
+        // Clear Cart Action
+        async function clearCartFromSwipe() {
             if (!currentCart.length) {
                 showToast('Cart is already empty', true);
                 return;
@@ -1768,7 +1829,7 @@
                     showToast('Failed to clear cart', true);
                 }
             }
-        };
+        }
         
         // Add to Cart
         window.addToCart = async (id, name, price, sku, img) => {
@@ -1816,92 +1877,6 @@
                 showToast('Link copied! Share the elegance ✨');
             }
         };
-        
-        // ========== SWIPE DOWN TO HIDE FUNCTIONALITY ==========
-        let touchStartY = 0;
-        let touchCurrentY = 0;
-        let isSwipingDown = false;
-        let overlay = document.getElementById('swipeCartOverlay');
-        let handle = document.getElementById('swipeHandle');
-        
-        function setupSwipeToHide() {
-            if (!overlay) return;
-            
-            // Touch events for swipe down to hide
-            overlay.addEventListener('touchstart', function(e) {
-                touchStartY = e.touches[0].clientY;
-                isSwipingDown = true;
-                overlay.classList.add('hiding');
-            });
-            
-            overlay.addEventListener('touchmove', function(e) {
-                if (!isSwipingDown) return;
-                touchCurrentY = e.touches[0].clientY;
-                let deltaY = touchCurrentY - touchStartY;
-                
-                if (deltaY > 0) {
-                    // Swiping down - hide the overlay
-                    let translateY = deltaY;
-                    if (translateY > 300) translateY = 300;
-                    overlay.style.transform = `translateY(${translateY}px)`;
-                    e.preventDefault();
-                }
-            });
-            
-            overlay.addEventListener('touchend', function(e) {
-                if (!isSwipingDown) return;
-                let deltaY = touchCurrentY - touchStartY;
-                
-                if (deltaY > 100) {
-                    // Swiped down enough - close the cart
-                    closeSwipeCart();
-                } else {
-                    // Not enough - reset position
-                    overlay.style.transform = '';
-                }
-                
-                isSwipingDown = false;
-                setTimeout(() => {
-                    overlay.classList.remove('hiding');
-                }, 300);
-            });
-            
-            // Mouse events for desktop swipe down
-            let mouseStartY = 0;
-            let isMouseSwiping = false;
-            
-            handle.addEventListener('mousedown', function(e) {
-                mouseStartY = e.clientY;
-                isMouseSwiping = true;
-                overlay.classList.add('hiding');
-            });
-            
-            document.addEventListener('mousemove', function(e) {
-                if (!isMouseSwiping) return;
-                let deltaY = e.clientY - mouseStartY;
-                if (deltaY > 0) {
-                    let translateY = deltaY;
-                    if (translateY > 300) translateY = 300;
-                    overlay.style.transform = `translateY(${translateY}px)`;
-                }
-            });
-            
-            document.addEventListener('mouseup', function(e) {
-                if (!isMouseSwiping) return;
-                let deltaY = e.clientY - mouseStartY;
-                
-                if (deltaY > 100) {
-                    closeSwipeCart();
-                } else {
-                    overlay.style.transform = '';
-                }
-                
-                isMouseSwiping = false;
-                setTimeout(() => {
-                    overlay.classList.remove('hiding');
-                }, 300);
-            });
-        }
         
         // ========== IPHONE 5 STYLE SWIPE TO UNLOCK ==========
         let isDragging = false;
@@ -1977,6 +1952,88 @@
             navigateTo('checkout');
         }
         
+        // Swipe Down to Hide
+        let touchStartY = 0;
+        let touchCurrentY = 0;
+        let isSwipingDown = false;
+        let overlay = document.getElementById('swipeCartOverlay');
+        let handle = document.getElementById('swipeHandle');
+        
+        function setupSwipeToHide() {
+            if (!overlay) return;
+            
+            overlay.addEventListener('touchstart', function(e) {
+                touchStartY = e.touches[0].clientY;
+                isSwipingDown = true;
+                overlay.classList.add('hiding');
+            });
+            
+            overlay.addEventListener('touchmove', function(e) {
+                if (!isSwipingDown) return;
+                touchCurrentY = e.touches[0].clientY;
+                let deltaY = touchCurrentY - touchStartY;
+                
+                if (deltaY > 0) {
+                    let translateY = deltaY;
+                    if (translateY > 300) translateY = 300;
+                    overlay.style.transform = `translateY(${translateY}px)`;
+                    e.preventDefault();
+                }
+            });
+            
+            overlay.addEventListener('touchend', function(e) {
+                if (!isSwipingDown) return;
+                let deltaY = touchCurrentY - touchStartY;
+                
+                if (deltaY > 100) {
+                    closeSwipeCart();
+                } else {
+                    overlay.style.transform = '';
+                }
+                
+                isSwipingDown = false;
+                setTimeout(() => {
+                    overlay.classList.remove('hiding');
+                }, 300);
+            });
+            
+            // Mouse events for desktop
+            let mouseStartY = 0;
+            let isMouseSwiping = false;
+            
+            handle.addEventListener('mousedown', function(e) {
+                mouseStartY = e.clientY;
+                isMouseSwiping = true;
+                overlay.classList.add('hiding');
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isMouseSwiping) return;
+                let deltaY = e.clientY - mouseStartY;
+                if (deltaY > 0) {
+                    let translateY = deltaY;
+                    if (translateY > 300) translateY = 300;
+                    overlay.style.transform = `translateY(${translateY}px)`;
+                }
+            });
+            
+            document.addEventListener('mouseup', function(e) {
+                if (!isMouseSwiping) return;
+                let deltaY = e.clientY - mouseStartY;
+                
+                if (deltaY > 100) {
+                    closeSwipeCart();
+                } else {
+                    overlay.style.transform = '';
+                }
+                
+                isMouseSwiping = false;
+                setTimeout(() => {
+                    overlay.classList.remove('hiding');
+                }, 300);
+            });
+        }
+        
         function openSwipeCart() {
             const overlay = document.getElementById('swipeCartOverlay');
             overlay.classList.add('active');
@@ -1998,18 +2055,13 @@
             openSwipeCart();
         });
         
-        // Setup swipe to hide
-        setupSwipeToHide();
-        
-        // Close on handle click
-        document.querySelector('.swipe-handle')?.addEventListener('click', closeSwipeCart);
-        document.getElementById('swipeCartOverlay')?.addEventListener('click', (e) => {
-            if (e.target === document.getElementById('swipeCartOverlay')) {
-                closeSwipeCart();
-            }
+        document.getElementById('clearCartSwipeBtn')?.addEventListener('click', () => {
+            clearCartFromSwipe();
         });
         
-        // ========== GALLERY FUNCTIONS ==========
+        setupSwipeToHide();
+        
+        // ========== GALLERY ARROW FUNCTIONS ==========
         window.scrollGallery = function(galleryId, direction) {
             const gallery = document.getElementById(galleryId);
             if (!gallery) return;
@@ -2021,7 +2073,8 @@
             }
         };
         
-        function initGalleryWithArrows(galleryId, images, dotContainerId) {
+        // Initialize Gallery with Arrows (with D360° support)
+        function initGalleryWithArrows(galleryId, mediaItems, dotContainerId) {
             const gallery = document.getElementById(galleryId);
             const dotContainer = document.getElementById(dotContainerId);
             if (!gallery || !dotContainer) return;
@@ -2029,14 +2082,30 @@
             gallery.innerHTML = '';
             dotContainer.innerHTML = '';
             
-            images.forEach((img, index) => {
-                const imgElement = document.createElement('img');
-                imgElement.src = img;
-                imgElement.className = 'gallery-image';
-                imgElement.alt = 'Product image';
-                imgElement.loading = 'lazy';
-                imgElement.onerror = () => { imgElement.src = 'https://via.placeholder.com/400x400?text=Style+Of+Life'; };
-                gallery.appendChild(imgElement);
+            mediaItems.forEach((media, index) => {
+                let mediaElement;
+                
+                if (isD360Viewer(media)) {
+                    // D360° interactive viewer
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'd360-item';
+                    wrapper.style.minWidth = '100%';
+                    wrapper.style.width = '100%';
+                    wrapper.style.height = '100%';
+                    wrapper.innerHTML = getD360HTML(media, '100%', '100%');
+                    mediaElement = wrapper;
+                } else {
+                    // Regular image
+                    const img = document.createElement('img');
+                    img.src = media;
+                    img.className = 'gallery-image';
+                    img.alt = 'Product media';
+                    img.loading = 'lazy';
+                    img.onerror = () => { img.src = 'https://via.placeholder.com/400x400?text=Media+Not+Available'; };
+                    mediaElement = img;
+                }
+                
+                gallery.appendChild(mediaElement);
                 
                 const dot = document.createElement('div');
                 dot.className = 'gallery-dot';
@@ -2075,7 +2144,8 @@
                 
                 let html = '';
                 for (const product of products) {
-                    const thumbnail = product.images?.[0] || 'https://via.placeholder.com/70x70?text=Style';
+                    const firstMedia = product.images?.[0] || 'https://via.placeholder.com/70x70?text=Style';
+                    const thumbnail = isD360Viewer(firstMedia) ? 'https://via.placeholder.com/70x70?text=360+View' : firstMedia;
                     html += `<div class="story-toggle" onclick='openProductModal(${JSON.stringify(product)})'>
                         <div class="story-ring">
                             <img class="story-thumbnail" src="${thumbnail}" alt="${escapeHtml(product.name)}" loading="lazy">
@@ -2104,7 +2174,8 @@
                 
                 let html = '';
                 for (const p of products) {
-                    const img = p.images?.[0] || 'https://via.placeholder.com/300x160?text=Style+Of+Life';
+                    const firstMedia = p.images?.[0] || 'https://via.placeholder.com/300x160?text=Style+Of+Life';
+                    const img = isD360Viewer(firstMedia) ? 'https://via.placeholder.com/300x160?text=360+View' : firstMedia;
                     html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'>
                         <img class="featured-image" src="${img}" alt="${escapeHtml(p.name)}" loading="lazy">
                         <div class="featured-info">
@@ -2138,12 +2209,14 @@
                 let html = '';
                 for (let i = 0; i < products.length; i++) {
                     const p = products[i];
-                    const images = p.images || [];
-                    const validImages = images.filter(img => img && img.trim() !== '');
-                    const displayImages = validImages.length > 0 ? validImages : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
+                    const mediaItems = p.images || [];
+                    const validMedia = mediaItems.filter(m => m && m.trim() !== '');
+                    const displayMedia = validMedia.length > 0 ? validMedia : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
                     const desc = p.description || 'Exquisite handcrafted masterpiece.';
                     const galleryId = `gallery-${p.id}`;
                     const dotId = `dots-${p.id}`;
+                    const firstMedia = displayMedia[0];
+                    const thumbnail = isD360Viewer(firstMedia) ? 'https://via.placeholder.com/400x400?text=360+Interactive+View' : firstMedia;
                     
                     html += `<div class="product-card">
                         <div class="product-gallery-container">
@@ -2162,8 +2235,8 @@
                             <div class="product-desc">${escapeHtml(desc.substring(0, 100))}${desc.length > 100 ? '...' : ''}</div>
                             <div class="product-price">₹${(p.price || 0).toLocaleString()}</div>
                             <div class="product-buttons">
-                                <button class="btn-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')"><i class="fas fa-bolt"></i> Buy Now</button>
-                                <button class="btn-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${displayImages[0]}')"><i class="fas fa-shopping-cart"></i></button>
+                                <button class="btn-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${thumbnail}')"><i class="fas fa-bolt"></i> Buy Now</button>
+                                <button class="btn-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${thumbnail}')"><i class="fas fa-shopping-cart"></i></button>
                                 <button class="btn-share" onclick="event.stopPropagation(); shareProduct(${JSON.stringify(p).replace(/"/g, '&quot;')})"><i class="fas fa-share-alt"></i></button>
                             </div>
                         </div>
@@ -2173,12 +2246,12 @@
                 
                 for (let i = 0; i < products.length; i++) {
                     const p = products[i];
-                    const images = p.images || [];
-                    const validImages = images.filter(img => img && img.trim() !== '');
-                    const displayImages = validImages.length > 0 ? validImages : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
+                    const mediaItems = p.images || [];
+                    const validMedia = mediaItems.filter(m => m && m.trim() !== '');
+                    const displayMedia = validMedia.length > 0 ? validMedia : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
                     const galleryId = `gallery-${p.id}`;
                     const dotId = `dots-${p.id}`;
-                    setTimeout(() => initGalleryWithArrows(galleryId, displayImages, dotId), 50);
+                    setTimeout(() => initGalleryWithArrows(galleryId, displayMedia, dotId), 50);
                 }
             } catch (error) {
                 console.error('Error loading products:', error);
@@ -2186,12 +2259,25 @@
             }
         }
         
-        // Open Product Modal
+        // Open Product Modal (with D360° support)
         window.openProductModal = function(product) {
-            const img = product.images?.[0] || 'https://via.placeholder.com/400x400?text=Style+Of+Life';
+            const mediaItems = product.images || [];
+            const validMedia = mediaItems.filter(m => m && m.trim() !== '');
+            const displayMedia = validMedia.length > 0 ? validMedia : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
+            const firstMedia = displayMedia[0];
             const stockStatus = product.stock <= 0 ? 'Out of Stock' : (product.stock < 10 ? `Only ${product.stock} left` : 'In Stock');
             
-            document.getElementById('modalImage').src = img;
+            // Generate media HTML with D360° support
+            let mediaHtml = '';
+            if (isD360Viewer(firstMedia)) {
+                mediaHtml = getD360HTML(firstMedia, '100%', '450px');
+            } else {
+                mediaHtml = `<img id="modalImage" class="modal-image" src="${firstMedia}" alt="Product detail" onerror="this.src='https://via.placeholder.com/400x400?text=Image+Not+Available'">`;
+            }
+            
+            const modalMediaContainer = document.getElementById('modalMediaContainer');
+            modalMediaContainer.innerHTML = mediaHtml;
+            
             document.getElementById('modalName').textContent = product.name;
             document.getElementById('modalSku').textContent = `SKU: ${product.sku}`;
             document.getElementById('modalCategory').textContent = product.category || 'Fine Jewelry';
@@ -2202,8 +2288,9 @@
             
             const buyBtn = document.getElementById('modalBuyBtn');
             const cartBtn = document.getElementById('modalCartBtn');
-            buyBtn.onclick = () => buyNow(product.id, product.name, product.price, product.sku, img);
-            cartBtn.onclick = () => addToCart(product.id, product.name, product.price, product.sku, img);
+            const imgUrl = isD360Viewer(firstMedia) ? 'https://via.placeholder.com/400x400?text=360+View' : firstMedia;
+            buyBtn.onclick = () => buyNow(product.id, product.name, product.price, product.sku, imgUrl);
+            cartBtn.onclick = () => addToCart(product.id, product.name, product.price, product.sku, imgUrl);
             
             document.getElementById('productModal').classList.add('active');
         };
@@ -2217,6 +2304,7 @@
             return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
         }
         
+        // Close modal on outside click
         document.getElementById('productModal')?.addEventListener('click', function(e) {
             if (e.target === this) closeProductModal();
         });
