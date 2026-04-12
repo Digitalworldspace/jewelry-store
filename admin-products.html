@@ -36,10 +36,24 @@
         input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; transition: all 0.3s; }
         input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
         
+        /* D360° Badge */
+        .d360-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            z-index: 5;
+        }
+        
         .media-url-section { margin-top: 15px; padding: 15px; background: var(--gray-100); border-radius: 12px; }
         .url-input-group { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
         .url-input-group input { flex: 1; min-width: 200px; }
-        .url-type-select { width: 120px; }
+        .url-type-select { width: 140px; }
         .media-preview { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
         .media-preview-item { position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; background: #f5f5f5; border: 1px solid var(--gray-200); }
         .media-preview-item img, .media-preview-item video { width: 100%; height: 100%; object-fit: cover; }
@@ -183,19 +197,22 @@
                 </div>
             </div>
             
-            <!-- Image/Video URL Section -->
+            <!-- Image/Video URL Section with D360° Support -->
             <div class="media-url-section">
-                <label>🔗 Add Image or Video URL</label>
+                <label>🔗 Add Media URL (Image/Video/D360°)</label>
                 <div class="url-input-group">
                     <select id="mediaType" class="url-type-select">
-                        <option value="image">Image URL</option>
-                        <option value="video">Video URL</option>
+                        <option value="image">📷 Image URL</option>
+                        <option value="video">🎬 Video URL</option>
+                        <option value="d360">🔄 D360° Interactive View</option>
                     </select>
-                    <input type="url" id="mediaUrl" placeholder="https://example.com/image.jpg">
+                    <input type="url" id="mediaUrl" placeholder="https://example.com/image.jpg or https://d360.tech/view.html?d=...">
                     <button class="btn" style="padding: 12px 20px;" onclick="addMediaUrl()">Add</button>
                 </div>
                 <div id="mediaPreviewList" class="media-preview"></div>
-                <p style="font-size: 11px; color: var(--gray-600); margin-top: 8px;">💡 Supported: JPG, PNG, GIF, WebP, MP4 URLs</p>
+                <p style="font-size: 11px; color: var(--gray-600); margin-top: 8px;">
+                    💡 Supported: JPG, PNG, GIF, WebP, MP4, YouTube, <strong>D360° (view.html?d=...)</strong>
+                </p>
             </div>
             
             <!-- Image Upload Section -->
@@ -252,6 +269,22 @@
         let mediaUrls = [];
         let pendingAction = null;
         
+        // ========== D360° URL DETECTION FUNCTIONS ==========
+        function isD360Viewer(url) {
+            return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d='));
+        }
+        
+        function isD360Image(url) {
+            return url && url.includes('d360.tech/imaged/');
+        }
+        
+        function getMediaThumbnail(url) {
+            if (isD360Viewer(url)) {
+                return 'https://via.placeholder.com/80x80?text=360°+View';
+            }
+            return url;
+        }
+        
         // Initialize image upload grid
         function initImageUploadGrid(existingImages = []) {
             const grid = document.getElementById('imageUploadGrid');
@@ -261,10 +294,14 @@
             let html = '';
             for (let i = 0; i < 5; i++) {
                 const existing = currentImages[i] || '';
+                const isD360 = isD360Viewer(existing);
+                const thumbnail = isD360 ? 'https://via.placeholder.com/120x120?text=360°+View' : existing;
+                
                 html += `
                     <div class="upload-card" id="uploadCard${i}">
-                        ${existing ? `<img class="upload-preview active" id="preview${i}" src="${existing}" alt="Image ${i+1}">` : 
+                        ${existing ? `<img class="upload-preview active" id="preview${i}" src="${thumbnail}" alt="Image ${i+1}" style="${isD360 ? 'object-fit: contain;' : ''}">` : 
                                     `<div class="upload-placeholder" id="placeholder${i}">📷 Image ${i+1}</div>`}
+                        ${isD360 && existing ? `<div style="font-size: 10px; color: var(--primary); margin-top: 5px;">🔄 D360° View</div>` : ''}
                         <div class="upload-progress" id="progress${i}">
                             <div class="upload-progress-bar" id="progressBar${i}"></div>
                         </div>
@@ -349,27 +386,47 @@
             if (removeBtn) removeBtn.remove();
         };
         
-        // Add media URL
+        // Add media URL (supports D360° now)
         window.addMediaUrl = function() {
             const mediaType = document.getElementById('mediaType').value;
-            const mediaUrl = document.getElementById('mediaUrl').value.trim();
+            let mediaUrl = document.getElementById('mediaUrl').value.trim();
             
             if (!mediaUrl) {
                 alert('Please enter a URL');
                 return;
             }
             
-            mediaUrls.push({ type: mediaType, url: mediaUrl });
+            // Auto-detect D360° URLs
+            if (mediaUrl.includes('d360.tech/view.html') || mediaUrl.includes('/view.html?d=')) {
+                mediaUrls.push({ type: 'd360', url: mediaUrl });
+            } else if (mediaType === 'd360') {
+                mediaUrls.push({ type: 'd360', url: mediaUrl });
+            } else if (mediaType === 'video') {
+                mediaUrls.push({ type: 'video', url: mediaUrl });
+            } else {
+                mediaUrls.push({ type: 'image', url: mediaUrl });
+            }
+            
             updateMediaPreview();
             document.getElementById('mediaUrl').value = '';
         };
         
-        // Update media preview
+        // Update media preview (with D360° support)
         function updateMediaPreview() {
             const container = document.getElementById('mediaPreviewList');
             let html = '';
             mediaUrls.forEach((media, index) => {
-                if (media.type === 'image') {
+                if (media.type === 'd360') {
+                    html += `
+                        <div class="media-preview-item">
+                            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #1a1a1a; color: var(--primary); font-size: 24px;">
+                                🔄
+                            </div>
+                            <div class="remove-media" onclick="removeMediaUrl(${index})">×</div>
+                            <div style="position: absolute; bottom: 2px; left: 0; right: 0; text-align: center; background: rgba(0,0,0,0.6); color: white; font-size: 8px; padding: 2px;">360° View</div>
+                        </div>
+                    `;
+                } else if (media.type === 'image') {
                     html += `
                         <div class="media-preview-item">
                             <img src="${media.url}" onerror="this.src='https://via.placeholder.com/80x80?text=Error'">
@@ -393,7 +450,7 @@
             updateMediaPreview();
         };
         
-        // Upload images to Supabase Storage
+        // Upload images to Supabase Storage (including D360° URLs)
         async function uploadImages(productId) {
             const uploadedUrls = [...mediaUrls.map(m => m.url)];
             
@@ -500,7 +557,7 @@
             }
         };
         
-        // Load products
+        // Load products (with D360° thumbnail support)
         async function loadProducts() {
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>Loading products...</p></div>';
@@ -519,7 +576,9 @@
             
             let html = '';
             data.forEach(p => {
-                const mainImage = p.images && p.images[0] ? p.images[0] : 'https://via.placeholder.com/300x250?text=No+Image';
+                const firstMedia = p.images && p.images[0] ? p.images[0] : 'https://via.placeholder.com/300x250?text=No+Image';
+                const isD360 = isD360Viewer(firstMedia);
+                const mainImage = isD360 ? 'https://via.placeholder.com/300x250?text=360°+Interactive+View' : firstMedia;
                 const imageCount = p.images ? p.images.length : 0;
                 const stockClass = p.stock <= 0 ? 'out-of-stock' : (p.stock < 10 ? 'low-stock' : 'in-stock');
                 const stockText = p.stock <= 0 ? 'Out of Stock' : (p.stock < 10 ? `Low Stock (${p.stock})` : `In Stock (${p.stock})`);
@@ -528,6 +587,7 @@
                     <div class="product-card">
                         <div class="product-image-container">
                             <img class="product-image" src="${mainImage}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300x250?text=No+Image'">
+                            ${isD360 ? `<div class="d360-badge">🔄 360° View</div>` : ''}
                             ${imageCount > 0 ? `<div class="image-badge">📸 ${imageCount} image${imageCount > 1 ? 's' : ''}</div>` : ''}
                         </div>
                         <div class="product-info">
@@ -546,7 +606,7 @@
             grid.innerHTML = html;
         }
         
-        // Edit product
+        // Edit product (with D360° support)
         window.editProduct = async function(id) {
             const { data, error } = await supabase.from('products').select('*').eq('id', id);
             if (error || !data || data.length === 0) return;
@@ -563,6 +623,14 @@
             currentImages = product.images || [];
             imageFiles = new Array(5).fill(null);
             mediaUrls = [];
+            
+            // Check if any existing images are D360° URLs
+            for (const img of currentImages) {
+                if (isD360Viewer(img)) {
+                    mediaUrls.push({ type: 'd360', url: img });
+                }
+            }
+            
             initImageUploadGrid(currentImages);
             updateMediaPreview();
             
@@ -578,8 +646,13 @@
                 if (data && data[0] && data[0].images) {
                     const images = data[0].images;
                     for (const imageUrl of images) {
-                        const path = imageUrl.split('/').pop();
-                        await supabase.storage.from('product-images').remove([path]);
+                        // Only try to delete from storage if it's not a D360° URL
+                        if (!isD360Viewer(imageUrl) && !isD360Image(imageUrl)) {
+                            const path = imageUrl.split('/').pop();
+                            if (path && !path.includes('d360.tech')) {
+                                await supabase.storage.from('product-images').remove([path]);
+                            }
+                        }
                     }
                 }
                 
@@ -596,12 +669,12 @@
             showModal('Delete this product? This action cannot be undone.');
         };
         
-        // Download sample CSV
+        // Download sample CSV (with D360° example)
         window.downloadSampleCSV = function() {
             const sampleData = [
                 ['sku', 'name', 'category', 'price', 'stock', 'description', 'images'],
-                ['RING-001', 'Diamond Ring', 'Rings', '29999', '50', 'Beautiful certified diamond engagement ring', 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400'],
-                ['NECK-001', 'Gold Necklace', 'Necklaces', '45999', '30', '24k pure gold necklace with pendant', 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400'],
+                ['RING-001', 'Diamond Ring', 'Rings', '29999', '50', 'Beautiful certified diamond engagement ring', 'https://d360.tech/view.html?d=315-MP-CP-2021'],
+                ['NECK-001', 'Gold Necklace', 'Necklaces', '45999', '30', '24k pure gold necklace with pendant', 'https://d360.tech/imaged/315-MP-CP-2021/still.jpg'],
                 ['EARR-001', 'Silver Earrings', 'Earrings', '8999', '100', 'Elegant sterling silver earrings', 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400'],
                 ['BRAC-001', 'Diamond Bracelet', 'Bracelets', '34999', '25', 'Diamond tennis bracelet', 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400']
             ];
@@ -618,7 +691,7 @@
             URL.revokeObjectURL(url);
         };
         
-        // Handle bulk upload - Supports CSV, XLSX, XLS files
+        // Handle bulk upload - Supports CSV, XLSX, XLS files (with D360° support)
         window.handleBulkUpload = async function(input) {
             const file = input.files[0];
             if (!file) return;
@@ -641,11 +714,9 @@
             let headers = [];
             
             try {
-                // Check file type and parse accordingly
                 const fileName = file.name.toLowerCase();
                 
                 if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-                    // Parse Excel file using SheetJS
                     progressText.textContent = 'Reading Excel file...';
                     const data = await file.arrayBuffer();
                     const workbook = XLSX.read(data, { type: 'array' });
@@ -659,7 +730,6 @@
                     progressText.textContent = `Excel file loaded. Found ${dataRows.length} rows.`;
                     
                 } else {
-                    // Parse CSV file
                     progressText.textContent = 'Reading CSV file...';
                     const text = await file.text();
                     const lines = text.split(/\r?\n/);
@@ -684,7 +754,6 @@
                     throw new Error('No data rows found in file');
                 }
                 
-                // Column mapping for flexibility
                 const columnMapping = {
                     'sku': findColumnIndex(headers, ['sku', 'product_sku', 'code', 'product code']),
                     'name': findColumnIndex(headers, ['name', 'product_name', 'title', 'product name']),
@@ -695,10 +764,6 @@
                     'images': findColumnIndex(headers, ['images', 'image', 'image_url', 'image urls', 'photo', 'pictures'])
                 };
                 
-                console.log('Column mapping:', columnMapping);
-                console.log('Headers found:', headers);
-                
-                // Check required columns
                 const requiredFields = ['sku', 'name', 'category', 'price'];
                 const missingFields = requiredFields.filter(f => columnMapping[f] === -1);
                 
@@ -725,35 +790,16 @@
                         
                         const imagesValue = getCellValue(row, columnMapping['images']);
                         if (imagesValue) {
-                            images = imagesValue.split(',').map(u => u.trim()).filter(u => u && (u.startsWith('http') || u.startsWith('https')));
+                            // Split by comma, but preserve D360° URLs (they don't contain commas)
+                            images = imagesValue.split(',').map(u => u.trim()).filter(u => u);
                         }
                         
-                        // Validate required fields
-                        if (!sku) {
-                            errors.push(`Row ${i + 1}: SKU is missing`);
+                        if (!sku || !name || !category || isNaN(price) || price <= 0) {
+                            errors.push(`Row ${i + 1}: Missing required fields (sku, name, category, price)`);
                             errorCount++;
                             continue;
                         }
                         
-                        if (!name) {
-                            errors.push(`Row ${i + 1}: Product name is missing for SKU "${sku}"`);
-                            errorCount++;
-                            continue;
-                        }
-                        
-                        if (!category) {
-                            errors.push(`Row ${i + 1}: Category is missing for SKU "${sku}"`);
-                            errorCount++;
-                            continue;
-                        }
-                        
-                        if (isNaN(price) || price <= 0) {
-                            errors.push(`Row ${i + 1}: Invalid price for SKU "${sku}" (price: ${getCellValue(row, columnMapping['price'])})`);
-                            errorCount++;
-                            continue;
-                        }
-                        
-                        // Check if SKU already exists
                         const { data: existing } = await supabase
                             .from('products')
                             .select('id')
@@ -788,7 +834,6 @@
                         errorCount++;
                     }
                     
-                    // Small delay to avoid rate limiting
                     await new Promise(r => setTimeout(r, 30));
                 }
                 
@@ -832,16 +877,14 @@
                     <strong>❌ Error:</strong> ${escapeHtml(error.message)}<br><br>
                     <strong>📋 Required Excel/CSV Format:</strong><br>
                     First row must contain column headers: <strong>sku, name, category, price, stock, description, images</strong><br><br>
-                    <strong>Example:</strong><br>
-                    <code>sku,name,category,price,stock,description,images</code><br>
-                    <code>"RING-001","Diamond Ring","Rings","29999","50","Beautiful ring","https://example.com/image.jpg"</code>
+                    <strong>Example with D360°:</strong><br>
+                    <code>"RING-001","Diamond Ring","Rings","29999","50","Beautiful ring","https://d360.tech/view.html?d=315-MP-CP-2021"</code>
                 </div>`;
             }
             
             input.value = '';
         };
         
-        // Helper function to find column index
         function findColumnIndex(headers, possibleNames) {
             for (let i = 0; i < headers.length; i++) {
                 const header = headers[i].toLowerCase().replace(/[^a-z]/g, '');
@@ -855,7 +898,6 @@
             return -1;
         }
         
-        // Helper function to get cell value
         function getCellValue(row, index) {
             if (index === -1 || index >= row.length) return '';
             let value = row[index];
@@ -865,7 +907,6 @@
             return value;
         }
         
-        // Parse CSV line (handles quoted fields)
         function parseCSVLine(line) {
             const result = [];
             let inQuotes = false;
@@ -886,7 +927,6 @@
             return result;
         }
         
-        // Drag and drop for bulk upload
         const bulkArea = document.getElementById('bulkUploadArea');
         if (bulkArea) {
             bulkArea.addEventListener('dragover', (e) => {
@@ -912,7 +952,6 @@
             });
         }
         
-        // Modal functions
         function showModal(message) {
             document.getElementById('modalMessage').textContent = message;
             document.getElementById('confirmModal').classList.add('active');
@@ -970,7 +1009,6 @@
             });
         }
         
-        // Initialize
         initImageUploadGrid([]);
         loadProducts();
     </script>
