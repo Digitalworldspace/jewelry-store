@@ -6,6 +6,7 @@
     <title>Product Management - Style Of Life Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -126,8 +127,8 @@
             <div class="toolbar-right">
                 <button class="btn btn-success" onclick="downloadSampleCSV()">📥 Download Sample CSV</button>
                 <label class="btn btn-warning" style="cursor: pointer;">
-                    📂 Upload Products File
-                    <input type="file" id="bulkFileInput" accept=".csv" style="display: none;" onchange="handleBulkUpload(this)">
+                    📂 Upload File (CSV/Excel)
+                    <input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display: none;" onchange="handleBulkUpload(this)">
                 </label>
             </div>
         </div>
@@ -137,8 +138,8 @@
             <h3 style="margin-bottom: 15px; color: var(--primary);">📁 Bulk Upload Products</h3>
             <div class="bulk-upload-area" id="bulkUploadArea" onclick="document.getElementById('bulkFileInput').click()">
                 <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--primary);"></i>
-                <p style="margin-top: 10px;">Click or drag & drop CSV file here</p>
-                <p style="font-size: 12px; color: var(--gray-600);">Supported: .csv format only</p>
+                <p style="margin-top: 10px;">Click or drag & drop CSV / Excel file here</p>
+                <p style="font-size: 12px; color: var(--gray-600);">Supported: .csv, .xlsx, .xls</p>
             </div>
             <div class="bulk-progress" id="bulkProgress">
                 <div class="bulk-progress-bar"><div class="bulk-progress-fill" id="bulkProgressFill"></div></div>
@@ -595,7 +596,7 @@
             showModal('Delete this product? This action cannot be undone.');
         };
         
-        // Download sample CSV - CORRECT FORMAT for Supabase
+        // Download sample CSV
         window.downloadSampleCSV = function() {
             const sampleData = [
                 ['sku', 'name', 'category', 'price', 'stock', 'description', 'images'],
@@ -617,7 +618,7 @@
             URL.revokeObjectURL(url);
         };
         
-        // Handle bulk upload - FIXED with better column mapping
+        // Handle bulk upload - Supports CSV, XLSX, XLS files
         window.handleBulkUpload = async function(input) {
             const file = input.files[0];
             if (!file) return;
@@ -636,106 +637,118 @@
             const errors = [];
             let successCount = 0;
             let errorCount = 0;
+            let dataRows = [];
+            let headers = [];
             
             try {
-                const text = await file.text();
-                const lines = text.split(/\r?\n/);
+                // Check file type and parse accordingly
+                const fileName = file.name.toLowerCase();
                 
-                if (lines.length < 2) {
-                    throw new Error('File is empty');
-                }
-                
-                // Show first line for debugging
-                console.log('First line of CSV:', lines[0]);
-                
-                // Parse headers (first line) - handle BOM and quotes
-                let firstLine = lines[0];
-                // Remove BOM if present
-                if (firstLine.charCodeAt(0) === 0xFEFF) {
-                    firstLine = firstLine.substring(1);
-                }
-                const headers = parseCSVLine(firstLine);
-                console.log('Parsed headers:', headers);
-                
-                // Expected headers mapping (case insensitive and with possible variations)
-                const headerVariations = {
-                    'sku': ['sku', 'product_sku', 'code', 'product code'],
-                    'name': ['name', 'product_name', 'title', 'product name', 'product title'],
-                    'category': ['category', 'cat', 'product_category', 'type'],
-                    'price': ['price', 'product_price', 'cost', 'amount', 'selling price'],
-                    'stock': ['stock', 'quantity', 'qty', 'inventory', 'stock_quantity', 'available'],
-                    'description': ['description', 'desc', 'product_description', 'details', 'about'],
-                    'images': ['images', 'image', 'image_url', 'image urls', 'photo', 'pictures']
-                };
-                
-                // Build column mapping
-                const columnMap = {};
-                headers.forEach((header, idx) => {
-                    const lowerHeader = header.toLowerCase().replace(/"/g, '').trim();
-                    for (const [dbField, variations] of Object.entries(headerVariations)) {
-                        if (variations.includes(lowerHeader)) {
-                            columnMap[dbField] = idx;
-                            break;
-                        }
+                if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+                    // Parse Excel file using SheetJS
+                    progressText.textContent = 'Reading Excel file...';
+                    const data = await file.arrayBuffer();
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+                    
+                    if (jsonData && jsonData.length > 0) {
+                        headers = jsonData[0].map(h => String(h || '').toLowerCase().trim());
+                        dataRows = jsonData.slice(1);
                     }
-                });
-                
-                console.log('Column mapping:', columnMap);
-                
-                // Check required headers
-                const requiredFields = ['sku', 'name', 'category', 'price'];
-                const missingFields = requiredFields.filter(f => columnMap[f] === undefined);
-                
-                if (missingFields.length > 0) {
-                    throw new Error(`Missing required columns: ${missingFields.join(', ')}.\n\nFound headers: ${headers.join(', ')}\n\nRequired format: sku, name, category, price, stock, description, images`);
-                }
-                
-                const totalRows = lines.length - 1;
-                
-                for (let i = 1; i < lines.length; i++) {
-                    if (!lines[i].trim()) continue;
+                    progressText.textContent = `Excel file loaded. Found ${dataRows.length} rows.`;
                     
-                    const values = parseCSVLine(lines[i]);
-                    const percent = 10 + ((i / lines.length) * 90);
-                    progressFill.style.width = `${percent}%`;
-                    progressText.textContent = `Processing row ${i} of ${totalRows}... (${successCount} added, ${errorCount} failed)`;
+                } else {
+                    // Parse CSV file
+                    progressText.textContent = 'Reading CSV file...';
+                    const text = await file.text();
+                    const lines = text.split(/\r?\n/);
                     
-                    try {
-                        const sku = values[columnMap['sku']]?.replace(/"/g, '').trim();
-                        const name = values[columnMap['name']]?.replace(/"/g, '').trim();
-                        const category = values[columnMap['category']]?.replace(/"/g, '').trim();
-                        const price = parseFloat(values[columnMap['price']]?.replace(/"/g, '').trim());
-                        const stock = parseInt(values[columnMap['stock']]?.replace(/"/g, '').trim()) || 0;
-                        const description = values[columnMap['description']]?.replace(/"/g, '').trim() || '';
-                        let images = [];
+                    if (lines.length > 0) {
+                        let firstLine = lines[0];
+                        if (firstLine.charCodeAt(0) === 0xFEFF) {
+                            firstLine = firstLine.substring(1);
+                        }
+                        headers = parseCSVLine(firstLine).map(h => h.replace(/"/g, '').toLowerCase().trim());
                         
-                        if (columnMap['images'] !== undefined && values[columnMap['images']]) {
-                            const imagesStr = values[columnMap['images']].replace(/"/g, '').trim();
-                            if (imagesStr) {
-                                images = imagesStr.split(',').map(u => u.trim()).filter(u => u && u.startsWith('http'));
+                        for (let i = 1; i < lines.length; i++) {
+                            if (lines[i].trim()) {
+                                dataRows.push(parseCSVLine(lines[i]));
                             }
                         }
+                    }
+                    progressText.textContent = `CSV file loaded. Found ${dataRows.length} rows.`;
+                }
+                
+                if (dataRows.length === 0) {
+                    throw new Error('No data rows found in file');
+                }
+                
+                // Column mapping for flexibility
+                const columnMapping = {
+                    'sku': findColumnIndex(headers, ['sku', 'product_sku', 'code', 'product code']),
+                    'name': findColumnIndex(headers, ['name', 'product_name', 'title', 'product name']),
+                    'category': findColumnIndex(headers, ['category', 'cat', 'product_category', 'type']),
+                    'price': findColumnIndex(headers, ['price', 'product_price', 'cost', 'amount', 'selling price']),
+                    'stock': findColumnIndex(headers, ['stock', 'quantity', 'qty', 'inventory', 'stock_quantity']),
+                    'description': findColumnIndex(headers, ['description', 'desc', 'product_description', 'details']),
+                    'images': findColumnIndex(headers, ['images', 'image', 'image_url', 'image urls', 'photo', 'pictures'])
+                };
+                
+                console.log('Column mapping:', columnMapping);
+                console.log('Headers found:', headers);
+                
+                // Check required columns
+                const requiredFields = ['sku', 'name', 'category', 'price'];
+                const missingFields = requiredFields.filter(f => columnMapping[f] === -1);
+                
+                if (missingFields.length > 0) {
+                    throw new Error(`Missing required columns: ${missingFields.join(', ')}.\n\nFound headers: ${headers.join(', ')}\n\nRequired columns: sku, name, category, price, stock, description, images`);
+                }
+                
+                const totalRows = dataRows.length;
+                
+                for (let i = 0; i < dataRows.length; i++) {
+                    const row = dataRows[i];
+                    const percent = 10 + (((i + 1) / totalRows) * 90);
+                    progressFill.style.width = `${percent}%`;
+                    progressText.textContent = `Processing row ${i + 1} of ${totalRows}... (${successCount} added, ${errorCount} failed)`;
+                    
+                    try {
+                        const sku = getCellValue(row, columnMapping['sku']);
+                        const name = getCellValue(row, columnMapping['name']);
+                        const category = getCellValue(row, columnMapping['category']);
+                        const price = parseFloat(getCellValue(row, columnMapping['price']));
+                        const stock = parseInt(getCellValue(row, columnMapping['stock'])) || 0;
+                        const description = getCellValue(row, columnMapping['description']) || '';
+                        let images = [];
                         
+                        const imagesValue = getCellValue(row, columnMapping['images']);
+                        if (imagesValue) {
+                            images = imagesValue.split(',').map(u => u.trim()).filter(u => u && (u.startsWith('http') || u.startsWith('https')));
+                        }
+                        
+                        // Validate required fields
                         if (!sku) {
-                            errors.push(`Row ${i}: SKU is missing`);
+                            errors.push(`Row ${i + 1}: SKU is missing`);
                             errorCount++;
                             continue;
                         }
                         
                         if (!name) {
-                            errors.push(`Row ${i}: Product name is missing for SKU "${sku}"`);
+                            errors.push(`Row ${i + 1}: Product name is missing for SKU "${sku}"`);
                             errorCount++;
                             continue;
                         }
                         
                         if (!category) {
-                            errors.push(`Row ${i}: Category is missing for SKU "${sku}"`);
+                            errors.push(`Row ${i + 1}: Category is missing for SKU "${sku}"`);
                             errorCount++;
                             continue;
                         }
                         
                         if (isNaN(price) || price <= 0) {
-                            errors.push(`Row ${i}: Invalid price for SKU "${sku}" (price: ${values[columnMap['price']]})`);
+                            errors.push(`Row ${i + 1}: Invalid price for SKU "${sku}" (price: ${getCellValue(row, columnMapping['price'])})`);
                             errorCount++;
                             continue;
                         }
@@ -748,7 +761,7 @@
                             .maybeSingle();
                         
                         if (existing) {
-                            errors.push(`Row ${i}: SKU "${sku}" already exists, skipping`);
+                            errors.push(`Row ${i + 1}: SKU "${sku}" already exists, skipping`);
                             errorCount++;
                             continue;
                         }
@@ -764,19 +777,19 @@
                         }]);
                         
                         if (error) {
-                            errors.push(`Row ${i}: ${error.message}`);
+                            errors.push(`Row ${i + 1}: ${error.message}`);
                             errorCount++;
                         } else {
                             successCount++;
                         }
                         
                     } catch (rowError) {
-                        errors.push(`Row ${i}: ${rowError.message}`);
+                        errors.push(`Row ${i + 1}: ${rowError.message}`);
                         errorCount++;
                     }
                     
                     // Small delay to avoid rate limiting
-                    await new Promise(r => setTimeout(r, 50));
+                    await new Promise(r => setTimeout(r, 30));
                 }
                 
                 progressFill.style.width = '100%';
@@ -817,15 +830,40 @@
                 progressText.textContent = 'Error processing file';
                 resultDiv.innerHTML = `<div style="background: #f8d7da; padding: 15px; border-radius: 8px; margin-top: 10px; color: #721c24;">
                     <strong>❌ Error:</strong> ${escapeHtml(error.message)}<br><br>
-                    <strong>📋 Required CSV format:</strong><br>
-                    First line must be: <strong>sku,name,category,price,stock,description,images</strong><br><br>
+                    <strong>📋 Required Excel/CSV Format:</strong><br>
+                    First row must contain column headers: <strong>sku, name, category, price, stock, description, images</strong><br><br>
                     <strong>Example:</strong><br>
-                    "RING-001","Diamond Ring","Rings","29999","50","Beautiful ring","https://example.com/image.jpg"
+                    <code>sku,name,category,price,stock,description,images</code><br>
+                    <code>"RING-001","Diamond Ring","Rings","29999","50","Beautiful ring","https://example.com/image.jpg"</code>
                 </div>`;
             }
             
             input.value = '';
         };
+        
+        // Helper function to find column index
+        function findColumnIndex(headers, possibleNames) {
+            for (let i = 0; i < headers.length; i++) {
+                const header = headers[i].toLowerCase().replace(/[^a-z]/g, '');
+                for (const name of possibleNames) {
+                    if (header === name.toLowerCase().replace(/[^a-z]/g, '') || 
+                        headers[i].toLowerCase() === name.toLowerCase()) {
+                        return i;
+                    }
+                }
+            }
+            return -1;
+        }
+        
+        // Helper function to get cell value
+        function getCellValue(row, index) {
+            if (index === -1 || index >= row.length) return '';
+            let value = row[index];
+            if (typeof value === 'string') {
+                value = value.replace(/^["']|["']$/g, '').trim();
+            }
+            return value;
+        }
         
         // Parse CSV line (handles quoted fields)
         function parseCSVLine(line) {
@@ -862,14 +900,14 @@
                 e.preventDefault();
                 bulkArea.classList.remove('drag-over');
                 const file = e.dataTransfer.files[0];
-                if (file && file.name.endsWith('.csv')) {
+                if (file && (file.name.endsWith('.csv') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
                     const input = document.getElementById('bulkFileInput');
                     const dt = new DataTransfer();
                     dt.items.add(file);
                     input.files = dt.files;
                     handleBulkUpload(input);
                 } else {
-                    alert('Please upload a CSV file');
+                    alert('Please upload a CSV or Excel file');
                 }
             });
         }
