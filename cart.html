@@ -139,6 +139,7 @@
         .cart-item-details { flex: 1; }
         .cart-item-name { font-weight: 600; margin-bottom: 4px; }
         .cart-item-price { color: var(--gold); font-weight: 600; margin: 8px 0; }
+        .cart-item-gst { font-size: 11px; color: var(--gray); margin-top: 4px; }
         .cart-item-total { font-weight: bold; margin-top: 8px; }
         
         .remove-btn {
@@ -176,6 +177,26 @@
             font-weight: bold;
             color: var(--gold);
             padding-top: 15px;
+        }
+        
+        .gst-breakdown {
+            background: var(--white-light);
+            border-radius: 12px;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+        
+        .gst-breakdown-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--gray);
+        }
+        
+        .gst-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
         }
         
         .checkout-btn {
@@ -231,7 +252,7 @@
             text-decoration: underline;
         }
         
-        /* ========== FLOATING CART BUTTON ========== */
+        /* Floating Cart Button */
         .floating-cart {
             position: fixed;
             bottom: 80px;
@@ -275,7 +296,7 @@
             justify-content: center;
         }
         
-        /* ========== IPHONE 5 STYLE SWIPE TO UNLOCK CART WITH SWIPE DOWN TO HIDE ========== */
+        /* Swipe Cart Overlay */
         .swipe-cart-overlay {
             position: fixed;
             bottom: 0;
@@ -296,10 +317,6 @@
             transform: translateY(0);
         }
         
-        .swipe-cart-overlay.hiding {
-            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-        }
-        
         .swipe-handle {
             width: 50px;
             height: 5px;
@@ -308,10 +325,6 @@
             margin: 0 auto 20px;
             cursor: grab;
             touch-action: pan-y;
-        }
-        
-        .swipe-handle:active {
-            cursor: grabbing;
         }
         
         .swipe-title {
@@ -331,10 +344,6 @@
             cursor: grab;
             user-select: none;
             touch-action: none;
-        }
-        
-        .swipe-container:active {
-            cursor: grabbing;
         }
         
         .swipe-track {
@@ -358,21 +367,6 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             position: relative;
             z-index: 2;
-        }
-        
-        .swipe-thumb:active {
-            cursor: grabbing;
-        }
-        
-        .swipe-thumb i {
-            font-size: 20px;
-            color: var(--black);
-        }
-        
-        .swipe-thumb span {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--black);
         }
         
         .swipe-progress {
@@ -445,13 +439,6 @@
             margin-top: 10px;
         }
         
-        .cart-preview-total span {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--gold);
-        }
-        
-        /* ========== DO SOMETHING SECTION - ONLY CLEAR CART ========== */
         .do-something-section {
             margin-top: 20px;
             padding-top: 15px;
@@ -604,13 +591,13 @@
         <div id="cartSummary"></div>
     </div>
     
-    <!-- Floating Cart Button (opens itself) -->
+    <!-- Floating Cart Button -->
     <div class="floating-cart" id="floatingCartBtn">
         <i class="fas fa-shopping-bag"></i>
         <span class="floating-cart-badge" id="cartCount">0</span>
     </div>
     
-    <!-- iPhone 5 Style Swipe to Unlock Cart with SWIPE DOWN TO HIDE -->
+    <!-- Swipe Cart Overlay -->
     <div id="swipeCartOverlay" class="swipe-cart-overlay">
         <div class="swipe-handle" id="swipeHandle"></div>
         <div class="swipe-title">
@@ -623,7 +610,6 @@
             </div>
         </div>
         
-        <!-- DO SOMETHING SECTION - ONLY CLEAR CART BUTTON -->
         <div class="do-something-section">
             <div class="do-something-title">
                 <i class="fas fa-bolt"></i> DO SOMETHING <i class="fas fa-bolt"></i>
@@ -674,8 +660,9 @@
         }
         
         let currentCart = [];
+        let productsCache = {};
         
-        // URL Masking Navigation
+        // Navigation
         function navigateTo(page) {
             if (window.parent !== window) {
                 window.parent.postMessage({ page: page }, '*');
@@ -701,6 +688,13 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
+        // ========== GST CALCULATION FUNCTIONS ==========
+        function calculateGST(price, gstPercent) {
+            const gstAmount = (price * gstPercent) / 100;
+            const total = price + gstAmount;
+            return { gstAmount, total };
+        }
+        
         // Update Cart Count and Current Cart
         async function updateCartCount() {
             try {
@@ -714,6 +708,26 @@
                 return items;
             } catch (error) {
                 return [];
+            }
+        }
+        
+        // Fetch product GST details from database
+        async function fetchProductGST(productId) {
+            if (productsCache[productId]) return productsCache[productId];
+            
+            try {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('gst, price')
+                    .eq('id', productId)
+                    .single();
+                
+                if (error) throw error;
+                productsCache[productId] = data;
+                return data;
+            } catch (error) {
+                console.error('Error fetching product GST:', error);
+                return { gst: 18, price: 0 };
             }
         }
         
@@ -737,25 +751,34 @@
             if (swipeContainer) swipeContainer.style.opacity = '1';
             
             let subtotal = 0;
+            let totalGST = 0;
             let itemsHtml = '';
+            
             for (const item of cartItems) {
-                const itemTotal = item.price * item.quantity;
-                subtotal += itemTotal;
+                const productInfo = await fetchProductGST(item.id);
+                const gstPercent = productInfo?.gst || 18;
+                const { gstAmount, total } = calculateGST(item.price, gstPercent);
+                const itemTotal = total * item.quantity;
+                const itemGSTTotal = gstAmount * item.quantity;
+                
+                subtotal += item.price * item.quantity;
+                totalGST += itemGSTTotal;
+                
                 itemsHtml += `
                     <div class="cart-preview-item">
                         <img src="${item.image}" onerror="this.src='https://via.placeholder.com/50x50'">
                         <div class="cart-preview-item-details">
                             <div class="cart-preview-item-name">${escapeHtml(item.name)}</div>
                             <div class="cart-preview-item-price">₹${item.price.toLocaleString()} × ${item.quantity}</div>
+                            <div class="cart-preview-item-price" style="font-size: 10px; color: #aaa;">GST ${gstPercent}%: ₹${(gstAmount * item.quantity).toLocaleString()}</div>
                         </div>
                         <div style="color: var(--gold); font-weight: bold;">₹${itemTotal.toLocaleString()}</div>
                     </div>
                 `;
             }
             
-            const tax = Math.round(subtotal * 0.18);
             const shipping = subtotal >= 3000 ? 0 : 100;
-            const total = subtotal + tax + shipping;
+            const total = subtotal + totalGST + shipping;
             
             previewContainer.innerHTML = `
                 ${itemsHtml}
@@ -765,12 +788,12 @@
                         <span>₹${subtotal.toLocaleString()}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>Shipping</span>
-                        <span>₹${shipping}</span>
+                        <span>Total GST</span>
+                        <span>₹${totalGST.toLocaleString()}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>GST (18%)</span>
-                        <span>₹${tax.toLocaleString()}</span>
+                        <span>Shipping</span>
+                        <span>₹${shipping}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; font-size: 18px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
                         <span>Total</span>
@@ -780,32 +803,7 @@
             `;
         }
         
-        // Clear Cart Action
-        async function clearCartFromSwipe() {
-            if (!currentCart.length) {
-                showToast('Cart is already empty', true);
-                return;
-            }
-            
-            if (confirm('Clear all items from your cart?')) {
-                try {
-                    await supabase.from('carts').upsert({ 
-                        session_id: sessionId, 
-                        items: [], 
-                        total: 0, 
-                        updated_at: new Date().toISOString() 
-                    }, { onConflict: 'session_id' });
-                    showToast('Cart cleared! 🗑️');
-                    await updateCartPreview();
-                    await loadCart();
-                    closeSwipeCart();
-                } catch (error) {
-                    showToast('Failed to clear cart', true);
-                }
-            }
-        }
-        
-        // Load Main Cart Page
+        // Load Main Cart Page with GST Breakdown
         async function loadCart() {
             try {
                 const { data, error } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
@@ -832,9 +830,22 @@
                 
                 let itemsHtml = '';
                 let subtotal = 0;
+                let totalGST = 0;
+                let gstBreakdown = {};
+                
                 for (const item of cart) {
-                    const itemTotal = item.price * item.quantity;
-                    subtotal += itemTotal;
+                    const productInfo = await fetchProductGST(item.id);
+                    const gstPercent = productInfo?.gst || 18;
+                    const { gstAmount, total } = calculateGST(item.price, gstPercent);
+                    const itemTotal = total * item.quantity;
+                    const itemGSTTotal = gstAmount * item.quantity;
+                    
+                    subtotal += item.price * item.quantity;
+                    totalGST += itemGSTTotal;
+                    
+                    // Track GST by percentage for breakdown
+                    gstBreakdown[gstPercent] = (gstBreakdown[gstPercent] || 0) + itemGSTTotal;
+                    
                     itemsHtml += `
                         <div class="cart-item">
                             <img class="cart-item-image" src="${item.image}" onerror="this.src='https://via.placeholder.com/70x70'">
@@ -842,6 +853,7 @@
                                 <div class="cart-item-name">${escapeHtml(item.name)}</div>
                                 <div class="cart-item-sku">SKU: ${item.sku}</div>
                                 <div class="cart-item-price">₹${item.price.toLocaleString()} × ${item.quantity}</div>
+                                <div class="cart-item-gst">GST ${gstPercent}%: ₹${(gstAmount * item.quantity).toLocaleString()}</div>
                                 <div class="cart-item-total">Total: ₹${itemTotal.toLocaleString()}</div>
                             </div>
                             <button class="remove-btn" onclick="removeItem(${item.id})"><i class="fas fa-trash-alt"></i></button>
@@ -849,16 +861,28 @@
                     `;
                 }
                 
-                const tax = Math.round(subtotal * 0.18);
+                // Build GST breakdown HTML
+                let gstBreakdownHtml = '';
+                for (const [percent, amount] of Object.entries(gstBreakdown)) {
+                    gstBreakdownHtml += `<div class="gst-item"><span>GST ${percent}%</span><span>₹${amount.toLocaleString()}</span></div>`;
+                }
+                
                 const shipping = subtotal >= 3000 ? 0 : 100;
-                const total = subtotal + tax + shipping;
+                const total = subtotal + totalGST + shipping;
                 
                 document.getElementById('cartItems').innerHTML = itemsHtml;
                 document.getElementById('cartSummary').innerHTML = `
                     <div class="cart-summary">
                         <div class="summary-row"><span>Subtotal</span><span>₹${subtotal.toLocaleString()}</span></div>
+                        <div class="gst-breakdown">
+                            <div class="gst-breakdown-title">GST Breakdown:</div>
+                            ${gstBreakdownHtml}
+                            <div class="gst-item" style="border-top: 1px solid #eee; margin-top: 5px; padding-top: 5px; font-weight: bold;">
+                                <span>Total GST</span>
+                                <span>₹${totalGST.toLocaleString()}</span>
+                            </div>
+                        </div>
                         <div class="summary-row"><span>Shipping</span><span>₹${shipping}</span></div>
-                        <div class="summary-row"><span>GST (18%)</span><span>₹${tax.toLocaleString()}</span></div>
                         <div class="summary-row total"><span>Total</span><span>₹${total.toLocaleString()}</span></div>
                         <button class="checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout →</button>
                         <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
@@ -902,7 +926,6 @@
         };
         
         // ========== SWIPE CART FUNCTIONALITY ==========
-        // Swipe to Checkout
         let isDragging = false;
         let startX = 0;
         let currentTranslate = 0;
@@ -914,10 +937,8 @@
         
         function initSwipe() {
             if (!swipeThumb || !swipeContainer) return;
-            
             const trackRect = swipeTrack.getBoundingClientRect();
             maxSwipe = trackRect.width - 70;
-            
             swipeThumb.addEventListener('mousedown', startDrag);
             swipeThumb.addEventListener('touchstart', startDrag);
             document.addEventListener('mousemove', onDrag);
@@ -939,29 +960,21 @@
             if (!isDragging) return;
             e.preventDefault();
             e.stopPropagation();
-            
             const clientX = e.clientX || (e.touches && e.touches[0].clientX);
             let newTranslate = clientX - startX;
             newTranslate = Math.max(0, Math.min(newTranslate, maxSwipe));
             currentTranslate = newTranslate;
-            
             const percent = (currentTranslate / maxSwipe) * 100;
             swipeThumb.style.transform = `translateX(${currentTranslate}px)`;
             swipeProgress.style.width = `${percent}%`;
-            
-            if (percent >= 95) {
-                completeSwipe();
-            }
+            if (percent >= 95) completeSwipe();
         }
         
         function endDrag() {
             isDragging = false;
             swipeThumb.style.transition = 'transform 0.3s ease';
             swipeProgress.style.transition = 'width 0.3s ease';
-            
-            if (currentTranslate < maxSwipe * 0.95) {
-                resetSwipe();
-            }
+            if (currentTranslate < maxSwipe * 0.95) resetSwipe();
         }
         
         function resetSwipe() {
@@ -976,7 +989,6 @@
             navigateTo('checkout');
         }
         
-        // Swipe Down to Hide
         let touchStartY = 0;
         let touchCurrentY = 0;
         let isSwipingDown = false;
@@ -985,76 +997,48 @@
         
         function setupSwipeToHide() {
             if (!overlay) return;
-            
-            overlay.addEventListener('touchstart', function(e) {
+            overlay.addEventListener('touchstart', (e) => {
                 touchStartY = e.touches[0].clientY;
                 isSwipingDown = true;
                 overlay.classList.add('hiding');
             });
-            
-            overlay.addEventListener('touchmove', function(e) {
+            overlay.addEventListener('touchmove', (e) => {
                 if (!isSwipingDown) return;
                 touchCurrentY = e.touches[0].clientY;
                 let deltaY = touchCurrentY - touchStartY;
-                
                 if (deltaY > 0) {
-                    let translateY = deltaY;
-                    if (translateY > 300) translateY = 300;
+                    let translateY = Math.min(deltaY, 300);
                     overlay.style.transform = `translateY(${translateY}px)`;
                     e.preventDefault();
                 }
             });
-            
-            overlay.addEventListener('touchend', function(e) {
+            overlay.addEventListener('touchend', () => {
                 if (!isSwipingDown) return;
                 let deltaY = touchCurrentY - touchStartY;
-                
-                if (deltaY > 100) {
-                    closeSwipeCart();
-                } else {
-                    overlay.style.transform = '';
-                }
-                
+                if (deltaY > 100) closeSwipeCart();
+                else overlay.style.transform = '';
                 isSwipingDown = false;
-                setTimeout(() => {
-                    overlay.classList.remove('hiding');
-                }, 300);
+                setTimeout(() => overlay.classList.remove('hiding'), 300);
             });
-            
-            // Mouse events for desktop
             let mouseStartY = 0;
             let isMouseSwiping = false;
-            
-            handle.addEventListener('mousedown', function(e) {
+            handle?.addEventListener('mousedown', (e) => {
                 mouseStartY = e.clientY;
                 isMouseSwiping = true;
                 overlay.classList.add('hiding');
             });
-            
-            document.addEventListener('mousemove', function(e) {
+            document.addEventListener('mousemove', (e) => {
                 if (!isMouseSwiping) return;
                 let deltaY = e.clientY - mouseStartY;
-                if (deltaY > 0) {
-                    let translateY = deltaY;
-                    if (translateY > 300) translateY = 300;
-                    overlay.style.transform = `translateY(${translateY}px)`;
-                }
+                if (deltaY > 0) overlay.style.transform = `translateY(${Math.min(deltaY, 300)}px)`;
             });
-            
-            document.addEventListener('mouseup', function(e) {
+            document.addEventListener('mouseup', (e) => {
                 if (!isMouseSwiping) return;
                 let deltaY = e.clientY - mouseStartY;
-                
-                if (deltaY > 100) {
-                    closeSwipeCart();
-                } else {
-                    overlay.style.transform = '';
-                }
-                
+                if (deltaY > 100) closeSwipeCart();
+                else overlay.style.transform = '';
                 isMouseSwiping = false;
-                setTimeout(() => {
-                    overlay.classList.remove('hiding');
-                }, 300);
+                setTimeout(() => overlay.classList.remove('hiding'), 300);
             });
         }
         
@@ -1063,9 +1047,7 @@
             overlay.classList.add('active');
             overlay.style.transform = '';
             updateCartPreview();
-            setTimeout(() => {
-                initSwipe();
-            }, 100);
+            setTimeout(initSwipe, 100);
         }
         
         function closeSwipeCart() {
@@ -1075,14 +1057,8 @@
             resetSwipe();
         }
         
-        document.getElementById('floatingCartBtn')?.addEventListener('click', () => {
-            openSwipeCart();
-        });
-        
-        document.getElementById('clearCartSwipeBtn')?.addEventListener('click', () => {
-            clearCartFromSwipe();
-        });
-        
+        document.getElementById('floatingCartBtn')?.addEventListener('click', openSwipeCart);
+        document.getElementById('clearCartSwipeBtn')?.addEventListener('click', clearCart);
         setupSwipeToHide();
         
         function escapeHtml(str) {
