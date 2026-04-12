@@ -50,81 +50,34 @@
             z-index: 5;
         }
         
-        /* D360° Preview in Admin */
-        .d360-preview {
+        /* D360° Embedded Viewer in Admin */
+        .product-d360-container {
+            position: relative;
             width: 100%;
-            height: 200px;
+            height: 250px;
             background: #1a1a1a;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            color: var(--primary);
-            cursor: pointer;
-            transition: all 0.3s;
+            overflow: hidden;
         }
         
-        .d360-preview:hover {
-            background: #2a2a2a;
-            transform: scale(1.02);
-        }
-        
-        .d360-preview i {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
-        
-        .d360-preview span {
-            font-size: 12px;
-        }
-        
-        /* Fullscreen Modal for D360° */
-        .d360-fullscreen-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .product-d360-iframe {
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 10000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        
-        .d360-fullscreen-modal.active {
-            display: flex;
-        }
-        
-        .d360-fullscreen-iframe {
-            width: 95%;
-            height: 85%;
             border: none;
-            border-radius: 16px;
+            pointer-events: auto;
         }
         
-        .d360-fullscreen-close {
+        .d360-label {
             position: absolute;
-            top: 20px;
-            right: 30px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 24px;
-            transition: all 0.3s;
-        }
-        
-        .d360-fullscreen-close:hover {
-            background: var(--danger);
-            transform: scale(1.1);
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            z-index: 5;
+            pointer-events: none;
         }
         
         .media-url-section { margin-top: 15px; padding: 15px; background: var(--gray-100); border-radius: 12px; }
@@ -163,10 +116,10 @@
         .error-log { max-height: 200px; overflow-y: auto; font-size: 12px; margin-top: 10px; }
         .error-item { padding: 5px; border-bottom: 1px solid #eee; color: var(--danger); }
         
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; margin-top: 30px; }
         .product-card { background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; }
         .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .product-image-container { position: relative; height: 250px; overflow: hidden; background: #f5f5f5; cursor: pointer; }
+        .product-image-container { position: relative; height: 250px; overflow: hidden; background: #f5f5f5; }
         .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         .product-card:hover .product-image { transform: scale(1.05); }
         .image-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 20px; font-size: 11px; }
@@ -317,12 +270,6 @@
         </div>
     </div>
 
-    <!-- D360° Fullscreen Modal -->
-    <div id="d360FullscreenModal" class="d360-fullscreen-modal">
-        <div class="d360-fullscreen-close" onclick="closeD360Fullscreen()">&times;</div>
-        <iframe id="d360FullscreenIframe" class="d360-fullscreen-iframe" src=""></iframe>
-    </div>
-
     <!-- Confirmation Modal -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
@@ -370,21 +317,6 @@
                    url.includes('vimeo.com');
         }
         
-        // Open D360° in fullscreen modal
-        window.openD360Viewer = function(url) {
-            const modal = document.getElementById('d360FullscreenModal');
-            const iframe = document.getElementById('d360FullscreenIframe');
-            iframe.src = url;
-            modal.classList.add('active');
-        };
-        
-        window.closeD360Fullscreen = function() {
-            const modal = document.getElementById('d360FullscreenModal');
-            const iframe = document.getElementById('d360FullscreenIframe');
-            iframe.src = '';
-            modal.classList.remove('active');
-        };
-        
         // Initialize image upload grid
         function initImageUploadGrid(existingImages = []) {
             const grid = document.getElementById('imageUploadGrid');
@@ -402,7 +334,7 @@
                     <div class="upload-card" id="uploadCard${i}">
                         ${existing ? `<img class="upload-preview active" id="preview${i}" src="${thumbnail}" alt="Media ${i+1}" style="${isD360 || isVideo ? 'object-fit: contain;' : ''}">` : 
                                     `<div class="upload-placeholder" id="placeholder${i}">📷 Media ${i+1}</div>`}
-                        ${isD360 ? `<div style="font-size: 10px; color: var(--primary); margin-top: 5px;">🔄 D360° View (Click to open)</div>` : ''}
+                        ${isD360 ? `<div style="font-size: 10px; color: var(--primary); margin-top: 5px;">🔄 D360° View</div>` : ''}
                         ${isVideo && !isD360 ? `<div style="font-size: 10px; color: var(--info); margin-top: 5px;">🎬 Video URL</div>` : ''}
                         <div class="upload-progress" id="progress${i}">
                             <div class="upload-progress-bar" id="progressBar${i}"></div>
@@ -520,7 +452,7 @@
             mediaUrls.forEach((media, index) => {
                 if (media.type === 'd360') {
                     html += `
-                        <div class="media-preview-item" onclick="openD360Viewer('${media.url}')">
+                        <div class="media-preview-item">
                             <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; background: #1a1a1a; color: var(--primary);">
                                 <i class="fas fa-cube" style="font-size: 32px; margin-bottom: 5px;"></i>
                                 <span style="font-size: 8px;">360° View</span>
@@ -662,7 +594,7 @@
             }
         };
         
-        // Load products (with D360° and video thumbnail support)
+        // Load products (with D360° embedded directly - NO CLICK NEEDED)
         async function loadProducts() {
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>Loading products...</p></div>';
@@ -684,28 +616,46 @@
                 const firstMedia = p.images && p.images[0] ? p.images[0] : 'https://via.placeholder.com/300x250?text=No+Media';
                 const isD360 = isD360Viewer(firstMedia);
                 const isVideo = !isD360 && isVideoUrl(firstMedia);
-                let mainImage = firstMedia;
-                let onClickAction = '';
-                
-                if (isD360) {
-                    mainImage = 'https://via.placeholder.com/300x250?text=360°+Interactive+View';
-                    onClickAction = `onclick="openD360Viewer('${firstMedia}')"`;
-                } else if (isVideo) {
-                    mainImage = 'https://via.placeholder.com/300x250?text=🎬+Video+Content';
-                }
-                
                 const imageCount = p.images ? p.images.length : 0;
                 const stockClass = p.stock <= 0 ? 'out-of-stock' : (p.stock < 10 ? 'low-stock' : 'in-stock');
                 const stockText = p.stock <= 0 ? 'Out of Stock' : (p.stock < 10 ? `Low Stock (${p.stock})` : `In Stock (${p.stock})`);
                 
-                html += `
-                    <div class="product-card">
-                        <div class="product-image-container" ${onClickAction}>
-                            <img class="product-image" src="${mainImage}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300x250?text=No+Media'">
-                            ${isD360 ? `<div class="d360-badge">🔄 360° View (Click to open)</div>` : ''}
-                            ${isVideo && !isD360 ? `<div class="d360-badge" style="background: rgba(0,0,0,0.7); color: #17a2b8;">🎬 Video</div>` : ''}
+                let mediaHtml = '';
+                
+                if (isD360) {
+                    // D360° interactive viewer - embedded directly (NO CLICK NEEDED)
+                    mediaHtml = `
+                        <div class="product-d360-container">
+                            <iframe 
+                                src="${firstMedia}" 
+                                class="product-d360-iframe"
+                                frameborder="0" 
+                                allowfullscreen>
+                            </iframe>
+                            <div class="d360-label">🔄 360° Interactive View</div>
+                        </div>
+                    `;
+                } else if (isVideo) {
+                    // Video content
+                    mediaHtml = `
+                        <div class="product-image-container">
+                            <video src="${firstMedia}" style="width: 100%; height: 100%; object-fit: cover;" controls></video>
+                            <div class="d360-badge" style="background: rgba(0,0,0,0.7); color: #17a2b8;">🎬 Video</div>
+                        </div>
+                    `;
+                } else {
+                    // Regular image
+                    mediaHtml = `
+                        <div class="product-image-container">
+                            <img class="product-image" src="${firstMedia}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300x250?text=No+Media'">
                             ${imageCount > 0 ? `<div class="image-badge">📸 ${imageCount} media</div>` : ''}
                         </div>
+                    `;
+                }
+                
+                html += `
+                    <div class="product-card">
+                        ${mediaHtml}
                         <div class="product-info">
                             <div class="product-name">${escapeHtml(p.name)}</div>
                             <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
@@ -1069,13 +1019,6 @@
                 }
             });
         }
-        
-        // Close D360° modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeD360Fullscreen();
-            }
-        });
         
         function showModal(message) {
             document.getElementById('modalMessage').textContent = message;
