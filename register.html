@@ -295,51 +295,6 @@
             setTimeout(() => toast.remove(), 5000);
         }
         
-        // Function to create profile with retry
-        async function createProfile(userId, fullName, phone, retryCount = 0) {
-            try {
-                console.log(`Attempt ${retryCount + 1}: Creating profile for user:`, userId);
-                
-                // First check if profile already exists
-                const { data: existing } = await supabase
-                    .from('profiles')
-                    .select('id')
-                    .eq('id', userId)
-                    .maybeSingle();
-                
-                if (existing) {
-                    console.log('Profile already exists');
-                    return true;
-                }
-                
-                // Insert new profile
-                const { error } = await supabase
-                    .from('profiles')
-                    .insert({
-                        id: userId,
-                        full_name: fullName,
-                        phone: phone || ''
-                    });
-                
-                if (error) {
-                    console.error('Insert error:', error);
-                    
-                    // Retry up to 3 times
-                    if (retryCount < 3) {
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        return createProfile(userId, fullName, phone, retryCount + 1);
-                    }
-                    return false;
-                }
-                
-                console.log('Profile created successfully');
-                return true;
-            } catch (error) {
-                console.error('Profile creation error:', error);
-                return false;
-            }
-        }
-        
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -376,8 +331,7 @@
             registerBtn.textContent = 'Creating account...';
             
             try {
-                // Step 1: Create user in Supabase Auth
-                console.log('Creating auth user for:', email);
+                // Sign up - profile will be created automatically by Supabase trigger
                 const { data, error } = await supabase.auth.signUp({
                     email: email,
                     password: password,
@@ -392,40 +346,22 @@
                 if (error) throw error;
                 
                 if (data.user) {
-                    console.log('Auth user created:', data.user.id);
+                    console.log('User created successfully:', data.user.id);
+                    showToast('Account created successfully!');
                     
-                    // Step 2: Create profile in profiles table
-                    const profileCreated = await createProfile(data.user.id, fullName, phone);
+                    // Auto login
+                    await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
                     
-                    if (profileCreated) {
-                        console.log('Profile creation SUCCESS');
-                        showToast('Account created successfully!');
-                        
-                        // Step 3: Auto login
-                        const { error: loginError } = await supabase.auth.signInWithPassword({
-                            email: email,
-                            password: password
-                        });
-                        
-                        if (!loginError) {
-                            document.getElementById('registrationForm').style.display = 'none';
-                            document.getElementById('successMessage').style.display = 'block';
-                            
-                            setTimeout(() => {
-                                window.location.href = 'customer-portal.html';
-                            }, 2000);
-                        } else {
-                            console.log('Auto login failed, but account created');
-                            setTimeout(() => {
-                                window.location.href = 'customer-portal.html';
-                            }, 1500);
-                        }
-                    } else {
-                        console.error('Profile creation FAILED after retries');
-                        showToast('Account created but profile issue. Please contact support.', true);
-                        registerBtn.disabled = false;
-                        registerBtn.textContent = 'Create Account →';
-                    }
+                    // Show success and redirect
+                    document.getElementById('registrationForm').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'customer-portal.html';
+                    }, 2000);
                 }
                 
             } catch (error) {
@@ -433,6 +369,8 @@
                 let errorMessage = 'Registration failed. ';
                 if (error.message === 'User already registered') {
                     errorMessage = 'An account with this email already exists. Please login instead.';
+                } else if (error.message.includes('password')) {
+                    errorMessage = 'Password is too weak. Please use a stronger password.';
                 } else {
                     errorMessage += error.message;
                 }
