@@ -350,6 +350,7 @@
             text-decoration: none;
             margin-top: 8px;
             display: inline-block;
+            cursor: pointer;
         }
         
         .profile-form input {
@@ -556,48 +557,62 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
-        // Function to create/update profile in profiles table
-        async function createOrUpdateProfile(userId, fullName, phone, email) {
+        // ========== PROFILES TABLE FUNCTIONS ==========
+        
+        // Create profile in profiles table
+        async function createProfile(userId, fullName, phone, email) {
             try {
-                // Check if profile exists
-                const { data: existingProfile } = await supabase
+                const { error } = await supabase
                     .from('profiles')
-                    .select('id')
-                    .eq('id', userId)
-                    .maybeSingle();
+                    .insert([{
+                        id: userId,
+                        full_name: fullName,
+                        phone: phone || '',
+                        email: email,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    }]);
                 
-                if (existingProfile) {
-                    // Update existing profile
-                    const { error } = await supabase
-                        .from('profiles')
-                        .update({
-                            full_name: fullName,
-                            phone: phone || '',
-                            email: email,
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq('id', userId);
-                    
-                    if (error) throw error;
-                } else {
-                    // Create new profile
-                    const { error } = await supabase
-                        .from('profiles')
-                        .insert([{
-                            id: userId,
-                            full_name: fullName,
-                            phone: phone || '',
-                            email: email,
-                            created_at: new Date().toISOString(),
-                            updated_at: new Date().toISOString()
-                        }]);
-                    
-                    if (error) throw error;
-                }
-                
+                if (error) throw error;
                 return true;
             } catch (error) {
                 console.error('Profile creation error:', error);
+                return false;
+            }
+        }
+        
+        // Get profile from profiles table
+        async function getProfile(userId) {
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', userId)
+                    .maybeSingle();
+                
+                if (error) throw error;
+                return data;
+            } catch (error) {
+                console.error('Get profile error:', error);
+                return null;
+            }
+        }
+        
+        // Update profile in profiles table
+        async function updateProfile(userId, updates) {
+            try {
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({
+                        ...updates,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', userId);
+                
+                if (error) throw error;
+                return true;
+            } catch (error) {
+                console.error('Profile update error:', error);
                 return false;
             }
         }
@@ -618,14 +633,13 @@
                 if (error) throw error;
                 
                 if (data.user) {
-                    // Get or create profile
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('*')
-                        .eq('id', data.user.id)
-                        .maybeSingle();
+                    // Get profile from profiles table
+                    const profile = await getProfile(data.user.id);
                     
-                    currentUser = { ...data.user, profile: profile || {} };
+                    currentUser = { 
+                        ...data.user, 
+                        profile: profile || { full_name: email.split('@')[0], phone: '' }
+                    };
                     localStorage.setItem('customerUser', JSON.stringify(currentUser));
                     
                     showToast('Login successful!');
@@ -678,7 +692,11 @@
                 
                 if (data.user) {
                     // Create profile in profiles table
-                    await createOrUpdateProfile(data.user.id, fullName, phone, email);
+                    const profileCreated = await createProfile(data.user.id, fullName, phone, email);
+                    
+                    if (!profileCreated) {
+                        console.warn('Profile creation issue, but user was created');
+                    }
                     
                     // Auto login after registration
                     const loginSuccess = await handleLogin(email, password);
@@ -757,7 +775,7 @@
                             <div class="order-date">${new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
                             <div class="order-items">${order.items?.map(i => `${i.name} x${i.quantity}`).join(', ') || 'No items'}</div>
                             <div class="order-total">Total: ₹${(order.total || 0).toLocaleString()}</div>
-                            <a class="track-link" data-page="track" data-order="${order.order_id}">Track Order →</a>
+                            <a class="track-link" data-order="${order.order_id}">Track Order →</a>
                         </div>
                     `;
                 }
@@ -843,27 +861,23 @@
                     return;
                 }
                 
-                const { error } = await supabase
-                    .from('profiles')
-                    .update({
-                        full_name: fullName,
-                        phone: phone || '',
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('id', currentUser.id);
+                const success = await updateProfile(currentUser.id, {
+                    full_name: fullName,
+                    phone: phone || ''
+                });
                 
-                if (error) {
-                    showToast('Error updating profile', true);
-                } else {
+                if (success) {
                     currentUser.profile = { ...currentUser.profile, full_name: fullName, phone: phone };
                     localStorage.setItem('customerUser', JSON.stringify(currentUser));
                     showToast('Profile updated successfully!');
                     renderDashboard();
+                } else {
+                    showToast('Error updating profile', true);
                 }
             });
             
             // Track order links
-            document.querySelectorAll('[data-page="track"]').forEach(el => {
+            document.querySelectorAll('.track-link').forEach(el => {
                 el.addEventListener('click', (e) => {
                     e.preventDefault();
                     const orderId = el.getAttribute('data-order');
@@ -998,13 +1012,11 @@
         const { data: { user } } = await supabase.auth.getUser();
         
         if (user) {
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .maybeSingle();
-            
-            currentUser = { ...user, profile: profile || {} };
+            const profile = await getProfile(user.id);
+            currentUser = { 
+                ...user, 
+                profile: profile || { full_name: user.email?.split('@')[0], phone: '' }
+            };
             localStorage.setItem('customerUser', JSON.stringify(currentUser));
             await renderDashboard();
         } else {
