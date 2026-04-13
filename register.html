@@ -295,29 +295,47 @@
             setTimeout(() => toast.remove(), 5000);
         }
         
-        // Direct insert into profiles table
-        async function insertProfile(userId, fullName, phone) {
+        // Function to create profile with retry
+        async function createProfile(userId, fullName, phone, retryCount = 0) {
             try {
-                console.log('Inserting profile for user:', userId);
+                console.log(`Attempt ${retryCount + 1}: Creating profile for user:`, userId);
                 
-                const { data, error } = await supabase
+                // First check if profile already exists
+                const { data: existing } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('id', userId)
+                    .maybeSingle();
+                
+                if (existing) {
+                    console.log('Profile already exists');
+                    return true;
+                }
+                
+                // Insert new profile
+                const { error } = await supabase
                     .from('profiles')
                     .insert({
                         id: userId,
                         full_name: fullName,
                         phone: phone || ''
-                    })
-                    .select();
+                    });
                 
                 if (error) {
                     console.error('Insert error:', error);
+                    
+                    // Retry up to 3 times
+                    if (retryCount < 3) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        return createProfile(userId, fullName, phone, retryCount + 1);
+                    }
                     return false;
                 }
                 
-                console.log('Profile inserted:', data);
+                console.log('Profile created successfully');
                 return true;
             } catch (error) {
-                console.error('Insert profile error:', error);
+                console.error('Profile creation error:', error);
                 return false;
             }
         }
@@ -347,6 +365,12 @@
                 return;
             }
             
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showToast('Please enter a valid email address', true);
+                return;
+            }
+            
             const registerBtn = document.querySelector('.register-btn');
             registerBtn.disabled = true;
             registerBtn.textContent = 'Creating account...';
@@ -370,12 +394,12 @@
                 if (data.user) {
                     console.log('Auth user created:', data.user.id);
                     
-                    // Step 2: Insert into profiles table
-                    const profileInserted = await insertProfile(data.user.id, fullName, phone);
+                    // Step 2: Create profile in profiles table
+                    const profileCreated = await createProfile(data.user.id, fullName, phone);
                     
-                    if (profileInserted) {
-                        console.log('Profile inserted successfully');
-                        showToast('Account created!');
+                    if (profileCreated) {
+                        console.log('Profile creation SUCCESS');
+                        showToast('Account created successfully!');
                         
                         // Step 3: Auto login
                         const { error: loginError } = await supabase.auth.signInWithPassword({
@@ -384,7 +408,6 @@
                         });
                         
                         if (!loginError) {
-                            // Show success and redirect
                             document.getElementById('registrationForm').style.display = 'none';
                             document.getElementById('successMessage').style.display = 'block';
                             
@@ -392,13 +415,14 @@
                                 window.location.href = 'customer-portal.html';
                             }, 2000);
                         } else {
-                            showToast('Account created! Please login.', false);
+                            console.log('Auto login failed, but account created');
                             setTimeout(() => {
                                 window.location.href = 'customer-portal.html';
                             }, 1500);
                         }
                     } else {
-                        showToast('Account created but profile issue', true);
+                        console.error('Profile creation FAILED after retries');
+                        showToast('Account created but profile issue. Please contact support.', true);
                         registerBtn.disabled = false;
                         registerBtn.textContent = 'Create Account →';
                     }
@@ -408,7 +432,7 @@
                 console.error('Registration error:', error);
                 let errorMessage = 'Registration failed. ';
                 if (error.message === 'User already registered') {
-                    errorMessage = 'An account with this email already exists.';
+                    errorMessage = 'An account with this email already exists. Please login instead.';
                 } else {
                     errorMessage += error.message;
                 }
