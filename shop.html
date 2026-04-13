@@ -199,7 +199,37 @@
             border-color: var(--gold);
         }
         
-        /* Product Image Container */
+        /* D360° Embedded Viewer */
+        .product-d360-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+        
+        .product-d360-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            pointer-events: auto;
+        }
+        
+        .d360-label {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: var(--gold);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            z-index: 5;
+            pointer-events: none;
+        }
+        
+        /* Product Image Container for regular images */
         .product-image-container {
             position: relative;
             width: 100%;
@@ -422,7 +452,7 @@
             margin-bottom: 15px;
         }
         
-        /* ========== FLOATING CART BUTTON ========== */
+        /* Floating Cart Button */
         .floating-cart {
             position: fixed;
             bottom: 80px;
@@ -466,7 +496,7 @@
             justify-content: center;
         }
         
-        /* ========== IPHONE 5 STYLE SWIPE TO UNLOCK CART ========== */
+        /* Swipe Cart Overlay */
         .swipe-cart-overlay {
             position: fixed;
             bottom: 0;
@@ -520,10 +550,6 @@
             touch-action: none;
         }
         
-        .swipe-container:active {
-            cursor: grabbing;
-        }
-        
         .swipe-track {
             background: rgba(255,255,255,0.2);
             border-radius: 50px;
@@ -545,10 +571,6 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             position: relative;
             z-index: 2;
-        }
-        
-        .swipe-thumb:active {
-            cursor: grabbing;
         }
         
         .swipe-progress {
@@ -621,7 +643,6 @@
             margin-top: 10px;
         }
         
-        /* ========== DO SOMETHING SECTION ========== */
         .do-something-section {
             margin-top: 20px;
             padding-top: 15px;
@@ -1018,7 +1039,7 @@
     <div id="productModal" class="product-modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeProductModal()">&times;</button>
-            <img id="modalImage" class="modal-image" src="" alt="Product detail">
+            <div id="modalMediaContainer" class="modal-media-container"></div>
             <div class="modal-info">
                 <div class="modal-name" id="modalName"></div>
                 <div class="modal-sku" id="modalSku"></div>
@@ -1064,7 +1085,16 @@
         let currentCart = [];
         let productsCache = {};
         
-        // ========== GST CALCULATION FUNCTIONS ==========
+        // ========== D360° URL DETECTION ==========
+        function isD360Viewer(url) {
+            return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d='));
+        }
+        
+        function isD360Image(url) {
+            return url && url.includes('d360.tech/imaged/');
+        }
+        
+        // ========== GST CALCULATION ==========
         function calculateGST(price, gstPercent) {
             const gstAmount = (price * gstPercent) / 100;
             const total = price + gstAmount;
@@ -1134,7 +1164,7 @@
             }
         }
         
-        // Update Cart Preview with GST
+        // Update Cart Preview
         async function updateCartPreview() {
             const cartItems = await updateCartCount();
             const previewContainer = document.getElementById('cartPreviewContent');
@@ -1209,7 +1239,6 @@
         // Add to Cart (with GST stored)
         window.addToCart = async (id, name, price, sku, img) => {
             try {
-                // Fetch GST for this product
                 const productInfo = await fetchProductGST(id);
                 const gstPercent = productInfo?.gst || 18;
                 
@@ -1306,7 +1335,7 @@
             }
         }
         
-        // Render Products with GST
+        // Render Products with D360° support
         function renderProducts() {
             const container = document.getElementById('productsGrid');
             let products = currentCategory === 'all' 
@@ -1325,37 +1354,62 @@
             
             let html = '';
             for (const p of products) {
-                const img = p.images?.[0] || 'https://via.placeholder.com/400x400?text=Style+Of+Life';
+                const mediaItems = p.images || [];
+                const validMedia = mediaItems.filter(m => m && m.trim() !== '');
+                const firstMedia = validMedia.length > 0 ? validMedia[0] : 'https://via.placeholder.com/400x400?text=Style+Of+Life';
+                const isD360 = isD360Viewer(firstMedia);
                 const stock = getStockStatus(p.stock);
                 const disabledAttr = stock.disabled ? 'disabled' : '';
                 const gstPercent = p.gst || 18;
                 const { gstAmount, total } = calculateGST(p.price, gstPercent);
                 
-                html += `
-                    <div class="product-card" data-product-id="${p.id}">
+                let mediaHtml = '';
+                
+                if (isD360) {
+                    // D360° interactive viewer - embedded directly
+                    mediaHtml = `
+                        <div class="product-d360-container">
+                            <iframe 
+                                src="${firstMedia}" 
+                                class="product-d360-iframe"
+                                frameborder="0" 
+                                allowfullscreen>
+                            </iframe>
+                            <div class="d360-label">🔄 360° Interactive View</div>
+                        </div>
+                    `;
+                } else {
+                    // Regular image
+                    mediaHtml = `
                         <div class="product-image-container">
-                            <img class="product-image" src="${img}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/400x400?text=Image+Not+Available'">
-                            <div class="share-image-btn" onclick="event.stopPropagation(); shareProduct('${escapeHtml(p.name)}', ${p.price}, '${img}')">
+                            <img class="product-image" src="${firstMedia}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/400x400?text=Image+Not+Available'">
+                            <div class="share-image-btn" onclick="event.stopPropagation(); shareProduct('${escapeHtml(p.name)}', ${p.price}, '${firstMedia}')">
                                 <i class="fas fa-share-alt"></i>
                             </div>
                         </div>
+                    `;
+                }
+                
+                html += `
+                    <div class="product-card" data-product-id="${p.id}">
+                        ${mediaHtml}
                         <div class="product-info">
                             <div class="product-name">${escapeHtml(p.name)}</div>
                             <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
-                            <div class="product-price">₹${(p.price || 0).toLocaleString()} <small>(Excl. GST)</small></div>
-                            <div class="product-gst">GST ${gstPercent}%: ₹${gstAmount.toLocaleString()} | Total: ₹${total.toLocaleString()}</div>
+                            <div class="product-price">₹${total.toLocaleString()} <small>(Incl. ${gstPercent}% GST)</small></div>
+                            <div class="product-gst">📊 GST ${gstPercent}%: ₹${gstAmount.toLocaleString()}</div>
                             <div class="product-stock ${stock.class}">
                                 <i class="fas ${p.stock <= 0 ? 'fa-times-circle' : (p.stock < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i>
                                 <span>${stock.text}</span>
                             </div>
                             <div class="product-buttons">
-                                <button class="buy-now-btn" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')" ${disabledAttr}>
+                                <button class="buy-now-btn" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${isD360 ? 'https://via.placeholder.com/400x400?text=360°+View' : firstMedia}')" ${disabledAttr}>
                                     <i class="fas fa-bolt"></i> Buy Now
                                 </button>
-                                <button class="cart-btn" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')" ${disabledAttr}>
+                                <button class="cart-btn" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${isD360 ? 'https://via.placeholder.com/400x400?text=360°+View' : firstMedia}')" ${disabledAttr}>
                                     <i class="fas fa-shopping-cart"></i> Cart
                                 </button>
-                                <button class="share-btn" onclick="event.stopPropagation(); shareProduct('${escapeHtml(p.name)}', ${p.price}, '${img}')">
+                                <button class="share-btn" onclick="event.stopPropagation(); shareProduct('${escapeHtml(p.name)}', ${p.price}, '${isD360 ? 'https://via.placeholder.com/400x400?text=360°+View' : firstMedia}')">
                                     <i class="fas fa-share-alt"></i>
                                 </button>
                             </div>
@@ -1366,18 +1420,35 @@
             container.innerHTML = html;
         }
         
-        // Open Product Modal with GST
+        // Open Product Modal with D360° support
         window.openProductModal = function(product) {
-            const img = product.images?.[0] || 'https://via.placeholder.com/400x400?text=Style+Of+Life';
+            const mediaItems = product.images || [];
+            const validMedia = mediaItems.filter(m => m && m.trim() !== '');
+            const displayMedia = validMedia.length > 0 ? validMedia : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
+            const firstMedia = displayMedia[0];
             const stock = getStockStatus(product.stock);
             const gstPercent = product.gst || 18;
             const { gstAmount, total } = calculateGST(product.price, gstPercent);
+            const isD360 = isD360Viewer(firstMedia);
             
-            document.getElementById('modalImage').src = img;
+            // For modal, show first media (if D360°, show iframe)
+            const modalMediaContainer = document.getElementById('modalMediaContainer');
+            if (modalMediaContainer) {
+                if (isD360) {
+                    modalMediaContainer.innerHTML = `
+                        <div style="width: 100%; aspect-ratio: 1/1; background: #1a1a1a;">
+                            <iframe src="${firstMedia}" style="width: 100%; height: 100%; border: none;" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    `;
+                } else {
+                    modalMediaContainer.innerHTML = `<img id="modalImage" class="modal-image" src="${firstMedia}" alt="Product detail" onerror="this.src='https://via.placeholder.com/400x400?text=Image+Not+Available'">`;
+                }
+            }
+            
             document.getElementById('modalName').textContent = product.name;
             document.getElementById('modalSku').textContent = `SKU: ${product.sku}`;
             document.getElementById('modalCategory').textContent = product.category || 'Jewelry';
-            document.getElementById('modalPrice').innerHTML = `₹${(product.price || 0).toLocaleString()} <small>(Excl. GST)</small><br><span style="font-size: 18px;">₹${total.toLocaleString()} <small>(Incl. ${gstPercent}% GST)</small></span>`;
+            document.getElementById('modalPrice').innerHTML = `₹${total.toLocaleString()} <small>(Incl. ${gstPercent}% GST)</small><br><span style="font-size: 16px; color: var(--gray);">Base: ₹${product.price.toLocaleString()} + GST: ₹${gstAmount.toLocaleString()}</span>`;
             document.getElementById('modalGst').innerHTML = `<i class="fas fa-percent"></i> GST ${gstPercent}%: ₹${gstAmount.toLocaleString()}`;
             document.getElementById('modalDescription').textContent = product.description || 'Exquisite handcrafted jewelry piece.';
             document.getElementById('modalStock').innerHTML = `
@@ -1387,9 +1458,10 @@
             
             const buyBtn = document.getElementById('modalBuyBtn');
             const cartBtn = document.getElementById('modalCartBtn');
+            const imgUrl = isD360 ? 'https://via.placeholder.com/400x400?text=360°+View' : firstMedia;
             
-            buyBtn.onclick = () => buyNow(product.id, product.name, product.price, product.sku, img);
-            cartBtn.onclick = () => addToCart(product.id, product.name, product.price, product.sku, img);
+            buyBtn.onclick = () => buyNow(product.id, product.name, product.price, product.sku, imgUrl);
+            cartBtn.onclick = () => addToCart(product.id, product.name, product.price, product.sku, imgUrl);
             
             document.getElementById('productModal').classList.add('active');
         };
@@ -1398,7 +1470,7 @@
             document.getElementById('productModal').classList.remove('active');
         };
         
-        // Load All Products with GST
+        // Load All Products
         async function loadProducts() {
             try {
                 const { data: products, error } = await supabase.from('products').select('*').order('id');
