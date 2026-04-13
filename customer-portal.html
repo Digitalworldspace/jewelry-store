@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Style Of Life - My Account</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#d4af37">
+    <title>My Account - Style Of Life</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -17,46 +17,138 @@
             --white-light: #F8F9FA;
             --black: #1A1A1A;
             --gray: #666666;
+            --gray-light: #999999;
+            --success: #28a745;
+            --danger: #dc3545;
+            --info: #17a2b8;
         }
         body {
             font-family: 'Inter', sans-serif;
             background: var(--white-light);
             padding-bottom: 70px;
         }
+        
+        /* Google Gemini Style Logo */
+        .gemini-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: 'Playfair Display', serif;
+            padding: 12px 0;
+            background: var(--white);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .gemini-star {
+            width: 40px;
+            height: 40px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .gemini-star svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            animation: starPulse 2s ease-in-out infinite;
+        }
+        
+        .gemini-star svg .star-outline {
+            stroke: url(#geminiGradient);
+            stroke-width: 2;
+            fill: white;
+        }
+        
+        @keyframes starPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 0.9; }
+        }
+        
+        .gemini-text {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--black);
+            position: relative;
+        }
+        
+        .gemini-text::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #4285F4, #EA4335, #FBBC05, #34A853);
+            transition: width 0.3s ease;
+        }
+        
+        .gemini-logo:hover .gemini-text::after {
+            width: 100%;
+        }
+        
+        .gemini-sub {
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--gray);
+            margin-left: 5px;
+        }
+        
+        /* Account Container */
         .account-container {
             max-width: 600px;
-            margin: 40px auto;
+            margin: 30px auto;
             padding: 20px;
         }
+        
         .account-box {
             background: white;
             border-radius: 24px;
             padding: 40px;
             text-align: center;
             border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
         }
+        
         h2 {
             color: var(--gold);
-            margin-bottom: 15px;
+            margin-bottom: 25px;
+            font-size: 28px;
         }
+        
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-align: left;
         }
+        
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: 500;
             color: var(--gray);
             font-size: 13px;
         }
+        
         .form-group input {
             width: 100%;
-            padding: 12px;
+            padding: 12px 16px;
             border: 1px solid #ddd;
             border-radius: 12px;
             font-size: 14px;
+            transition: all 0.3s;
         }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212,175,55,0.1);
+        }
+        
         .login-btn, .register-btn {
             width: 100%;
             padding: 14px;
@@ -64,18 +156,229 @@
             border: none;
             border-radius: 40px;
             font-weight: 600;
+            font-size: 16px;
             cursor: pointer;
+            transition: all 0.3s;
             margin-top: 10px;
         }
-        .switch-link {
-            margin-top: 20px;
-            font-size: 13px;
+        
+        .login-btn:hover, .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212,175,55,0.3);
         }
+        
+        .login-btn:disabled, .register-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .switch-link {
+            margin-top: 25px;
+            font-size: 14px;
+        }
+        
         .switch-link a {
             color: var(--gold);
             cursor: pointer;
             text-decoration: none;
+            font-weight: 600;
         }
+        
+        .switch-link a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Dashboard Styles */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .welcome-badge {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--black);
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+        }
+        
+        .logout-dashboard {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .logout-dashboard:hover {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02));
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(212,175,55,0.1);
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--gold);
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 5px;
+            background: var(--white);
+            padding: 5px;
+            border-radius: 50px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--gray);
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--black);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .order-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .order-id {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-processing { background: #d1ecf1; color: #0c5460; }
+        .status-shipped { background: #d4edda; color: #155724; }
+        .status-delivered { background: #c3e6cb; color: #155724; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+        
+        .order-date {
+            font-size: 11px;
+            color: var(--gray-light);
+            margin-bottom: 8px;
+        }
+        
+        .order-items {
+            font-size: 12px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+        
+        .order-total {
+            font-weight: 700;
+            color: var(--gold);
+            margin-top: 8px;
+        }
+        
+        .track-link {
+            color: var(--gold);
+            font-size: 12px;
+            text-decoration: none;
+            margin-top: 8px;
+            display: inline-block;
+        }
+        
+        .profile-form input {
+            margin-bottom: 15px;
+        }
+        
+        .save-profile-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray-light);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -88,6 +391,7 @@
             border-top: 1px solid rgba(0,0,0,0.05);
             z-index: 100;
         }
+        
         .bottom-nav a {
             display: flex;
             flex-direction: column;
@@ -98,11 +402,14 @@
             font-size: 10px;
             cursor: pointer;
         }
+        
         .bottom-nav a i { font-size: 22px; }
         .bottom-nav a.active, .bottom-nav a:hover { color: var(--gold); }
+        
+        /* Toast */
         .toast {
             position: fixed;
-            bottom: 70px;
+            bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
@@ -113,64 +420,103 @@
             font-size: 13px;
             font-weight: 700;
             animation: slideUp 0.3s ease;
+            white-space: nowrap;
         }
+        
+        .toast-error {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .toast-success {
+            background: var(--success);
+            color: white;
+        }
+        
         @keyframes slideUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #e9ecef;
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .account-container {
+                margin: 15px auto;
+                padding: 15px;
+            }
+            .account-box {
+                padding: 25px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            .stat-number {
+                font-size: 22px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="account-container">
-        <div id="accountContent">
-            <div class="account-box">
-                <h2><i class="fas fa-user-circle"></i> My Account</h2>
-                <div id="loginForm">
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" id="loginEmail" placeholder="your@email.com">
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="loginPassword" placeholder="Enter password">
-                    </div>
-                    <button class="login-btn" onclick="handleLogin()">Login →</button>
-                    <div class="switch-link">
-                        <p>New customer? <a onclick="showRegister()">Create an account</a></p>
-                    </div>
-                </div>
-                <div id="registerForm" style="display: none;">
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="regName" placeholder="Enter your full name">
-                    </div>
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" id="regEmail" placeholder="your@email.com">
-                    </div>
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        <input type="tel" id="regPhone" maxlength="10" placeholder="10-digit mobile number">
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="regPassword" placeholder="Create password (min 6 characters)">
-                    </div>
-                    <button class="register-btn" onclick="handleRegister()">Create Account →</button>
-                    <div class="switch-link">
-                        <p>Already have account? <a onclick="showLogin()">Sign In</a></p>
-                    </div>
-                </div>
-            </div>
+    <!-- Google Gemini Style Logo -->
+    <div class="gemini-logo" data-page="home">
+        <div class="gemini-star">
+            <svg viewBox="0 0 24 24" width="100%" height="100%">
+                <defs>
+                    <linearGradient id="geminiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#4285F4;stop-opacity:1" />
+                        <stop offset="33%" style="stop-color:#EA4335;stop-opacity:1" />
+                        <stop offset="66%" style="stop-color:#FBBC05;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#34A853;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path class="star-outline" d="M12 2L15 9H22L16 14L19 21L12 16.5L5 21L8 14L2 9H9L12 2Z" fill="white" stroke="url(#geminiGradient)" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div>
+            <span class="gemini-text">Style Of Life</span>
+            <span class="gemini-sub">LUXURY JEWELRY</span>
         </div>
     </div>
     
+    <div class="account-container">
+        <div id="accountContent">
+            <!-- Login/Register forms will be shown here -->
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <a data-page="home"><i class="fas fa-home"></i><span>Home</span></a>
         <a data-page="shop"><i class="fas fa-search"></i><span>Shop</span></a>
         <a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Cart</span></a>
         <a data-page="track"><i class="fas fa-truck"></i><span>Track</span></a>
-        <a data-page="account" class="active"><i class="fas fa-user"></i><span>Account</span></a>
+        <a data-page="customer-portal" class="active"><i class="fas fa-user"></i><span>Account</span></a>
     </div>
     
     <script type="importmap">
@@ -183,6 +529,7 @@
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let currentUser = null;
         
+        // Navigation
         function navigateTo(page) {
             if (window.parent !== window) {
                 window.parent.postMessage({ page: page }, '*');
@@ -202,95 +549,467 @@
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast';
-            if (isError) toast.style.background = '#dc3545';
+            if (isError) toast.classList.add('toast-error');
+            else toast.classList.add('toast-success');
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
         
-        window.showLogin = function() {
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('registerForm').style.display = 'none';
-        };
+        // Function to create/update profile in profiles table
+        async function createOrUpdateProfile(userId, fullName, phone, email) {
+            try {
+                // Check if profile exists
+                const { data: existingProfile } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('id', userId)
+                    .maybeSingle();
+                
+                if (existingProfile) {
+                    // Update existing profile
+                    const { error } = await supabase
+                        .from('profiles')
+                        .update({
+                            full_name: fullName,
+                            phone: phone || '',
+                            email: email,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', userId);
+                    
+                    if (error) throw error;
+                } else {
+                    // Create new profile
+                    const { error } = await supabase
+                        .from('profiles')
+                        .insert([{
+                            id: userId,
+                            full_name: fullName,
+                            phone: phone || '',
+                            email: email,
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        }]);
+                    
+                    if (error) throw error;
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Profile creation error:', error);
+                return false;
+            }
+        }
         
-        window.showRegister = function() {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'block';
-        };
-        
-        window.handleLogin = async function() {
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            
+        // Handle Login
+        async function handleLogin(email, password) {
             if (!email || !password) {
                 showToast('Please enter email and password', true);
-                return;
+                return false;
             }
             
             try {
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
                 if (error) throw error;
                 
-                showToast('Login successful!');
-                setTimeout(() => navigateTo('account'), 1000);
+                if (data.user) {
+                    // Get or create profile
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', data.user.id)
+                        .maybeSingle();
+                    
+                    currentUser = { ...data.user, profile: profile || {} };
+                    localStorage.setItem('customerUser', JSON.stringify(currentUser));
+                    
+                    showToast('Login successful!');
+                    return true;
+                }
+                return false;
             } catch (error) {
                 showToast(error.message || 'Login failed', true);
+                return false;
             }
-        };
+        }
         
-        window.handleRegister = async function() {
-            const name = document.getElementById('regName').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const phone = document.getElementById('regPhone').value.trim();
-            const password = document.getElementById('regPassword').value;
-            
-            if (!name || !email || !password) {
+        // Handle Register
+        async function handleRegister(fullName, email, phone, password) {
+            if (!fullName || !email || !password) {
                 showToast('Please fill all required fields', true);
-                return;
+                return false;
             }
             
             if (password.length < 6) {
                 showToast('Password must be at least 6 characters', true);
-                return;
+                return false;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showToast('Please enter a valid email address', true);
+                return false;
             }
             
             if (phone && (phone.length !== 10 || !/^\d+$/.test(phone))) {
-                showToast('Enter valid 10-digit phone number', true);
-                return;
+                showToast('Please enter a valid 10-digit phone number', true);
+                return false;
             }
             
             try {
+                // Sign up with auto-confirm
                 const { data, error } = await supabase.auth.signUp({
                     email: email,
                     password: password,
-                    options: { data: { full_name: name, phone: phone } }
+                    options: {
+                        data: {
+                            full_name: fullName,
+                            phone: phone || ''
+                        }
+                    }
                 });
+                
                 if (error) throw error;
                 
-                showToast('Registration successful! Please check your email to verify.');
-                setTimeout(() => showLogin(), 2000);
+                if (data.user) {
+                    // Create profile in profiles table
+                    await createOrUpdateProfile(data.user.id, fullName, phone, email);
+                    
+                    // Auto login after registration
+                    const loginSuccess = await handleLogin(email, password);
+                    
+                    if (loginSuccess) {
+                        showToast('Account created successfully!');
+                        return true;
+                    } else {
+                        showToast('Account created! Please login.', false);
+                        return true;
+                    }
+                }
+                return false;
             } catch (error) {
-                showToast(error.message || 'Registration failed', true);
+                console.error('Registration error:', error);
+                let errorMessage = 'Registration failed. ';
+                if (error.message === 'User already registered') {
+                    errorMessage = 'An account with this email already exists. Please login instead.';
+                } else {
+                    errorMessage += error.message;
+                }
+                showToast(errorMessage, true);
+                return false;
             }
-        };
-        
-        // Check if already logged in
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            document.getElementById('accountContent').innerHTML = `
-                <div class="account-box">
-                    <h2><i class="fas fa-user-circle"></i> Welcome ${user.email?.split('@')[0]}!</h2>
-                    <p style="margin: 15px 0;">You are logged in to your account.</p>
-                    <button class="login-btn" onclick="handleLogout()" style="background: #dc3545;">Logout</button>
-                </div>
-            `;
         }
         
-        window.handleLogout = async function() {
+        // Handle Logout
+        async function handleLogout() {
             await supabase.auth.signOut();
+            localStorage.removeItem('customerUser');
+            currentUser = null;
             showToast('Logged out successfully');
-            setTimeout(() => navigateTo('account'), 500);
-        };
+            renderLoginRegister();
+        }
+        
+        // Load user orders
+        async function loadUserOrders() {
+            if (!currentUser) return [];
+            
+            try {
+                const { data, error } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .eq('email', currentUser.email)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                return [];
+            }
+        }
+        
+        // Render Dashboard
+        async function renderDashboard() {
+            const container = document.getElementById('accountContent');
+            const orders = await loadUserOrders();
+            const totalOrders = orders.length;
+            const totalSpent = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+            const pendingOrders = orders.filter(o => o.status === 'pending' || o.status === 'Pending').length;
+            
+            // Generate orders HTML
+            let ordersHtml = '';
+            if (orders.length === 0) {
+                ordersHtml = '<div class="empty-state"><i class="fas fa-shopping-bag"></i><p>No orders yet</p><a data-page="shop" style="color: var(--gold); cursor: pointer;">Start Shopping →</a></div>';
+            } else {
+                for (const order of orders) {
+                    const statusClass = `status-${(order.status || 'pending').toLowerCase()}`;
+                    ordersHtml += `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <span class="order-id">${order.order_id}</span>
+                                <span class="status-badge ${statusClass}">${order.status || 'Pending'}</span>
+                            </div>
+                            <div class="order-date">${new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+                            <div class="order-items">${order.items?.map(i => `${i.name} x${i.quantity}`).join(', ') || 'No items'}</div>
+                            <div class="order-total">Total: ₹${(order.total || 0).toLocaleString()}</div>
+                            <a class="track-link" data-page="track" data-order="${order.order_id}">Track Order →</a>
+                        </div>
+                    `;
+                }
+            }
+            
+            container.innerHTML = `
+                <div class="account-box">
+                    <div class="dashboard-header">
+                        <div class="welcome-badge">
+                            <i class="fas fa-crown"></i> Welcome, ${currentUser?.profile?.full_name || currentUser?.email?.split('@')[0]}!
+                        </div>
+                        <button class="logout-dashboard" id="dashboardLogoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">${totalOrders}</div>
+                            <div class="stat-label">Total Orders</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">₹${totalSpent.toLocaleString()}</div>
+                            <div class="stat-label">Total Spent</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${pendingOrders}</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                    </div>
+                    
+                    <div class="tabs">
+                        <div class="tab active" data-tab="orders">📦 Orders</div>
+                        <div class="tab" data-tab="profile">👤 Profile</div>
+                    </div>
+                    
+                    <div id="ordersTab" class="tab-content active">
+                        ${ordersHtml}
+                    </div>
+                    
+                    <div id="profileTab" class="tab-content">
+                        <div class="profile-form">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="profileFullName" value="${escapeHtml(currentUser?.profile?.full_name || '')}" placeholder="Your full name">
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" id="profileEmail" value="${escapeHtml(currentUser?.email || '')}" disabled style="background: #f5f5f5;">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" id="profilePhone" maxlength="10" value="${escapeHtml(currentUser?.profile?.phone || '')}" placeholder="10-digit mobile number">
+                            </div>
+                            <button class="save-profile-btn" id="saveProfileBtn">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Tab switching
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    const tabName = tab.dataset.tab;
+                    document.getElementById('ordersTab').classList.toggle('active', tabName === 'orders');
+                    document.getElementById('profileTab').classList.toggle('active', tabName === 'profile');
+                });
+            });
+            
+            // Logout button
+            document.getElementById('dashboardLogoutBtn')?.addEventListener('click', handleLogout);
+            
+            // Save profile button
+            document.getElementById('saveProfileBtn')?.addEventListener('click', async () => {
+                const fullName = document.getElementById('profileFullName').value.trim();
+                const phone = document.getElementById('profilePhone').value.trim();
+                
+                if (!fullName) {
+                    showToast('Please enter your full name', true);
+                    return;
+                }
+                
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({
+                        full_name: fullName,
+                        phone: phone || '',
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', currentUser.id);
+                
+                if (error) {
+                    showToast('Error updating profile', true);
+                } else {
+                    currentUser.profile = { ...currentUser.profile, full_name: fullName, phone: phone };
+                    localStorage.setItem('customerUser', JSON.stringify(currentUser));
+                    showToast('Profile updated successfully!');
+                    renderDashboard();
+                }
+            });
+            
+            // Track order links
+            document.querySelectorAll('[data-page="track"]').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const orderId = el.getAttribute('data-order');
+                    if (orderId) {
+                        navigateTo(`track?order=${orderId}`);
+                    } else {
+                        navigateTo('track');
+                    }
+                });
+            });
+        }
+        
+        // Render Login/Register forms
+        function renderLoginRegister() {
+            const container = document.getElementById('accountContent');
+            container.innerHTML = `
+                <div class="account-box">
+                    <div id="loginForm">
+                        <h2><i class="fas fa-user-circle"></i> My Account</h2>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="loginEmail" placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="loginPassword" placeholder="Enter password">
+                        </div>
+                        <button class="login-btn" id="loginBtn">Login →</button>
+                        <div class="switch-link">
+                            <p>New customer? <a id="showRegisterBtn">Create an account</a></p>
+                        </div>
+                    </div>
+                    
+                    <div id="registerForm" style="display: none;">
+                        <h2><i class="fas fa-user-plus"></i> Create Account</h2>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="regFullName" placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="regEmail" placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="regPhone" maxlength="10" placeholder="10-digit mobile number (optional)">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="regPassword" placeholder="Create password (min 6 characters)">
+                        </div>
+                        <button class="register-btn" id="registerBtn">Create Account →</button>
+                        <div class="switch-link">
+                            <p>Already have account? <a id="showLoginBtn">Sign In</a></p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Login button
+            document.getElementById('loginBtn')?.addEventListener('click', async () => {
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value;
+                
+                const btn = document.getElementById('loginBtn');
+                btn.disabled = true;
+                btn.textContent = 'Logging in...';
+                
+                const success = await handleLogin(email, password);
+                
+                if (success) {
+                    await renderDashboard();
+                }
+                
+                btn.disabled = false;
+                btn.textContent = 'Login →';
+            });
+            
+            // Register button
+            document.getElementById('registerBtn')?.addEventListener('click', async () => {
+                const fullName = document.getElementById('regFullName').value.trim();
+                const email = document.getElementById('regEmail').value.trim();
+                const phone = document.getElementById('regPhone').value.trim();
+                const password = document.getElementById('regPassword').value;
+                
+                const btn = document.getElementById('registerBtn');
+                btn.disabled = true;
+                btn.textContent = 'Creating account...';
+                
+                const success = await handleRegister(fullName, email, phone, password);
+                
+                if (success) {
+                    await renderDashboard();
+                }
+                
+                btn.disabled = false;
+                btn.textContent = 'Create Account →';
+            });
+            
+            // Show register form
+            document.getElementById('showRegisterBtn')?.addEventListener('click', () => {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+            });
+            
+            // Show login form
+            document.getElementById('showLoginBtn')?.addEventListener('click', () => {
+                document.getElementById('registerForm').style.display = 'none';
+                document.getElementById('loginForm').style.display = 'block';
+            });
+            
+            // Enter key support
+            document.getElementById('loginPassword')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('loginBtn')?.click();
+            });
+            document.getElementById('regPassword')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('registerBtn')?.click();
+            });
+            
+            // Phone input validation
+            document.getElementById('regPhone')?.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+            });
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
+        }
+        
+        // Check if user is already logged in
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .maybeSingle();
+            
+            currentUser = { ...user, profile: profile || {} };
+            localStorage.setItem('customerUser', JSON.stringify(currentUser));
+            await renderDashboard();
+        } else {
+            renderLoginRegister();
+        }
     </script>
 </body>
 </html>
