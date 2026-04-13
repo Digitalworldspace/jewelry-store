@@ -20,7 +20,6 @@
             --gray-light: #999999;
             --success: #28a745;
             --danger: #dc3545;
-            --info: #17a2b8;
         }
         body {
             font-family: 'Inter', sans-serif;
@@ -99,7 +98,6 @@
             margin-left: 5px;
         }
         
-        /* Account Container */
         .account-container {
             max-width: 600px;
             margin: 30px auto;
@@ -149,7 +147,7 @@
             box-shadow: 0 0 0 3px rgba(212,175,55,0.1);
         }
         
-        .login-btn, .register-btn {
+        .login-btn {
             width: 100%;
             padding: 14px;
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
@@ -162,12 +160,12 @@
             margin-top: 10px;
         }
         
-        .login-btn:hover, .register-btn:hover {
+        .login-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(212,175,55,0.3);
         }
         
-        .login-btn:disabled, .register-btn:disabled {
+        .login-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
@@ -379,7 +377,6 @@
             margin-bottom: 15px;
         }
         
-        /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -407,7 +404,6 @@
         .bottom-nav a i { font-size: 22px; }
         .bottom-nav a.active, .bottom-nav a:hover { color: var(--gold); }
         
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 80px;
@@ -445,7 +441,6 @@
             }
         }
         
-        /* Loading */
         .loading {
             text-align: center;
             padding: 40px;
@@ -484,7 +479,6 @@
     </style>
 </head>
 <body>
-    <!-- Google Gemini Style Logo -->
     <div class="gemini-logo" data-page="home">
         <div class="gemini-star">
             <svg viewBox="0 0 24 24" width="100%" height="100%">
@@ -506,12 +500,9 @@
     </div>
     
     <div class="account-container">
-        <div id="accountContent">
-            <!-- Login/Register forms will be shown here -->
-        </div>
+        <div id="accountContent"></div>
     </div>
     
-    <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <a data-page="home"><i class="fas fa-home"></i><span>Home</span></a>
         <a data-page="shop"><i class="fas fa-search"></i><span>Shop</span></a>
@@ -530,7 +521,6 @@
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let currentUser = null;
         
-        // Navigation
         function navigateTo(page) {
             if (window.parent !== window) {
                 window.parent.postMessage({ page: page }, '*');
@@ -559,29 +549,6 @@
         
         // ========== PROFILES TABLE FUNCTIONS ==========
         
-        // Create profile in profiles table
-        async function createProfile(userId, fullName, phone, email) {
-            try {
-                const { error } = await supabase
-                    .from('profiles')
-                    .insert([{
-                        id: userId,
-                        full_name: fullName,
-                        phone: phone || '',
-                        email: email,
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
-                    }]);
-                
-                if (error) throw error;
-                return true;
-            } catch (error) {
-                console.error('Profile creation error:', error);
-                return false;
-            }
-        }
-        
-        // Get profile from profiles table
         async function getProfile(userId) {
             try {
                 const { data, error } = await supabase
@@ -598,7 +565,6 @@
             }
         }
         
-        // Update profile in profiles table
         async function updateProfile(userId, updates) {
             try {
                 const { error } = await supabase
@@ -617,7 +583,6 @@
             }
         }
         
-        // Handle Login
         async function handleLogin(email, password) {
             if (!email || !password) {
                 showToast('Please enter email and password', true);
@@ -633,15 +598,12 @@
                 if (error) throw error;
                 
                 if (data.user) {
-                    // Get profile from profiles table
                     const profile = await getProfile(data.user.id);
-                    
                     currentUser = { 
                         ...data.user, 
                         profile: profile || { full_name: email.split('@')[0], phone: '' }
                     };
                     localStorage.setItem('customerUser', JSON.stringify(currentUser));
-                    
                     showToast('Login successful!');
                     return true;
                 }
@@ -652,78 +614,6 @@
             }
         }
         
-        // Handle Register
-        async function handleRegister(fullName, email, phone, password) {
-            if (!fullName || !email || !password) {
-                showToast('Please fill all required fields', true);
-                return false;
-            }
-            
-            if (password.length < 6) {
-                showToast('Password must be at least 6 characters', true);
-                return false;
-            }
-            
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                showToast('Please enter a valid email address', true);
-                return false;
-            }
-            
-            if (phone && (phone.length !== 10 || !/^\d+$/.test(phone))) {
-                showToast('Please enter a valid 10-digit phone number', true);
-                return false;
-            }
-            
-            try {
-                // Sign up with auto-confirm
-                const { data, error } = await supabase.auth.signUp({
-                    email: email,
-                    password: password,
-                    options: {
-                        data: {
-                            full_name: fullName,
-                            phone: phone || ''
-                        }
-                    }
-                });
-                
-                if (error) throw error;
-                
-                if (data.user) {
-                    // Create profile in profiles table
-                    const profileCreated = await createProfile(data.user.id, fullName, phone, email);
-                    
-                    if (!profileCreated) {
-                        console.warn('Profile creation issue, but user was created');
-                    }
-                    
-                    // Auto login after registration
-                    const loginSuccess = await handleLogin(email, password);
-                    
-                    if (loginSuccess) {
-                        showToast('Account created successfully!');
-                        return true;
-                    } else {
-                        showToast('Account created! Please login.', false);
-                        return true;
-                    }
-                }
-                return false;
-            } catch (error) {
-                console.error('Registration error:', error);
-                let errorMessage = 'Registration failed. ';
-                if (error.message === 'User already registered') {
-                    errorMessage = 'An account with this email already exists. Please login instead.';
-                } else {
-                    errorMessage += error.message;
-                }
-                showToast(errorMessage, true);
-                return false;
-            }
-        }
-        
-        // Handle Logout
         async function handleLogout() {
             await supabase.auth.signOut();
             localStorage.removeItem('customerUser');
@@ -732,10 +622,8 @@
             renderLoginRegister();
         }
         
-        // Load user orders
         async function loadUserOrders() {
             if (!currentUser) return [];
-            
             try {
                 const { data, error } = await supabase
                     .from('orders')
@@ -751,7 +639,6 @@
             }
         }
         
-        // Render Dashboard
         async function renderDashboard() {
             const container = document.getElementById('accountContent');
             const orders = await loadUserOrders();
@@ -759,7 +646,6 @@
             const totalSpent = orders.reduce((sum, o) => sum + (o.total || 0), 0);
             const pendingOrders = orders.filter(o => o.status === 'pending' || o.status === 'Pending').length;
             
-            // Generate orders HTML
             let ordersHtml = '';
             if (orders.length === 0) {
                 ordersHtml = '<div class="empty-state"><i class="fas fa-shopping-bag"></i><p>No orders yet</p><a data-page="shop" style="color: var(--gold); cursor: pointer;">Start Shopping →</a></div>';
@@ -772,7 +658,7 @@
                                 <span class="order-id">${order.order_id}</span>
                                 <span class="status-badge ${statusClass}">${order.status || 'Pending'}</span>
                             </div>
-                            <div class="order-date">${new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+                            <div class="order-date">${new Date(order.created_at).toLocaleDateString('en-IN')}</div>
                             <div class="order-items">${order.items?.map(i => `${i.name} x${i.quantity}`).join(', ') || 'No items'}</div>
                             <div class="order-total">Total: ₹${(order.total || 0).toLocaleString()}</div>
                             <a class="track-link" data-order="${order.order_id}">Track Order →</a>
@@ -784,88 +670,47 @@
             container.innerHTML = `
                 <div class="account-box">
                     <div class="dashboard-header">
-                        <div class="welcome-badge">
-                            <i class="fas fa-crown"></i> Welcome, ${currentUser?.profile?.full_name || currentUser?.email?.split('@')[0]}!
-                        </div>
-                        <button class="logout-dashboard" id="dashboardLogoutBtn">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
+                        <div class="welcome-badge"><i class="fas fa-crown"></i> Welcome, ${currentUser?.profile?.full_name || currentUser?.email?.split('@')[0]}!</div>
+                        <button class="logout-dashboard" id="dashboardLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
                     </div>
-                    
                     <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-number">${totalOrders}</div>
-                            <div class="stat-label">Total Orders</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number">₹${totalSpent.toLocaleString()}</div>
-                            <div class="stat-label">Total Spent</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number">${pendingOrders}</div>
-                            <div class="stat-label">Pending</div>
-                        </div>
+                        <div class="stat-card"><div class="stat-number">${totalOrders}</div><div class="stat-label">Total Orders</div></div>
+                        <div class="stat-card"><div class="stat-number">₹${totalSpent.toLocaleString()}</div><div class="stat-label">Total Spent</div></div>
+                        <div class="stat-card"><div class="stat-number">${pendingOrders}</div><div class="stat-label">Pending</div></div>
                     </div>
-                    
                     <div class="tabs">
                         <div class="tab active" data-tab="orders">📦 Orders</div>
                         <div class="tab" data-tab="profile">👤 Profile</div>
                     </div>
-                    
-                    <div id="ordersTab" class="tab-content active">
-                        ${ordersHtml}
-                    </div>
-                    
+                    <div id="ordersTab" class="tab-content active">${ordersHtml}</div>
                     <div id="profileTab" class="tab-content">
                         <div class="profile-form">
-                            <div class="form-group">
-                                <label>Full Name</label>
-                                <input type="text" id="profileFullName" value="${escapeHtml(currentUser?.profile?.full_name || '')}" placeholder="Your full name">
-                            </div>
-                            <div class="form-group">
-                                <label>Email Address</label>
-                                <input type="email" id="profileEmail" value="${escapeHtml(currentUser?.email || '')}" disabled style="background: #f5f5f5;">
-                            </div>
-                            <div class="form-group">
-                                <label>Phone Number</label>
-                                <input type="tel" id="profilePhone" maxlength="10" value="${escapeHtml(currentUser?.profile?.phone || '')}" placeholder="10-digit mobile number">
-                            </div>
+                            <div class="form-group"><label>Full Name</label><input type="text" id="profileFullName" value="${escapeHtml(currentUser?.profile?.full_name || '')}" placeholder="Your full name"></div>
+                            <div class="form-group"><label>Email Address</label><input type="email" id="profileEmail" value="${escapeHtml(currentUser?.email || '')}" disabled style="background: #f5f5f5;"></div>
+                            <div class="form-group"><label>Phone Number</label><input type="tel" id="profilePhone" maxlength="10" value="${escapeHtml(currentUser?.profile?.phone || '')}" placeholder="10-digit mobile number"></div>
                             <button class="save-profile-btn" id="saveProfileBtn">Save Changes</button>
                         </div>
                     </div>
                 </div>
             `;
             
-            // Tab switching
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', () => {
                     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
-                    
                     const tabName = tab.dataset.tab;
                     document.getElementById('ordersTab').classList.toggle('active', tabName === 'orders');
                     document.getElementById('profileTab').classList.toggle('active', tabName === 'profile');
                 });
             });
             
-            // Logout button
             document.getElementById('dashboardLogoutBtn')?.addEventListener('click', handleLogout);
             
-            // Save profile button
             document.getElementById('saveProfileBtn')?.addEventListener('click', async () => {
                 const fullName = document.getElementById('profileFullName').value.trim();
                 const phone = document.getElementById('profilePhone').value.trim();
-                
-                if (!fullName) {
-                    showToast('Please enter your full name', true);
-                    return;
-                }
-                
-                const success = await updateProfile(currentUser.id, {
-                    full_name: fullName,
-                    phone: phone || ''
-                });
-                
+                if (!fullName) { showToast('Please enter your full name', true); return; }
+                const success = await updateProfile(currentUser.id, { full_name: fullName, phone: phone || '' });
                 if (success) {
                     currentUser.profile = { ...currentUser.profile, full_name: fullName, phone: phone };
                     localStorage.setItem('customerUser', JSON.stringify(currentUser));
@@ -876,21 +721,16 @@
                 }
             });
             
-            // Track order links
             document.querySelectorAll('.track-link').forEach(el => {
                 el.addEventListener('click', (e) => {
                     e.preventDefault();
                     const orderId = el.getAttribute('data-order');
-                    if (orderId) {
-                        navigateTo(`track?order=${orderId}`);
-                    } else {
-                        navigateTo('track');
-                    }
+                    navigateTo(`track?order=${orderId}`);
                 });
             });
         }
         
-        // Render Login/Register forms
+        // ========== FIXED: Redirect to register.html ==========
         function renderLoginRegister() {
             const container = document.getElementById('accountContent');
             container.innerHTML = `
@@ -908,30 +748,6 @@
                         <button class="login-btn" id="loginBtn">Login →</button>
                         <div class="switch-link">
                             <p>New customer? <a id="showRegisterBtn">Create an account</a></p>
-                        </div>
-                    </div>
-                    
-                    <div id="registerForm" style="display: none;">
-                        <h2><i class="fas fa-user-plus"></i> Create Account</h2>
-                        <div class="form-group">
-                            <label>Full Name</label>
-                            <input type="text" id="regFullName" placeholder="Enter your full name">
-                        </div>
-                        <div class="form-group">
-                            <label>Email Address</label>
-                            <input type="email" id="regEmail" placeholder="your@email.com">
-                        </div>
-                        <div class="form-group">
-                            <label>Phone Number</label>
-                            <input type="tel" id="regPhone" maxlength="10" placeholder="10-digit mobile number (optional)">
-                        </div>
-                        <div class="form-group">
-                            <label>Password</label>
-                            <input type="password" id="regPassword" placeholder="Create password (min 6 characters)">
-                        </div>
-                        <button class="register-btn" id="registerBtn">Create Account →</button>
-                        <div class="switch-link">
-                            <p>Already have account? <a id="showLoginBtn">Sign In</a></p>
                         </div>
                     </div>
                 </div>
@@ -956,50 +772,17 @@
                 btn.textContent = 'Login →';
             });
             
-            // Register button
-            document.getElementById('registerBtn')?.addEventListener('click', async () => {
-                const fullName = document.getElementById('regFullName').value.trim();
-                const email = document.getElementById('regEmail').value.trim();
-                const phone = document.getElementById('regPhone').value.trim();
-                const password = document.getElementById('regPassword').value;
-                
-                const btn = document.getElementById('registerBtn');
-                btn.disabled = true;
-                btn.textContent = 'Creating account...';
-                
-                const success = await handleRegister(fullName, email, phone, password);
-                
-                if (success) {
-                    await renderDashboard();
-                }
-                
-                btn.disabled = false;
-                btn.textContent = 'Create Account →';
-            });
-            
-            // Show register form
-            document.getElementById('showRegisterBtn')?.addEventListener('click', () => {
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('registerForm').style.display = 'block';
-            });
-            
-            // Show login form
-            document.getElementById('showLoginBtn')?.addEventListener('click', () => {
-                document.getElementById('registerForm').style.display = 'none';
-                document.getElementById('loginForm').style.display = 'block';
+            // Redirect to register.html when clicking "Create an account"
+            document.getElementById('showRegisterBtn')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = 'register.html';
             });
             
             // Enter key support
             document.getElementById('loginPassword')?.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') document.getElementById('loginBtn')?.click();
-            });
-            document.getElementById('regPassword')?.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') document.getElementById('registerBtn')?.click();
-            });
-            
-            // Phone input validation
-            document.getElementById('regPhone')?.addEventListener('input', function(e) {
-                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+                if (e.key === 'Enter') {
+                    document.getElementById('loginBtn')?.click();
+                }
             });
         }
         
@@ -1010,13 +793,9 @@
         
         // Check if user is already logged in
         const { data: { user } } = await supabase.auth.getUser();
-        
         if (user) {
             const profile = await getProfile(user.id);
-            currentUser = { 
-                ...user, 
-                profile: profile || { full_name: user.email?.split('@')[0], phone: '' }
-            };
+            currentUser = { ...user, profile: profile || { full_name: user.email?.split('@')[0], phone: '' } };
             localStorage.setItem('customerUser', JSON.stringify(currentUser));
             await renderDashboard();
         } else {
