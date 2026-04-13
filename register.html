@@ -19,7 +19,6 @@
             --gray-600: #6c757d;
             --success: #28a745;
             --danger: #dc3545;
-            --info: #17a2b8;
         }
         
         body {
@@ -296,12 +295,12 @@
             setTimeout(() => toast.remove(), 5000);
         }
         
-        // ========== PROFILES TABLE FUNCTIONS ==========
-        
         // Create profile in profiles table
         async function createProfile(userId, fullName, phone, email) {
             try {
-                const { error } = await supabase
+                console.log('Creating profile for user:', userId);
+                
+                const { data, error } = await supabase
                     .from('profiles')
                     .insert([{
                         id: userId,
@@ -312,8 +311,12 @@
                         updated_at: new Date().toISOString()
                     }]);
                 
-                if (error) throw error;
-                console.log('Profile created successfully');
+                if (error) {
+                    console.error('Profile insert error:', error);
+                    return false;
+                }
+                
+                console.log('Profile created successfully:', data);
                 return true;
             } catch (error) {
                 console.error('Profile creation error:', error);
@@ -329,7 +332,12 @@
                     password: password
                 });
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('Auto login error:', error);
+                    return false;
+                }
+                
+                console.log('Auto login successful');
                 return true;
             } catch (error) {
                 console.error('Auto login error:', error);
@@ -379,6 +387,7 @@
             
             try {
                 // Step 1: Sign up with Supabase Auth
+                console.log('Step 1: Creating auth user...');
                 const { data, error } = await supabase.auth.signUp({
                     email: email,
                     password: password,
@@ -393,19 +402,25 @@
                 if (error) throw error;
                 
                 if (data.user) {
+                    console.log('Auth user created:', data.user.id);
+                    
                     // Step 2: Create profile in profiles table
+                    console.log('Step 2: Creating profile...');
                     const profileCreated = await createProfile(data.user.id, fullName, phone, email);
                     
                     if (profileCreated) {
-                        console.log('Profile saved to profiles table');
+                        console.log('Profile created successfully');
+                        showToast('Profile saved!');
                     } else {
-                        console.warn('Profile creation had issues');
+                        console.warn('Profile creation failed but user was created');
+                        showToast('Account created but profile save had issues', true);
                     }
                     
                     // Step 3: Auto login
-                    const loggedIn = await autoLogin(email, password);
+                    console.log('Step 3: Auto logging in...');
+                    await autoLogin(email, password);
                     
-                    // Step 4: Show success and redirect to customer-portal.html
+                    // Step 4: Show success and redirect
                     document.getElementById('registrationForm').style.display = 'none';
                     document.getElementById('successMessage').style.display = 'block';
                     showToast('Account created successfully!');
