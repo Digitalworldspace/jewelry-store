@@ -295,8 +295,8 @@
             setTimeout(() => toast.remove(), 5000);
         }
         
-        // Create profile in profiles table
-        async function createProfile(userId, fullName, phone, email) {
+        // Create profile in profiles table (without email column)
+        async function createProfile(userId, fullName, phone) {
             try {
                 console.log('Creating profile for user:', userId);
                 
@@ -306,7 +306,6 @@
                         id: userId,
                         full_name: fullName,
                         phone: phone || '',
-                        email: email,
                         created_at: new Date().toISOString(),
                         updated_at: new Date().toISOString()
                     }]);
@@ -406,14 +405,12 @@
                     
                     // Step 2: Create profile in profiles table
                     console.log('Step 2: Creating profile...');
-                    const profileCreated = await createProfile(data.user.id, fullName, phone, email);
+                    const profileCreated = await createProfile(data.user.id, fullName, phone);
                     
                     if (profileCreated) {
                         console.log('Profile created successfully');
-                        showToast('Profile saved!');
                     } else {
                         console.warn('Profile creation failed but user was created');
-                        showToast('Account created but profile save had issues', true);
                     }
                     
                     // Step 3: Auto login
