@@ -295,12 +295,12 @@
             setTimeout(() => toast.remove(), 5000);
         }
         
-        // Create profile in profiles table (without email column)
+        // Create profile in profiles table
         async function createProfile(userId, fullName, phone) {
             try {
                 console.log('Creating profile for user:', userId);
                 
-                const { data, error } = await supabase
+                const { error } = await supabase
                     .from('profiles')
                     .insert([{
                         id: userId,
@@ -315,7 +315,7 @@
                     return false;
                 }
                 
-                console.log('Profile created successfully:', data);
+                console.log('Profile created successfully');
                 return true;
             } catch (error) {
                 console.error('Profile creation error:', error);
@@ -323,26 +323,16 @@
             }
         }
         
-        // Auto login after registration
-        async function autoLogin(email, password) {
-            try {
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-                
-                if (error) {
-                    console.error('Auto login error:', error);
-                    return false;
-                }
-                
-                console.log('Auto login successful');
-                return true;
-            } catch (error) {
-                console.error('Auto login error:', error);
-                return false;
+        // Check if user is logged in
+        async function checkUser() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                console.log('User already logged in:', user.email);
+                window.location.href = 'customer-portal.html';
             }
         }
+        
+        checkUser();
         
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -385,8 +375,8 @@
             registerBtn.textContent = 'Creating account...';
             
             try {
-                // Step 1: Sign up with Supabase Auth
-                console.log('Step 1: Creating auth user...');
+                // Step 1: Sign up with Supabase Auth (email confirmation disabled)
+                console.log('Creating auth user for:', email);
                 const { data, error } = await supabase.auth.signUp({
                     email: email,
                     password: password,
@@ -404,25 +394,30 @@
                     console.log('Auth user created:', data.user.id);
                     
                     // Step 2: Create profile in profiles table
-                    console.log('Step 2: Creating profile...');
                     const profileCreated = await createProfile(data.user.id, fullName, phone);
                     
                     if (profileCreated) {
                         console.log('Profile created successfully');
-                    } else {
-                        console.warn('Profile creation failed but user was created');
                     }
                     
-                    // Step 3: Auto login
-                    console.log('Step 3: Auto logging in...');
-                    await autoLogin(email, password);
+                    // Step 3: Try to login automatically
+                    const { error: signInError } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
                     
-                    // Step 4: Show success and redirect
+                    if (signInError) {
+                        console.log('Auto login failed, user can login manually');
+                    } else {
+                        console.log('Auto login successful');
+                    }
+                    
+                    // Show success
                     document.getElementById('registrationForm').style.display = 'none';
                     document.getElementById('successMessage').style.display = 'block';
                     showToast('Account created successfully!');
                     
-                    // Redirect to customer-portal.html after 2 seconds
+                    // Redirect
                     setTimeout(() => {
                         window.location.href = 'customer-portal.html';
                     }, 2000);
@@ -455,7 +450,7 @@
             this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
         });
         
-        // Real-time password match indicator
+        // Password match indicator
         const passwordInput = document.getElementById('password');
         const confirmInput = document.getElementById('confirmPassword');
         
