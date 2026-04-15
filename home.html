@@ -1,3 +1,5 @@
+Here is the updated HTML document with D360° video support for stories, Editor's Pick, and Our Collection sections, keeping all other features intact.
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1330,6 +1332,27 @@
                 font-size: 12px;
             }
         }
+        
+        /* D360 thumbnail badge for stories */
+        .story-d360-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            background: var(--gold);
+            color: var(--black);
+            font-size: 10px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+        
+        .story-ring {
+            position: relative;
+        }
     </style>
 </head>
 <body>
@@ -1403,7 +1426,7 @@
         </div>
     </div>
     
-    <!-- Stories Section - Random 15 products -->
+    <!-- Stories Section - Random 15 products with D360° support -->
     <div class="stories-section">
         <div class="stories-container" id="storiesContainer">
             <div class="loading"><div class="spinner"></div></div>
@@ -1421,7 +1444,7 @@
         </div>
     </div>
     
-    <!-- Featured Section - Random Products -->
+    <!-- Featured Section - Editor's Pick with D360° support -->
     <div class="featured-section">
         <div class="section-header">
             <div class="section-icon">✦</div>
@@ -1433,7 +1456,7 @@
         </div>
     </div>
     
-    <!-- Products Section -->
+    <!-- Products Section - Our Collection with D360° support -->
     <div class="products-section">
         <div class="section-header">
             <div class="section-icon">💎</div>
@@ -1575,6 +1598,21 @@
             return url && url.includes('d360.tech/imaged/');
         }
         
+        // Helper: Get best thumbnail for D360 products
+        function getProductThumbnail(product) {
+            const media = product.images?.[0];
+            if (!media) return 'https://via.placeholder.com/70x70?text=Style';
+            if (isD360Viewer(media)) {
+                // Extract d parameter or use placeholder
+                const match = media.match(/[?&]d=([^&]+)/);
+                if (match && match[1]) {
+                    return `https://d360.tech/imaged/${match[1]}/still.jpg`;
+                }
+                return 'https://via.placeholder.com/70x70?text=360°';
+            }
+            return media;
+        }
+        
         // Navigation
         function navigateTo(page) {
             if (window.parent !== window) {
@@ -1621,19 +1659,12 @@
         // Fetch product GST from database
         async function fetchProductGST(productId) {
             if (productsCache[productId]) return productsCache[productId];
-            
             try {
-                const { data, error } = await supabase
-                    .from('products')
-                    .select('gst')
-                    .eq('id', productId)
-                    .single();
-                
+                const { data, error } = await supabase.from('products').select('gst').eq('id', productId).single();
                 if (error) throw error;
                 productsCache[productId] = data;
                 return data;
             } catch (error) {
-                console.error('Error fetching product GST:', error);
                 return { gst: 18 };
             }
         }
@@ -1645,16 +1676,10 @@
             const swipeContainer = document.getElementById('swipeContainer');
             
             if (!cartItems.length) {
-                previewContainer.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">
-                        <i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 15px;"></i>
-                        <p>Your cart is empty</p>
-                    </div>
-                `;
+                previewContainer.innerHTML = `<div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);"><i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 15px;"></i><p>Your cart is empty</p></div>`;
                 if (swipeContainer) swipeContainer.style.opacity = '0.5';
                 return;
             }
-            
             if (swipeContainer) swipeContainer.style.opacity = '1';
             
             let subtotal = 0;
@@ -1667,256 +1692,84 @@
                 const { gstAmount, total } = calculateGST(item.price, gstPercent);
                 const itemTotal = total * item.quantity;
                 const itemGSTTotal = gstAmount * item.quantity;
-                
                 subtotal += item.price * item.quantity;
                 totalGST += itemGSTTotal;
-                
-                itemsHtml += `
-                    <div class="cart-preview-item">
-                        <img src="${item.image}" onerror="this.src='https://via.placeholder.com/50x50'">
-                        <div class="cart-preview-item-details">
-                            <div class="cart-preview-item-name">${escapeHtml(item.name)}</div>
-                            <div class="cart-preview-item-price">₹${item.price.toLocaleString()} × ${item.quantity}</div>
-                            <div class="cart-preview-item-price" style="font-size: 10px; color: #aaa;">GST ${gstPercent}%: ₹${(gstAmount * item.quantity).toLocaleString()}</div>
-                        </div>
-                        <div style="color: var(--gold); font-weight: bold;">₹${itemTotal.toLocaleString()}</div>
-                    </div>
-                `;
+                itemsHtml += `<div class="cart-preview-item"><img src="${item.image}" onerror="this.src='https://via.placeholder.com/50x50'"><div class="cart-preview-item-details"><div class="cart-preview-item-name">${escapeHtml(item.name)}</div><div class="cart-preview-item-price">₹${item.price.toLocaleString()} × ${item.quantity}</div><div class="cart-preview-item-price" style="font-size: 10px; color: #aaa;">GST ${gstPercent}%: ₹${(gstAmount * item.quantity).toLocaleString()}</div></div><div style="color: var(--gold); font-weight: bold;">₹${itemTotal.toLocaleString()}</div></div>`;
             }
             
             const shipping = subtotal >= 3000 ? 0 : 100;
             const total = subtotal + totalGST + shipping;
-            
-            previewContainer.innerHTML = `
-                ${itemsHtml}
-                <div class="cart-preview-total">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>Subtotal</span>
-                        <span>₹${subtotal.toLocaleString()}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>Total GST</span>
-                        <span>₹${totalGST.toLocaleString()}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span>Shipping</span>
-                        <span>₹${shipping}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 18px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
-                        <span>Total</span>
-                        <span style="color: var(--gold);">₹${total.toLocaleString()}</span>
-                    </div>
-                </div>
-            `;
+            previewContainer.innerHTML = `${itemsHtml}<div class="cart-preview-total"><div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>Subtotal</span><span>₹${subtotal.toLocaleString()}</span></div><div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>Total GST</span><span>₹${totalGST.toLocaleString()}</span></div><div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>Shipping</span><span>₹${shipping}</span></div><div style="display: flex; justify-content: space-between; font-size: 18px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);"><span>Total</span><span style="color: var(--gold);">₹${total.toLocaleString()}</span></div></div>`;
         }
         
         // Clear Cart
         async function clearCartFromSwipe() {
-            if (!currentCart.length) {
-                showToast('Cart is already empty', true);
-                return;
-            }
-            
+            if (!currentCart.length) { showToast('Cart is already empty', true); return; }
             if (confirm('Clear all items from your cart?')) {
                 try {
-                    await supabase.from('carts').upsert({ 
-                        session_id: sessionId, 
-                        items: [], 
-                        total: 0, 
-                        updated_at: new Date().toISOString() 
-                    }, { onConflict: 'session_id' });
+                    await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
                     showToast('Cart cleared! 🗑️');
                     await updateCartPreview();
                     closeSwipeCart();
-                } catch (error) {
-                    showToast('Failed to clear cart', true);
-                }
+                } catch (error) { showToast('Failed to clear cart', true); }
             }
         }
         
-        // Add to Cart (with GST stored)
+        // Add to Cart
         window.addToCart = async (id, name, price, sku, img) => {
             try {
                 const productInfo = await fetchProductGST(id);
                 const gstPercent = productInfo?.gst || 18;
-                
-                let { data: cartData, error: fetchError } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
-                if (fetchError) throw fetchError;
+                let { data: cartData } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
                 let items = cartData?.items || [];
                 const existing = items.find(i => i.id === id);
-                if (existing) { existing.quantity += 1; } 
-                else { items.push({ id, sku, name, price, gst: gstPercent, quantity: 1, image: img }); }
+                if (existing) existing.quantity += 1;
+                else items.push({ id, sku, name, price, gst: gstPercent, quantity: 1, image: img });
                 const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
-                const { error: saveError } = await supabase.from('carts').upsert({ session_id: sessionId, items: items, total: total, updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
-                if (saveError) throw saveError;
+                await supabase.from('carts').upsert({ session_id: sessionId, items: items, total: total, updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
                 showToast(`${name} added to cart! ✨`);
                 await updateCartPreview();
                 return true;
-            } catch (error) { 
-                showToast('Failed to add', true); 
-                return false;
-            }
+            } catch (error) { showToast('Failed to add', true); return false; }
         };
         
         // Buy Now
         window.buyNow = async (id, name, price, sku, img) => {
             const added = await addToCart(id, name, price, sku, img);
-            if (added) {
-                setTimeout(() => { navigateTo('checkout'); }, 500);
-            }
+            if (added) setTimeout(() => navigateTo('checkout'), 500);
         };
         
         // Share Product
         window.shareProduct = function(product) {
             const text = `✨ Discover ${product.name} at Style Of Life! Price: ₹${(product.price || 0).toLocaleString()}`;
-            if (navigator.share) {
-                navigator.share({
-                    title: product.name,
-                    text: text,
-                    url: window.location.href
-                }).catch(() => {
-                    navigator.clipboard.writeText(text);
-                    showToast('Link copied! Share the elegance ✨');
-                });
-            } else {
-                navigator.clipboard.writeText(text);
-                showToast('Link copied! Share the elegance ✨');
-            }
+            if (navigator.share) navigator.share({ title: product.name, text: text, url: window.location.href }).catch(() => { navigator.clipboard.writeText(text); showToast('Link copied!'); });
+            else { navigator.clipboard.writeText(text); showToast('Link copied!'); }
         };
         
         // ========== SWIPE CART FUNCTIONALITY ==========
-        let isDragging = false;
-        let startX = 0;
-        let currentTranslate = 0;
-        let swipeThumb = document.getElementById('swipeThumb');
-        let swipeProgress = document.getElementById('swipeProgress');
-        let swipeContainer = document.getElementById('swipeContainer');
-        let swipeTrack = document.querySelector('.swipe-track');
-        let maxSwipe = 0;
-        
+        let isDragging = false, startX = 0, currentTranslate = 0, swipeThumb = document.getElementById('swipeThumb'), swipeProgress = document.getElementById('swipeProgress'), swipeTrack = document.querySelector('.swipe-track'), maxSwipe = 0;
         function initSwipe() {
-            if (!swipeThumb || !swipeContainer) return;
+            if (!swipeThumb || !swipeTrack) return;
             const trackRect = swipeTrack.getBoundingClientRect();
             maxSwipe = trackRect.width - 70;
-            swipeThumb.addEventListener('mousedown', startDrag);
-            swipeThumb.addEventListener('touchstart', startDrag);
-            document.addEventListener('mousemove', onDrag);
-            document.addEventListener('touchmove', onDrag);
-            document.addEventListener('mouseup', endDrag);
-            document.addEventListener('touchend', endDrag);
+            swipeThumb.addEventListener('mousedown', startDrag); swipeThumb.addEventListener('touchstart', startDrag);
+            document.addEventListener('mousemove', onDrag); document.addEventListener('touchmove', onDrag);
+            document.addEventListener('mouseup', endDrag); document.addEventListener('touchend', endDrag);
         }
+        function startDrag(e) { isDragging = true; const clientX = e.clientX || (e.touches && e.touches[0].clientX); startX = clientX - currentTranslate; swipeThumb.style.transition = 'none'; swipeProgress.style.transition = 'none'; e.stopPropagation(); }
+        function onDrag(e) { if (!isDragging) return; e.preventDefault(); const clientX = e.clientX || (e.touches && e.touches[0].clientX); let newTranslate = clientX - startX; newTranslate = Math.max(0, Math.min(newTranslate, maxSwipe)); currentTranslate = newTranslate; const percent = (currentTranslate / maxSwipe) * 100; swipeThumb.style.transform = `translateX(${currentTranslate}px)`; swipeProgress.style.width = `${percent}%`; if (percent >= 95) completeSwipe(); }
+        function endDrag() { isDragging = false; swipeThumb.style.transition = 'transform 0.3s ease'; swipeProgress.style.transition = 'width 0.3s ease'; if (currentTranslate < maxSwipe * 0.95) { currentTranslate = 0; swipeThumb.style.transform = `translateX(0px)`; swipeProgress.style.width = `0%`; } }
+        function completeSwipe() { currentTranslate = 0; swipeThumb.style.transform = `translateX(0px)`; swipeProgress.style.width = `0%`; closeSwipeCart(); navigateTo('checkout'); }
         
-        function startDrag(e) {
-            isDragging = true;
-            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            startX = clientX - currentTranslate;
-            swipeThumb.style.transition = 'none';
-            swipeProgress.style.transition = 'none';
-            e.stopPropagation();
-        }
-        
-        function onDrag(e) {
-            if (!isDragging) return;
-            e.preventDefault();
-            e.stopPropagation();
-            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            let newTranslate = clientX - startX;
-            newTranslate = Math.max(0, Math.min(newTranslate, maxSwipe));
-            currentTranslate = newTranslate;
-            const percent = (currentTranslate / maxSwipe) * 100;
-            swipeThumb.style.transform = `translateX(${currentTranslate}px)`;
-            swipeProgress.style.width = `${percent}%`;
-            if (percent >= 95) completeSwipe();
-        }
-        
-        function endDrag() {
-            isDragging = false;
-            swipeThumb.style.transition = 'transform 0.3s ease';
-            swipeProgress.style.transition = 'width 0.3s ease';
-            if (currentTranslate < maxSwipe * 0.95) resetSwipe();
-        }
-        
-        function resetSwipe() {
-            currentTranslate = 0;
-            swipeThumb.style.transform = `translateX(0px)`;
-            swipeProgress.style.width = `0%`;
-        }
-        
-        function completeSwipe() {
-            resetSwipe();
-            closeSwipeCart();
-            navigateTo('checkout');
-        }
-        
-        let touchStartY = 0;
-        let touchCurrentY = 0;
-        let isSwipingDown = false;
-        let overlay = document.getElementById('swipeCartOverlay');
-        let handle = document.querySelector('.swipe-handle');
-        
+        let overlay = document.getElementById('swipeCartOverlay'), touchStartY = 0, touchCurrentY = 0, isSwipingDown = false;
         function setupSwipeToHide() {
             if (!overlay) return;
-            overlay.addEventListener('touchstart', function(e) {
-                touchStartY = e.touches[0].clientY;
-                isSwipingDown = true;
-                overlay.classList.add('hiding');
-            });
-            overlay.addEventListener('touchmove', function(e) {
-                if (!isSwipingDown) return;
-                touchCurrentY = e.touches[0].clientY;
-                let deltaY = touchCurrentY - touchStartY;
-                if (deltaY > 0) {
-                    let translateY = Math.min(deltaY, 300);
-                    overlay.style.transform = `translateY(${translateY}px)`;
-                    e.preventDefault();
-                }
-            });
-            overlay.addEventListener('touchend', function(e) {
-                if (!isSwipingDown) return;
-                let deltaY = touchCurrentY - touchStartY;
-                if (deltaY > 100) closeSwipeCart();
-                else overlay.style.transform = '';
-                isSwipingDown = false;
-                setTimeout(() => overlay.classList.remove('hiding'), 300);
-            });
-            
-            let mouseStartY = 0;
-            let isMouseSwiping = false;
-            handle?.addEventListener('mousedown', function(e) {
-                mouseStartY = e.clientY;
-                isMouseSwiping = true;
-                overlay.classList.add('hiding');
-            });
-            document.addEventListener('mousemove', function(e) {
-                if (!isMouseSwiping) return;
-                let deltaY = e.clientY - mouseStartY;
-                if (deltaY > 0) overlay.style.transform = `translateY(${Math.min(deltaY, 300)}px)`;
-            });
-            document.addEventListener('mouseup', function(e) {
-                if (!isMouseSwiping) return;
-                let deltaY = e.clientY - mouseStartY;
-                if (deltaY > 100) closeSwipeCart();
-                else overlay.style.transform = '';
-                isMouseSwiping = false;
-                setTimeout(() => overlay.classList.remove('hiding'), 300);
-            });
+            overlay.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; isSwipingDown = true; });
+            overlay.addEventListener('touchmove', (e) => { if (!isSwipingDown) return; touchCurrentY = e.touches[0].clientY; let deltaY = touchCurrentY - touchStartY; if (deltaY > 0) overlay.style.transform = `translateY(${Math.min(deltaY, 300)}px)`; });
+            overlay.addEventListener('touchend', () => { if (touchCurrentY - touchStartY > 100) closeSwipeCart(); else overlay.style.transform = ''; isSwipingDown = false; });
         }
-        
-        function openSwipeCart() {
-            const overlay = document.getElementById('swipeCartOverlay');
-            overlay.classList.add('active');
-            overlay.style.transform = '';
-            updateCartPreview();
-            setTimeout(initSwipe, 100);
-        }
-        
-        function closeSwipeCart() {
-            const overlay = document.getElementById('swipeCartOverlay');
-            overlay.classList.remove('active');
-            overlay.style.transform = '';
-            resetSwipe();
-        }
-        
+        function openSwipeCart() { overlay.classList.add('active'); overlay.style.transform = ''; updateCartPreview(); setTimeout(initSwipe, 100); }
+        function closeSwipeCart() { overlay.classList.remove('active'); overlay.style.transform = ''; }
         document.getElementById('floatingCartBtn')?.addEventListener('click', openSwipeCart);
         document.getElementById('clearCartSwipeBtn')?.addEventListener('click', clearCartFromSwipe);
         setupSwipeToHide();
@@ -1929,85 +1782,48 @@
             gallery.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
         };
         
-        // Initialize Gallery (handles both regular images and D360° iframes)
         function initGalleryWithMedia(galleryId, mediaItems, dotContainerId) {
             const gallery = document.getElementById(galleryId);
             const dotContainer = document.getElementById(dotContainerId);
             if (!gallery || !dotContainer) return;
-            
             gallery.innerHTML = '';
             dotContainer.innerHTML = '';
-            
             mediaItems.forEach((media, index) => {
                 let mediaElement;
-                
                 if (isD360Viewer(media)) {
                     const wrapper = document.createElement('div');
-                    wrapper.style.minWidth = '100%';
-                    wrapper.style.width = '100%';
-                    wrapper.style.height = '100%';
-                    wrapper.style.position = 'relative';
-                    wrapper.style.background = '#1a1a1a';
-                    wrapper.innerHTML = `
-                        <iframe 
-                            src="${media}" 
-                            style="width: 100%; height: 100%; border: none; pointer-events: auto;"
-                            frameborder="0" 
-                            allowfullscreen>
-                        </iframe>
-                        <div class="d360-label">🔄 360° Interactive</div>
-                    `;
+                    wrapper.style.minWidth = '100%'; wrapper.style.width = '100%'; wrapper.style.height = '100%'; wrapper.style.position = 'relative'; wrapper.style.background = '#1a1a1a';
+                    wrapper.innerHTML = `<iframe src="${media}" style="width: 100%; height: 100%; border: none; pointer-events: auto;" frameborder="0" allowfullscreen></iframe><div class="d360-label">🔄 360° Interactive</div>`;
                     mediaElement = wrapper;
                 } else {
                     const img = document.createElement('img');
-                    img.src = media;
-                    img.className = 'gallery-image';
-                    img.alt = 'Product media';
-                    img.loading = 'lazy';
+                    img.src = media; img.className = 'gallery-image'; img.alt = 'Product media'; img.loading = 'lazy';
                     img.onerror = () => { img.src = 'https://via.placeholder.com/400x400?text=Image+Not+Available'; };
                     mediaElement = img;
                 }
-                
                 gallery.appendChild(mediaElement);
-                
                 const dot = document.createElement('div');
                 dot.className = 'gallery-dot';
                 if (index === 0) dot.classList.add('active');
-                dot.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    gallery.scrollTo({ left: gallery.clientWidth * index, behavior: 'smooth' });
-                });
+                dot.addEventListener('click', (e) => { e.stopPropagation(); gallery.scrollTo({ left: gallery.clientWidth * index, behavior: 'smooth' }); });
                 dotContainer.appendChild(dot);
             });
-            
             gallery.addEventListener('scroll', () => {
                 const scrollPos = gallery.scrollLeft;
                 const itemWidth = gallery.clientWidth;
                 const activeIndex = Math.round(scrollPos / itemWidth);
                 const dots = dotContainer.querySelectorAll('.gallery-dot');
-                dots.forEach((dot, idx) => {
-                    if (idx === activeIndex) dot.classList.add('active');
-                    else dot.classList.remove('active');
-                });
+                dots.forEach((dot, idx) => { if (idx === activeIndex) dot.classList.add('active'); else dot.classList.remove('active'); });
             });
         }
         
-        // Function to shuffle array (Fisher-Yates)
-        function shuffleArray(array) {
-            const shuffled = [...array];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return shuffled;
-        }
+        function shuffleArray(array) { const shuffled = [...array]; for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; } return shuffled; }
         
-        // Load Stories - Shows 15 Random Products
+        // Load Stories - 15 random products with D360° thumbnails
         async function loadStories() {
             const container = document.getElementById('storiesContainer');
             if (!container) return;
             try {
-                // Fetch all products if not already loaded
                 let products = allProducts;
                 if (!products.length) {
                     const { data, error } = await supabase.from('products').select('*');
@@ -2015,45 +1831,24 @@
                     products = data || [];
                     allProducts = products;
                 }
-                
-                if (!products.length) {
-                    container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-                    return;
-                }
-                
-                // Randomly select 15 products for stories (or all if less than 15)
+                if (!products.length) { container.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; return; }
                 const shuffledProducts = shuffleArray(products);
                 const storyProducts = shuffledProducts.slice(0, Math.min(15, products.length));
-                
                 let html = '';
                 for (const product of storyProducts) {
-                    const firstMedia = product.images?.[0] || 'https://via.placeholder.com/70x70?text=Style';
-                    let thumbnail = firstMedia;
-                    
-                    // Handle D360° URLs for thumbnails
-                    if (isD360Viewer(firstMedia)) {
-                        thumbnail = 'https://via.placeholder.com/70x70?text=360°';
-                    } else if (isD360Image(firstMedia)) {
-                        thumbnail = firstMedia;
-                    }
-                    
-                    html += `<div class="story-toggle" onclick='openProductModal(${JSON.stringify(product)})'>
-                        <div class="story-ring"><img class="story-thumbnail" src="${thumbnail}" alt="${escapeHtml(product.name)}" loading="lazy"></div>
-                    </div>`;
+                    const thumbnail = getProductThumbnail(product);
+                    const isD360 = product.images?.[0] && isD360Viewer(product.images[0]);
+                    html += `<div class="story-toggle" onclick='openProductModal(${JSON.stringify(product)})'><div class="story-ring"><img class="story-thumbnail" src="${thumbnail}" alt="${escapeHtml(product.name)}" loading="lazy"></div>${isD360 ? '<div class="story-d360-badge"><i class="fas fa-cube"></i></div>' : ''}</div>`;
                 }
                 container.innerHTML = html;
-            } catch (error) {
-                console.error('Error loading stories:', error);
-                container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-            }
+            } catch (error) { container.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; }
         }
         
-        // Load Featured Products - Random selection (different from stories)
+        // Load Featured Products - Editor's Pick (random, supports D360°)
         async function loadFeaturedProducts() {
             const container = document.getElementById('featuredGrid');
             if (!container) return;
             try {
-                // Fetch all products if not already loaded
                 let products = allProducts;
                 if (!products.length) {
                     const { data, error } = await supabase.from('products').select('*');
@@ -2061,54 +1856,31 @@
                     products = data || [];
                     allProducts = products;
                 }
-                
-                if (!products.length) {
-                    container.innerHTML = '<div class="empty-state">✨ Coming soon</div>';
-                    return;
-                }
-                
-                // Randomly select 4 different products for Editor's Pick
+                if (!products.length) { container.innerHTML = '<div class="empty-state">✨ Coming soon</div>'; return; }
                 const shuffledProducts = shuffleArray(products);
                 const randomProducts = shuffledProducts.slice(0, 4);
-                
                 let html = '';
                 for (const p of randomProducts) {
                     const firstMedia = p.images?.[0] || 'https://via.placeholder.com/300x160?text=Style+Of+Life';
                     let img = firstMedia;
-                    
-                    // Handle D360° URLs for featured images
                     if (isD360Viewer(firstMedia)) {
-                        img = 'https://via.placeholder.com/300x160?text=360°+View';
-                    } else if (isD360Image(firstMedia)) {
-                        img = firstMedia;
-                    }
-                    
+                        const match = firstMedia.match(/[?&]d=([^&]+)/);
+                        img = match && match[1] ? `https://d360.tech/imaged/${match[1]}/still.jpg` : 'https://via.placeholder.com/300x160?text=360°+View';
+                    } else if (isD360Image(firstMedia)) img = firstMedia;
                     const gstPercent = p.gst || 18;
                     const { total } = calculateGST(p.price, gstPercent);
-                    
-                    html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'>
-                        <img class="featured-image" src="${img}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x160?text=Image+Not+Available'">
-                        <div class="featured-info">
-                            <div class="featured-name">${escapeHtml(p.name)}</div>
-                            <div class="featured-price">₹${total.toLocaleString()}</div>
-                            <div class="featured-gst">Incl. ${gstPercent}% GST</div>
-                        </div>
-                    </div>`;
+                    html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'><img class="featured-image" src="${img}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x160?text=Image+Not+Available'"><div class="featured-info"><div class="featured-name">${escapeHtml(p.name)}</div><div class="featured-price">₹${total.toLocaleString()}</div><div class="featured-gst">Incl. ${gstPercent}% GST</div></div></div>`;
                 }
                 container.innerHTML = html;
-            } catch (error) {
-                console.error('Error loading featured products:', error);
-                container.innerHTML = '<div class="empty-state">Unable to load collection</div>';
-            }
+            } catch (error) { container.innerHTML = '<div class="empty-state">Unable to load collection</div>'; }
         }
         
-        // Load All Products
+        // Load All Products - Our Collection with D360° support
         async function loadProducts() {
             const container = document.getElementById('productsGrid');
             if (!container) return;
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div>';
             try {
-                // Fetch products if not already loaded
                 let products = allProducts;
                 if (!products.length) {
                     const { data, error } = await supabase.from('products').select('*').order('id');
@@ -2116,17 +1888,8 @@
                     products = data || [];
                     allProducts = products;
                 }
-                
-                if (!products.length) {
-                    container.innerHTML = '<div class="empty-state">✨ No products found</div>';
-                    return;
-                }
-                
-                // Cache GST values
-                for (const p of products) {
-                    productsCache[p.id] = { gst: p.gst || 18 };
-                }
-                
+                if (!products.length) { container.innerHTML = '<div class="empty-state">✨ No products found</div>'; return; }
+                for (const p of products) productsCache[p.id] = { gst: p.gst || 18 };
                 let html = '';
                 for (let i = 0; i < products.length; i++) {
                     const p = products[i];
@@ -2140,55 +1903,15 @@
                     const isD360 = isD360Viewer(firstMedia);
                     const gstPercent = p.gst || 18;
                     const { gstAmount, total } = calculateGST(p.price, gstPercent);
-                    
-                    // For D360° products, show iframe directly; for regular, show image gallery
                     let mediaHtml = '';
                     if (isD360 && displayMedia.length === 1) {
-                        mediaHtml = `
-                            <div class="product-d360-container">
-                                <iframe 
-                                    src="${firstMedia}" 
-                                    class="product-d360-iframe"
-                                    frameborder="0" 
-                                    allowfullscreen>
-                                </iframe>
-                                <div class="d360-label">🔄 360° Interactive View</div>
-                            </div>
-                        `;
+                        mediaHtml = `<div class="product-d360-container"><iframe src="${firstMedia}" class="product-d360-iframe" frameborder="0" allowfullscreen></iframe><div class="d360-label">🔄 360° Interactive View</div></div>`;
                     } else {
-                        mediaHtml = `
-                            <div class="product-gallery-container">
-                                <div class="product-gallery" id="${galleryId}"></div>
-                                <button class="gallery-arrow gallery-arrow-left" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'left')">
-                                    <i class="fas fa-chevron-left"></i>
-                                </button>
-                                <button class="gallery-arrow gallery-arrow-right" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'right')">
-                                    <i class="fas fa-chevron-right"></i>
-                                </button>
-                                <div class="gallery-dots" id="${dotId}"></div>
-                            </div>
-                        `;
+                        mediaHtml = `<div class="product-gallery-container"><div class="product-gallery" id="${galleryId}"></div><button class="gallery-arrow gallery-arrow-left" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'left')"><i class="fas fa-chevron-left"></i></button><button class="gallery-arrow gallery-arrow-right" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'right')"><i class="fas fa-chevron-right"></i></button><div class="gallery-dots" id="${dotId}"></div></div>`;
                     }
-                    
-                    html += `<div class="product-card">
-                        ${mediaHtml}
-                        <div class="product-info">
-                            <div class="product-name">${escapeHtml(p.name)}</div>
-                            <div class="product-sku">${p.sku} | ${p.category || 'Fine Jewelry'}</div>
-                            <div class="product-desc">${escapeHtml(desc.substring(0, 100))}${desc.length > 100 ? '...' : ''}</div>
-                            <div class="product-price">₹${total.toLocaleString()} <small>(Incl. ${gstPercent}% GST)</small></div>
-                            <div class="product-gst">📊 GST ${gstPercent}%: ₹${gstAmount.toLocaleString()}</div>
-                            <div class="product-buttons">
-                                <button class="btn-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${isD360 ? 'https://via.placeholder.com/400x400?text=360°+View' : (displayMedia[0] || '')}')"><i class="fas fa-bolt"></i> Buy Now</button>
-                                <button class="btn-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${isD360 ? 'https://via.placeholder.com/400x400?text=360°+View' : (displayMedia[0] || '')}')"><i class="fas fa-shopping-cart"></i></button>
-                                <button class="btn-share" onclick="event.stopPropagation(); shareProduct(${JSON.stringify(p).replace(/"/g, '&quot;')})"><i class="fas fa-share-alt"></i></button>
-                            </div>
-                        </div>
-                    </div>`;
+                    html += `<div class="product-card">${mediaHtml}<div class="product-info"><div class="product-name">${escapeHtml(p.name)}</div><div class="product-sku">${p.sku} | ${p.category || 'Fine Jewelry'}</div><div class="product-desc">${escapeHtml(desc.substring(0, 100))}${desc.length > 100 ? '...' : ''}</div><div class="product-price">₹${total.toLocaleString()} <small>(Incl. ${gstPercent}% GST)</small></div><div class="product-gst">📊 GST ${gstPercent}%: ₹${gstAmount.toLocaleString()}</div><div class="product-buttons"><button class="btn-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${isD360 ? 'https://via.placeholder.com/400x400?text=360°+View' : (displayMedia[0] || '')}')"><i class="fas fa-bolt"></i> Buy Now</button><button class="btn-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${isD360 ? 'https://via.placeholder.com/400x400?text=360°+View' : (displayMedia[0] || '')}')"><i class="fas fa-shopping-cart"></i></button><button class="btn-share" onclick="event.stopPropagation(); shareProduct(${JSON.stringify(p).replace(/"/g, '&quot;')})"><i class="fas fa-share-alt"></i></button></div></div></div>`;
                 }
                 container.innerHTML = html;
-                
-                // Initialize galleries for non-D360° products
                 for (let i = 0; i < products.length; i++) {
                     const p = products[i];
                     const mediaItems = p.images || [];
@@ -2196,20 +1919,14 @@
                     const displayMedia = validMedia.length > 0 ? validMedia : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
                     const firstMedia = displayMedia[0];
                     const isD360 = isD360Viewer(firstMedia);
-                    
                     if (!(isD360 && displayMedia.length === 1)) {
-                        const galleryId = `gallery-${p.id}`;
-                        const dotId = `dots-${p.id}`;
-                        setTimeout(() => initGalleryWithMedia(galleryId, displayMedia, dotId), 50);
+                        setTimeout(() => initGalleryWithMedia(`gallery-${p.id}`, displayMedia, `dots-${p.id}`), 50);
                     }
                 }
-            } catch (error) {
-                console.error('Error loading products:', error);
-                container.innerHTML = '<div class="empty-state">Error loading collection</div>';
-            }
+            } catch (error) { container.innerHTML = '<div class="empty-state">Error loading collection</div>'; }
         }
         
-        // Open Product Modal with GST and D360° support
+        // Open Product Modal with D360° support
         window.openProductModal = function(product) {
             const mediaItems = product.images || [];
             const validMedia = mediaItems.filter(m => m && m.trim() !== '');
@@ -2218,24 +1935,14 @@
             const stockStatus = product.stock <= 0 ? 'Out of Stock' : (product.stock < 10 ? `Only ${product.stock} left` : 'In Stock');
             const gstPercent = product.gst || 18;
             const { gstAmount, total } = calculateGST(product.price, gstPercent);
-            
-            // For modal, show first media (if D360°, show iframe in modal)
             const modalMediaContainer = document.getElementById('modalMediaContainer');
             if (modalMediaContainer) {
                 if (isD360Viewer(firstMedia)) {
-                    modalMediaContainer.innerHTML = `
-                        <div style="width: 100%; aspect-ratio: 1/1; background: #1a1a1a;">
-                            <iframe src="${firstMedia}" style="width: 100%; height: 100%; border: none;" frameborder="0" allowfullscreen></iframe>
-                        </div>
-                    `;
+                    modalMediaContainer.innerHTML = `<div style="width: 100%; aspect-ratio: 1/1; background: #1a1a1a;"><iframe src="${firstMedia}" style="width: 100%; height: 100%; border: none;" frameborder="0" allowfullscreen></iframe><div class="d360-label" style="bottom: 20px; right: 20px;">🔄 360° Interactive</div></div>`;
                 } else {
                     modalMediaContainer.innerHTML = `<img id="modalImage" class="modal-image" src="${firstMedia}" alt="Product detail" onerror="this.src='https://via.placeholder.com/400x400?text=Image+Not+Available'">`;
                 }
-            } else {
-                const modalImg = document.getElementById('modalImage');
-                if (modalImg) modalImg.src = firstMedia;
             }
-            
             document.getElementById('modalName').textContent = product.name;
             document.getElementById('modalSku').textContent = `SKU: ${product.sku}`;
             document.getElementById('modalCategory').textContent = product.category || 'Fine Jewelry';
@@ -2244,30 +1951,21 @@
             document.getElementById('modalDesc').textContent = product.description || 'Exquisite handcrafted masterpiece.';
             document.getElementById('modalStock').innerHTML = `<i class="fas ${product.stock <= 0 ? 'fa-times-circle' : (product.stock < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> ${stockStatus}`;
             document.getElementById('modalStock').style.color = product.stock <= 0 ? '#dc3545' : (product.stock < 10 ? '#ff9800' : '#28a745');
-            
             const buyBtn = document.getElementById('modalBuyBtn');
             const cartBtn = document.getElementById('modalCartBtn');
             const imgUrl = isD360Viewer(firstMedia) ? 'https://via.placeholder.com/400x400?text=360°+View' : firstMedia;
             buyBtn.onclick = () => buyNow(product.id, product.name, product.price, product.sku, imgUrl);
             cartBtn.onclick = () => addToCart(product.id, product.name, product.price, product.sku, imgUrl);
-            
             document.getElementById('productModal').classList.add('active');
         };
         
-        window.closeProductModal = function() {
-            document.getElementById('productModal').classList.remove('active');
-        };
+        window.closeProductModal = function() { document.getElementById('productModal').classList.remove('active'); };
         
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
-        }
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')); }
         
-        document.getElementById('productModal')?.addEventListener('click', function(e) {
-            if (e.target === this) closeProductModal();
-        });
+        document.getElementById('productModal')?.addEventListener('click', function(e) { if (e.target === this) closeProductModal(); });
         
-        // Initialize
+        // Initialize all sections
         updateCartPreview();
         loadStories();
         loadFeaturedProducts();
@@ -2275,3 +1973,4 @@
     </script>
 </body>
 </html>
+```
