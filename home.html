@@ -1,3 +1,5 @@
+Here is the updated HTML document that properly handles D360° links, images, and videos in stories, Editor's Pick, and Our Collection sections. Videos and D360 content are now correctly prioritized and displayed with swipe functionality.
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -119,7 +121,7 @@
             margin-left: 5px;
         }
         
-        /* Stories Section - Scrollable */
+        /* Stories Section */
         .stories-section {
             padding: 15px 0;
             background: var(--white);
@@ -161,6 +163,10 @@
             padding: 2px;
             animation: ringGlow 3s ease-in-out infinite;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
         
         @keyframes ringGlow {
@@ -593,6 +599,17 @@
             object-fit: cover;
         }
         
+        .featured-d360 {
+            width: 100%;
+            height: 160px;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 12px;
+        }
+        
         .featured-card:hover .featured-media {
             transform: scale(1.05);
         }
@@ -649,7 +666,6 @@
             border-color: var(--gold);
         }
         
-        /* D360° Embedded Viewer */
         .product-d360-container {
             position: relative;
             width: 100%;
@@ -665,7 +681,6 @@
             pointer-events: auto;
         }
         
-        /* Video Container */
         .product-video-container {
             position: relative;
             width: 100%;
@@ -694,7 +709,6 @@
             pointer-events: none;
         }
         
-        /* Regular Image Gallery */
         .product-gallery-container {
             position: relative;
             width: 100%;
@@ -718,20 +732,35 @@
             display: none;
         }
         
-        .gallery-image {
+        .gallery-item {
             min-width: 100%;
             width: 100%;
             height: 100%;
-            object-fit: cover;
             scroll-snap-align: start;
+            position: relative;
+        }
+        
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .gallery-video {
-            min-width: 100%;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            scroll-snap-align: start;
+        }
+        
+        .gallery-d360 {
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: var(--gold);
         }
         
         .gallery-arrow {
@@ -1081,10 +1110,6 @@
             cursor: pointer;
         }
         
-        .bottom-nav a i {
-            font-size: 22px;
-        }
-        
         .bottom-nav a.active,
         .bottom-nav a:hover {
             color: var(--gold);
@@ -1193,6 +1218,12 @@
             width: 100%;
             aspect-ratio: 1 / 1;
             object-fit: cover;
+        }
+        
+        .modal-d360 {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #1a1a1a;
         }
         
         .modal-info {
@@ -1319,41 +1350,19 @@
         }
         
         @media (min-width: 768px) {
-            .hero-title {
-                font-size: 64px;
-            }
-            .featured-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 20px;
-                max-width: 1200px;
-                margin: 0 auto;
-            }
-            .products-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 25px;
-                max-width: 1200px;
-                margin: 0 auto;
-            }
-            .features-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            .featured-media, .featured-video {
-                height: 200px;
-            }
+            .hero-title { font-size: 64px; }
+            .featured-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto; }
+            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 25px; max-width: 1200px; margin: 0 auto; }
+            .features-grid { grid-template-columns: repeat(4, 1fr); }
+            .featured-media, .featured-video, .featured-d360 { height: 200px; }
         }
         
         @media (min-width: 1024px) {
-            .products-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
+            .products-grid { grid-template-columns: repeat(3, 1fr); }
         }
         
         @media (max-width: 768px) {
-            .gallery-arrow {
-                width: 30px;
-                height: 30px;
-                font-size: 12px;
-            }
+            .gallery-arrow { width: 30px; height: 30px; font-size: 12px; }
         }
     </style>
 </head>
@@ -1390,45 +1399,14 @@
     <!-- Swipe Cart Overlay -->
     <div id="swipeCartOverlay" class="swipe-cart-overlay">
         <div class="swipe-handle"></div>
-        <div class="swipe-title">
-            <i class="fas fa-shopping-bag" style="color: var(--gold);"></i> Your Cart
-        </div>
-        <div id="cartPreviewContent" class="cart-preview">
-            <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">
-                <i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 15px;"></i>
-                <p>Your cart is empty</p>
-            </div>
-        </div>
-        <div class="do-something-section">
-            <div class="do-something-title">
-                <i class="fas fa-bolt"></i> DO SOMETHING <i class="fas fa-bolt"></i>
-            </div>
-            <div class="action-buttons-grid">
-                <div class="action-card" id="clearCartSwipeBtn">
-                    <div class="action-icon"><i class="fas fa-trash-alt"></i></div>
-                    <div class="action-title">Clear Cart</div>
-                    <div class="action-desc">Remove all items from cart</div>
-                </div>
-            </div>
-        </div>
-        <div class="swipe-container" id="swipeContainer">
-            <div class="swipe-track">
-                <div class="swipe-progress" id="swipeProgress"></div>
-                <div class="swipe-thumb" id="swipeThumb">
-                    <i class="fas fa-chevron-right"></i>
-                    <span>Slide to Checkout</span>
-                </div>
-                <div class="swipe-text">→ Swipe to checkout →</div>
-            </div>
-        </div>
+        <div class="swipe-title"><i class="fas fa-shopping-bag" style="color: var(--gold);"></i> Your Cart</div>
+        <div id="cartPreviewContent" class="cart-preview"><div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);"><i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 15px;"></i><p>Your cart is empty</p></div></div>
+        <div class="do-something-section"><div class="do-something-title"><i class="fas fa-bolt"></i> DO SOMETHING <i class="fas fa-bolt"></i></div><div class="action-buttons-grid"><div class="action-card" id="clearCartSwipeBtn"><div class="action-icon"><i class="fas fa-trash-alt"></i></div><div class="action-title">Clear Cart</div><div class="action-desc">Remove all items from cart</div></div></div></div>
+        <div class="swipe-container" id="swipeContainer"><div class="swipe-track"><div class="swipe-progress" id="swipeProgress"></div><div class="swipe-thumb" id="swipeThumb"><i class="fas fa-chevron-right"></i><span>Slide to Checkout</span></div><div class="swipe-text">→ Swipe to checkout →</div></div></div>
     </div>
     
     <!-- Stories Section -->
-    <div class="stories-section">
-        <div class="stories-container" id="storiesContainer">
-            <div class="loading"><div class="spinner"></div></div>
-        </div>
-    </div>
+    <div class="stories-section"><div class="stories-container" id="storiesContainer"><div class="loading"><div class="spinner"></div></div></div></div>
     
     <!-- Hero Section -->
     <div class="hero-section">
@@ -1443,257 +1421,87 @@
     
     <!-- Featured Section - Editor's Pick -->
     <div class="featured-section">
-        <div class="section-header">
-            <div class="section-icon">✦</div>
-            <h2 class="section-title">Editor's Pick</h2>
-            <div class="section-subtitle">Curated just for you</div>
-        </div>
-        <div class="featured-grid" id="featuredGrid">
-            <div class="loading"><div class="spinner"></div></div>
-        </div>
+        <div class="section-header"><div class="section-icon">✦</div><h2 class="section-title">Editor's Pick</h2><div class="section-subtitle">Curated just for you</div></div>
+        <div class="featured-grid" id="featuredGrid"><div class="loading"><div class="spinner"></div></div></div>
     </div>
     
     <!-- Products Section - Our Collection -->
     <div class="products-section">
-        <div class="section-header">
-            <div class="section-icon">💎</div>
-            <h2 class="section-title">Our Collection</h2>
-            <div class="section-subtitle">Discover timeless masterpieces</div>
-        </div>
-        <div class="products-grid" id="productsGrid">
-            <div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div>
-        </div>
+        <div class="section-header"><div class="section-icon">💎</div><h2 class="section-title">Our Collection</h2><div class="section-subtitle">Discover timeless masterpieces</div></div>
+        <div class="products-grid" id="productsGrid"><div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div></div>
     </div>
     
     <!-- Premium Features -->
-    <div class="features-section">
-        <div class="features-grid">
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-gem"></i></div>
-                <div class="feature-title">Premium Quality</div>
-                <div class="feature-desc">Certified diamonds and finest metals</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-truck"></i></div>
-                <div class="feature-title">Free Shipping</div>
-                <div class="feature-desc">On orders above ₹3000</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
-                <div class="feature-title">Secure Payments</div>
-                <div class="feature-desc">100% secure transactions</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-headset"></i></div>
-                <div class="feature-title">24/7 Support</div>
-                <div class="feature-desc">Dedicated customer care</div>
-            </div>
-        </div>
-    </div>
+    <div class="features-section"><div class="features-grid"><div class="feature-item"><div class="feature-icon"><i class="fas fa-gem"></i></div><div class="feature-title">Premium Quality</div><div class="feature-desc">Certified diamonds and finest metals</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-truck"></i></div><div class="feature-title">Free Shipping</div><div class="feature-desc">On orders above ₹3000</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><div class="feature-title">Secure Payments</div><div class="feature-desc">100% secure transactions</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-headset"></i></div><div class="feature-title">24/7 Support</div><div class="feature-desc">Dedicated customer care</div></div></div></div>
     
     <!-- Footer -->
     <footer class="luxury-footer">
         <div class="footer-content">
-            <div class="footer-brand">
-                <div class="footer-logo">STYLE<span>OF</span>LIFE</div>
-                <p>Crafting timeless elegance since 2024. Each piece is a celebration of artistry and passion.</p>
-                <div class="footer-social">
-                    <a href="https://instagram.com/styleoflife.in" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-pinterest"></i></a>
-                </div>
-            </div>
-            <div class="footer-links">
-                <h4>Explore</h4>
-                <a data-page="home">Home</a>
-                <a data-page="shop">Shop All</a>
-                <a data-page="track">Track Order</a>
-                <a data-page="customer-portal">My Account</a>
-            </div>
-            <div class="footer-links">
-                <h4>Support</h4>
-                <a data-page="shipping">Shipping Policy</a>
-                <a data-page="privacy">Privacy Policy</a>
-                <a data-page="terms">Terms & Conditions</a>
-                <a data-page="faq">FAQ</a>
-            </div>
-            <div class="footer-links">
-                <h4>Connect</h4>
-                <p><i class="fas fa-phone"></i> <a href="tel:+916352925472">+91-6352925472</a></p>
-                <p><i class="fas fa-envelope"></i> <a href="mailto:styleoflife987@gmail.com">styleoflife987@gmail.com</a></p>
-                <p><i class="fab fa-instagram"></i> @styleoflife.in</p>
-            </div>
+            <div class="footer-brand"><div class="footer-logo">STYLE<span>OF</span>LIFE</div><p>Crafting timeless elegance since 2024. Each piece is a celebration of artistry and passion.</p><div class="footer-social"><a href="https://instagram.com/styleoflife.in" target="_blank"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-twitter"></i></a><a href="#"><i class="fab fa-pinterest"></i></a></div></div>
+            <div class="footer-links"><h4>Explore</h4><a data-page="home">Home</a><a data-page="shop">Shop All</a><a data-page="track">Track Order</a><a data-page="customer-portal">My Account</a></div>
+            <div class="footer-links"><h4>Support</h4><a data-page="shipping">Shipping Policy</a><a data-page="privacy">Privacy Policy</a><a data-page="terms">Terms & Conditions</a><a data-page="faq">FAQ</a></div>
+            <div class="footer-links"><h4>Connect</h4><p><i class="fas fa-phone"></i> <a href="tel:+916352925472">+91-6352925472</a></p><p><i class="fas fa-envelope"></i> <a href="mailto:styleoflife987@gmail.com">styleoflife987@gmail.com</a></p><p><i class="fab fa-instagram"></i> @styleoflife.in</p></div>
         </div>
-        <div class="footer-bottom">
-            <p>© 2026 Style Of Life. All rights reserved. | Crafted with 💎 in India</p>
-        </div>
+        <div class="footer-bottom"><p>© 2026 Style Of Life. All rights reserved. | Crafted with 💎 in India</p></div>
     </footer>
     
     <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <a data-page="home" class="active"><i class="fas fa-home"></i><span>Home</span></a>
-        <a data-page="shop"><i class="fas fa-search"></i><span>Discover</span></a>
-        <a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Bag</span></a>
-        <a data-page="track"><i class="fas fa-truck"></i><span>Track</span></a>
-        <a data-page="customer-portal"><i class="fas fa-user"></i><span>Profile</span></a>
-    </div>
+    <div class="bottom-nav"><a data-page="home" class="active"><i class="fas fa-home"></i><span>Home</span></a><a data-page="shop"><i class="fas fa-search"></i><span>Discover</span></a><a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Bag</span></a><a data-page="track"><i class="fas fa-truck"></i><span>Track</span></a><a data-page="customer-portal"><i class="fas fa-user"></i><span>Profile</span></a></div>
     
     <!-- Product Modal -->
-    <div id="productModal" class="product-modal">
-        <div class="modal-container">
-            <button class="modal-close" onclick="closeProductModal()">&times;</button>
-            <div id="modalMediaContainer"></div>
-            <div class="modal-info">
-                <div class="modal-name" id="modalName"></div>
-                <div class="modal-sku" id="modalSku"></div>
-                <div class="modal-category" id="modalCategory"></div>
-                <div class="modal-price" id="modalPrice"></div>
-                <div class="modal-gst" id="modalGst"></div>
-                <div class="modal-desc" id="modalDesc"></div>
-                <div class="modal-stock" id="modalStock"></div>
-                <div class="modal-buttons">
-                    <button class="modal-buy" id="modalBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button>
-                    <button class="modal-cart" id="modalCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="productModal" class="product-modal"><div class="modal-container"><button class="modal-close" onclick="closeProductModal()">&times;</button><div id="modalMediaContainer"></div><div class="modal-info"><div class="modal-name" id="modalName"></div><div class="modal-sku" id="modalSku"></div><div class="modal-category" id="modalCategory"></div><div class="modal-price" id="modalPrice"></div><div class="modal-gst" id="modalGst"></div><div class="modal-desc" id="modalDesc"></div><div class="modal-stock" id="modalStock"></div><div class="modal-buttons"><button class="modal-buy" id="modalBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button><button class="modal-cart" id="modalCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button></div></div></div></div>
     
-    <script type="importmap">
-        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
-    </script>
+    <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let sessionId = localStorage.getItem('sessionId');
-        if (!sessionId) {
-            sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('sessionId', sessionId);
+        if (!sessionId) { sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); localStorage.setItem('sessionId', sessionId); }
+        
+        let currentCart = [], productsCache = {}, allProducts = [];
+        
+        function calculateGST(price, gstPercent) { const gstAmount = (price * gstPercent) / 100; return { gstAmount, total: price + gstAmount }; }
+        function isD360Viewer(url) { return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); }
+        function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi|wmv|flv)$/i) || url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')); }
+        function getMediaType(url) { if (isD360Viewer(url)) return 'd360'; if (isVideoUrl(url)) return 'video'; return 'image'; }
+        
+        function getThumbnailForMedia(url) {
+            const type = getMediaType(url);
+            if (type === 'd360') { const match = url.match(/[?&]d=([^&]+)/); return match && match[1] ? `https://d360.tech/imaged/${match[1]}/still.jpg` : 'https://via.placeholder.com/70x70?text=360°'; }
+            return url;
         }
         
-        let currentCart = [];
-        let productsCache = {};
-        let allProducts = [];
+        function navigateTo(page) { if (window.parent !== window) window.parent.postMessage({ page: page }, '*'); else window.location.href = page + '.html'; }
+        document.querySelectorAll('[data-page]').forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); navigateTo(el.getAttribute('data-page')); }));
         
-        function calculateGST(price, gstPercent) {
-            const gstAmount = (price * gstPercent) / 100;
-            const total = price + gstAmount;
-            return { gstAmount, total };
-        }
+        function showToast(message, isError = false) { const toast = document.createElement('div'); toast.className = 'toast' + (isError ? ' toast-error' : ''); toast.textContent = message; document.body.appendChild(toast); setTimeout(() => toast.remove(), 3000); }
         
-        function isD360Viewer(url) {
-            return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d='));
-        }
-        
-        function isVideoUrl(url) {
-            if (!url) return false;
-            return url.match(/\.(mp4|webm|mov|avi|wmv|flv)$/i) || 
-                   url.includes('youtube.com') || url.includes('youtu.be') || 
-                   url.includes('vimeo.com');
-        }
-        
-        function getMediaType(url) {
-            if (isD360Viewer(url)) return 'd360';
-            if (isVideoUrl(url)) return 'video';
-            return 'image';
-        }
-        
-        function getProductThumbnail(product) {
-            const media = product.images?.[0];
-            if (!media) return 'https://via.placeholder.com/70x70?text=Style';
-            const type = getMediaType(media);
-            if (type === 'd360') {
-                const match = media.match(/[?&]d=([^&]+)/);
-                return match && match[1] ? `https://d360.tech/imaged/${match[1]}/still.jpg` : 'https://via.placeholder.com/70x70?text=360°';
-            }
-            if (type === 'video') {
-                return media;
-            }
-            return media;
-        }
-        
-        function navigateTo(page) {
-            if (window.parent !== window) window.parent.postMessage({ page: page }, '*');
-            else window.location.href = page + '.html';
-        }
-        
-        document.querySelectorAll('[data-page]').forEach(el => {
-            el.addEventListener('click', (e) => {
-                e.preventDefault();
-                navigateTo(el.getAttribute('data-page'));
-            });
-        });
-        
-        function showToast(message, isError = false) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            if (isError) toast.classList.add('toast-error');
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-        
-        async function updateCartCount() {
-            try {
-                const { data, error } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
-                if (error) throw error;
-                const items = data?.items || [];
-                currentCart = items;
-                const total = items.reduce((s, i) => s + i.quantity, 0);
-                const badge = document.getElementById('cartCount');
-                if (badge) badge.textContent = total;
-                return items;
-            } catch (error) { return []; }
-        }
-        
-        async function fetchProductGST(productId) {
-            if (productsCache[productId]) return productsCache[productId];
-            try {
-                const { data, error } = await supabase.from('products').select('gst').eq('id', productId).single();
-                if (error) throw error;
-                productsCache[productId] = data;
-                return data;
-            } catch (error) { return { gst: 18 }; }
-        }
+        async function updateCartCount() { try { const { data } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle(); const items = data?.items || []; currentCart = items; const total = items.reduce((s, i) => s + i.quantity, 0); document.getElementById('cartCount').textContent = total; return items; } catch(e) { return []; } }
+        async function fetchProductGST(productId) { if (productsCache[productId]) return productsCache[productId]; try { const { data } = await supabase.from('products').select('gst').eq('id', productId).single(); productsCache[productId] = data; return data; } catch(e) { return { gst: 18 }; } }
         
         async function updateCartPreview() {
             const cartItems = await updateCartCount();
             const previewContainer = document.getElementById('cartPreviewContent');
             const swipeContainer = document.getElementById('swipeContainer');
-            if (!cartItems.length) {
-                previewContainer.innerHTML = `<div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);"><i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 15px;"></i><p>Your cart is empty</p></div>`;
-                if (swipeContainer) swipeContainer.style.opacity = '0.5';
-                return;
-            }
+            if (!cartItems.length) { previewContainer.innerHTML = `<div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);"><i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 15px;"></i><p>Your cart is empty</p></div>`; if (swipeContainer) swipeContainer.style.opacity = '0.5'; return; }
             if (swipeContainer) swipeContainer.style.opacity = '1';
             let subtotal = 0, totalGST = 0, itemsHtml = '';
             for (const item of cartItems) {
                 const productInfo = await fetchProductGST(item.id);
                 const gstPercent = productInfo?.gst || 18;
                 const { gstAmount, total } = calculateGST(item.price, gstPercent);
-                const itemTotal = total * item.quantity;
-                const itemGSTTotal = gstAmount * item.quantity;
                 subtotal += item.price * item.quantity;
-                totalGST += itemGSTTotal;
-                itemsHtml += `<div class="cart-preview-item"><img src="${item.image}" onerror="this.src='https://via.placeholder.com/50x50'"><div class="cart-preview-item-details"><div class="cart-preview-item-name">${escapeHtml(item.name)}</div><div class="cart-preview-item-price">₹${item.price.toLocaleString()} × ${item.quantity}</div><div class="cart-preview-item-price" style="font-size: 10px; color: #aaa;">GST ${gstPercent}%: ₹${(gstAmount * item.quantity).toLocaleString()}</div></div><div style="color: var(--gold); font-weight: bold;">₹${itemTotal.toLocaleString()}</div></div>`;
+                totalGST += gstAmount * item.quantity;
+                itemsHtml += `<div class="cart-preview-item"><img src="${item.image}" onerror="this.src='https://via.placeholder.com/50x50'"><div class="cart-preview-item-details"><div class="cart-preview-item-name">${escapeHtml(item.name)}</div><div class="cart-preview-item-price">₹${item.price.toLocaleString()} × ${item.quantity}</div><div class="cart-preview-item-price" style="font-size: 10px; color: #aaa;">GST ${gstPercent}%: ₹${(gstAmount * item.quantity).toLocaleString()}</div></div><div style="color: var(--gold); font-weight: bold;">₹${(total * item.quantity).toLocaleString()}</div></div>`;
             }
             const shipping = subtotal >= 3000 ? 0 : 100;
             const total = subtotal + totalGST + shipping;
             previewContainer.innerHTML = `${itemsHtml}<div class="cart-preview-total"><div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>Subtotal</span><span>₹${subtotal.toLocaleString()}</span></div><div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>Total GST</span><span>₹${totalGST.toLocaleString()}</span></div><div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>Shipping</span><span>₹${shipping}</span></div><div style="display: flex; justify-content: space-between; font-size: 18px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);"><span>Total</span><span style="color: var(--gold);">₹${total.toLocaleString()}</span></div></div>`;
         }
         
-        async function clearCartFromSwipe() {
-            if (!currentCart.length) { showToast('Cart is already empty', true); return; }
-            if (confirm('Clear all items from your cart?')) {
-                await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
-                showToast('Cart cleared! 🗑️');
-                await updateCartPreview();
-                closeSwipeCart();
-            }
-        }
+        async function clearCartFromSwipe() { if (!currentCart.length) { showToast('Cart is empty', true); return; } if (confirm('Clear cart?')) { await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date().toISOString() }, { onConflict: 'session_id' }); showToast('Cart cleared!'); await updateCartPreview(); closeSwipeCart(); } }
         
         window.addToCart = async (id, name, price, sku, img) => {
             try {
@@ -1704,120 +1512,105 @@
                 const existing = items.find(i => i.id === id);
                 if (existing) existing.quantity += 1;
                 else items.push({ id, sku, name, price, gst: gstPercent, quantity: 1, image: img });
-                const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
-                await supabase.from('carts').upsert({ session_id: sessionId, items: items, total: total, updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
-                showToast(`${name} added to cart! ✨`);
-                await updateCartPreview();
-                return true;
-            } catch (error) { showToast('Failed to add', true); return false; }
+                await supabase.from('carts').upsert({ session_id: sessionId, items: items, total: items.reduce((s, i) => s + (i.price * i.quantity), 0), updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
+                showToast(`${name} added! ✨`); await updateCartPreview(); return true;
+            } catch(e) { showToast('Failed', true); return false; }
         };
-        
-        window.buyNow = async (id, name, price, sku, img) => {
-            const added = await addToCart(id, name, price, sku, img);
-            if (added) setTimeout(() => navigateTo('checkout'), 500);
-        };
-        
-        window.shareProduct = function(product) {
-            const text = `✨ Discover ${product.name} at Style Of Life! Price: ₹${(product.price || 0).toLocaleString()}`;
-            if (navigator.share) navigator.share({ title: product.name, text: text, url: window.location.href }).catch(() => { navigator.clipboard.writeText(text); showToast('Link copied!'); });
-            else { navigator.clipboard.writeText(text); showToast('Link copied!'); }
-        };
+        window.buyNow = async (id, name, price, sku, img) => { if (await addToCart(id, name, price, sku, img)) setTimeout(() => navigateTo('checkout'), 500); };
+        window.shareProduct = function(product) { const text = `✨ ${product.name} at Style Of Life!`; if (navigator.share) navigator.share({ title: product.name, text }); else { navigator.clipboard.writeText(text); showToast('Link copied!'); } };
         
         // Swipe Cart
         let isDragging = false, startX = 0, currentTranslate = 0, swipeThumb = document.getElementById('swipeThumb'), swipeProgress = document.getElementById('swipeProgress'), swipeTrack = document.querySelector('.swipe-track'), maxSwipe = 0;
-        function initSwipe() {
-            if (!swipeThumb || !swipeTrack) return;
-            const trackRect = swipeTrack.getBoundingClientRect();
-            maxSwipe = trackRect.width - 70;
-            swipeThumb.addEventListener('mousedown', startDrag); swipeThumb.addEventListener('touchstart', startDrag);
-            document.addEventListener('mousemove', onDrag); document.addEventListener('touchmove', onDrag);
-            document.addEventListener('mouseup', endDrag); document.addEventListener('touchend', endDrag);
-        }
+        function initSwipe() { if (!swipeThumb || !swipeTrack) return; maxSwipe = swipeTrack.getBoundingClientRect().width - 70; swipeThumb.addEventListener('mousedown', startDrag); swipeThumb.addEventListener('touchstart', startDrag); document.addEventListener('mousemove', onDrag); document.addEventListener('touchmove', onDrag); document.addEventListener('mouseup', endDrag); document.addEventListener('touchend', endDrag); }
         function startDrag(e) { isDragging = true; const clientX = e.clientX || (e.touches && e.touches[0].clientX); startX = clientX - currentTranslate; swipeThumb.style.transition = 'none'; swipeProgress.style.transition = 'none'; e.stopPropagation(); }
-        function onDrag(e) { if (!isDragging) return; e.preventDefault(); const clientX = e.clientX || (e.touches && e.touches[0].clientX); let newTranslate = clientX - startX; newTranslate = Math.max(0, Math.min(newTranslate, maxSwipe)); currentTranslate = newTranslate; const percent = (currentTranslate / maxSwipe) * 100; swipeThumb.style.transform = `translateX(${currentTranslate}px)`; swipeProgress.style.width = `${percent}%`; if (percent >= 95) completeSwipe(); }
-        function endDrag() { isDragging = false; swipeThumb.style.transition = 'transform 0.3s ease'; swipeProgress.style.transition = 'width 0.3s ease'; if (currentTranslate < maxSwipe * 0.95) { currentTranslate = 0; swipeThumb.style.transform = `translateX(0px)`; swipeProgress.style.width = `0%`; } }
-        function completeSwipe() { currentTranslate = 0; swipeThumb.style.transform = `translateX(0px)`; swipeProgress.style.width = `0%`; closeSwipeCart(); navigateTo('checkout'); }
+        function onDrag(e) { if (!isDragging) return; e.preventDefault(); const clientX = e.clientX || (e.touches && e.touches[0].clientX); let newTranslate = clientX - startX; newTranslate = Math.max(0, Math.min(newTranslate, maxSwipe)); currentTranslate = newTranslate; swipeThumb.style.transform = `translateX(${currentTranslate}px)`; swipeProgress.style.width = `${(currentTranslate / maxSwipe) * 100}%`; if ((currentTranslate / maxSwipe) >= 0.95) completeSwipe(); }
+        function endDrag() { isDragging = false; swipeThumb.style.transition = 'transform 0.3s ease'; swipeProgress.style.transition = 'width 0.3s ease'; if (currentTranslate < maxSwipe * 0.95) { currentTranslate = 0; swipeThumb.style.transform = 'translateX(0px)'; swipeProgress.style.width = '0%'; } }
+        function completeSwipe() { currentTranslate = 0; swipeThumb.style.transform = 'translateX(0px)'; swipeProgress.style.width = '0%'; closeSwipeCart(); navigateTo('checkout'); }
         let overlay = document.getElementById('swipeCartOverlay');
         function openSwipeCart() { overlay.classList.add('active'); overlay.style.transform = ''; updateCartPreview(); setTimeout(initSwipe, 100); }
         function closeSwipeCart() { overlay.classList.remove('active'); overlay.style.transform = ''; }
         document.getElementById('floatingCartBtn')?.addEventListener('click', openSwipeCart);
         document.getElementById('clearCartSwipeBtn')?.addEventListener('click', clearCartFromSwipe);
         
-        // Gallery
-        window.scrollGallery = function(galleryId, direction) {
-            const gallery = document.getElementById(galleryId);
-            if (!gallery) return;
-            gallery.scrollBy({ left: direction === 'left' ? -gallery.clientWidth : gallery.clientWidth, behavior: 'smooth' });
-        };
+        // Gallery with mixed media (images first, then videos/D360)
+        window.scrollGallery = function(galleryId, direction) { const gallery = document.getElementById(galleryId); if (gallery) gallery.scrollBy({ left: direction === 'left' ? -gallery.clientWidth : gallery.clientWidth, behavior: 'smooth' }); };
+        
+        function buildGalleryItems(mediaItems) {
+            const items = [];
+            // Separate media types: images first, then videos, then D360
+            const images = mediaItems.filter(m => getMediaType(m) === 'image');
+            const videos = mediaItems.filter(m => getMediaType(m) === 'video');
+            const d360s = mediaItems.filter(m => getMediaType(m) === 'd360');
+            [...images, ...videos, ...d360s].forEach(media => {
+                const type = getMediaType(media);
+                if (type === 'image') items.push({ type: 'image', url: media });
+                else if (type === 'video') items.push({ type: 'video', url: media });
+                else items.push({ type: 'd360', url: media });
+            });
+            return items;
+        }
         
         function initGalleryWithMedia(galleryId, mediaItems, dotContainerId) {
             const gallery = document.getElementById(galleryId);
             const dotContainer = document.getElementById(dotContainerId);
             if (!gallery || !dotContainer) return;
+            const items = buildGalleryItems(mediaItems);
             gallery.innerHTML = '';
             dotContainer.innerHTML = '';
-            mediaItems.forEach((media, index) => {
-                const type = getMediaType(media);
-                let mediaElement;
-                if (type === 'd360') {
-                    const wrapper = document.createElement('div');
-                    wrapper.style.minWidth = '100%'; wrapper.style.width = '100%'; wrapper.style.height = '100%'; wrapper.style.position = 'relative'; wrapper.style.background = '#1a1a1a';
-                    wrapper.innerHTML = `<iframe src="${media}" style="width: 100%; height: 100%; border: none;" frameborder="0" allowfullscreen></iframe><div class="media-badge">🔄 360° View</div>`;
-                    mediaElement = wrapper;
-                } else if (type === 'video') {
+            items.forEach((item, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'gallery-item';
+                if (item.type === 'image') {
+                    const img = document.createElement('img');
+                    img.src = item.url; img.className = 'gallery-image'; img.loading = 'lazy';
+                    img.onerror = () => img.src = 'https://via.placeholder.com/400x400?text=Image+Not+Available';
+                    slide.appendChild(img);
+                } else if (item.type === 'video') {
                     const video = document.createElement('video');
-                    video.src = media; video.className = 'gallery-video'; video.loop = true; video.muted = true; video.playsInline = true;
+                    video.src = item.url; video.className = 'gallery-video'; video.loop = true; video.muted = true; video.playsInline = true;
                     video.addEventListener('mouseenter', () => video.play());
                     video.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
-                    mediaElement = video;
-                } else {
-                    const img = document.createElement('img');
-                    img.src = media; img.className = 'gallery-image'; img.loading = 'lazy';
-                    img.onerror = () => { img.src = 'https://via.placeholder.com/400x400?text=Image+Not+Available'; };
-                    mediaElement = img;
+                    slide.appendChild(video);
+                    const badge = document.createElement('div'); badge.className = 'media-badge'; badge.innerHTML = '🎬 Video'; slide.appendChild(badge);
+                } else if (item.type === 'd360') {
+                    const wrapper = document.createElement('div');
+                    wrapper.style.width = '100%'; wrapper.style.height = '100%'; wrapper.style.position = 'relative'; wrapper.style.background = '#1a1a1a';
+                    wrapper.innerHTML = `<iframe src="${item.url}" style="width:100%;height:100%;border:none;" frameborder="0" allowfullscreen></iframe><div class="media-badge">🔄 360° View</div>`;
+                    slide.appendChild(wrapper);
                 }
-                gallery.appendChild(mediaElement);
+                gallery.appendChild(slide);
                 const dot = document.createElement('div');
                 dot.className = 'gallery-dot';
                 if (index === 0) dot.classList.add('active');
                 dot.addEventListener('click', (e) => { e.stopPropagation(); gallery.scrollTo({ left: gallery.clientWidth * index, behavior: 'smooth' }); });
                 dotContainer.appendChild(dot);
             });
-            gallery.addEventListener('scroll', () => {
-                const activeIndex = Math.round(gallery.scrollLeft / gallery.clientWidth);
-                const dots = dotContainer.querySelectorAll('.gallery-dot');
-                dots.forEach((dot, idx) => dot.classList.toggle('active', idx === activeIndex));
-            });
+            gallery.addEventListener('scroll', () => { const activeIndex = Math.round(gallery.scrollLeft / gallery.clientWidth); const dots = dotContainer.querySelectorAll('.gallery-dot'); dots.forEach((dot, idx) => dot.classList.toggle('active', idx === activeIndex)); });
         }
         
-        function shuffleArray(array) { const shuffled = [...array]; for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; } return shuffled; }
+        function shuffleArray(arr) { const shuffled = [...arr]; for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; } return shuffled; }
         
         async function loadStories() {
             const container = document.getElementById('storiesContainer');
             if (!container) return;
             try {
                 let products = allProducts;
-                if (!products.length) {
-                    const { data, error } = await supabase.from('products').select('*');
-                    if (error) throw error;
-                    products = data || [];
-                    allProducts = products;
-                }
+                if (!products.length) { const { data } = await supabase.from('products').select('*'); products = data || []; allProducts = products; }
                 if (!products.length) { container.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; return; }
-                const shuffledProducts = shuffleArray(products);
-                const storyProducts = shuffledProducts.slice(0, Math.min(15, products.length));
+                const shuffled = shuffleArray(products);
+                const storyProducts = shuffled.slice(0, Math.min(15, products.length));
                 let html = '';
                 for (const product of storyProducts) {
-                    const thumbnail = getProductThumbnail(product);
                     const firstMedia = product.images?.[0];
                     const mediaType = getMediaType(firstMedia);
+                    let thumbnail = firstMedia ? getThumbnailForMedia(firstMedia) : 'https://via.placeholder.com/70x70?text=Style';
                     let badgeIcon = '';
                     if (mediaType === 'd360') badgeIcon = '<i class="fas fa-cube"></i>';
                     else if (mediaType === 'video') badgeIcon = '<i class="fas fa-play"></i>';
                     html += `<div class="story-toggle" onclick='openProductModal(${JSON.stringify(product)})'><div class="story-ring">${mediaType === 'video' ? `<video class="story-thumbnail" src="${thumbnail}" muted loop playsinline autoplay onmouseenter="this.play()" onmouseleave="this.pause(); this.currentTime=0"></video>` : `<img class="story-thumbnail" src="${thumbnail}" alt="${escapeHtml(product.name)}" loading="lazy">`}${badgeIcon ? `<div class="story-badge">${badgeIcon}</div>` : ''}</div></div>`;
                 }
                 container.innerHTML = html;
-            } catch (error) { container.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; }
+            } catch(e) { container.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; }
         }
         
         async function loadFeaturedProducts() {
@@ -1825,35 +1618,28 @@
             if (!container) return;
             try {
                 let products = allProducts;
-                if (!products.length) {
-                    const { data, error } = await supabase.from('products').select('*');
-                    if (error) throw error;
-                    products = data || [];
-                    allProducts = products;
-                }
+                if (!products.length) { const { data } = await supabase.from('products').select('*'); products = data || []; allProducts = products; }
                 if (!products.length) { container.innerHTML = '<div class="empty-state">✨ Coming soon</div>'; return; }
-                const shuffledProducts = shuffleArray(products);
-                const randomProducts = shuffledProducts.slice(0, 4);
+                const shuffled = shuffleArray(products);
+                const randomProducts = shuffled.slice(0, 4);
                 let html = '';
                 for (const p of randomProducts) {
-                    const firstMedia = p.images?.[0] || 'https://via.placeholder.com/300x160?text=Style+Of+Life';
+                    const firstMedia = p.images?.[0] || 'https://via.placeholder.com/300x160?text=Style';
                     const mediaType = getMediaType(firstMedia);
                     let mediaHtml = '';
                     if (mediaType === 'd360') {
-                        const match = firstMedia.match(/[?&]d=([^&]+)/);
-                        const thumb = match && match[1] ? `https://d360.tech/imaged/${match[1]}/still.jpg` : 'https://via.placeholder.com/300x160?text=360°+View';
-                        mediaHtml = `<img class="featured-media" src="${thumb}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x160?text=Image+Not+Available'">`;
+                        const thumb = getThumbnailForMedia(firstMedia);
+                        mediaHtml = `<img class="featured-media" src="${thumb}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x160?text=360°+View'">`;
                     } else if (mediaType === 'video') {
                         mediaHtml = `<video class="featured-video" src="${firstMedia}" muted loop playsinline autoplay onmouseenter="this.play()" onmouseleave="this.pause(); this.currentTime=0"></video>`;
                     } else {
                         mediaHtml = `<img class="featured-media" src="${firstMedia}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x160?text=Image+Not+Available'">`;
                     }
-                    const gstPercent = p.gst || 18;
-                    const { total } = calculateGST(p.price, gstPercent);
-                    html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'>${mediaHtml}<div class="featured-info"><div class="featured-name">${escapeHtml(p.name)}</div><div class="featured-price">₹${total.toLocaleString()}</div><div class="featured-gst">Incl. ${gstPercent}% GST</div></div></div>`;
+                    const { total } = calculateGST(p.price, p.gst || 18);
+                    html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'>${mediaHtml}<div class="featured-info"><div class="featured-name">${escapeHtml(p.name)}</div><div class="featured-price">₹${total.toLocaleString()}</div><div class="featured-gst">Incl. ${p.gst || 18}% GST</div></div></div>`;
                 }
                 container.innerHTML = html;
-            } catch (error) { container.innerHTML = '<div class="empty-state">Unable to load collection</div>'; }
+            } catch(e) { container.innerHTML = '<div class="empty-state">Unable to load</div>'; }
         }
         
         async function loadProducts() {
@@ -1862,12 +1648,7 @@
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div>';
             try {
                 let products = allProducts;
-                if (!products.length) {
-                    const { data, error } = await supabase.from('products').select('*').order('id');
-                    if (error) throw error;
-                    products = data || [];
-                    allProducts = products;
-                }
+                if (!products.length) { const { data } = await supabase.from('products').select('*').order('id'); products = data || []; allProducts = products; }
                 if (!products.length) { container.innerHTML = '<div class="empty-state">✨ No products found</div>'; return; }
                 for (const p of products) productsCache[p.id] = { gst: p.gst || 18 };
                 let html = '';
@@ -1875,35 +1656,30 @@
                     const mediaItems = p.images || [];
                     const validMedia = mediaItems.filter(m => m && m.trim() !== '');
                     const displayMedia = validMedia.length > 0 ? validMedia : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
-                    const desc = p.description || 'Exquisite handcrafted masterpiece.';
-                    const galleryId = `gallery-${p.id}`;
-                    const dotId = `dots-${p.id}`;
                     const firstMedia = displayMedia[0];
                     const firstMediaType = getMediaType(firstMedia);
-                    const gstPercent = p.gst || 18;
-                    const { gstAmount, total } = calculateGST(p.price, gstPercent);
+                    const { total, gstAmount } = calculateGST(p.price, p.gst || 18);
+                    const galleryId = `gallery-${p.id}`;
+                    const dotId = `dots-${p.id}`;
                     let mediaHtml = '';
-                    if (firstMediaType === 'd360' && displayMedia.length === 1) {
-                        mediaHtml = `<div class="product-d360-container"><iframe src="${firstMedia}" class="product-d360-iframe" frameborder="0" allowfullscreen></iframe><div class="media-badge">🔄 360° Interactive</div></div>`;
-                    } else if (firstMediaType === 'video' && displayMedia.length === 1) {
-                        mediaHtml = `<div class="product-video-container"><video src="${firstMedia}" class="product-video" autoplay muted loop playsinline></video><div class="media-badge">🎬 Video</div></div>`;
+                    if (displayMedia.length === 1) {
+                        if (firstMediaType === 'd360') mediaHtml = `<div class="product-d360-container"><iframe src="${firstMedia}" class="product-d360-iframe" frameborder="0" allowfullscreen></iframe><div class="media-badge">🔄 360° View</div></div>`;
+                        else if (firstMediaType === 'video') mediaHtml = `<div class="product-video-container"><video src="${firstMedia}" class="product-video" autoplay muted loop playsinline></video><div class="media-badge">🎬 Video</div></div>`;
+                        else mediaHtml = `<div class="product-gallery-container"><div class="product-gallery" id="${galleryId}"></div><button class="gallery-arrow gallery-arrow-left" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'left')"><i class="fas fa-chevron-left"></i></button><button class="gallery-arrow gallery-arrow-right" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'right')"><i class="fas fa-chevron-right"></i></button><div class="gallery-dots" id="${dotId}"></div></div>`;
                     } else {
                         mediaHtml = `<div class="product-gallery-container"><div class="product-gallery" id="${galleryId}"></div><button class="gallery-arrow gallery-arrow-left" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'left')"><i class="fas fa-chevron-left"></i></button><button class="gallery-arrow gallery-arrow-right" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'right')"><i class="fas fa-chevron-right"></i></button><div class="gallery-dots" id="${dotId}"></div></div>`;
                     }
-                    html += `<div class="product-card">${mediaHtml}<div class="product-info"><div class="product-name">${escapeHtml(p.name)}</div><div class="product-sku">${p.sku} | ${p.category || 'Fine Jewelry'}</div><div class="product-desc">${escapeHtml(desc.substring(0, 100))}${desc.length > 100 ? '...' : ''}</div><div class="product-price">₹${total.toLocaleString()} <small>(Incl. ${gstPercent}% GST)</small></div><div class="product-gst">📊 GST ${gstPercent}%: ₹${gstAmount.toLocaleString()}</div><div class="product-buttons"><button class="btn-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${firstMediaType === 'd360' ? 'https://via.placeholder.com/400x400?text=360°+View' : (displayMedia[0] || '')}')"><i class="fas fa-bolt"></i> Buy Now</button><button class="btn-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${firstMediaType === 'd360' ? 'https://via.placeholder.com/400x400?text=360°+View' : (displayMedia[0] || '')}')"><i class="fas fa-shopping-cart"></i></button><button class="btn-share" onclick="event.stopPropagation(); shareProduct(${JSON.stringify(p).replace(/"/g, '&quot;')})"><i class="fas fa-share-alt"></i></button></div></div></div>`;
+                    html += `<div class="product-card">${mediaHtml}<div class="product-info"><div class="product-name">${escapeHtml(p.name)}</div><div class="product-sku">${p.sku} | ${p.category || 'Fine Jewelry'}</div><div class="product-desc">${escapeHtml((p.description || 'Exquisite masterpiece.').substring(0, 100))}${(p.description || '').length > 100 ? '...' : ''}</div><div class="product-price">₹${total.toLocaleString()} <small>(Incl. ${p.gst || 18}% GST)</small></div><div class="product-gst">📊 GST ${p.gst || 18}%: ₹${gstAmount.toLocaleString()}</div><div class="product-buttons"><button class="btn-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${firstMediaType === 'd360' ? 'https://via.placeholder.com/400x400?text=360°+View' : (displayMedia[0] || '')}')"><i class="fas fa-bolt"></i> Buy Now</button><button class="btn-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${firstMediaType === 'd360' ? 'https://via.placeholder.com/400x400?text=360°+View' : (displayMedia[0] || '')}')"><i class="fas fa-shopping-cart"></i></button><button class="btn-share" onclick="event.stopPropagation(); shareProduct(${JSON.stringify(p).replace(/"/g, '&quot;')})"><i class="fas fa-share-alt"></i></button></div></div></div>`;
                 }
                 container.innerHTML = html;
                 for (const p of products) {
                     const mediaItems = p.images || [];
                     const validMedia = mediaItems.filter(m => m && m.trim() !== '');
                     const displayMedia = validMedia.length > 0 ? validMedia : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
-                    const firstMedia = displayMedia[0];
-                    const firstMediaType = getMediaType(firstMedia);
-                    if (!(firstMediaType === 'd360' && displayMedia.length === 1) && !(firstMediaType === 'video' && displayMedia.length === 1)) {
-                        setTimeout(() => initGalleryWithMedia(`gallery-${p.id}`, displayMedia, `dots-${p.id}`), 50);
-                    }
+                    if (displayMedia.length > 1) setTimeout(() => initGalleryWithMedia(`gallery-${p.id}`, displayMedia, `dots-${p.id}`), 50);
+                    else if (displayMedia.length === 1 && getMediaType(displayMedia[0]) === 'image') setTimeout(() => initGalleryWithMedia(`gallery-${p.id}`, displayMedia, `dots-${p.id}`), 50);
                 }
-            } catch (error) { container.innerHTML = '<div class="empty-state">Error loading collection</div>'; }
+            } catch(e) { container.innerHTML = '<div class="empty-state">Error loading collection</div>'; }
         }
         
         window.openProductModal = function(product) {
@@ -1912,25 +1688,20 @@
             const displayMedia = validMedia.length > 0 ? validMedia : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
             const firstMedia = displayMedia[0];
             const firstMediaType = getMediaType(firstMedia);
-            const stockStatus = product.stock <= 0 ? 'Out of Stock' : (product.stock < 10 ? `Only ${product.stock} left` : 'In Stock');
-            const gstPercent = product.gst || 18;
-            const { gstAmount, total } = calculateGST(product.price, gstPercent);
-            const modalMediaContainer = document.getElementById('modalMediaContainer');
-            if (modalMediaContainer) {
-                if (firstMediaType === 'd360') {
-                    modalMediaContainer.innerHTML = `<div style="width: 100%; aspect-ratio: 1/1; background: #1a1a1a;"><iframe src="${firstMedia}" style="width: 100%; height: 100%; border: none;" frameborder="0" allowfullscreen></iframe><div class="media-badge" style="bottom: 20px; right: 20px;">🔄 360° Interactive</div></div>`;
-                } else if (firstMediaType === 'video') {
-                    modalMediaContainer.innerHTML = `<video src="${firstMedia}" class="modal-video" autoplay muted loop playsinline controls></video><div class="media-badge" style="bottom: 20px; right: 20px;">🎬 Video</div>`;
-                } else {
-                    modalMediaContainer.innerHTML = `<img class="modal-media" src="${firstMedia}" alt="Product detail" onerror="this.src='https://via.placeholder.com/400x400?text=Image+Not+Available'">`;
-                }
+            const { total, gstAmount } = calculateGST(product.price, product.gst || 18);
+            const modalMedia = document.getElementById('modalMediaContainer');
+            if (modalMedia) {
+                if (firstMediaType === 'd360') modalMedia.innerHTML = `<div class="modal-d360"><iframe src="${firstMedia}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe><div class="media-badge" style="bottom:20px;right:20px;">🔄 360°</div></div>`;
+                else if (firstMediaType === 'video') modalMedia.innerHTML = `<video src="${firstMedia}" class="modal-video" autoplay muted loop playsinline controls></video><div class="media-badge" style="bottom:20px;right:20px;">🎬 Video</div>`;
+                else modalMedia.innerHTML = `<img class="modal-media" src="${firstMedia}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/400x400'">`;
             }
             document.getElementById('modalName').textContent = product.name;
             document.getElementById('modalSku').textContent = `SKU: ${product.sku}`;
             document.getElementById('modalCategory').textContent = product.category || 'Fine Jewelry';
-            document.getElementById('modalPrice').innerHTML = `₹${total.toLocaleString()} <small>(Incl. ${gstPercent}% GST)</small><br><span style="font-size: 16px; color: var(--gray);">Base: ₹${product.price.toLocaleString()} + GST: ₹${gstAmount.toLocaleString()}</span>`;
-            document.getElementById('modalGst').innerHTML = `<i class="fas fa-percent"></i> GST ${gstPercent}%: ₹${gstAmount.toLocaleString()}`;
+            document.getElementById('modalPrice').innerHTML = `₹${total.toLocaleString()} <small>(Incl. ${product.gst || 18}% GST)</small><br><span style="font-size:16px;color:var(--gray);">Base: ₹${product.price.toLocaleString()} + GST: ₹${gstAmount.toLocaleString()}</span>`;
+            document.getElementById('modalGst').innerHTML = `<i class="fas fa-percent"></i> GST ${product.gst || 18}%: ₹${gstAmount.toLocaleString()}`;
             document.getElementById('modalDesc').textContent = product.description || 'Exquisite handcrafted masterpiece.';
+            const stockStatus = product.stock <= 0 ? 'Out of Stock' : (product.stock < 10 ? `Only ${product.stock} left` : 'In Stock');
             document.getElementById('modalStock').innerHTML = `<i class="fas ${product.stock <= 0 ? 'fa-times-circle' : (product.stock < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> ${stockStatus}`;
             document.getElementById('modalStock').style.color = product.stock <= 0 ? '#dc3545' : (product.stock < 10 ? '#ff9800' : '#28a745');
             const imgUrl = firstMediaType === 'd360' ? 'https://via.placeholder.com/400x400?text=360°+View' : firstMedia;
@@ -1938,12 +1709,9 @@
             document.getElementById('modalCartBtn').onclick = () => addToCart(product.id, product.name, product.price, product.sku, imgUrl);
             document.getElementById('productModal').classList.add('active');
         };
-        
-        window.closeProductModal = function() { document.getElementById('productModal').classList.remove('active'); };
-        
+        window.closeProductModal = () => document.getElementById('productModal').classList.remove('active');
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')); }
-        
-        document.getElementById('productModal')?.addEventListener('click', function(e) { if (e.target === this) closeProductModal(); });
+        document.getElementById('productModal')?.addEventListener('click', e => { if (e.target === e.currentTarget) closeProductModal(); });
         
         updateCartPreview();
         loadStories();
@@ -1952,3 +1720,4 @@
     </script>
 </body>
 </html>
+```
