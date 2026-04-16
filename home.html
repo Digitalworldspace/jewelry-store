@@ -1,5 +1,3 @@
-Here is the updated HTML document with D360° video support for stories, Editor's Pick, and Our Collection sections, keeping all other features intact.
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,34 +46,6 @@ Here is the updated HTML document with D360° video support for stories, Editor'
             height: 100%;
             z-index: -2;
             background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
-        }
-        
-        /* Premium Banner */
-        .premium-banner {
-            background: var(--black);
-            color: var(--gold);
-            text-align: center;
-            padding: 8px;
-            font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .premium-banner::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.2), transparent);
-            animation: shimmer 3s infinite;
-        }
-        
-        @keyframes shimmer {
-            100% { left: 100%; }
         }
         
         /* Google Gemini Style Logo */
@@ -190,6 +160,7 @@ Here is the updated HTML document with D360° video support for stories, Editor'
             background: linear-gradient(135deg, var(--gold), var(--gold-dark), var(--gold));
             padding: 2px;
             animation: ringGlow 3s ease-in-out infinite;
+            position: relative;
         }
         
         @keyframes ringGlow {
@@ -203,6 +174,23 @@ Here is the updated HTML document with D360° video support for stories, Editor'
             border-radius: 50%;
             object-fit: cover;
             background: var(--white);
+        }
+        
+        .story-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            background: var(--gold);
+            color: var(--black);
+            font-size: 10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            z-index: 2;
         }
         
         /* Floating Cart Button */
@@ -592,14 +580,20 @@ Here is the updated HTML document with D360° video support for stories, Editor'
             border-color: var(--gold);
         }
         
-        .featured-image {
+        .featured-media {
             width: 100%;
             height: 160px;
             object-fit: cover;
             transition: transform 0.5s;
         }
         
-        .featured-card:hover .featured-image {
+        .featured-video {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+        
+        .featured-card:hover .featured-media {
             transform: scale(1.05);
         }
         
@@ -671,7 +665,22 @@ Here is the updated HTML document with D360° video support for stories, Editor'
             pointer-events: auto;
         }
         
-        .d360-label {
+        /* Video Container */
+        .product-video-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            background: #000;
+        }
+        
+        .product-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .media-badge {
             position: absolute;
             bottom: 10px;
             right: 10px;
@@ -710,6 +719,14 @@ Here is the updated HTML document with D360° video support for stories, Editor'
         }
         
         .gallery-image {
+            min-width: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            scroll-snap-align: start;
+        }
+        
+        .gallery-video {
             min-width: 100%;
             width: 100%;
             height: 100%;
@@ -1166,7 +1183,13 @@ Here is the updated HTML document with D360° video support for stories, Editor'
             transition: all 0.3s;
         }
         
-        .modal-image {
+        .modal-media {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+        }
+        
+        .modal-video {
             width: 100%;
             aspect-ratio: 1 / 1;
             object-fit: cover;
@@ -1314,7 +1337,7 @@ Here is the updated HTML document with D360° video support for stories, Editor'
             .features-grid {
                 grid-template-columns: repeat(4, 1fr);
             }
-            .featured-image {
+            .featured-media, .featured-video {
                 height: 200px;
             }
         }
@@ -1332,36 +1355,10 @@ Here is the updated HTML document with D360° video support for stories, Editor'
                 font-size: 12px;
             }
         }
-        
-        /* D360 thumbnail badge for stories */
-        .story-d360-badge {
-            position: absolute;
-            bottom: -2px;
-            right: -2px;
-            background: var(--gold);
-            color: var(--black);
-            font-size: 10px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid white;
-        }
-        
-        .story-ring {
-            position: relative;
-        }
     </style>
 </head>
 <body>
     <div class="light-bg"></div>
-    
-    <!-- Premium Banner -->
-    <div class="premium-banner">
-        <span>✦ FREE SHIPPING ON ORDERS ABOVE ₹3000 ✦ CASH ON DELIVERY AVAILABLE ✦</span>
-    </div>
     
     <!-- Google Gemini Style Logo -->
     <div class="gemini-logo" data-page="home">
@@ -1426,7 +1423,7 @@ Here is the updated HTML document with D360° video support for stories, Editor'
         </div>
     </div>
     
-    <!-- Stories Section - Random 15 products with D360° support -->
+    <!-- Stories Section -->
     <div class="stories-section">
         <div class="stories-container" id="storiesContainer">
             <div class="loading"><div class="spinner"></div></div>
@@ -1444,7 +1441,7 @@ Here is the updated HTML document with D360° video support for stories, Editor'
         </div>
     </div>
     
-    <!-- Featured Section - Editor's Pick with D360° support -->
+    <!-- Featured Section - Editor's Pick -->
     <div class="featured-section">
         <div class="section-header">
             <div class="section-icon">✦</div>
@@ -1456,7 +1453,7 @@ Here is the updated HTML document with D360° video support for stories, Editor'
         </div>
     </div>
     
-    <!-- Products Section - Our Collection with D360° support -->
+    <!-- Products Section - Our Collection -->
     <div class="products-section">
         <div class="section-header">
             <div class="section-icon">💎</div>
@@ -1546,7 +1543,7 @@ Here is the updated HTML document with D360° video support for stories, Editor'
     <div id="productModal" class="product-modal">
         <div class="modal-container">
             <button class="modal-close" onclick="closeProductModal()">&times;</button>
-            <div id="modalMediaContainer" class="modal-media-container"></div>
+            <div id="modalMediaContainer"></div>
             <div class="modal-info">
                 <div class="modal-name" id="modalName"></div>
                 <div class="modal-sku" id="modalSku"></div>
@@ -1572,7 +1569,6 @@ Here is the updated HTML document with D360° video support for stories, Editor'
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let sessionId = localStorage.getItem('sessionId');
-        
         if (!sessionId) {
             sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('sessionId', sessionId);
@@ -1582,55 +1578,55 @@ Here is the updated HTML document with D360° video support for stories, Editor'
         let productsCache = {};
         let allProducts = [];
         
-        // ========== GST CALCULATION FUNCTIONS ==========
         function calculateGST(price, gstPercent) {
             const gstAmount = (price * gstPercent) / 100;
             const total = price + gstAmount;
             return { gstAmount, total };
         }
         
-        // ========== D360° URL DETECTION ==========
         function isD360Viewer(url) {
             return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d='));
         }
         
-        function isD360Image(url) {
-            return url && url.includes('d360.tech/imaged/');
+        function isVideoUrl(url) {
+            if (!url) return false;
+            return url.match(/\.(mp4|webm|mov|avi|wmv|flv)$/i) || 
+                   url.includes('youtube.com') || url.includes('youtu.be') || 
+                   url.includes('vimeo.com');
         }
         
-        // Helper: Get best thumbnail for D360 products
+        function getMediaType(url) {
+            if (isD360Viewer(url)) return 'd360';
+            if (isVideoUrl(url)) return 'video';
+            return 'image';
+        }
+        
         function getProductThumbnail(product) {
             const media = product.images?.[0];
             if (!media) return 'https://via.placeholder.com/70x70?text=Style';
-            if (isD360Viewer(media)) {
-                // Extract d parameter or use placeholder
+            const type = getMediaType(media);
+            if (type === 'd360') {
                 const match = media.match(/[?&]d=([^&]+)/);
-                if (match && match[1]) {
-                    return `https://d360.tech/imaged/${match[1]}/still.jpg`;
-                }
-                return 'https://via.placeholder.com/70x70?text=360°';
+                return match && match[1] ? `https://d360.tech/imaged/${match[1]}/still.jpg` : 'https://via.placeholder.com/70x70?text=360°';
+            }
+            if (type === 'video') {
+                return media;
             }
             return media;
         }
         
-        // Navigation
         function navigateTo(page) {
-            if (window.parent !== window) {
-                window.parent.postMessage({ page: page }, '*');
-            } else {
-                window.location.href = page + '.html';
-            }
+            if (window.parent !== window) window.parent.postMessage({ page: page }, '*');
+            else window.location.href = page + '.html';
         }
         
         document.querySelectorAll('[data-page]').forEach(el => {
             el.addEventListener('click', (e) => {
                 e.preventDefault();
-                const page = el.getAttribute('data-page');
-                navigateTo(page);
+                navigateTo(el.getAttribute('data-page'));
             });
         });
         
-        // Toast
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast';
@@ -1640,7 +1636,6 @@ Here is the updated HTML document with D360° video support for stories, Editor'
             setTimeout(() => toast.remove(), 3000);
         }
         
-        // Update Cart Count
         async function updateCartCount() {
             try {
                 const { data, error } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
@@ -1651,12 +1646,9 @@ Here is the updated HTML document with D360° video support for stories, Editor'
                 const badge = document.getElementById('cartCount');
                 if (badge) badge.textContent = total;
                 return items;
-            } catch (error) {
-                return [];
-            }
+            } catch (error) { return []; }
         }
         
-        // Fetch product GST from database
         async function fetchProductGST(productId) {
             if (productsCache[productId]) return productsCache[productId];
             try {
@@ -1664,28 +1656,20 @@ Here is the updated HTML document with D360° video support for stories, Editor'
                 if (error) throw error;
                 productsCache[productId] = data;
                 return data;
-            } catch (error) {
-                return { gst: 18 };
-            }
+            } catch (error) { return { gst: 18 }; }
         }
         
-        // Update Cart Preview with GST
         async function updateCartPreview() {
             const cartItems = await updateCartCount();
             const previewContainer = document.getElementById('cartPreviewContent');
             const swipeContainer = document.getElementById('swipeContainer');
-            
             if (!cartItems.length) {
                 previewContainer.innerHTML = `<div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);"><i class="fas fa-shopping-cart" style="font-size: 48px; margin-bottom: 15px;"></i><p>Your cart is empty</p></div>`;
                 if (swipeContainer) swipeContainer.style.opacity = '0.5';
                 return;
             }
             if (swipeContainer) swipeContainer.style.opacity = '1';
-            
-            let subtotal = 0;
-            let totalGST = 0;
-            let itemsHtml = '';
-            
+            let subtotal = 0, totalGST = 0, itemsHtml = '';
             for (const item of cartItems) {
                 const productInfo = await fetchProductGST(item.id);
                 const gstPercent = productInfo?.gst || 18;
@@ -1696,26 +1680,21 @@ Here is the updated HTML document with D360° video support for stories, Editor'
                 totalGST += itemGSTTotal;
                 itemsHtml += `<div class="cart-preview-item"><img src="${item.image}" onerror="this.src='https://via.placeholder.com/50x50'"><div class="cart-preview-item-details"><div class="cart-preview-item-name">${escapeHtml(item.name)}</div><div class="cart-preview-item-price">₹${item.price.toLocaleString()} × ${item.quantity}</div><div class="cart-preview-item-price" style="font-size: 10px; color: #aaa;">GST ${gstPercent}%: ₹${(gstAmount * item.quantity).toLocaleString()}</div></div><div style="color: var(--gold); font-weight: bold;">₹${itemTotal.toLocaleString()}</div></div>`;
             }
-            
             const shipping = subtotal >= 3000 ? 0 : 100;
             const total = subtotal + totalGST + shipping;
             previewContainer.innerHTML = `${itemsHtml}<div class="cart-preview-total"><div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>Subtotal</span><span>₹${subtotal.toLocaleString()}</span></div><div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>Total GST</span><span>₹${totalGST.toLocaleString()}</span></div><div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>Shipping</span><span>₹${shipping}</span></div><div style="display: flex; justify-content: space-between; font-size: 18px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);"><span>Total</span><span style="color: var(--gold);">₹${total.toLocaleString()}</span></div></div>`;
         }
         
-        // Clear Cart
         async function clearCartFromSwipe() {
             if (!currentCart.length) { showToast('Cart is already empty', true); return; }
             if (confirm('Clear all items from your cart?')) {
-                try {
-                    await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
-                    showToast('Cart cleared! 🗑️');
-                    await updateCartPreview();
-                    closeSwipeCart();
-                } catch (error) { showToast('Failed to clear cart', true); }
+                await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
+                showToast('Cart cleared! 🗑️');
+                await updateCartPreview();
+                closeSwipeCart();
             }
         }
         
-        // Add to Cart
         window.addToCart = async (id, name, price, sku, img) => {
             try {
                 const productInfo = await fetchProductGST(id);
@@ -1733,20 +1712,18 @@ Here is the updated HTML document with D360° video support for stories, Editor'
             } catch (error) { showToast('Failed to add', true); return false; }
         };
         
-        // Buy Now
         window.buyNow = async (id, name, price, sku, img) => {
             const added = await addToCart(id, name, price, sku, img);
             if (added) setTimeout(() => navigateTo('checkout'), 500);
         };
         
-        // Share Product
         window.shareProduct = function(product) {
             const text = `✨ Discover ${product.name} at Style Of Life! Price: ₹${(product.price || 0).toLocaleString()}`;
             if (navigator.share) navigator.share({ title: product.name, text: text, url: window.location.href }).catch(() => { navigator.clipboard.writeText(text); showToast('Link copied!'); });
             else { navigator.clipboard.writeText(text); showToast('Link copied!'); }
         };
         
-        // ========== SWIPE CART FUNCTIONALITY ==========
+        // Swipe Cart
         let isDragging = false, startX = 0, currentTranslate = 0, swipeThumb = document.getElementById('swipeThumb'), swipeProgress = document.getElementById('swipeProgress'), swipeTrack = document.querySelector('.swipe-track'), maxSwipe = 0;
         function initSwipe() {
             if (!swipeThumb || !swipeTrack) return;
@@ -1760,26 +1737,17 @@ Here is the updated HTML document with D360° video support for stories, Editor'
         function onDrag(e) { if (!isDragging) return; e.preventDefault(); const clientX = e.clientX || (e.touches && e.touches[0].clientX); let newTranslate = clientX - startX; newTranslate = Math.max(0, Math.min(newTranslate, maxSwipe)); currentTranslate = newTranslate; const percent = (currentTranslate / maxSwipe) * 100; swipeThumb.style.transform = `translateX(${currentTranslate}px)`; swipeProgress.style.width = `${percent}%`; if (percent >= 95) completeSwipe(); }
         function endDrag() { isDragging = false; swipeThumb.style.transition = 'transform 0.3s ease'; swipeProgress.style.transition = 'width 0.3s ease'; if (currentTranslate < maxSwipe * 0.95) { currentTranslate = 0; swipeThumb.style.transform = `translateX(0px)`; swipeProgress.style.width = `0%`; } }
         function completeSwipe() { currentTranslate = 0; swipeThumb.style.transform = `translateX(0px)`; swipeProgress.style.width = `0%`; closeSwipeCart(); navigateTo('checkout'); }
-        
-        let overlay = document.getElementById('swipeCartOverlay'), touchStartY = 0, touchCurrentY = 0, isSwipingDown = false;
-        function setupSwipeToHide() {
-            if (!overlay) return;
-            overlay.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; isSwipingDown = true; });
-            overlay.addEventListener('touchmove', (e) => { if (!isSwipingDown) return; touchCurrentY = e.touches[0].clientY; let deltaY = touchCurrentY - touchStartY; if (deltaY > 0) overlay.style.transform = `translateY(${Math.min(deltaY, 300)}px)`; });
-            overlay.addEventListener('touchend', () => { if (touchCurrentY - touchStartY > 100) closeSwipeCart(); else overlay.style.transform = ''; isSwipingDown = false; });
-        }
+        let overlay = document.getElementById('swipeCartOverlay');
         function openSwipeCart() { overlay.classList.add('active'); overlay.style.transform = ''; updateCartPreview(); setTimeout(initSwipe, 100); }
         function closeSwipeCart() { overlay.classList.remove('active'); overlay.style.transform = ''; }
         document.getElementById('floatingCartBtn')?.addEventListener('click', openSwipeCart);
         document.getElementById('clearCartSwipeBtn')?.addEventListener('click', clearCartFromSwipe);
-        setupSwipeToHide();
         
-        // ========== GALLERY FUNCTIONS ==========
+        // Gallery
         window.scrollGallery = function(galleryId, direction) {
             const gallery = document.getElementById(galleryId);
             if (!gallery) return;
-            const scrollAmount = gallery.clientWidth;
-            gallery.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+            gallery.scrollBy({ left: direction === 'left' ? -gallery.clientWidth : gallery.clientWidth, behavior: 'smooth' });
         };
         
         function initGalleryWithMedia(galleryId, mediaItems, dotContainerId) {
@@ -1789,15 +1757,22 @@ Here is the updated HTML document with D360° video support for stories, Editor'
             gallery.innerHTML = '';
             dotContainer.innerHTML = '';
             mediaItems.forEach((media, index) => {
+                const type = getMediaType(media);
                 let mediaElement;
-                if (isD360Viewer(media)) {
+                if (type === 'd360') {
                     const wrapper = document.createElement('div');
                     wrapper.style.minWidth = '100%'; wrapper.style.width = '100%'; wrapper.style.height = '100%'; wrapper.style.position = 'relative'; wrapper.style.background = '#1a1a1a';
-                    wrapper.innerHTML = `<iframe src="${media}" style="width: 100%; height: 100%; border: none; pointer-events: auto;" frameborder="0" allowfullscreen></iframe><div class="d360-label">🔄 360° Interactive</div>`;
+                    wrapper.innerHTML = `<iframe src="${media}" style="width: 100%; height: 100%; border: none;" frameborder="0" allowfullscreen></iframe><div class="media-badge">🔄 360° View</div>`;
                     mediaElement = wrapper;
+                } else if (type === 'video') {
+                    const video = document.createElement('video');
+                    video.src = media; video.className = 'gallery-video'; video.loop = true; video.muted = true; video.playsInline = true;
+                    video.addEventListener('mouseenter', () => video.play());
+                    video.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+                    mediaElement = video;
                 } else {
                     const img = document.createElement('img');
-                    img.src = media; img.className = 'gallery-image'; img.alt = 'Product media'; img.loading = 'lazy';
+                    img.src = media; img.className = 'gallery-image'; img.loading = 'lazy';
                     img.onerror = () => { img.src = 'https://via.placeholder.com/400x400?text=Image+Not+Available'; };
                     mediaElement = img;
                 }
@@ -1809,17 +1784,14 @@ Here is the updated HTML document with D360° video support for stories, Editor'
                 dotContainer.appendChild(dot);
             });
             gallery.addEventListener('scroll', () => {
-                const scrollPos = gallery.scrollLeft;
-                const itemWidth = gallery.clientWidth;
-                const activeIndex = Math.round(scrollPos / itemWidth);
+                const activeIndex = Math.round(gallery.scrollLeft / gallery.clientWidth);
                 const dots = dotContainer.querySelectorAll('.gallery-dot');
-                dots.forEach((dot, idx) => { if (idx === activeIndex) dot.classList.add('active'); else dot.classList.remove('active'); });
+                dots.forEach((dot, idx) => dot.classList.toggle('active', idx === activeIndex));
             });
         }
         
         function shuffleArray(array) { const shuffled = [...array]; for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; } return shuffled; }
         
-        // Load Stories - 15 random products with D360° thumbnails
         async function loadStories() {
             const container = document.getElementById('storiesContainer');
             if (!container) return;
@@ -1837,14 +1809,17 @@ Here is the updated HTML document with D360° video support for stories, Editor'
                 let html = '';
                 for (const product of storyProducts) {
                     const thumbnail = getProductThumbnail(product);
-                    const isD360 = product.images?.[0] && isD360Viewer(product.images[0]);
-                    html += `<div class="story-toggle" onclick='openProductModal(${JSON.stringify(product)})'><div class="story-ring"><img class="story-thumbnail" src="${thumbnail}" alt="${escapeHtml(product.name)}" loading="lazy"></div>${isD360 ? '<div class="story-d360-badge"><i class="fas fa-cube"></i></div>' : ''}</div>`;
+                    const firstMedia = product.images?.[0];
+                    const mediaType = getMediaType(firstMedia);
+                    let badgeIcon = '';
+                    if (mediaType === 'd360') badgeIcon = '<i class="fas fa-cube"></i>';
+                    else if (mediaType === 'video') badgeIcon = '<i class="fas fa-play"></i>';
+                    html += `<div class="story-toggle" onclick='openProductModal(${JSON.stringify(product)})'><div class="story-ring">${mediaType === 'video' ? `<video class="story-thumbnail" src="${thumbnail}" muted loop playsinline autoplay onmouseenter="this.play()" onmouseleave="this.pause(); this.currentTime=0"></video>` : `<img class="story-thumbnail" src="${thumbnail}" alt="${escapeHtml(product.name)}" loading="lazy">`}${badgeIcon ? `<div class="story-badge">${badgeIcon}</div>` : ''}</div></div>`;
                 }
                 container.innerHTML = html;
             } catch (error) { container.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; }
         }
         
-        // Load Featured Products - Editor's Pick (random, supports D360°)
         async function loadFeaturedProducts() {
             const container = document.getElementById('featuredGrid');
             if (!container) return;
@@ -1862,20 +1837,25 @@ Here is the updated HTML document with D360° video support for stories, Editor'
                 let html = '';
                 for (const p of randomProducts) {
                     const firstMedia = p.images?.[0] || 'https://via.placeholder.com/300x160?text=Style+Of+Life';
-                    let img = firstMedia;
-                    if (isD360Viewer(firstMedia)) {
+                    const mediaType = getMediaType(firstMedia);
+                    let mediaHtml = '';
+                    if (mediaType === 'd360') {
                         const match = firstMedia.match(/[?&]d=([^&]+)/);
-                        img = match && match[1] ? `https://d360.tech/imaged/${match[1]}/still.jpg` : 'https://via.placeholder.com/300x160?text=360°+View';
-                    } else if (isD360Image(firstMedia)) img = firstMedia;
+                        const thumb = match && match[1] ? `https://d360.tech/imaged/${match[1]}/still.jpg` : 'https://via.placeholder.com/300x160?text=360°+View';
+                        mediaHtml = `<img class="featured-media" src="${thumb}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x160?text=Image+Not+Available'">`;
+                    } else if (mediaType === 'video') {
+                        mediaHtml = `<video class="featured-video" src="${firstMedia}" muted loop playsinline autoplay onmouseenter="this.play()" onmouseleave="this.pause(); this.currentTime=0"></video>`;
+                    } else {
+                        mediaHtml = `<img class="featured-media" src="${firstMedia}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x160?text=Image+Not+Available'">`;
+                    }
                     const gstPercent = p.gst || 18;
                     const { total } = calculateGST(p.price, gstPercent);
-                    html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'><img class="featured-image" src="${img}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x160?text=Image+Not+Available'"><div class="featured-info"><div class="featured-name">${escapeHtml(p.name)}</div><div class="featured-price">₹${total.toLocaleString()}</div><div class="featured-gst">Incl. ${gstPercent}% GST</div></div></div>`;
+                    html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'>${mediaHtml}<div class="featured-info"><div class="featured-name">${escapeHtml(p.name)}</div><div class="featured-price">₹${total.toLocaleString()}</div><div class="featured-gst">Incl. ${gstPercent}% GST</div></div></div>`;
                 }
                 container.innerHTML = html;
             } catch (error) { container.innerHTML = '<div class="empty-state">Unable to load collection</div>'; }
         }
         
-        // Load All Products - Our Collection with D360° support
         async function loadProducts() {
             const container = document.getElementById('productsGrid');
             if (!container) return;
@@ -1891,8 +1871,7 @@ Here is the updated HTML document with D360° video support for stories, Editor'
                 if (!products.length) { container.innerHTML = '<div class="empty-state">✨ No products found</div>'; return; }
                 for (const p of products) productsCache[p.id] = { gst: p.gst || 18 };
                 let html = '';
-                for (let i = 0; i < products.length; i++) {
-                    const p = products[i];
+                for (const p of products) {
                     const mediaItems = p.images || [];
                     const validMedia = mediaItems.filter(m => m && m.trim() !== '');
                     const displayMedia = validMedia.length > 0 ? validMedia : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
@@ -1900,47 +1879,50 @@ Here is the updated HTML document with D360° video support for stories, Editor'
                     const galleryId = `gallery-${p.id}`;
                     const dotId = `dots-${p.id}`;
                     const firstMedia = displayMedia[0];
-                    const isD360 = isD360Viewer(firstMedia);
+                    const firstMediaType = getMediaType(firstMedia);
                     const gstPercent = p.gst || 18;
                     const { gstAmount, total } = calculateGST(p.price, gstPercent);
                     let mediaHtml = '';
-                    if (isD360 && displayMedia.length === 1) {
-                        mediaHtml = `<div class="product-d360-container"><iframe src="${firstMedia}" class="product-d360-iframe" frameborder="0" allowfullscreen></iframe><div class="d360-label">🔄 360° Interactive View</div></div>`;
+                    if (firstMediaType === 'd360' && displayMedia.length === 1) {
+                        mediaHtml = `<div class="product-d360-container"><iframe src="${firstMedia}" class="product-d360-iframe" frameborder="0" allowfullscreen></iframe><div class="media-badge">🔄 360° Interactive</div></div>`;
+                    } else if (firstMediaType === 'video' && displayMedia.length === 1) {
+                        mediaHtml = `<div class="product-video-container"><video src="${firstMedia}" class="product-video" autoplay muted loop playsinline></video><div class="media-badge">🎬 Video</div></div>`;
                     } else {
                         mediaHtml = `<div class="product-gallery-container"><div class="product-gallery" id="${galleryId}"></div><button class="gallery-arrow gallery-arrow-left" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'left')"><i class="fas fa-chevron-left"></i></button><button class="gallery-arrow gallery-arrow-right" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'right')"><i class="fas fa-chevron-right"></i></button><div class="gallery-dots" id="${dotId}"></div></div>`;
                     }
-                    html += `<div class="product-card">${mediaHtml}<div class="product-info"><div class="product-name">${escapeHtml(p.name)}</div><div class="product-sku">${p.sku} | ${p.category || 'Fine Jewelry'}</div><div class="product-desc">${escapeHtml(desc.substring(0, 100))}${desc.length > 100 ? '...' : ''}</div><div class="product-price">₹${total.toLocaleString()} <small>(Incl. ${gstPercent}% GST)</small></div><div class="product-gst">📊 GST ${gstPercent}%: ₹${gstAmount.toLocaleString()}</div><div class="product-buttons"><button class="btn-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${isD360 ? 'https://via.placeholder.com/400x400?text=360°+View' : (displayMedia[0] || '')}')"><i class="fas fa-bolt"></i> Buy Now</button><button class="btn-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${isD360 ? 'https://via.placeholder.com/400x400?text=360°+View' : (displayMedia[0] || '')}')"><i class="fas fa-shopping-cart"></i></button><button class="btn-share" onclick="event.stopPropagation(); shareProduct(${JSON.stringify(p).replace(/"/g, '&quot;')})"><i class="fas fa-share-alt"></i></button></div></div></div>`;
+                    html += `<div class="product-card">${mediaHtml}<div class="product-info"><div class="product-name">${escapeHtml(p.name)}</div><div class="product-sku">${p.sku} | ${p.category || 'Fine Jewelry'}</div><div class="product-desc">${escapeHtml(desc.substring(0, 100))}${desc.length > 100 ? '...' : ''}</div><div class="product-price">₹${total.toLocaleString()} <small>(Incl. ${gstPercent}% GST)</small></div><div class="product-gst">📊 GST ${gstPercent}%: ₹${gstAmount.toLocaleString()}</div><div class="product-buttons"><button class="btn-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${firstMediaType === 'd360' ? 'https://via.placeholder.com/400x400?text=360°+View' : (displayMedia[0] || '')}')"><i class="fas fa-bolt"></i> Buy Now</button><button class="btn-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${firstMediaType === 'd360' ? 'https://via.placeholder.com/400x400?text=360°+View' : (displayMedia[0] || '')}')"><i class="fas fa-shopping-cart"></i></button><button class="btn-share" onclick="event.stopPropagation(); shareProduct(${JSON.stringify(p).replace(/"/g, '&quot;')})"><i class="fas fa-share-alt"></i></button></div></div></div>`;
                 }
                 container.innerHTML = html;
-                for (let i = 0; i < products.length; i++) {
-                    const p = products[i];
+                for (const p of products) {
                     const mediaItems = p.images || [];
                     const validMedia = mediaItems.filter(m => m && m.trim() !== '');
                     const displayMedia = validMedia.length > 0 ? validMedia : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
                     const firstMedia = displayMedia[0];
-                    const isD360 = isD360Viewer(firstMedia);
-                    if (!(isD360 && displayMedia.length === 1)) {
+                    const firstMediaType = getMediaType(firstMedia);
+                    if (!(firstMediaType === 'd360' && displayMedia.length === 1) && !(firstMediaType === 'video' && displayMedia.length === 1)) {
                         setTimeout(() => initGalleryWithMedia(`gallery-${p.id}`, displayMedia, `dots-${p.id}`), 50);
                     }
                 }
             } catch (error) { container.innerHTML = '<div class="empty-state">Error loading collection</div>'; }
         }
         
-        // Open Product Modal with D360° support
         window.openProductModal = function(product) {
             const mediaItems = product.images || [];
             const validMedia = mediaItems.filter(m => m && m.trim() !== '');
             const displayMedia = validMedia.length > 0 ? validMedia : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
             const firstMedia = displayMedia[0];
+            const firstMediaType = getMediaType(firstMedia);
             const stockStatus = product.stock <= 0 ? 'Out of Stock' : (product.stock < 10 ? `Only ${product.stock} left` : 'In Stock');
             const gstPercent = product.gst || 18;
             const { gstAmount, total } = calculateGST(product.price, gstPercent);
             const modalMediaContainer = document.getElementById('modalMediaContainer');
             if (modalMediaContainer) {
-                if (isD360Viewer(firstMedia)) {
-                    modalMediaContainer.innerHTML = `<div style="width: 100%; aspect-ratio: 1/1; background: #1a1a1a;"><iframe src="${firstMedia}" style="width: 100%; height: 100%; border: none;" frameborder="0" allowfullscreen></iframe><div class="d360-label" style="bottom: 20px; right: 20px;">🔄 360° Interactive</div></div>`;
+                if (firstMediaType === 'd360') {
+                    modalMediaContainer.innerHTML = `<div style="width: 100%; aspect-ratio: 1/1; background: #1a1a1a;"><iframe src="${firstMedia}" style="width: 100%; height: 100%; border: none;" frameborder="0" allowfullscreen></iframe><div class="media-badge" style="bottom: 20px; right: 20px;">🔄 360° Interactive</div></div>`;
+                } else if (firstMediaType === 'video') {
+                    modalMediaContainer.innerHTML = `<video src="${firstMedia}" class="modal-video" autoplay muted loop playsinline controls></video><div class="media-badge" style="bottom: 20px; right: 20px;">🎬 Video</div>`;
                 } else {
-                    modalMediaContainer.innerHTML = `<img id="modalImage" class="modal-image" src="${firstMedia}" alt="Product detail" onerror="this.src='https://via.placeholder.com/400x400?text=Image+Not+Available'">`;
+                    modalMediaContainer.innerHTML = `<img class="modal-media" src="${firstMedia}" alt="Product detail" onerror="this.src='https://via.placeholder.com/400x400?text=Image+Not+Available'">`;
                 }
             }
             document.getElementById('modalName').textContent = product.name;
@@ -1951,11 +1933,9 @@ Here is the updated HTML document with D360° video support for stories, Editor'
             document.getElementById('modalDesc').textContent = product.description || 'Exquisite handcrafted masterpiece.';
             document.getElementById('modalStock').innerHTML = `<i class="fas ${product.stock <= 0 ? 'fa-times-circle' : (product.stock < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> ${stockStatus}`;
             document.getElementById('modalStock').style.color = product.stock <= 0 ? '#dc3545' : (product.stock < 10 ? '#ff9800' : '#28a745');
-            const buyBtn = document.getElementById('modalBuyBtn');
-            const cartBtn = document.getElementById('modalCartBtn');
-            const imgUrl = isD360Viewer(firstMedia) ? 'https://via.placeholder.com/400x400?text=360°+View' : firstMedia;
-            buyBtn.onclick = () => buyNow(product.id, product.name, product.price, product.sku, imgUrl);
-            cartBtn.onclick = () => addToCart(product.id, product.name, product.price, product.sku, imgUrl);
+            const imgUrl = firstMediaType === 'd360' ? 'https://via.placeholder.com/400x400?text=360°+View' : firstMedia;
+            document.getElementById('modalBuyBtn').onclick = () => buyNow(product.id, product.name, product.price, product.sku, imgUrl);
+            document.getElementById('modalCartBtn').onclick = () => addToCart(product.id, product.name, product.price, product.sku, imgUrl);
             document.getElementById('productModal').classList.add('active');
         };
         
@@ -1965,7 +1945,6 @@ Here is the updated HTML document with D360° video support for stories, Editor'
         
         document.getElementById('productModal')?.addEventListener('click', function(e) { if (e.target === this) closeProductModal(); });
         
-        // Initialize all sections
         updateCartPreview();
         loadStories();
         loadFeaturedProducts();
@@ -1973,4 +1952,3 @@ Here is the updated HTML document with D360° video support for stories, Editor'
     </script>
 </body>
 </html>
-```
