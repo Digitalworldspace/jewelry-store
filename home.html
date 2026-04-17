@@ -16,7 +16,6 @@
             --white: #FFFFFF; --white-light: #F8F9FA; --black: #1A1A1A;
             --gray: #666666; --gray-light: #999999;
             --shadow: 0 2px 10px rgba(0,0,0,0.05); --shadow-hover: 0 10px 30px rgba(0,0,0,0.1);
-            --success: #10b981; --danger: #ef4444; --info: #3b82f6;
         }
         body { font-family: 'Inter', sans-serif; background: var(--white-light); color: var(--black); overflow-x: hidden; padding-bottom: 70px; }
         .light-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%); }
@@ -37,29 +36,151 @@
         .story-thumbnail { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: var(--white); }
         .story-badge { position: absolute; bottom: -2px; right: -2px; background: var(--gold); color: black; font-size: 10px; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; z-index: 2; }
         
-        .floating-cart { position: fixed; bottom: 80px; right: 20px; width: 55px; height: 55px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; box-shadow: 0 5px 20px rgba(212,175,55,0.4); transition: all 0.3s; }
-        .floating-cart:hover { transform: scale(1.1); }
+        /* Floating Cart Button */
+        .floating-cart { 
+            position: fixed; 
+            bottom: 80px; 
+            right: 20px; 
+            width: 55px; 
+            height: 55px; 
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark)); 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            z-index: 1000; 
+            box-shadow: 0 5px 20px rgba(212,175,55,0.4); 
+            transition: all 0.3s ease;
+        }
+        .floating-cart:hover { transform: scale(1.1); box-shadow: 0 8px 25px rgba(212,175,55,0.5); }
         .floating-cart i { font-size: 24px; color: var(--black); }
-        .floating-cart-badge { position: absolute; top: -5px; right: -5px; background: var(--black); color: var(--gold); font-size: 11px; font-weight: bold; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .floating-cart-badge { 
+            position: absolute; 
+            top: -5px; 
+            right: -5px; 
+            background: var(--black); 
+            color: var(--gold); 
+            font-size: 11px; 
+            font-weight: bold; 
+            width: 22px; 
+            height: 22px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
         
-        .swipe-cart-overlay { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); z-index: 2000; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1); border-radius: 30px 30px 0 0; padding: 20px; }
+        /* Swipe Cart Overlay */
+        .swipe-cart-overlay { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: rgba(0,0,0,0.92); 
+            backdrop-filter: blur(20px); 
+            z-index: 2000; 
+            transform: translateY(100%); 
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1); 
+            border-radius: 30px 30px 0 0; 
+            padding: 20px; 
+            padding-bottom: 30px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
         .swipe-cart-overlay.active { transform: translateY(0); }
-        .swipe-handle { width: 50px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 3px; margin: 0 auto 20px; cursor: grab; }
-        .swipe-container { background: rgba(255,255,255,0.1); border-radius: 50px; padding: 4px; margin: 20px 0; position: relative; }
-        .swipe-track { background: rgba(255,255,255,0.2); border-radius: 50px; position: relative; overflow: hidden; }
-        .swipe-thumb { width: 70px; height: 50px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 50px; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: grab; position: relative; z-index: 2; }
-        .swipe-progress { position: absolute; top: 0; left: 0; height: 100%; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 50px; width: 0%; z-index: 1; }
-        .swipe-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.6); font-size: 14px; white-space: nowrap; pointer-events: none; }
-        .cart-preview { max-height: 300px; overflow-y: auto; margin-top: 20px; }
-        .cart-preview-item { display: flex; gap: 12px; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 10px; margin-bottom: 10px; }
-        .cart-preview-item img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+        .swipe-handle { 
+            width: 50px; 
+            height: 5px; 
+            background: rgba(255,255,255,0.4); 
+            border-radius: 3px; 
+            margin: 0 auto 20px; 
+            cursor: grab;
+        }
+        .swipe-handle:active { cursor: grabbing; }
+        .swipe-title { text-align: center; color: white; font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+        .swipe-title i { color: var(--gold); margin-right: 8px; }
+        
+        .cart-preview { flex: 1; overflow-y: auto; max-height: 45vh; margin-bottom: 15px; }
+        .cart-preview-item { display: flex; gap: 12px; background: rgba(255,255,255,0.08); border-radius: 16px; padding: 12px; margin-bottom: 10px; }
+        .cart-preview-item img { width: 55px; height: 55px; border-radius: 12px; object-fit: cover; }
         .cart-preview-item-details { flex: 1; }
-        .cart-preview-item-name { font-size: 13px; font-weight: 600; color: white; }
+        .cart-preview-item-name { font-size: 14px; font-weight: 600; color: white; margin-bottom: 4px; }
         .cart-preview-item-price { font-size: 12px; color: var(--gold); }
+        .cart-preview-item-quantity { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px; }
         .cart-preview-total { text-align: center; padding: 15px; color: white; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 10px; }
         .cart-preview-total div { margin: 5px 0; }
-        .action-card { background: rgba(255,255,255,0.1); border-radius: 16px; padding: 12px 20px; text-align: center; cursor: pointer; display: inline-block; transition: all 0.3s; }
-        .action-card:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+        
+        .swipe-container { 
+            background: rgba(255,255,255,0.1); 
+            border-radius: 50px; 
+            padding: 4px; 
+            margin: 15px 0 10px; 
+            position: relative; 
+            cursor: grab;
+        }
+        .swipe-container:active { cursor: grabbing; }
+        .swipe-track { background: rgba(255,255,255,0.2); border-radius: 50px; position: relative; overflow: hidden; height: 52px; }
+        .swipe-thumb { 
+            width: 75px; 
+            height: 48px; 
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark)); 
+            border-radius: 50px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 5px; 
+            cursor: grab; 
+            position: relative; 
+            z-index: 2; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--black);
+        }
+        .swipe-thumb:active { cursor: grabbing; }
+        .swipe-progress { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            height: 100%; 
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark)); 
+            border-radius: 50px; 
+            width: 0%; 
+            z-index: 1; 
+            transition: width 0.05s linear;
+        }
+        .swipe-text { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            color: rgba(255,255,255,0.7); 
+            font-size: 13px; 
+            font-weight: 500; 
+            white-space: nowrap; 
+            z-index: 1; 
+            pointer-events: none;
+        }
+        
+        .do-something-section { margin-top: 10px; text-align: center; }
+        .action-card { 
+            background: rgba(255,255,255,0.08); 
+            border-radius: 50px; 
+            padding: 10px 20px; 
+            text-align: center; 
+            cursor: pointer; 
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease; 
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .action-card:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); border-color: var(--gold); }
+        .action-icon { font-size: 16px; color: var(--gold); }
+        .action-title { font-size: 13px; font-weight: 500; color: white; }
         
         .hero-section { position: relative; height: 500px; display: flex; align-items: center; justify-content: center; text-align: center; background: linear-gradient(135deg, var(--black) 0%, #1a1a2e 100%); }
         .hero-bg { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.4; }
@@ -134,7 +255,7 @@
         .bottom-nav a i { font-size: 22px; }
         .bottom-nav a.active, .bottom-nav a:hover { color: var(--gold); }
         
-        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: black; padding: 12px 24px; border-radius: 40px; z-index: 9999; font-weight: 700; animation: fadeUp 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: black; padding: 12px 24px; border-radius: 40px; z-index: 9999; font-weight: 700; animation: fadeUp 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.2); white-space: nowrap; }
         .toast-error { background: #dc3545; color: white; }
         @keyframes fadeUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         
@@ -152,7 +273,6 @@
         .modal-category { display: inline-block; background: var(--gold-light); color: var(--gold-dark); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-bottom: 15px; }
         .modal-price { font-size: 28px; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
         .modal-price small { font-size: 12px; color: var(--gray); font-weight: normal; }
-        .modal-gst { font-size: 12px; color: var(--gray); margin-bottom: 15px; }
         .modal-desc { font-size: 14px; color: var(--gray); line-height: 1.5; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
         .modal-stock { font-size: 13px; margin-bottom: 20px; padding: 10px; border-radius: 12px; background: var(--white-light); }
         .modal-buttons { display: flex; gap: 12px; }
@@ -184,14 +304,33 @@
         <div><span class="gemini-text">Style Of Life</span><span class="gemini-sub">LUXURY JEWELRY</span></div>
     </div>
     
-    <div class="floating-cart" id="floatingCartBtn"><i class="fas fa-shopping-bag"></i><span class="floating-cart-badge" id="cartCount">0</span></div>
+    <!-- Floating Cart Button -->
+    <div class="floating-cart" id="floatingCartBtn">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="floating-cart-badge" id="cartCount">0</span>
+    </div>
     
+    <!-- Swipe Cart Overlay -->
     <div id="swipeCartOverlay" class="swipe-cart-overlay">
         <div class="swipe-handle"></div>
-        <div class="swipe-title"><i class="fas fa-shopping-bag" style="color: var(--gold);"></i> Your Shopping Bag</div>
+        <div class="swipe-title"><i class="fas fa-shopping-bag"></i> Your Shopping Bag</div>
         <div id="cartPreviewContent" class="cart-preview"><div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);"><i class="fas fa-shopping-cart" style="font-size:48px;margin-bottom:15px;"></i><p>Your cart is empty</p><p style="font-size:12px;">Add beautiful jewelry to your bag</p></div></div>
-        <div class="do-something-section" style="margin-top:20px;text-align:center;"><div class="action-card" id="clearCartSwipeBtn"><div class="action-icon"><i class="fas fa-trash-alt"></i></div><div class="action-title">Clear Cart</div><div style="font-size:10px;color:rgba(255,255,255,0.5);">Remove all items</div></div></div>
-        <div class="swipe-container" id="swipeContainer"><div class="swipe-track"><div class="swipe-progress" id="swipeProgress"></div><div class="swipe-thumb" id="swipeThumb"><i class="fas fa-chevron-right"></i><span>Slide</span></div><div class="swipe-text">→ Slide to checkout →</div></div></div>
+        <div class="do-something-section">
+            <div class="action-card" id="clearCartSwipeBtn">
+                <div class="action-icon"><i class="fas fa-trash-alt"></i></div>
+                <div class="action-title">Clear Cart</div>
+            </div>
+        </div>
+        <div class="swipe-container" id="swipeContainer">
+            <div class="swipe-track">
+                <div class="swipe-progress" id="swipeProgress"></div>
+                <div class="swipe-thumb" id="swipeThumb">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Slide</span>
+                </div>
+                <div class="swipe-text">→ Slide to checkout →</div>
+            </div>
+        </div>
     </div>
     
     <div class="stories-section"><div class="stories-container" id="storiesContainer"><div class="loading"><div class="spinner"></div></div></div></div>
@@ -247,7 +386,8 @@
         async function updateCartCount() {
             const { data } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
             const items = data?.items || []; currentCart = items;
-            document.getElementById('cartCount').textContent = items.reduce((s, i) => s + i.quantity, 0);
+            const count = items.reduce((s, i) => s + i.quantity, 0);
+            document.getElementById('cartCount').textContent = count;
             return items;
         }
         async function fetchProductGST(id) { if (productsCache[id]) return productsCache[id]; const { data } = await supabase.from('products').select('gst').eq('id', id).single(); productsCache[id] = data || { gst: 18 }; return productsCache[id]; }
@@ -262,7 +402,7 @@
                 const { gstAmount, total } = calculateGST(item.price, gstPercent);
                 subtotal += item.price * item.quantity;
                 totalGST += gstAmount * item.quantity;
-                html += `<div class="cart-preview-item"><img src="${item.image}" onerror="this.src='https://via.placeholder.com/50'"><div class="cart-preview-item-details"><div class="cart-preview-item-name">${escapeHtml(item.name)}</div><div class="cart-preview-item-price">₹${item.price.toLocaleString()} × ${item.quantity}</div><div style="font-size:10px;color:#aaa;">GST ${gstPercent}%: ₹${(gstAmount * item.quantity).toFixed(2)}</div></div><div style="color:var(--gold);font-weight:bold;">₹${(total * item.quantity).toFixed(2)}</div></div>`;
+                html += `<div class="cart-preview-item"><img src="${item.image}" onerror="this.src='https://via.placeholder.com/55'"><div class="cart-preview-item-details"><div class="cart-preview-item-name">${escapeHtml(item.name)}</div><div class="cart-preview-item-price">₹${item.price.toLocaleString()} × ${item.quantity}</div><div class="cart-preview-item-quantity">GST ${gstPercent}%: ₹${(gstAmount * item.quantity).toFixed(2)}</div></div><div style="color:var(--gold);font-weight:bold;">₹${(total * item.quantity).toFixed(2)}</div></div>`;
             }
             const shipping = subtotal >= 3000 ? 0 : 100;
             const grand = subtotal + totalGST + shipping;
@@ -296,17 +436,146 @@
             else { navigator.clipboard.writeText(text); showToast('Link copied! Share the elegance ✨'); }
         };
         
-        // Swipe cart logic
-        let drag = false, startX = 0, trans = 0, thumb = document.getElementById('swipeThumb'), prog = document.getElementById('swipeProgress'), track = document.querySelector('.swipe-track'), maxW = 0;
-        function initSwipe() { if (!thumb || !track) return; maxW = track.getBoundingClientRect().width - 70; thumb.addEventListener('mousedown', startDrag); thumb.addEventListener('touchstart', startDrag); document.addEventListener('mousemove', onDrag); document.addEventListener('touchmove', onDrag); document.addEventListener('mouseup', endDrag); }
-        function startDrag(e) { drag = true; const x = e.clientX || e.touches[0].clientX; startX = x - trans; thumb.style.transition = 'none'; prog.style.transition = 'none'; e.stopPropagation(); }
-        function onDrag(e) { if (!drag) return; e.preventDefault(); const x = e.clientX || e.touches[0].clientX; let newX = x - startX; newX = Math.max(0, Math.min(newX, maxW)); trans = newX; thumb.style.transform = `translateX(${trans}px)`; prog.style.width = `${(trans / maxW) * 100}%`; if (trans / maxW >= 0.95) completeSwipe(); }
-        function endDrag() { drag = false; thumb.style.transition = 'transform 0.3s'; prog.style.transition = 'width 0.3s'; if (trans < maxW * 0.95) { trans = 0; thumb.style.transform = 'translateX(0px)'; prog.style.width = '0%'; } }
-        function completeSwipe() { trans = 0; thumb.style.transform = 'translateX(0px)'; prog.style.width = '0%'; closeSwipeCart(); if (currentCart.length) navigateTo('checkout'); else showToast('Your bag is empty! Add some items first', true); }
-        function openSwipeCart() { document.getElementById('swipeCartOverlay').classList.add('active'); updateCartPreview(); setTimeout(initSwipe, 100); }
-        function closeSwipeCart() { document.getElementById('swipeCartOverlay').classList.remove('active'); }
+        // Swipe cart functionality - FIXED
+        let isDragging = false;
+        let startX = 0;
+        let currentTranslate = 0;
+        const swipeThumb = document.getElementById('swipeThumb');
+        const swipeProgress = document.getElementById('swipeProgress');
+        const swipeTrack = document.querySelector('.swipe-track');
+        let maxSwipe = 0;
+        
+        function initSwipe() {
+            if (!swipeThumb || !swipeTrack) return;
+            const trackRect = swipeTrack.getBoundingClientRect();
+            maxSwipe = trackRect.width - 75;
+            
+            swipeThumb.removeEventListener('mousedown', startDrag);
+            swipeThumb.removeEventListener('touchstart', startDrag);
+            swipeThumb.addEventListener('mousedown', startDrag);
+            swipeThumb.addEventListener('touchstart', startDrag);
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('touchmove', onDrag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('touchend', endDrag);
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('touchmove', onDrag);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+        }
+        
+        function startDrag(e) {
+            isDragging = true;
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            startX = clientX - currentTranslate;
+            if (swipeThumb) swipeThumb.style.transition = 'none';
+            if (swipeProgress) swipeProgress.style.transition = 'none';
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        
+        function onDrag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            let newTranslate = clientX - startX;
+            newTranslate = Math.max(0, Math.min(newTranslate, maxSwipe));
+            currentTranslate = newTranslate;
+            const percent = (currentTranslate / maxSwipe) * 100;
+            if (swipeThumb) swipeThumb.style.transform = `translateX(${currentTranslate}px)`;
+            if (swipeProgress) swipeProgress.style.width = `${percent}%`;
+            if (percent >= 95) completeSwipe();
+        }
+        
+        function endDrag() {
+            isDragging = false;
+            if (swipeThumb) swipeThumb.style.transition = 'transform 0.3s ease';
+            if (swipeProgress) swipeProgress.style.transition = 'width 0.3s ease';
+            if (currentTranslate < maxSwipe * 0.95) {
+                currentTranslate = 0;
+                if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)';
+                if (swipeProgress) swipeProgress.style.width = '0%';
+            }
+        }
+        
+        function completeSwipe() {
+            currentTranslate = 0;
+            if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)';
+            if (swipeProgress) swipeProgress.style.width = '0%';
+            closeSwipeCart();
+            if (currentCart.length > 0) {
+                showToast('Proceeding to checkout...');
+                navigateTo('checkout');
+            } else {
+                showToast('Your bag is empty! Add some items first', true);
+            }
+        }
+        
+        // Swipe down to close overlay
+        let touchStartY = 0;
+        let overlay = document.getElementById('swipeCartOverlay');
+        const handle = document.querySelector('.swipe-handle');
+        
+        function setupSwipeToHide() {
+            if (!overlay) return;
+            overlay.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; });
+            overlay.addEventListener('touchmove', (e) => {
+                const deltaY = e.touches[0].clientY - touchStartY;
+                if (deltaY > 0 && overlay.classList.contains('active')) {
+                    const translateY = Math.min(deltaY, 300);
+                    overlay.style.transform = `translateY(${translateY}px)`;
+                    e.preventDefault();
+                }
+            });
+            overlay.addEventListener('touchend', (e) => {
+                const deltaY = e.changedTouches[0].clientY - touchStartY;
+                if (deltaY > 100) closeSwipeCart();
+                overlay.style.transform = '';
+            });
+            
+            if (handle) {
+                handle.addEventListener('mousedown', (e) => { touchStartY = e.clientY; });
+                document.addEventListener('mousemove', (e) => {
+                    if (!overlay.classList.contains('active')) return;
+                    const deltaY = e.clientY - touchStartY;
+                    if (deltaY > 0 && deltaY < 300) overlay.style.transform = `translateY(${deltaY}px)`;
+                });
+                document.addEventListener('mouseup', (e) => {
+                    const deltaY = e.clientY - touchStartY;
+                    if (deltaY > 100) closeSwipeCart();
+                    overlay.style.transform = '';
+                });
+            }
+        }
+        
+        function openSwipeCart() {
+            overlay.classList.add('active');
+            overlay.style.transform = '';
+            updateCartPreview();
+            setTimeout(initSwipe, 150);
+        }
+        
+        function closeSwipeCart() {
+            overlay.classList.remove('active');
+            overlay.style.transform = '';
+            currentTranslate = 0;
+            if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)';
+            if (swipeProgress) swipeProgress.style.width = '0%';
+        }
+        
         document.getElementById('floatingCartBtn')?.addEventListener('click', openSwipeCart);
-        document.getElementById('clearCartSwipeBtn')?.addEventListener('click', async () => { if (currentCart.length && confirm('Clear all items from your bag?')) { await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date() }, { onConflict: 'session_id' }); showToast('Bag cleared! 🗑️'); await updateCartPreview(); closeSwipeCart(); } else if (!currentCart.length) showToast('Bag is already empty', true); });
+        document.getElementById('clearCartSwipeBtn')?.addEventListener('click', async () => { 
+            if (currentCart.length && confirm('Clear all items from your bag?')) { 
+                await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date() }, { onConflict: 'session_id' }); 
+                showToast('Bag cleared! 🗑️'); 
+                await updateCartPreview(); 
+                closeSwipeCart(); 
+            } else if (!currentCart.length) { 
+                showToast('Bag is already empty', true); 
+            } 
+        });
+        
+        setupSwipeToHide();
         
         window.scrollGallery = (id, dir) => { const g = document.getElementById(id); if (g) g.scrollBy({ left: dir === 'left' ? -g.clientWidth : g.clientWidth, behavior: 'smooth' }); };
         
