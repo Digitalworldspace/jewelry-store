@@ -110,20 +110,18 @@
         .product-price small { font-size: 11px; color: var(--gray); font-weight: normal; }
         .product-gst { font-size: 11px; color: var(--gray); margin-bottom: 12px; }
         
-        /* Icon buttons only - no text */
-        .product-buttons-icon { display: flex; gap: 12px; margin-top: 12px; justify-content: flex-start; }
-        .btn-icon-buy, .btn-icon-cart { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; border: none; font-size: 18px; }
-        .btn-icon-buy { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); }
-        .btn-icon-buy:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 4px 12px rgba(212,175,55,0.4); }
-        .btn-icon-cart { background: var(--white); border: 1.5px solid var(--gold); color: var(--gold); }
-        .btn-icon-cart:hover { background: var(--gold); color: var(--black); transform: translateY(-3px) scale(1.05); }
+        /* Full Buy Now Button + Icon Cart for Our Collection */
+        .product-buttons-full { display: flex; gap: 12px; margin-top: 12px; }
+        .btn-full-buy { flex: 1; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); padding: 12px 16px; border: none; border-radius: 40px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-full-buy:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212,175,55,0.4); }
+        .btn-icon-cart { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; background: var(--white); border: 1.5px solid var(--gold); color: var(--gold); font-size: 18px; }
+        .btn-icon-cart:hover { background: var(--gold); color: var(--black); transform: scale(1.05); }
         
-        /* Full buttons for modal */
-        .modal-buttons { display: flex; gap: 12px; }
-        .modal-buy { flex: 1; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: black; padding: 14px; border: none; border-radius: 40px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; }
-        .modal-buy:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212,175,55,0.3); }
-        .modal-cart { flex: 1; background: white; border: 2px solid var(--gold); color: var(--gold); padding: 14px; border-radius: 40px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; }
-        .modal-cart:hover { background: var(--gold); color: black; transform: translateY(-2px); }
+        /* No buttons for Editor's Pick - just product name */
+        .featured-info { padding: 12px; text-align: center; }
+        .featured-name { font-size: 15px; font-weight: 600; margin-bottom: 5px; }
+        .featured-price { font-size: 16px; font-weight: 700; color: var(--gold); margin-bottom: 4px; }
+        .featured-gst { font-size: 10px; color: var(--gray); }
         
         .features-section { padding: 60px 20px; background: linear-gradient(135deg, var(--black) 0%, #1a1a1a 100%); color: white; }
         .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; max-width: 1000px; margin: 0 auto; text-align: center; }
@@ -166,6 +164,11 @@
         .modal-price small { font-size: 12px; color: var(--gray); font-weight: normal; }
         .modal-desc { font-size: 14px; color: var(--gray); line-height: 1.5; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
         .modal-stock { font-size: 13px; margin-bottom: 20px; padding: 10px; border-radius: 12px; background: var(--white-light); }
+        .modal-buttons { display: flex; gap: 12px; }
+        .modal-buy { flex: 1; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: black; padding: 14px; border: none; border-radius: 40px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; }
+        .modal-buy:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212,175,55,0.3); }
+        .modal-cart { flex: 1; background: white; border: 2px solid var(--gold); color: var(--gold); padding: 14px; border-radius: 40px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; }
+        .modal-cart:hover { background: var(--gold); color: black; transform: translateY(-2px); }
         
         .loading { text-align: center; padding: 60px; }
         .spinner { width: 40px; height: 40px; border: 3px solid #eee; border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
@@ -212,10 +215,10 @@
         </div>
     </div>
     
-    <!-- Editor's Pick Section - Icon buttons only -->
+    <!-- Editor's Pick Section - NO BUTTONS, just product name and price -->
     <div class="featured-section"><div class="section-header"><div class="section-icon">✦</div><h2 class="section-title">Editor's Pick</h2><div class="section-subtitle">Curated just for you</div></div><div class="featured-grid" id="featuredGrid"><div class="loading"><div class="spinner"></div></div></div></div>
     
-    <!-- Our Collection Section - Icon buttons only -->
+    <!-- Our Collection Section - Full Buy Now button + Icon Cart button -->
     <div class="products-section"><div class="section-header"><div class="section-icon">💎</div><h2 class="section-title">Our Collection</h2><div class="section-subtitle">Discover timeless masterpieces</div></div><div class="products-grid" id="productsGrid"><div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div></div></div>
     
     <div class="features-section"><div class="features-grid"><div class="feature-item"><div class="feature-icon"><i class="fas fa-gem"></i></div><div class="feature-title">Premium Quality</div><div class="feature-desc">Certified diamonds and finest metals</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-truck"></i></div><div class="feature-title">Free Shipping</div><div class="feature-desc">On orders above ₹3000</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><div class="feature-title">Secure Payments</div><div class="feature-desc">100% secure transactions</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-headset"></i></div><div class="feature-title">24/7 Support</div><div class="feature-desc">Dedicated customer care</div></div></div></div>
@@ -414,6 +417,7 @@
             } catch(e) { cont.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; }
         }
         
+        // Editor's Pick - NO BUTTONS, just product name and price
         async function loadFeatured() {
             const cont = document.getElementById('featuredGrid');
             if (!cont) return;
@@ -431,13 +435,14 @@
                     else if (type === 'd360') { const match = firstMedia.match(/[?&]d=([^&]+)/); const thumb = match ? `https://d360.tech/imaged/${match[1]}/still.jpg` : 'https://via.placeholder.com/300x200?text=360°'; mediaHtml = `<img class="featured-media" src="${thumb}" onerror="this.src='https://via.placeholder.com/300x200'">`; }
                     else mediaHtml = `<img class="featured-media" src="${firstMedia}" onerror="this.src='https://via.placeholder.com/300x200'">`;
                     const { total } = calculateGST(p.price, p.gst || 18);
-                    const imgUrl = type === 'd360' ? 'https://via.placeholder.com/400?text=360°' : (p.images?.[0] || '');
-                    html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'>${mediaHtml}<div class="featured-info"><div class="featured-name">${escapeHtml(p.name)}</div><div class="featured-price">₹${total.toLocaleString()}</div><div class="featured-gst">Incl. ${p.gst||18}% GST</div><div class="product-buttons-icon" onclick="event.stopPropagation()"><button class="btn-icon-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${imgUrl}')"><i class="fas fa-bolt"></i></button><button class="btn-icon-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${imgUrl}')"><i class="fas fa-shopping-cart"></i></button></div></div></div>`;
+                    // No buttons - just name and price
+                    html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'>${mediaHtml}<div class="featured-info"><div class="featured-name">${escapeHtml(p.name)}</div><div class="featured-price">₹${total.toLocaleString()}</div><div class="featured-gst">Incl. ${p.gst||18}% GST</div></div></div>`;
                 }
                 cont.innerHTML = html;
             } catch(e) { cont.innerHTML = '<div class="empty-state">Error loading</div>'; }
         }
         
+        // Our Collection - Full Buy Now button + Icon Cart button
         async function loadProducts() {
             const cont = document.getElementById('productsGrid');
             if (!cont) return;
@@ -464,7 +469,8 @@
                     } else {
                         mediaHtml = `<div class="product-gallery-container"><div class="product-gallery" id="${galleryId}"></div><button class="gallery-arrow gallery-arrow-left" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'left')"><i class="fas fa-chevron-left"></i></button><button class="gallery-arrow gallery-arrow-right" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'right')"><i class="fas fa-chevron-right"></i></button><div class="gallery-dots" id="${dotId}"></div></div>`;
                     }
-                    html += `<div class="product-card" onclick='openProductModal(${JSON.stringify(p)})'>${mediaHtml}<div class="product-info"><div class="product-name">${escapeHtml(p.name)}</div><div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div><div class="product-price">₹${total.toLocaleString()} <small>Incl. ${p.gst || 18}% GST</small></div><div class="product-gst">📊 GST ${p.gst || 18}%: ₹${gstAmount.toLocaleString()}</div><div class="product-buttons-icon" onclick="event.stopPropagation()"><button class="btn-icon-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${imgUrl}')"><i class="fas fa-bolt"></i></button><button class="btn-icon-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${imgUrl}')"><i class="fas fa-shopping-cart"></i></button></div></div></div>`;
+                    // Full Buy Now button + Icon Cart button
+                    html += `<div class="product-card" onclick='openProductModal(${JSON.stringify(p)})'>${mediaHtml}<div class="product-info"><div class="product-name">${escapeHtml(p.name)}</div><div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div><div class="product-desc">${escapeHtml((p.description || '').substring(0, 100))}${(p.description || '').length > 100 ? '...' : ''}</div><div class="product-price">₹${total.toLocaleString()} <small>Incl. ${p.gst || 18}% GST</small></div><div class="product-gst">📊 GST ${p.gst || 18}%: ₹${gstAmount.toLocaleString()}</div><div class="product-buttons-full" onclick="event.stopPropagation()"><button class="btn-full-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${imgUrl}')"><i class="fas fa-bolt"></i> Buy Now</button><button class="btn-icon-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${imgUrl}')"><i class="fas fa-shopping-cart"></i></button></div></div></div>`;
                 }
                 cont.innerHTML = html;
                 for (const p of allProducts) {
