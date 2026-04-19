@@ -91,9 +91,9 @@
         .toast { position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #1a1a1a; padding: 12px 24px; border-radius: 40px; z-index: 1000; font-weight: 600; animation: slideIn 0.3s ease; }
         .toast-error { background: linear-gradient(135deg, var(--danger), #dc2626); color: white; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        .real-time-badge { background: var(--success); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; margin-left: 15px; }
-        .real-time-badge i { font-size: 10px; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .sync-status { background: var(--success); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; margin-left: 15px; animation: pulse 2s infinite; }
+        .sync-status i { font-size: 10px; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
         @media (max-width: 768px) { .sidebar { transform: translateX(-100%); position: fixed; z-index: 200; } .sidebar.open { transform: translateX(0); } .main-content { margin-left: 0; padding: 20px; } .mobile-menu-btn { display: block; } .form-grid { grid-template-columns: 1fr; } }
         .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 101; background: var(--bg-card); border: 1px solid var(--border); padding: 10px; border-radius: 12px; cursor: pointer; }
         .error-log { max-height: 200px; overflow-y: auto; font-size: 12px; margin-top: 10px; }
@@ -108,13 +108,13 @@
         <div class="brand"><div class="gemini-logo" onclick="window.location.href='index.html'"><div class="gemini-star"><svg viewBox="0 0 24 24"><defs><linearGradient id="geminiGradient"><stop offset="0%" stop-color="#4285F4"/><stop offset="33%" stop-color="#EA4335"/><stop offset="66%" stop-color="#FBBC05"/><stop offset="100%" stop-color="#34A853"/></linearGradient></defs><path d="M12 2L15 9H22L16 14L19 21L12 16.5L5 21L8 14L2 9H9L12 2Z" fill="currentColor" stroke="url(#geminiGradient)" stroke-width="2"/></svg></div><div><span class="gemini-text">Style Of Life</span><span class="gemini-sub">ADMIN</span></div></div></div>
         <div class="header-actions"><div class="theme-toggle" id="themeToggle"><span class="theme-option active" data-theme="light">☀️ Light</span><span class="theme-option" data-theme="dark">🌙 Dark</span></div><button class="logout-btn" onclick="logout()" style="background: rgba(239,68,68,0.1); border: 1px solid var(--danger); color: var(--danger); padding: 8px 16px; border-radius: 40px;"><i class="fas fa-sign-out-alt"></i> Exit</button></div>
     </div>
-    <div class="sidebar" id="sidebar"><div class="sidebar-nav"><a href="admin.html" class="nav-item"><i class="fas fa-chart-line"></i><span>Dashboard</span></a><a href="admin-products.html" class="nav-item active"><i class="fas fa-box"></i><span>Products</span><span class="real-time-badge"><i class="fas fa-circle"></i> Live Sync</span></a><a href="admin-orders.html" class="nav-item"><i class="fas fa-shopping-cart"></i><span>Orders</span></a><a href="admin-customers.html" class="nav-item"><i class="fas fa-users"></i><span>Customers</span></a><a href="admin-analytics.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Analytics</span></a></div></div>
+    <div class="sidebar" id="sidebar"><div class="sidebar-nav"><a href="admin.html" class="nav-item"><i class="fas fa-chart-line"></i><span>Dashboard</span></a><a href="admin-products.html" class="nav-item active"><i class="fas fa-box"></i><span>Products</span><span class="sync-status"><i class="fas fa-circle"></i> Auto-Sync to Supabase</span></a><a href="admin-orders.html" class="nav-item"><i class="fas fa-shopping-cart"></i><span>Orders</span></a><a href="admin-customers.html" class="nav-item"><i class="fas fa-users"></i><span>Customers</span></a><a href="admin-analytics.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Analytics</span></a></div></div>
     <div class="main-content">
-        <div class="page-header"><div class="page-title">✨ Product Management</div><div class="page-subtitle">Live sync with Supabase • Changes reflect instantly on website</div></div>
+        <div class="page-header"><div class="page-title">✨ Product Management</div><div class="page-subtitle">All changes are automatically saved to Supabase • Real-time sync to website</div></div>
         <div class="toolbar"><div><button class="btn" onclick="toggleForm()">➕ Add New Product</button><button class="btn btn-secondary" onclick="loadProducts()">🔄 Refresh</button></div><div><button class="btn btn-success" onclick="downloadSampleCSV()">📥 Sample CSV</button><label class="btn btn-secondary" style="cursor:pointer;">📂 Upload CSV/Excel<input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display:none;" onchange="handleBulkUpload(this)"></label></div></div>
         <div class="bulk-upload-section" id="bulkUploadSection"><h3 style="margin-bottom:15px;color:var(--gold);">📁 Bulk Upload Products</h3><div class="bulk-upload-area" id="bulkUploadArea"><i class="fas fa-cloud-upload-alt" style="font-size:48px;color:var(--gold);"></i><p>Click or drag & drop CSV / Excel</p><p style="font-size:12px;">Supported: .csv, .xlsx, .xls</p></div><div class="bulk-progress" id="bulkProgress"><div class="bulk-progress-bar"><div class="bulk-progress-fill" id="bulkProgressFill"></div></div><p id="bulkProgressText" style="font-size:12px;margin-top:8px;"></p></div><div id="bulkResult"></div></div>
-        <div id="productForm" class="form-card"><h3 class="form-title" id="formTitle">Add New Product</h3><input type="hidden" id="productId"><div class="form-grid"><div class="form-group"><label>SKU *</label><input type="text" id="sku" placeholder="e.g., NECK-001"></div><div class="form-group"><label>Product Name *</label><input type="text" id="name" placeholder="Diamond Necklace"></div><div class="form-group"><label>Category *</label><input type="text" id="category" placeholder="Necklaces"></div><div class="form-group"><label>Price (₹) *</label><input type="number" id="price" step="0.01"></div><div class="form-group"><label>GST (%)</label><input type="number" id="gst" step="0.01" value="18"></div><div class="form-group"><label>Stock *</label><input type="number" id="stock"></div></div><div class="form-group"><label>Description</label><textarea id="description" rows="2"></textarea></div><div class="gst-preview"><h4>💰 GST Calculation</h4><div class="gst-preview-row"><span>Product Price:</span><span id="previewPrice">₹0</span></div><div class="gst-preview-row"><span>GST (<span id="previewGstPercent">18</span>%):</span><span id="previewGstAmount">₹0</span></div><div class="gst-preview-row gst-preview-total"><span>Total (Incl. GST):</span><span id="previewTotal">₹0</span></div></div><div class="media-url-section"><label>🔗 Add Media URL (Image/Video/D360)</label><div class="url-input-group"><select id="mediaType"><option value="image">📷 Image</option><option value="video">🎬 Video</option><option value="d360">🔄 D360°</option></select><input type="url" id="mediaUrl" placeholder="https://..."><button class="btn" style="padding:10px 18px;" onclick="addMediaUrl()">Add</button></div><div id="mediaPreviewList" class="media-preview"></div></div><div class="image-upload-section"><label>📸 Upload Images (Max 5, stored with SKU)</label><div class="image-upload-grid" id="imageUploadGrid"></div></div><div style="display:flex;gap:15px;"><button class="btn" onclick="saveProduct()">💾 Save Product</button><button class="btn btn-secondary" onclick="toggleForm()">Cancel</button></div></div>
-        <div class="products-grid" id="productsGrid"><div class="loading-spinner"><div class="spinner"></div><p>Loading products...</p></div></div>
+        <div id="productForm" class="form-card"><h3 class="form-title" id="formTitle">Add New Product</h3><input type="hidden" id="productId"><div class="form-grid"><div class="form-group"><label>SKU *</label><input type="text" id="sku" placeholder="e.g., NECK-001"></div><div class="form-group"><label>Product Name *</label><input type="text" id="name" placeholder="Diamond Necklace"></div><div class="form-group"><label>Category *</label><input type="text" id="category" placeholder="Necklaces"></div><div class="form-group"><label>Price (₹) *</label><input type="number" id="price" step="0.01"></div><div class="form-group"><label>GST (%)</label><input type="number" id="gst" step="0.01" value="18"></div><div class="form-group"><label>Stock *</label><input type="number" id="stock"></div></div><div class="form-group"><label>Description</label><textarea id="description" rows="2"></textarea></div><div class="gst-preview"><h4>💰 GST Calculation</h4><div class="gst-preview-row"><span>Product Price:</span><span id="previewPrice">₹0</span></div><div class="gst-preview-row"><span>GST (<span id="previewGstPercent">18</span>%):</span><span id="previewGstAmount">₹0</span></div><div class="gst-preview-row gst-preview-total"><span>Total (Incl. GST):</span><span id="previewTotal">₹0</span></div></div><div class="media-url-section"><label>🔗 Add Media URL (Image/Video/D360)</label><div class="url-input-group"><select id="mediaType"><option value="image">📷 Image</option><option value="video">🎬 Video</option><option value="d360">🔄 D360°</option></select><input type="url" id="mediaUrl" placeholder="https://..."><button class="btn" style="padding:10px 18px;" onclick="addMediaUrl()">Add</button></div><div id="mediaPreviewList" class="media-preview"></div></div><div class="image-upload-section"><label>📸 Upload Images (Max 5, stored with SKU)</label><div class="image-upload-grid" id="imageUploadGrid"></div></div><div style="display:flex;gap:15px;"><button class="btn" onclick="saveProduct()">💾 Save Product to Supabase</button><button class="btn btn-secondary" onclick="toggleForm()">Cancel</button></div></div>
+        <div class="products-grid" id="productsGrid"><div class="loading-spinner"><div class="spinner"></div><p>Loading products from Supabase...</p></div></div>
     </div>
     <div id="confirmModal" class="modal"><div class="modal-content"><div class="modal-header"><h3>Confirm</h3><button class="close-modal" onclick="closeModal()">&times;</button></div><p id="modalMessage">Are you sure?</p><div style="display:flex;gap:10px;margin-top:20px;"><button class="btn" onclick="confirmAction(true)">Yes</button><button class="btn btn-secondary" onclick="confirmAction(false)">No</button></div></div></div>
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
@@ -144,7 +144,34 @@
         window.handleFileSelect = (idx, input) => { let file=input.files[0]; if(!file) return; if(!file.type.match('image/jpeg|image/png|image/jpg')) return alert('Only JPEG/PNG'); if(file.size>5*1024*1024) return alert('<5MB'); let reader=new FileReader(); reader.onload=e=>{ let preview=document.getElementById(`preview${idx}`); let placeholder=document.getElementById(`placeholder${idx}`); if(preview){ preview.src=e.target.result; preview.classList.add('active'); } else { let newImg=document.createElement('img'); newImg.className='upload-preview active'; newImg.id=`preview${idx}`; newImg.src=e.target.result; document.getElementById(`uploadCard${idx}`).insertBefore(newImg, document.getElementById(`uploadCard${idx}`).firstChild); if(placeholder) placeholder.style.display='none'; } }; reader.readAsDataURL(file); imageFiles[idx]=file; let removeBtn=document.querySelector(`#uploadCard${idx} .remove-img`); if(!removeBtn){ let btn=document.createElement('button'); btn.className='remove-img'; btn.textContent='Remove'; btn.onclick=()=>removeImage(idx); document.getElementById(`uploadCard${idx}`).appendChild(btn); } };
         window.removeImage = (idx) => { imageFiles[idx]=null; existingImagesUrls[idx]=''; let preview=document.getElementById(`preview${idx}`); if(preview) preview.classList.remove('active'); let placeholder=document.getElementById(`placeholder${idx}`); if(placeholder) placeholder.style.display='flex'; let fileInp=document.getElementById(`fileInput${idx}`); if(fileInp) fileInp.value=''; let btn=document.querySelector(`#uploadCard${idx} .remove-img`); if(btn) btn.remove(); };
         
-        async function uploadImagesToStorage(productId, sku) { let uploadedUrls = [...mediaUrls.map(m=>m.url)]; for(let i=0;i<imageFiles.length;i++){ let file=imageFiles[i]; if(file){ let progressDiv=document.getElementById(`progress${i}`); let progressBar=document.getElementById(`progressBar${i}`); if(progressDiv) progressDiv.classList.add('active'); let ext=file.name.split('.').pop(); let fileName = `${sku}/${Date.now()}_${i}.${ext}`; try { const {error}=await supabase.storage.from('product-images').upload(fileName, file, {cacheControl:'3600', upsert:true}); if(error) throw error; const {data:{publicUrl}}=supabase.storage.from('product-images').getPublicUrl(fileName); uploadedUrls.push(publicUrl); existingImagesUrls[i]=publicUrl; if(progressBar) progressBar.style.width='100%'; setTimeout(()=>{ if(progressDiv) progressDiv.classList.remove('active'); if(progressBar) progressBar.style.width='0%'; },300); } catch(err){ console.error(err); alert(`Upload failed: ${err.message}`); } } } for(let i=0;i<existingImagesUrls.length;i++){ if(existingImagesUrls[i] && !imageFiles[i] && !uploadedUrls.includes(existingImagesUrls[i]) && !mediaUrls.some(m=>m.url===existingImagesUrls[i])){ uploadedUrls.push(existingImagesUrls[i]); } } return [...new Set(uploadedUrls)]; }
+        async function uploadImagesToStorage(productId, sku) { 
+            let uploadedUrls = [...mediaUrls.map(m=>m.url)]; 
+            for(let i=0;i<imageFiles.length;i++){ 
+                let file=imageFiles[i]; 
+                if(file){ 
+                    let progressDiv=document.getElementById(`progress${i}`); 
+                    let progressBar=document.getElementById(`progressBar${i}`); 
+                    if(progressDiv) progressDiv.classList.add('active'); 
+                    let ext=file.name.split('.').pop(); 
+                    let fileName = `${sku}/${Date.now()}_${i}.${ext}`; 
+                    try { 
+                        const {error}=await supabase.storage.from('product-images').upload(fileName, file, {cacheControl:'3600', upsert:true}); 
+                        if(error) throw error; 
+                        const {data:{publicUrl}}=supabase.storage.from('product-images').getPublicUrl(fileName); 
+                        uploadedUrls.push(publicUrl); 
+                        existingImagesUrls[i]=publicUrl; 
+                        if(progressBar) progressBar.style.width='100%'; 
+                        setTimeout(()=>{ if(progressDiv) progressDiv.classList.remove('active'); if(progressBar) progressBar.style.width='0%'; },300); 
+                    } catch(err){ console.error(err); alert(`Upload failed: ${err.message}`); } 
+                } 
+            } 
+            for(let i=0;i<existingImagesUrls.length;i++){ 
+                if(existingImagesUrls[i] && !imageFiles[i] && !uploadedUrls.includes(existingImagesUrls[i]) && !mediaUrls.some(m=>m.url===existingImagesUrls[i])){ 
+                    uploadedUrls.push(existingImagesUrls[i]); 
+                } 
+            } 
+            return [...new Set(uploadedUrls)]; 
+        }
         
         window.saveProduct = async () => { 
             let id=document.getElementById('productId').value; 
@@ -162,39 +189,28 @@
                 let imagesArray = await uploadImagesToStorage(id||sku, sku); 
                 let productPayload = { sku, name, category, price, gst, stock, description: desc, images: imagesArray }; 
                 let result; 
-                if(id){ result = await supabase.from('products').update(productPayload).eq('id', parseInt(id)); } 
-                else { const {data:existing}=await supabase.from('products').select('id').eq('sku',sku).maybeSingle(); if(existing) return alert(`SKU "${sku}" already exists`); result = await supabase.from('products').insert([productPayload]); } 
+                if(id){ 
+                    result = await supabase.from('products').update(productPayload).eq('id', parseInt(id)); 
+                    if(!result.error) showToast(`✅ Product "${name}" updated in Supabase! Changes live on website.`);
+                } else { 
+                    const {data:existing}=await supabase.from('products').select('id').eq('sku',sku).maybeSingle(); 
+                    if(existing) return alert(`SKU "${sku}" already exists`); 
+                    result = await supabase.from('products').insert([productPayload]); 
+                    if(!result.error) showToast(`✅ Product "${name}" added to Supabase! Live on website.`);
+                } 
                 if(result.error) throw result.error; 
-                showToast(id?'Product updated! Changes live on website!':'Product added! Changes live on website!'); 
                 toggleForm(); loadProducts(); resetForm(); 
-            } catch(err){ alert('Error: '+err.message); } 
+            } catch(err){ alert('Error saving to Supabase: '+err.message); } 
         };
         
         function resetForm(){ document.getElementById('productId').value=''; document.getElementById('sku').value=''; document.getElementById('name').value=''; document.getElementById('category').value=''; document.getElementById('price').value=''; document.getElementById('gst').value='18'; document.getElementById('stock').value=''; document.getElementById('description').value=''; imageFiles=new Array(5).fill(null); mediaUrls=[]; existingImagesUrls=[]; updateMediaPreview(); initImageGrid([]); updateGSTPreview(); }
         
-        // Real-time subscription for products table
-        let productsSubscription = null;
-        
-        function setupRealtimeSubscription() {
-            if (productsSubscription) {
-                supabase.removeChannel(productsSubscription);
-            }
-            productsSubscription = supabase
-                .channel('products-changes')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, (payload) => {
-                    console.log('Real-time update received:', payload.eventType);
-                    showToast(`🔄 Product ${payload.eventType === 'INSERT' ? 'added' : payload.eventType === 'UPDATE' ? 'updated' : 'deleted'} - Refreshing...`, false);
-                    loadProducts(); // Reload products instantly
-                })
-                .subscribe();
-        }
-        
         window.loadProducts = async () => { 
             let grid=document.getElementById('productsGrid'); 
-            grid.innerHTML='<div class="loading-spinner"><div class="spinner"></div><p>Syncing live...</p></div>'; 
+            grid.innerHTML='<div class="loading-spinner"><div class="spinner"></div><p>Loading products from Supabase...</p></div>'; 
             let {data,error}=await supabase.from('products').select('*').order('id',{ascending:false}); 
-            if(error){ grid.innerHTML='<div class="empty-state">Error loading</div>'; return; } 
-            if(!data||data.length===0){ grid.innerHTML='<div class="empty-state">✨ No products yet. Add your first product.</div>'; return; } 
+            if(error){ grid.innerHTML='<div class="empty-state">Error loading from Supabase</div>'; return; } 
+            if(!data||data.length===0){ grid.innerHTML='<div class="empty-state">✨ No products yet. Add your first product to Supabase.</div>'; return; } 
             let html=''; 
             data.forEach(p=>{ 
                 let mainImg = (p.images && p.images[0]) ? p.images[0] : 'https://via.placeholder.com/300x220?text=No+Image'; 
@@ -249,10 +265,10 @@
                 } 
                 let {error}=await supabase.from('products').delete().eq('id',id); 
                 if(error) alert('Delete error: '+error.message); 
-                else { showToast('Product deleted permanently - Changes live on website!'); loadProducts(); } 
+                else { showToast(`✅ Product deleted from Supabase! Changes live on website.`); loadProducts(); } 
                 closeModal(); 
             }; 
-            showModal('Delete product? This will also remove associated images from storage.'); 
+            showModal('Delete product? This will remove it from Supabase and website.'); 
         };
         
         window.downloadSampleCSV = () => { let csv=`"sku","name","category","price","gst","stock","description","images"\n"RING-001","Diamond Ring","Rings","29999","18","50","Beautiful ring","https://d360.tech/view.html?d=315-MP-CP-2021"\n"NECK-001","Gold Necklace","Necklaces","45999","18","30","24k gold","https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400"`; let blob=new Blob(["\uFEFF"+csv],{type:'text/csv'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='sample_products.csv'; a.click(); URL.revokeObjectURL(a.href); };
@@ -276,9 +292,9 @@
                 let total=data.slice(1).filter(r=>r.length>1).length; let processed=0; 
                 for(let i=1;i<data.length;i++){ let row=data[i]; if(!row||row.length<2||!row[idx.sku]) continue; processed++; fill.style.width=`${10+(processed/total)*90}%`; text.innerText=`Processing ${processed}/${total}...`; 
                 try{ let sku=String(row[idx.sku]||'').trim(); let name=String(row[idx.name]||'').trim(); let cat=String(row[idx.category]||'').trim(); let price=parseFloat(row[idx.price]); let gst=parseFloat(row[idx.gst])||18; let stock=parseInt(row[idx.stock])||0; let desc=row[idx.description]?String(row[idx.description]).trim():''; let imagesVal=row[idx.images]?String(row[idx.images]).trim():''; let imagesArr=imagesVal?imagesVal.split(',').map(u=>u.trim()):[]; if(!sku||!name||!cat||isNaN(price)) throw new Error('Missing required field'); let {data:exist}=await supabase.from('products').select('id').eq('sku',sku).maybeSingle(); if(exist) throw new Error(`SKU ${sku} exists`); let {error}=await supabase.from('products').insert([{sku,name,category:cat,price,gst,stock,description:desc,images:imagesArr}]); if(error) throw new Error(error.message); success++; }catch(e){ errors.push(`Row ${i+1}: ${e.message}`); fail++; } await new Promise(r=>setTimeout(r,20)); } 
-                fill.style.width='100%'; text.innerText=`✅ Done! Added: ${success}, Failed: ${fail} - Changes live on website!`; 
+                fill.style.width='100%'; text.innerText=`✅ Complete! ${success} added to Supabase, ${fail} failed`; 
                 let errHtml=errors.length?`<div class="error-log"><strong>Errors:</strong>${errors.slice(0,10).map(e=>`<div class="error-item">${escapeHtml(e)}</div>`).join('')}${errors.length>10?`<div>... and ${errors.length-10} more</div>`:''}</div>`:''; 
-                resultDiv.innerHTML=`<div style="background:rgba(16,185,129,0.1);padding:12px;border-radius:12px;"><strong>📊 Import Summary</strong><br>✅ Success: ${success}<br>❌ Failed: ${fail}<br>${errHtml}</div>`; 
+                resultDiv.innerHTML=`<div style="background:rgba(16,185,129,0.1);padding:12px;border-radius:12px;"><strong>📊 Import Summary</strong><br>✅ Successfully added to Supabase: ${success}<br>❌ Failed: ${fail}<br>${errHtml}</div>`; 
                 if(success) loadProducts(); 
                 setTimeout(()=>{ progDiv.style.display='none'; },4000); 
             } catch(err){ text.innerText='Error'; resultDiv.innerHTML=`<div style="background:rgba(239,68,68,0.1);padding:12px;">❌ ${escapeHtml(err.message)}</div>`; } 
@@ -293,7 +309,7 @@
         function logout(){ sessionStorage.removeItem('adminLoggedIn'); showToast('Logged out'); setTimeout(()=>window.location.href='login.html',500); }
         function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>]/g,function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
         
-        initTheme(); initImageGrid([]); setupRealtimeSubscription(); loadProducts();
+        initTheme(); initImageGrid([]); loadProducts();
         document.getElementById('bulkUploadArea')?.addEventListener('dragover',e=>e.preventDefault()); 
         document.getElementById('bulkUploadArea')?.addEventListener('drop',e=>{ e.preventDefault(); let file=e.dataTransfer.files[0]; if(file&&(file.name.endsWith('.csv')||file.name.endsWith('.xlsx'))){ let inp=document.getElementById('bulkFileInput'); let dt=new DataTransfer(); dt.items.add(file); inp.files=dt.files; handleBulkUpload(inp); } else alert('Please drop CSV/Excel'); });
         window.logout=logout; window.loadProducts=loadProducts;
