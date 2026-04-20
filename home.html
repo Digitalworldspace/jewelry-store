@@ -60,8 +60,6 @@
         .swipe-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 500; white-space: nowrap; z-index: 1; pointer-events: none; }
         .action-card { background: rgba(255,255,255,0.08); border-radius: 50px; padding: 10px 20px; text-align: center; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.05); }
         .action-card:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); border-color: var(--gold); }
-        .action-icon { font-size: 16px; color: var(--gold); }
-        .action-title { font-size: 13px; font-weight: 500; color: white; }
         
         .hero-section { position: relative; height: 500px; display: flex; align-items: center; justify-content: center; text-align: center; background: linear-gradient(135deg, var(--black) 0%, #1a1a2e 100%); }
         .hero-bg { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.4; }
@@ -85,23 +83,10 @@
         .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); border-color: var(--gold); }
         
         .featured-media, .featured-video { width: 100%; height: 160px; object-fit: cover; }
-        .product-d360-container, .product-video-container { position: relative; width: 100%; aspect-ratio: 1 / 1; background: #1a1a1a; }
-        .product-d360-iframe { width: 100%; height: 100%; border: none; }
-        .product-video { width: 100%; height: 100%; object-fit: cover; }
-        .media-badge { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: var(--gold); padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; z-index: 5; pointer-events: none; }
-        
-        .product-gallery-container { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; }
-        .product-gallery { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; width: 100%; height: 100%; }
-        .product-gallery::-webkit-scrollbar { display: none; }
-        .gallery-item { min-width: 100%; width: 100%; height: 100%; scroll-snap-align: start; position: relative; }
-        .gallery-image, .gallery-video { width: 100%; height: 100%; object-fit: cover; }
-        .gallery-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; border: none; z-index: 10; transition: all 0.3s; }
-        .gallery-arrow:hover { background: var(--gold); color: black; }
-        .gallery-arrow-left { left: 10px; }
-        .gallery-arrow-right { right: 10px; }
-        .gallery-dots { position: absolute; bottom: 12px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; z-index: 5; }
-        .gallery-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.2s; }
-        .gallery-dot.active { width: 20px; border-radius: 3px; background: var(--gold); }
+        .product-image-container { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #f5f5f5; }
+        .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .product-card:hover .product-image { transform: scale(1.05); }
+        .image-badge { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 20px; font-size: 10px; z-index: 5; }
         
         .product-info { padding: 15px; }
         .product-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
@@ -110,14 +95,13 @@
         .product-price { font-size: 22px; font-weight: 700; color: var(--gold); margin-bottom: 4px; }
         .product-price small { font-size: 11px; color: var(--gray); font-weight: normal; }
         
-        /* Full Buy Now Button + Icon Cart for Our Collection */
-        .product-buttons-full { display: flex; gap: 12px; margin-top: 12px; }
-        .btn-full-buy { flex: 1; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); padding: 12px 16px; border: none; border-radius: 40px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-full-buy:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212,175,55,0.4); }
-        .btn-icon-cart { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; background: var(--white); border: 1.5px solid var(--gold); color: var(--gold); font-size: 18px; }
-        .btn-icon-cart:hover { background: var(--gold); color: var(--black); transform: scale(1.05); }
+        .product-buttons-icon { display: flex; gap: 12px; margin-top: 12px; }
+        .btn-icon-buy, .btn-icon-cart { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; border: none; font-size: 18px; }
+        .btn-icon-buy { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); }
+        .btn-icon-buy:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 4px 12px rgba(212,175,55,0.4); }
+        .btn-icon-cart { background: var(--white); border: 1.5px solid var(--gold); color: var(--gold); }
+        .btn-icon-cart:hover { background: var(--gold); color: var(--black); transform: translateY(-3px) scale(1.05); }
         
-        /* No buttons for Editor's Pick - just product name */
         .featured-info { padding: 12px; text-align: center; }
         .featured-name { font-size: 15px; font-weight: 600; margin-bottom: 5px; }
         .featured-price { font-size: 16px; font-weight: 700; color: var(--gold); margin-bottom: 4px; }
@@ -138,12 +122,12 @@
         .footer-links a:hover { color: var(--gold); }
         .footer-bottom { text-align: center; padding-top: 40px; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: rgba(255,255,255,0.4); }
         
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 10px 20px 20px; border-top: 1px solid rgba(0,0,0,0.05); z-index: 100; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); display: flex; justify-content: around; padding: 10px 20px 20px; border-top: 1px solid rgba(0,0,0,0.05); z-index: 100; }
         .bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--gray); text-decoration: none; font-size: 10px; cursor: pointer; transition: color 0.3s; }
         .bottom-nav a i { font-size: 22px; }
         .bottom-nav a.active, .bottom-nav a:hover { color: var(--gold); }
         
-        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: black; padding: 12px 24px; border-radius: 40px; z-index: 9999; font-weight: 700; animation: fadeUp 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.2); white-space: nowrap; }
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: black; padding: 12px 24px; border-radius: 40px; z-index: 9999; font-weight: 700; animation: fadeUp 0.3s; white-space: nowrap; }
         .toast-error { background: #dc3545; color: white; }
         @keyframes fadeUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         
@@ -153,8 +137,21 @@
         @keyframes modalZoom { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         .modal-close { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; z-index: 10; transition: all 0.3s; }
         .modal-close:hover { background: var(--gold); color: black; }
-        .modal-media { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
-        .modal-video { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+        .modal-gallery-container { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #1a1a1a; }
+        .modal-gallery { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; width: 100%; height: 100%; }
+        .modal-gallery::-webkit-scrollbar { display: none; }
+        .modal-gallery-item { min-width: 100%; width: 100%; height: 100%; scroll-snap-align: start; position: relative; }
+        .modal-gallery-image { width: 100%; height: 100%; object-fit: cover; }
+        .modal-gallery-video { width: 100%; height: 100%; object-fit: cover; }
+        .modal-gallery-d360 { width: 100%; height: 100%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; flex-direction: column; color: var(--gold); }
+        .modal-gallery-d360 iframe { width: 100%; height: 100%; border: none; }
+        .modal-gallery-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; border: none; z-index: 10; transition: all 0.3s; }
+        .modal-gallery-arrow:hover { background: var(--gold); color: black; }
+        .modal-gallery-arrow-left { left: 10px; }
+        .modal-gallery-arrow-right { right: 10px; }
+        .modal-gallery-dots { position: absolute; bottom: 12px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; z-index: 5; }
+        .modal-gallery-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.2s; }
+        .modal-gallery-dot.active { width: 20px; border-radius: 3px; background: var(--gold); }
         .modal-info { padding: 20px; }
         .modal-name { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
         .modal-sku { font-size: 12px; color: var(--gray-light); margin-bottom: 12px; }
@@ -214,52 +211,23 @@
         </div>
     </div>
     
-    <!-- Editor's Pick Section - NO BUTTONS, just product name and price -->
     <div class="featured-section"><div class="section-header"><div class="section-icon">✦</div><h2 class="section-title">Editor's Pick</h2><div class="section-subtitle">Curated just for you</div></div><div class="featured-grid" id="featuredGrid"><div class="loading"><div class="spinner"></div></div></div></div>
     
-    <!-- Our Collection Section - Full Buy Now button + Icon Cart button (GST removed) -->
     <div class="products-section"><div class="section-header"><div class="section-icon">💎</div><h2 class="section-title">Our Collection</h2><div class="section-subtitle">Discover timeless masterpieces</div></div><div class="products-grid" id="productsGrid"><div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div></div></div>
     
     <div class="features-section"><div class="features-grid"><div class="feature-item"><div class="feature-icon"><i class="fas fa-gem"></i></div><div class="feature-title">Premium Quality</div><div class="feature-desc">Certified diamonds and finest metals</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-truck"></i></div><div class="feature-title">Free Shipping</div><div class="feature-desc">On orders above ₹3000</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><div class="feature-title">Secure Payments</div><div class="feature-desc">100% secure transactions</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-headset"></i></div><div class="feature-title">24/7 Support</div><div class="feature-desc">Dedicated customer care</div></div></div></div>
     
-    <footer class="luxury-footer">
-        <div class="footer-content">
-            <div class="footer-brand">
-                <div class="footer-logo">STYLE<span>OF</span>LIFE</div>
-                <p>Crafting timeless elegance since 2024.</p>
-            </div>
-            <div class="footer-links">
-                <h4>Explore</h4>
-                <a data-page="home">Home</a>
-                <a data-page="shop">Shop All</a>
-                <a data-page="track">Track Order</a>
-                <a data-page="customer-portal">My Account</a>
-            </div>
-            <div class="footer-links">
-                <h4>Support</h4>
-                <a href="https://styleoflife987-hub.github.io/jewelry-store/shipping-policy.html" target="_blank">Shipping Policy</a>
-                <a href="https://styleoflife987-hub.github.io/jewelry-store/privacy-policy.html" target="_blank">Privacy Policy</a>
-                <a href="https://styleoflife987-hub.github.io/jewelry-store/terms-conditions.html" target="_blank">Terms & Conditions</a>
-            </div>
-            <div class="footer-links">
-                <h4>Connect</h4>
-                <p><i class="fas fa-phone"></i> <a href="tel:+916352925472">+91-6352925472</a></p>
-                <p><i class="fas fa-envelope"></i> <a href="mailto:styleoflife987@gmail.com">styleoflife987@gmail.com</a></p>
-                <p><i class="fab fa-instagram"></i> @styleoflife.in</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>© 2026 Style Of Life. All rights reserved.</p>
-        </div>
-    </footer>
+    <footer class="luxury-footer"><div class="footer-content"><div class="footer-brand"><div class="footer-logo">STYLE<span>OF</span>LIFE</div><p>Crafting timeless elegance since 2024.</p></div><div class="footer-links"><h4>Explore</h4><a data-page="home">Home</a><a data-page="shop">Shop All</a><a data-page="track">Track Order</a><a data-page="customer-portal">My Account</a></div><div class="footer-links"><h4>Support</h4><a data-page="shipping">Shipping Policy</a><a data-page="privacy">Privacy Policy</a><a data-page="terms">Terms & Conditions</a></div><div class="footer-links"><h4>Connect</h4><p><i class="fas fa-phone"></i> <a href="tel:+916352925472">+91-6352925472</a></p><p><i class="fas fa-envelope"></i> <a href="mailto:styleoflife987@gmail.com">styleoflife987@gmail.com</a></p><p><i class="fab fa-instagram"></i> @styleoflife.in</p></div></div><div class="footer-bottom"><p>© 2026 Style Of Life. All rights reserved.</p></div></footer>
     
     <div class="bottom-nav"><a data-page="home" class="active"><i class="fas fa-home"></i><span>Home</span></a><a data-page="shop"><i class="fas fa-search"></i><span>Discover</span></a><a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Bag</span></a><a data-page="track"><i class="fas fa-truck"></i><span>Track</span></a><a data-page="customer-portal"><i class="fas fa-user"></i><span>Profile</span></a></div>
     
-    <div id="productModal" class="product-modal"><div class="modal-container"><button class="modal-close" onclick="closeProductModal()">&times;</button><div id="modalMediaContainer"></div><div class="modal-info"><div class="modal-name" id="modalName"></div><div class="modal-sku" id="modalSku"></div><div class="modal-category" id="modalCategory"></div><div class="modal-price" id="modalPrice"></div><div class="modal-desc" id="modalDesc"></div><div class="modal-stock" id="modalStock"></div><div class="modal-buttons"><button class="modal-buy" id="modalBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button><button class="modal-cart" id="modalCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button></div></div></div></div>
+    <div id="productModal" class="product-modal"><div class="modal-container"><button class="modal-close" onclick="closeProductModal()">&times;</button><div id="modalMediaContainer" class="modal-gallery-container"></div><div class="modal-info"><div class="modal-name" id="modalName"></div><div class="modal-sku" id="modalSku"></div><div class="modal-category" id="modalCategory"></div><div class="modal-price" id="modalPrice"></div><div class="modal-desc" id="modalDesc"></div><div class="modal-stock" id="modalStock"></div><div class="modal-buttons"><button class="modal-buy" id="modalBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button><button class="modal-cart" id="modalCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button></div></div></div></div>
     
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
+    
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
+        
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let sessionId = localStorage.getItem('sessionId');
         if (!sessionId) { sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); localStorage.setItem('sessionId', sessionId); }
@@ -271,11 +239,16 @@
         function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi|wmv|flv)$/i) || url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')); }
         function getMediaType(url) { if (isD360Viewer(url)) return 'd360'; if (isVideoUrl(url)) return 'video'; return 'image'; }
         
-        function getBestThumbnail(product) {
+        function getProductImage(product) {
             const media = product.images || [];
-            for (let m of media) { if (isVideoUrl(m)) return m; if (!isD360Viewer(m)) return m; }
-            for (let m of media) { if (isD360Viewer(m)) { const match = m.match(/[?&]d=([^&]+)/); if (match) return `https://d360.tech/imaged/${match[1]}/still.jpg`; } }
-            return 'https://via.placeholder.com/300x300?text=Style';
+            for (let m of media) {
+                const type = getMediaType(m);
+                if (type === 'image') return m;
+            }
+            for (let m of media) {
+                if (getMediaType(m) === 'video') return m;
+            }
+            return 'https://via.placeholder.com/400x400?text=Style';
         }
         
         function navigateTo(page) { if (window.parent !== window) window.parent.postMessage({ page: page }, '*'); else window.location.href = page + '.html'; }
@@ -328,7 +301,7 @@
             }
         };
         
-        // Swipe cart functionality
+        // Swipe cart
         let isDragging = false, startX = 0, currentTranslate = 0;
         const swipeThumb = document.getElementById('swipeThumb');
         const swipeProgress = document.getElementById('swipeProgress');
@@ -338,14 +311,8 @@
         function initSwipe() {
             if (!swipeThumb || !swipeTrack) return;
             maxSwipe = swipeTrack.getBoundingClientRect().width - 75;
-            swipeThumb.removeEventListener('mousedown', startDrag);
-            swipeThumb.removeEventListener('touchstart', startDrag);
             swipeThumb.addEventListener('mousedown', startDrag);
             swipeThumb.addEventListener('touchstart', startDrag);
-            document.removeEventListener('mousemove', onDrag);
-            document.removeEventListener('touchmove', onDrag);
-            document.removeEventListener('mouseup', endDrag);
-            document.removeEventListener('touchend', endDrag);
             document.addEventListener('mousemove', onDrag);
             document.addEventListener('touchmove', onDrag);
             document.addEventListener('mouseup', endDrag);
@@ -399,29 +366,7 @@
         document.getElementById('floatingCartBtn')?.addEventListener('click', openSwipeCart);
         document.getElementById('clearCartSwipeBtn')?.addEventListener('click', async () => { if (currentCart.length && confirm('Clear cart?')) { await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date() }, { onConflict: 'session_id' }); showToast('Cart cleared!'); await updateCartPreview(); closeSwipeCart(); } else if (!currentCart.length) showToast('Cart empty', true); });
         
-        window.scrollGallery = (id, dir) => { const g = document.getElementById(id); if (g) g.scrollBy({ left: dir === 'left' ? -g.clientWidth : g.clientWidth, behavior: 'smooth' }); };
-        
-        function initGallery(galleryId, mediaItems, dotId) {
-            const gallery = document.getElementById(galleryId);
-            const dots = document.getElementById(dotId);
-            if (!gallery || !dots) return;
-            gallery.innerHTML = ''; dots.innerHTML = '';
-            const sorted = [...mediaItems].sort((a, b) => { const ta = getMediaType(a), tb = getMediaType(b); if (ta === 'image' && tb !== 'image') return -1; if (ta !== 'image' && tb === 'image') return 1; return 0; });
-            sorted.forEach((media, idx) => {
-                const type = getMediaType(media);
-                const slide = document.createElement('div'); slide.className = 'gallery-item';
-                if (type === 'image') { const img = document.createElement('img'); img.src = media; img.className = 'gallery-image'; img.loading = 'lazy'; img.onerror = () => img.src = 'https://via.placeholder.com/400?text=Image'; slide.appendChild(img); }
-                else if (type === 'video') { const vid = document.createElement('video'); vid.src = media; vid.className = 'gallery-video'; vid.loop = true; vid.muted = true; vid.playsInline = true; vid.addEventListener('mouseenter', () => vid.play()); vid.addEventListener('mouseleave', () => { vid.pause(); vid.currentTime = 0; }); slide.appendChild(vid); const badge = document.createElement('div'); badge.className = 'media-badge'; badge.innerHTML = '🎬 Video'; slide.appendChild(badge); }
-                else { const wrap = document.createElement('div'); wrap.style.width = '100%'; wrap.style.height = '100%'; wrap.style.position = 'relative'; wrap.style.background = '#1a1a1a'; wrap.innerHTML = `<iframe src="${media}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe><div class="media-badge">🔄 360°</div>`; slide.appendChild(wrap); }
-                gallery.appendChild(slide);
-                const dot = document.createElement('div'); dot.className = 'gallery-dot'; if (idx === 0) dot.classList.add('active');
-                dot.addEventListener('click', () => gallery.scrollTo({ left: gallery.clientWidth * idx, behavior: 'smooth' }));
-                dots.appendChild(dot);
-            });
-            gallery.addEventListener('scroll', () => { const idx = Math.round(gallery.scrollLeft / gallery.clientWidth); Array.from(dots.children).forEach((d, i) => d.classList.toggle('active', i === idx)); });
-        }
-        
-        function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+        function shuffleArray(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
         
         async function loadStories() {
             const cont = document.getElementById('storiesContainer');
@@ -429,13 +374,12 @@
             try {
                 if (!allProducts.length) { const { data } = await supabase.from('products').select('*'); allProducts = data || []; }
                 if (!allProducts.length) { cont.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; return; }
-                const shuffled = shuffle([...allProducts]);
+                const shuffled = shuffleArray([...allProducts]);
                 const stories = shuffled.slice(0, 15);
                 let html = '';
                 for (const p of stories) {
-                    const thumb = getBestThumbnail(p);
-                    const firstMedia = p.images?.[0];
-                    const type = getMediaType(firstMedia);
+                    const thumb = getProductImage(p);
+                    const type = getMediaType(p.images?.[0]);
                     let badge = '';
                     if (type === 'video') badge = '<div class="story-badge"><i class="fas fa-play"></i></div>';
                     else if (type === 'd360') badge = '<div class="story-badge"><i class="fas fa-cube"></i></div>';
@@ -445,31 +389,24 @@
             } catch(e) { cont.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; }
         }
         
-        // Editor's Pick - NO BUTTONS, just product name and price (GST removed)
         async function loadFeatured() {
             const cont = document.getElementById('featuredGrid');
             if (!cont) return;
             try {
                 if (!allProducts.length) { const { data } = await supabase.from('products').select('*'); allProducts = data || []; }
                 if (!allProducts.length) { cont.innerHTML = '<div class="empty-state">✨ Coming soon</div>'; return; }
-                const shuffled = shuffle([...allProducts]);
+                const shuffled = shuffleArray([...allProducts]);
                 const picks = shuffled.slice(0, 4);
                 let html = '';
                 for (const p of picks) {
-                    const firstMedia = p.images?.[0] || 'https://via.placeholder.com/300x200';
-                    const type = getMediaType(firstMedia);
-                    let mediaHtml = '';
-                    if (type === 'video') mediaHtml = `<video class="featured-video" src="${firstMedia}" muted loop playsinline autoplay onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"></video>`;
-                    else if (type === 'd360') { const match = firstMedia.match(/[?&]d=([^&]+)/); const thumb = match ? `https://d360.tech/imaged/${match[1]}/still.jpg` : 'https://via.placeholder.com/300x200?text=360°'; mediaHtml = `<img class="featured-media" src="${thumb}" onerror="this.src='https://via.placeholder.com/300x200'">`; }
-                    else mediaHtml = `<img class="featured-media" src="${firstMedia}" onerror="this.src='https://via.placeholder.com/300x200'">`;
+                    const img = getProductImage(p);
                     const { total } = calculateGST(p.price, p.gst || 18);
-                    html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'>${mediaHtml}<div class="featured-info"><div class="featured-name">${escapeHtml(p.name)}</div><div class="featured-price">₹${total.toLocaleString()}</div></div></div>`;
+                    html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'><img class="featured-media" src="${img}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200'"><div class="featured-info"><div class="featured-name">${escapeHtml(p.name)}</div><div class="featured-price">₹${total.toLocaleString()}</div><div class="featured-gst">Incl. ${p.gst||18}% GST</div></div></div>`;
                 }
                 cont.innerHTML = html;
             } catch(e) { cont.innerHTML = '<div class="empty-state">Error loading</div>'; }
         }
         
-        // Our Collection - Full Buy Now button + Icon Cart button (GST removed from display)
         async function loadProducts() {
             const cont = document.getElementById('productsGrid');
             if (!cont) return;
@@ -478,64 +415,106 @@
                 if (!allProducts.length) { const { data } = await supabase.from('products').select('*').order('id'); allProducts = data || []; }
                 if (!allProducts.length) { cont.innerHTML = '<div class="empty-state">✨ No products found</div>'; return; }
                 for (const p of allProducts) productsCache[p.id] = { gst: p.gst || 18 };
+                
+                // Show only first 10 products
+                const displayProducts = allProducts.slice(0, 10);
+                
                 let html = '';
-                for (const p of allProducts) {
-                    const mediaList = (p.images || []).filter(m => m && m.trim());
-                    const displayMedia = mediaList.length ? mediaList : ['https://via.placeholder.com/400x400?text=Style'];
-                    const firstMedia = displayMedia[0];
-                    const type = getMediaType(firstMedia);
-                    const { total } = calculateGST(p.price, p.gst || 18);
-                    const galleryId = `gallery-${p.id}`;
-                    const dotId = `dots-${p.id}`;
-                    const imgUrl = type === 'd360' ? 'https://via.placeholder.com/400?text=360°' : (displayMedia[0] || '');
-                    let mediaHtml = '';
-                    if (displayMedia.length === 1) {
-                        if (type === 'video') mediaHtml = `<div class="product-video-container"><video src="${firstMedia}" class="product-video" autoplay muted loop playsinline></video><div class="media-badge">🎬 Video</div></div>`;
-                        else if (type === 'd360') mediaHtml = `<div class="product-d360-container"><iframe src="${firstMedia}" class="product-d360-iframe" allowfullscreen></iframe><div class="media-badge">🔄 360°</div></div>`;
-                        else mediaHtml = `<div class="product-gallery-container"><div class="product-gallery" id="${galleryId}"></div><button class="gallery-arrow gallery-arrow-left" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'left')"><i class="fas fa-chevron-left"></i></button><button class="gallery-arrow gallery-arrow-right" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'right')"><i class="fas fa-chevron-right"></i></button><div class="gallery-dots" id="${dotId}"></div></div>`;
-                    } else {
-                        mediaHtml = `<div class="product-gallery-container"><div class="product-gallery" id="${galleryId}"></div><button class="gallery-arrow gallery-arrow-left" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'left')"><i class="fas fa-chevron-left"></i></button><button class="gallery-arrow gallery-arrow-right" onclick="event.stopPropagation(); scrollGallery('${galleryId}', 'right')"><i class="fas fa-chevron-right"></i></button><div class="gallery-dots" id="${dotId}"></div></div>`;
-                    }
-                    html += `<div class="product-card" onclick='openProductModal(${JSON.stringify(p)})'>${mediaHtml}<div class="product-info"><div class="product-name">${escapeHtml(p.name)}</div><div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div><div class="product-desc">${escapeHtml((p.description || '').substring(0, 100))}${(p.description || '').length > 100 ? '...' : ''}</div><div class="product-price">₹${total.toLocaleString()} <small>Incl. GST</small></div><div class="product-buttons-full" onclick="event.stopPropagation()"><button class="btn-full-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${imgUrl}')"><i class="fas fa-bolt"></i> Buy Now</button><button class="btn-icon-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${imgUrl}')"><i class="fas fa-shopping-cart"></i></button></div></div></div>`;
+                for (const p of displayProducts) {
+                    const img = getProductImage(p);
+                    const { total, gstAmount } = calculateGST(p.price, p.gst || 18);
+                    const imgCount = p.images ? p.images.length : 0;
+                    
+                    html += `<div class="product-card" onclick='openProductModal(${JSON.stringify(p)})'>
+                        <div class="product-image-container">
+                            <img class="product-image" src="${img}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400?text=Style'">
+                            ${imgCount > 1 ? `<div class="image-badge"><i class="fas fa-images"></i> ${imgCount}</div>` : ''}
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">${escapeHtml(p.name)}</div>
+                            <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
+                            <div class="product-desc">${escapeHtml((p.description || '').substring(0, 100))}${(p.description || '').length > 100 ? '...' : ''}</div>
+                            <div class="product-price">₹${total.toLocaleString()} <small>Incl. ${p.gst || 18}% GST</small></div>
+                            <div class="product-buttons-icon" onclick="event.stopPropagation()">
+                                <button class="btn-icon-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')"><i class="fas fa-bolt"></i></button>
+                                <button class="btn-icon-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')"><i class="fas fa-shopping-cart"></i></button>
+                            </div>
+                        </div>
+                    </div>`;
                 }
                 cont.innerHTML = html;
-                for (const p of allProducts) {
-                    const mediaList = (p.images || []).filter(m => m && m.trim());
-                    const display = mediaList.length ? mediaList : ['https://via.placeholder.com/400x400?text=Style'];
-                    const firstType = getMediaType(display[0]);
-                    if (display.length > 1 || (display.length === 1 && firstType === 'image')) {
-                        setTimeout(() => initGallery(`gallery-${p.id}`, display, `dots-${p.id}`), 50);
-                    }
-                }
             } catch(e) { cont.innerHTML = '<div class="empty-state">Error loading collection</div>'; }
         }
         
+        // Modal with scrollable gallery (shows all media: images, videos, D360)
         window.openProductModal = function(product) {
             const media = (product.images || []).filter(m => m && m.trim());
-            const display = media.length ? media : ['https://via.placeholder.com/400x400?text=Style'];
-            const first = display[0];
-            const type = getMediaType(first);
-            const { total } = calculateGST(product.price, product.gst || 18);
+            const displayMedia = media.length ? media : ['https://via.placeholder.com/400x400?text=Style'];
+            const { total, gstAmount } = calculateGST(product.price, product.gst || 18);
+            
             const modalMedia = document.getElementById('modalMediaContainer');
-            if (modalMedia) {
-                if (type === 'video') modalMedia.innerHTML = `<video src="${first}" class="modal-video" autoplay muted loop playsinline controls></video><div class="media-badge" style="bottom:20px;right:20px;">🎬 Video</div>`;
-                else if (type === 'd360') modalMedia.innerHTML = `<div style="width:100%;aspect-ratio:1/1;background:#1a1a1a;"><iframe src="${first}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe><div class="media-badge" style="bottom:20px;right:20px;">🔄 360°</div></div>`;
-                else modalMedia.innerHTML = `<img class="modal-media" src="${first}" onerror="this.src='https://via.placeholder.com/400'">`;
+            
+            // Build gallery HTML
+            let galleryHtml = `<div class="modal-gallery-container"><div class="modal-gallery" id="modalGallery">`;
+            for (let i = 0; i < displayMedia.length; i++) {
+                const m = displayMedia[i];
+                const type = getMediaType(m);
+                if (type === 'video') {
+                    galleryHtml += `<div class="modal-gallery-item"><video src="${m}" class="modal-gallery-video" autoplay muted loop playsinline controls></video><div class="media-badge" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.7);color:var(--gold);padding:4px 10px;border-radius:20px;font-size:10px;">🎬 Video</div></div>`;
+                } else if (type === 'd360') {
+                    galleryHtml += `<div class="modal-gallery-item"><div class="modal-gallery-d360"><iframe src="${m}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe><div class="media-badge" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.7);color:var(--gold);padding:4px 10px;border-radius:20px;font-size:10px;">🔄 360°</div></div></div>`;
+                } else {
+                    galleryHtml += `<div class="modal-gallery-item"><img class="modal-gallery-image" src="${m}" alt="${product.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400'"></div>`;
+                }
             }
+            galleryHtml += `</div>`;
+            
+            if (displayMedia.length > 1) {
+                galleryHtml += `<button class="modal-gallery-arrow modal-gallery-arrow-left" onclick="event.stopPropagation(); document.getElementById('modalGallery').scrollBy({left: -document.getElementById('modalGallery').clientWidth, behavior:'smooth'})"><i class="fas fa-chevron-left"></i></button>
+                                <button class="modal-gallery-arrow modal-gallery-arrow-right" onclick="event.stopPropagation(); document.getElementById('modalGallery').scrollBy({left: document.getElementById('modalGallery').clientWidth, behavior:'smooth'})"><i class="fas fa-chevron-right"></i></button>
+                                <div class="modal-gallery-dots" id="modalGalleryDots"></div>`;
+            }
+            galleryHtml += `</div>`;
+            
+            modalMedia.innerHTML = galleryHtml;
+            
+            // Add dots for gallery
+            if (displayMedia.length > 1) {
+                setTimeout(() => {
+                    const galleryEl = document.getElementById('modalGallery');
+                    const dotsContainer = document.getElementById('modalGalleryDots');
+                    if (galleryEl && dotsContainer) {
+                        for (let i = 0; i < displayMedia.length; i++) {
+                            const dot = document.createElement('div');
+                            dot.className = 'modal-gallery-dot';
+                            if (i === 0) dot.classList.add('active');
+                            dot.addEventListener('click', () => galleryEl.scrollTo({ left: galleryEl.clientWidth * i, behavior: 'smooth' }));
+                            dotsContainer.appendChild(dot);
+                        }
+                        galleryEl.addEventListener('scroll', () => {
+                            const idx = Math.round(galleryEl.scrollLeft / galleryEl.clientWidth);
+                            Array.from(dotsContainer.children).forEach((d, i) => d.classList.toggle('active', i === idx));
+                        });
+                    }
+                }, 50);
+            }
+            
             document.getElementById('modalName').innerText = product.name;
             document.getElementById('modalSku').innerText = `SKU: ${product.sku}`;
             document.getElementById('modalCategory').innerText = product.category || 'Fine Jewelry';
-            document.getElementById('modalPrice').innerHTML = `₹${total.toLocaleString()} <small>Incl. GST</small>`;
+            document.getElementById('modalPrice').innerHTML = `₹${total.toLocaleString()} <small>(Incl. ${product.gst || 18}% GST)</small><br><span style="font-size:14px;color:var(--gray);">Base: ₹${product.price.toLocaleString()} + GST: ₹${gstAmount.toLocaleString()}</span>`;
             document.getElementById('modalDesc').innerText = product.description || 'Exquisite handcrafted masterpiece.';
             const stockStat = product.stock <= 0 ? 'Out of Stock' : (product.stock < 10 ? `Only ${product.stock} left!` : 'In Stock');
             const stockColor = product.stock <= 0 ? '#dc3545' : (product.stock < 10 ? '#ff9800' : '#28a745');
             document.getElementById('modalStock').innerHTML = `<i class="fas ${product.stock <= 0 ? 'fa-times-circle' : (product.stock < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> ${stockStat}`;
             document.getElementById('modalStock').style.color = stockColor;
-            const imgUrl = type === 'd360' ? 'https://via.placeholder.com/400?text=360°' : (product.images?.[0] || '');
+            
+            const imgUrl = getProductImage(product);
             document.getElementById('modalBuyBtn').onclick = () => buyNow(product.id, product.name, product.price, product.sku, imgUrl);
             document.getElementById('modalCartBtn').onclick = () => addToCart(product.id, product.name, product.price, product.sku, imgUrl);
             document.getElementById('productModal').classList.add('active');
         };
+        
         window.closeProductModal = () => document.getElementById('productModal').classList.remove('active');
         document.getElementById('productModal')?.addEventListener('click', (e) => { if (e.target === e.currentTarget) closeProductModal(); });
         
