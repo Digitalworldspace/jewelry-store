@@ -32,6 +32,59 @@
         .shop-header h1 span { color: var(--gold); }
         .shop-header p { color: rgba(255,255,255,0.8); max-width: 600px; margin: 0 auto; }
         
+        /* View Toggle Buttons */
+        .view-toggle { display: flex; gap: 10px; align-items: center; }
+        .view-btn { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: all 0.3s; }
+        .view-btn.active { background: var(--gold); border-color: var(--gold); color: var(--black); }
+        .view-btn i { font-size: 16px; }
+        
+        /* Grid View (Default) */
+        .products-grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
+        .products-grid.list-view { grid-template-columns: 1fr; }
+        .products-grid.list-view .product-card { display: flex; flex-direction: row; }
+        .products-grid.list-view .product-image-container { width: 200px; aspect-ratio: 1 / 1; }
+        .products-grid.list-view .product-info { flex: 1; }
+        @media (min-width: 768px) {
+            .products-grid { grid-template-columns: repeat(2, 1fr); }
+            .products-grid.list-view { grid-template-columns: 1fr; }
+        }
+        @media (min-width: 1024px) {
+            .products-grid { grid-template-columns: repeat(3, 1fr); }
+            .products-grid.list-view { grid-template-columns: 1fr; }
+        }
+        
+        .product-card { background: var(--white); border-radius: 20px; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); transition: all 0.4s ease; cursor: pointer; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); border-color: var(--gold); }
+        
+        .product-image-container { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #f5f5f5; }
+        .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .product-card:hover .product-image { transform: scale(1.05); }
+        .image-badge { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 20px; font-size: 10px; z-index: 5; }
+        
+        .product-info { padding: 18px; }
+        .product-name { font-size: 18px; font-weight: 700; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; }
+        .diamond-badge { background: rgba(212,175,55,0.15); color: var(--gold); padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+        .product-sku { font-size: 11px; color: var(--gray-light); margin-bottom: 8px; }
+        .product-price { font-size: 20px; font-weight: 700; color: var(--gold); margin: 8px 0; }
+        .product-price small { font-size: 11px; color: var(--gray); font-weight: normal; }
+        
+        .diamond-details { background: var(--white-light); border-radius: 12px; padding: 10px; margin: 10px 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; }
+        .diamond-detail-item { text-align: center; flex: 1; min-width: 50px; }
+        .diamond-detail-label { font-size: 9px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
+        .diamond-detail-value { font-size: 12px; font-weight: 600; color: var(--gold); }
+        
+        .product-buttons-icon { display: flex; gap: 12px; margin-top: 12px; }
+        .btn-icon-buy, .btn-icon-cart { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; border: none; font-size: 18px; }
+        .btn-icon-buy { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); }
+        .btn-icon-buy:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 4px 12px rgba(212,175,55,0.4); }
+        .btn-icon-cart { background: var(--white); border: 1.5px solid var(--gold); color: var(--gold); }
+        .btn-icon-cart:hover { background: var(--gold); color: var(--black); transform: translateY(-3px) scale(1.05); }
+        
+        /* Load More Button */
+        .load-more-container { text-align: center; margin-top: 40px; }
+        .load-more-btn { background: var(--gold); color: var(--black); padding: 12px 30px; border: none; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .load-more-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212,175,55,0.3); }
+        
         /* Floating Filter Button */
         .floating-filter {
             position: fixed;
@@ -143,34 +196,6 @@
         .products-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         .products-count { color: var(--gray); font-size: 14px; }
         .sort-select { padding: 8px 15px; border: 1px solid var(--gray-200); border-radius: 8px; background: white; cursor: pointer; }
-        .products-grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
-        
-        .product-card { background: var(--white); border-radius: 20px; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); transition: all 0.4s ease; cursor: pointer; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); border-color: var(--gold); }
-        
-        .product-image-container { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #f5f5f5; }
-        .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
-        .product-card:hover .product-image { transform: scale(1.05); }
-        .image-badge { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 20px; font-size: 10px; z-index: 5; }
-        
-        .product-info { padding: 18px; }
-        .product-name { font-size: 18px; font-weight: 700; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; }
-        .diamond-badge { background: rgba(212,175,55,0.15); color: var(--gold); padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
-        .product-sku { font-size: 11px; color: var(--gray-light); margin-bottom: 8px; }
-        .product-price { font-size: 20px; font-weight: 700; color: var(--gold); margin: 8px 0; }
-        .product-price small { font-size: 11px; color: var(--gray); font-weight: normal; }
-        
-        .diamond-details { background: var(--white-light); border-radius: 12px; padding: 10px; margin: 10px 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; }
-        .diamond-detail-item { text-align: center; flex: 1; min-width: 50px; }
-        .diamond-detail-label { font-size: 9px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
-        .diamond-detail-value { font-size: 12px; font-weight: 600; color: var(--gold); }
-        
-        .product-buttons-icon { display: flex; gap: 12px; margin-top: 12px; }
-        .btn-icon-buy, .btn-icon-cart { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; border: none; font-size: 18px; }
-        .btn-icon-buy { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); }
-        .btn-icon-buy:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 4px 12px rgba(212,175,55,0.4); }
-        .btn-icon-cart { background: var(--white); border: 1.5px solid var(--gold); color: var(--gold); }
-        .btn-icon-cart:hover { background: var(--gold); color: var(--black); transform: translateY(-3px) scale(1.05); }
         
         /* Floating Cart */
         .floating-cart { position: fixed; bottom: 80px; right: 20px; width: 55px; height: 55px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; box-shadow: 0 5px 20px rgba(212,175,55,0.4); transition: all 0.3s; }
@@ -247,18 +272,15 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .empty-state { text-align: center; padding: 60px; color: var(--gray); }
         
-        @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (min-width: 1024px) {
             .floating-filter { display: none; }
             .shop-layout { display: flex; gap: 30px; align-items: flex-start; }
             .filters-section { width: 300px; margin: 0; position: sticky; top: 20px; display: block !important; }
             .products-container { flex: 1; padding: 0; }
-            .products-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 1023px) {
             .filters-section { display: none; }
         }
-        @media (min-width: 1280px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
     </style>
 </head>
 <body>
@@ -269,11 +291,13 @@
         <div><span class="gemini-text">Style Of Life</span><span class="gemini-sub">SHOP</span></div>
     </div>
     
+    <!-- Floating Filter Button -->
     <div class="floating-filter" id="floatingFilterBtn">
         <i class="fas fa-sliders-h"></i>
         <span class="filter-badge" id="filterBadge" style="display: none;">0</span>
     </div>
     
+    <!-- Filter Modal -->
     <div id="filterModal" class="filter-modal">
         <div class="filter-drawer">
             <div class="filter-drawer-header">
@@ -309,16 +333,25 @@
         <div class="products-container">
             <div class="products-header">
                 <div class="products-count" id="productsCount">Loading products...</div>
-                <select class="sort-select" id="sortSelect" onchange="applyFilters()">
-                    <option value="default">Sort by: Default</option>
-                    <option value="price_asc">Price: Low to High</option>
-                    <option value="price_desc">Price: High to Low</option>
-                    <option value="carat_asc">Carat: Low to High</option>
-                    <option value="carat_desc">Carat: High to Low</option>
-                </select>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <div class="view-toggle">
+                        <button class="view-btn active" id="gridViewBtn" onclick="setView('grid')"><i class="fas fa-th"></i></button>
+                        <button class="view-btn" id="listViewBtn" onclick="setView('list')"><i class="fas fa-list"></i></button>
+                    </div>
+                    <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+                        <option value="default">Sort by: Default</option>
+                        <option value="price_asc">Price: Low to High</option>
+                        <option value="price_desc">Price: High to Low</option>
+                        <option value="carat_asc">Carat: Low to High</option>
+                        <option value="carat_desc">Carat: High to Low</option>
+                    </select>
+                </div>
             </div>
             <div class="products-grid" id="productsGrid">
                 <div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div>
+            </div>
+            <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+                <button class="load-more-btn" onclick="loadMoreProducts()">Load More Products</button>
             </div>
         </div>
     </div>
@@ -371,6 +404,10 @@
         if (!sessionId) { sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); localStorage.setItem('sessionId', sessionId); }
         
         let currentCart = [], productsCache = {}, allProducts = [];
+        let displayedProducts = [];
+        let currentDisplayCount = 21;
+        let currentView = 'grid';
+        
         let selectedFilters = {
             categories: [],
             carat: '',
@@ -402,6 +439,24 @@
         document.querySelectorAll('[data-page]').forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); navigateTo(el.getAttribute('data-page')); }));
         
         function showToast(msg, isErr = false) { const t = document.createElement('div'); t.className = 'toast' + (isErr ? ' toast-error' : ''); t.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+        
+        // View Toggle
+        window.setView = function(view) {
+            currentView = view;
+            const gridViewBtn = document.getElementById('gridViewBtn');
+            const listViewBtn = document.getElementById('listViewBtn');
+            const productsGrid = document.getElementById('productsGrid');
+            
+            if (view === 'grid') {
+                gridViewBtn.classList.add('active');
+                listViewBtn.classList.remove('active');
+                productsGrid.classList.remove('list-view');
+            } else {
+                listViewBtn.classList.add('active');
+                gridViewBtn.classList.remove('active');
+                productsGrid.classList.add('list-view');
+            }
+        };
         
         // Filter UI Functions
         window.toggleFilter = function(filterId) {
@@ -584,12 +639,10 @@
         function filterProducts(products) {
             let filtered = [...products];
             
-            // Filter by categories
             if (selectedFilters.categories.length > 0) {
                 filtered = filtered.filter(p => selectedFilters.categories.includes(p.category));
             }
             
-            // Filter by diamond specs - only if product has diamond_details
             if (selectedFilters.carat) {
                 filtered = filtered.filter(p => p.diamond_details && p.diamond_details.carat == selectedFilters.carat);
             }
@@ -609,7 +662,6 @@
                 filtered = filtered.filter(p => p.diamond_details && p.diamond_details.symmetry === selectedFilters.symmetry);
             }
             
-            // Filter by price
             const minPrice = parseFloat(document.getElementById('minPrice')?.value);
             const maxPrice = parseFloat(document.getElementById('maxPrice')?.value);
             if (minPrice) filtered = filtered.filter(p => p.price >= minPrice);
@@ -673,11 +725,25 @@
             const sortBy = document.getElementById('sortSelect')?.value || 'default';
             let filtered = filterProducts(allProducts);
             filtered = sortProducts(filtered, sortBy);
+            displayedProducts = filtered;
+            currentDisplayCount = 21;
             updateActiveFiltersDisplay();
-            renderProducts(filtered);
+            renderProducts();
             const countEl = document.getElementById('productsCount');
-            if (countEl) countEl.innerHTML = `Showing ${filtered.length} of ${allProducts.length} products`;
+            if (countEl) countEl.innerHTML = `Showing ${Math.min(currentDisplayCount, displayedProducts.length)} of ${displayedProducts.length} products`;
             updateFilterBadge();
+        };
+        
+        window.loadMoreProducts = function() {
+            currentDisplayCount += 21;
+            renderProducts();
+            const countEl = document.getElementById('productsCount');
+            if (countEl) countEl.innerHTML = `Showing ${Math.min(currentDisplayCount, displayedProducts.length)} of ${displayedProducts.length} products`;
+            
+            const loadMoreContainer = document.getElementById('loadMoreContainer');
+            if (currentDisplayCount >= displayedProducts.length) {
+                loadMoreContainer.style.display = 'none';
+            }
         };
         
         window.resetFilters = function() {
@@ -691,15 +757,19 @@
             updateFilterBadge();
         };
         
-        function renderProducts(products) {
+        function renderProducts() {
             const container = document.getElementById('productsGrid');
-            if (!products.length) { container.innerHTML = '<div class="empty-state">✨ No products match your filters</div>'; return; }
+            const productsToShow = displayedProducts.slice(0, currentDisplayCount);
+            
+            if (!productsToShow.length) { container.innerHTML = '<div class="empty-state">✨ No products match your filters</div>'; return; }
+            
             let html = '';
-            for (const p of products) {
+            for (const p of productsToShow) {
                 const img = getProductImage(p);
                 const { total } = calculateGST(p.price, p.gst || 18);
                 const diamond = p.diamond_details || {};
                 const hasDiamond = Object.keys(diamond).length > 0;
+                
                 html += `<div class="product-card" onclick='openProductModal(${JSON.stringify(p)})'>
                     <div class="product-image-container"><img class="product-image" src="${img}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400?text=Style'">${hasDiamond ? `<div class="image-badge"><i class="fas fa-gem"></i> Certified Diamond</div>` : ''}</div>
                     <div class="product-info">
@@ -715,16 +785,23 @@
                 </div>`;
             }
             container.innerHTML = html;
+            
+            const loadMoreContainer = document.getElementById('loadMoreContainer');
+            if (displayedProducts.length > currentDisplayCount) {
+                loadMoreContainer.style.display = 'block';
+            } else {
+                loadMoreContainer.style.display = 'none';
+            }
         }
         
         function buildFilterHTML() {
-            // Get unique carat values from products with diamond_details
+            // Get unique values from actual products
             const caratValues = [...new Set(allProducts.filter(p => p.diamond_details?.carat).map(p => p.diamond_details.carat))].sort((a,b) => a-b);
-            const colorValues = ['D','E','F','G','H','I','J'];
-            const clarityValues = ['FL','IF','VVS1','VVS2','VS1','VS2','SI1','SI2','I1'];
-            const cutValues = ['Excellent','Very Good','Good','Fair'];
-            const polishValues = ['Excellent','Very Good','Good'];
-            const symmetryValues = ['Excellent','Very Good','Good'];
+            const colorValues = [...new Set(allProducts.filter(p => p.diamond_details?.color).map(p => p.diamond_details.color))].sort();
+            const clarityValues = [...new Set(allProducts.filter(p => p.diamond_details?.clarity).map(p => p.diamond_details.clarity))].sort();
+            const cutValues = [...new Set(allProducts.filter(p => p.diamond_details?.cut).map(p => p.diamond_details.cut))].sort();
+            const polishValues = [...new Set(allProducts.filter(p => p.diamond_details?.polish).map(p => p.diamond_details.polish))].sort();
+            const symmetryValues = [...new Set(allProducts.filter(p => p.diamond_details?.symmetry).map(p => p.diamond_details.symmetry))].sort();
             
             return `
                 <div class="filter-group">
@@ -748,11 +825,11 @@
                     </div>
                 </div>
                 ${caratValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="caratFilter" onclick="toggleFilter('caratFilter')"><h4><i class="fas fa-gem"></i> Carat Weight</h4><i class="fas fa-chevron-down toggle-icon" id="caratFilterIcon"></i></div><div class="filter-content" id="caratFilter"><div class="filter-options">${caratValues.map(v => `<div class="filter-option" data-filter="carat" data-value="${v}" onclick="selectFilter('carat', '${v}')">${v} ct</div>`).join('')}</div></div></div>` : ''}
-                <div class="filter-group"><div class="filter-header" data-filter-id="colorFilter" onclick="toggleFilter('colorFilter')"><h4><i class="fas fa-palette"></i> Diamond Color</h4><i class="fas fa-chevron-down toggle-icon" id="colorFilterIcon"></i></div><div class="filter-content" id="colorFilter"><div class="filter-options">${colorValues.map(v => `<div class="filter-option" data-filter="color" data-value="${v}" onclick="selectFilter('color', '${v}')">${v}</div>`).join('')}</div></div></div>
-                <div class="filter-group"><div class="filter-header" data-filter-id="clarityFilter" onclick="toggleFilter('clarityFilter')"><h4><i class="fas fa-eye"></i> Diamond Clarity</h4><i class="fas fa-chevron-down toggle-icon" id="clarityFilterIcon"></i></div><div class="filter-content" id="clarityFilter"><div class="filter-options">${clarityValues.map(v => `<div class="filter-option" data-filter="clarity" data-value="${v}" onclick="selectFilter('clarity', '${v}')">${v}</div>`).join('')}</div></div></div>
-                <div class="filter-group"><div class="filter-header" data-filter-id="cutFilter" onclick="toggleFilter('cutFilter')"><h4><i class="fas fa-cut"></i> Diamond Cut</h4><i class="fas fa-chevron-down toggle-icon" id="cutFilterIcon"></i></div><div class="filter-content" id="cutFilter"><div class="filter-options">${cutValues.map(v => `<div class="filter-option" data-filter="cut" data-value="${v}" onclick="selectFilter('cut', '${v}')">${v}</div>`).join('')}</div></div></div>
-                <div class="filter-group"><div class="filter-header" data-filter-id="polishFilter" onclick="toggleFilter('polishFilter')"><h4><i class="fas fa-chart-line"></i> Diamond Polish</h4><i class="fas fa-chevron-down toggle-icon" id="polishFilterIcon"></i></div><div class="filter-content" id="polishFilter"><div class="filter-options">${polishValues.map(v => `<div class="filter-option" data-filter="polish" data-value="${v}" onclick="selectFilter('polish', '${v}')">${v}</div>`).join('')}</div></div></div>
-                <div class="filter-group"><div class="filter-header" data-filter-id="symmetryFilter" onclick="toggleFilter('symmetryFilter')"><h4><i class="fas fa-sync-alt"></i> Diamond Symmetry</h4><i class="fas fa-chevron-down toggle-icon" id="symmetryFilterIcon"></i></div><div class="filter-content" id="symmetryFilter"><div class="filter-options">${symmetryValues.map(v => `<div class="filter-option" data-filter="symmetry" data-value="${v}" onclick="selectFilter('symmetry', '${v}')">${v}</div>`).join('')}</div></div></div>
+                ${colorValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="colorFilter" onclick="toggleFilter('colorFilter')"><h4><i class="fas fa-palette"></i> Diamond Color</h4><i class="fas fa-chevron-down toggle-icon" id="colorFilterIcon"></i></div><div class="filter-content" id="colorFilter"><div class="filter-options">${colorValues.map(v => `<div class="filter-option" data-filter="color" data-value="${v}" onclick="selectFilter('color', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
+                ${clarityValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="clarityFilter" onclick="toggleFilter('clarityFilter')"><h4><i class="fas fa-eye"></i> Diamond Clarity</h4><i class="fas fa-chevron-down toggle-icon" id="clarityFilterIcon"></i></div><div class="filter-content" id="clarityFilter"><div class="filter-options">${clarityValues.map(v => `<div class="filter-option" data-filter="clarity" data-value="${v}" onclick="selectFilter('clarity', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
+                ${cutValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="cutFilter" onclick="toggleFilter('cutFilter')"><h4><i class="fas fa-cut"></i> Diamond Cut</h4><i class="fas fa-chevron-down toggle-icon" id="cutFilterIcon"></i></div><div class="filter-content" id="cutFilter"><div class="filter-options">${cutValues.map(v => `<div class="filter-option" data-filter="cut" data-value="${v}" onclick="selectFilter('cut', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
+                ${polishValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="polishFilter" onclick="toggleFilter('polishFilter')"><h4><i class="fas fa-chart-line"></i> Diamond Polish</h4><i class="fas fa-chevron-down toggle-icon" id="polishFilterIcon"></i></div><div class="filter-content" id="polishFilter"><div class="filter-options">${polishValues.map(v => `<div class="filter-option" data-filter="polish" data-value="${v}" onclick="selectFilter('polish', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
+                ${symmetryValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="symmetryFilter" onclick="toggleFilter('symmetryFilter')"><h4><i class="fas fa-sync-alt"></i> Diamond Symmetry</h4><i class="fas fa-chevron-down toggle-icon" id="symmetryFilterIcon"></i></div><div class="filter-content" id="symmetryFilter"><div class="filter-options">${symmetryValues.map(v => `<div class="filter-option" data-filter="symmetry" data-value="${v}" onclick="selectFilter('symmetry', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
                 <div class="filter-actions"><button class="btn-filter" onclick="applyFilters()">Apply Filters</button><button class="btn-reset" onclick="resetFilters()">Reset All</button></div>
                 <div id="activeFilters" class="active-filters"></div>
             `;
