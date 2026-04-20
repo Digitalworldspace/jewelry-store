@@ -2,104 +2,210 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Style Of Life - Admin Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Admin Login - Style Of Life</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --primary: #d4af37; --primary-dark: #b8962e; --dark: #1a1a1a; --darker: #0a0a0a; }
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
             min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             padding: 20px;
         }
         .login-container {
+            max-width: 420px;
+            width: 100%;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .logo h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #d4af37;
+        }
+        .logo p {
+            color: #888;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .login-card {
             background: white;
             border-radius: 24px;
-            overflow: hidden;
-            max-width: 450px;
-            width: 100%;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
         .login-header {
-            background: linear-gradient(135deg, var(--dark), var(--darker));
-            padding: 40px;
             text-align: center;
+            margin-bottom: 30px;
         }
-        .login-header h1 {
-            color: var(--primary);
-            font-size: 28px;
+        .login-header i {
+            font-size: 48px;
+            color: #d4af37;
+            margin-bottom: 15px;
+        }
+        .login-header h2 {
+            font-size: 24px;
             font-weight: 600;
-            letter-spacing: 2px;
+            color: #1a1a1a;
         }
-        .login-header p { color: #6c757d; margin-top: 8px; font-size: 14px; }
-        .login-body { padding: 40px; }
-        .form-group { margin-bottom: 25px; }
-        label { display: block; color: #6c757d; margin-bottom: 8px; font-weight: 500; font-size: 14px; }
-        input {
+        .login-header p {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            font-size: 13px;
+        }
+        .form-group input {
             width: 100%;
             padding: 14px 16px;
-            border: 1px solid #e9ecef;
+            border: 1px solid #e0e0e0;
             border-radius: 12px;
             font-size: 14px;
+            transition: all 0.3s;
         }
-        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
-        button {
+        .form-group input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212,175,55,0.1);
+        }
+        .login-btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: linear-gradient(135deg, #d4af37, #b8962e);
+            color: white;
             border: none;
-            border-radius: 40px;
-            color: var(--dark);
-            font-weight: 600;
+            border-radius: 12px;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s;
             margin-top: 10px;
         }
-        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212,175,55,0.3); }
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 13px;
-            text-align: center;
-            display: none;
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212,175,55,0.3);
         }
-        .hint { text-align: center; margin-top: 20px; font-size: 12px; color: #6c757d; padding-top: 20px; border-top: 1px solid #e9ecef; }
-        .hint strong { color: var(--primary); }
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .info-text {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+        .info-text a {
+            color: #d4af37;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <div class="login-header">
+        <div class="logo">
             <h1>STYLE OF LIFE</h1>
-            <p>Admin Panel Access</p>
+            <p>ADMIN PORTAL</p>
         </div>
-        <div class="login-body">
-            <div id="errorMessage" class="error-message"></div>
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="username" placeholder="Enter username">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-crown"></i>
+                <h2>Admin Login</h2>
+                <p>Enter your credentials to access the admin panel</p>
             </div>
             <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="password" placeholder="Enter password">
+                <label><i class="fas fa-envelope"></i> Email Address</label>
+                <input type="email" id="email" placeholder="admin@styleoflife.com" autocomplete="email">
             </div>
-            <button onclick="login()">Login to Dashboard →</button>
-            <div class="hint">
-                <strong>Demo Credentials:</strong><br>
-                Username: <strong>admin</strong> | Password: <strong>1234</strong>
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password">
+            </div>
+            <button class="login-btn" onclick="login()">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            <div class="info-text">
+                <i class="fas fa-shield-alt"></i> Secure admin access only
             </div>
         </div>
     </div>
 
-    <script>
+    <script type="importmap">
+        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
+    </script>
+    <script type="module">
+        import { createClient } from '@supabase/supabase-js';
+        
+        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        
+        window.login = async () => {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMessage');
+            
+            if (!email || !password) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please enter both email and password';
+                return;
+            }
+            
+            errorDiv.style.display = 'none';
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) {
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + error.message;
+                    return;
+                }
+                
+                if (data.session) {
+                    sessionStorage.setItem('adminLoggedIn', 'true');
+                    sessionStorage.setItem('adminEmail', email);
+                    window.location.href = 'admin-products.html';
+                }
+                
+            } catch (error) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Login failed. Please try again.';
+            }
+        };
+        
+        // Enter key to login
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+    </script>
+</body>
+</html>    <script>
         function login() {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
