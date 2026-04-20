@@ -44,6 +44,7 @@
         .swipe-cart-overlay { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.92); backdrop-filter: blur(20px); z-index: 2000; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1); border-radius: 30px 30px 0 0; padding: 20px; max-height: 85vh; display: flex; flex-direction: column; }
         .swipe-cart-overlay.active { transform: translateY(0); }
         .swipe-handle { width: 50px; height: 5px; background: rgba(255,255,255,0.4); border-radius: 3px; margin: 0 auto 20px; cursor: grab; }
+        .swipe-handle:active { cursor: grabbing; }
         .swipe-title { text-align: center; color: white; font-size: 18px; font-weight: 600; margin-bottom: 20px; }
         .swipe-title i { color: var(--gold); margin-right: 8px; }
         .cart-preview { flex: 1; overflow-y: auto; max-height: 45vh; margin-bottom: 15px; }
@@ -122,7 +123,7 @@
         .footer-links a:hover { color: var(--gold); }
         .footer-bottom { text-align: center; padding-top: 40px; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: rgba(255,255,255,0.4); }
         
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); display: flex; justify-content: around; padding: 10px 20px 20px; border-top: 1px solid rgba(0,0,0,0.05); z-index: 100; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 10px 20px 20px; border-top: 1px solid rgba(0,0,0,0.05); z-index: 100; }
         .bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--gray); text-decoration: none; font-size: 10px; cursor: pointer; transition: color 0.3s; }
         .bottom-nav a i { font-size: 22px; }
         .bottom-nav a.active, .bottom-nav a:hover { color: var(--gold); }
@@ -235,18 +236,33 @@
         let currentCart = [], productsCache = {}, allProducts = [];
         
         function calculateGST(price, gstPercent) { const gst = (price * gstPercent) / 100; return { gstAmount: gst, total: price + gst }; }
-        function isD360Viewer(url) { return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); }
-        function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi|wmv|flv)$/i) || url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')); }
-        function getMediaType(url) { if (isD360Viewer(url)) return 'd360'; if (isVideoUrl(url)) return 'video'; return 'image'; }
         
+        function isD360Viewer(url) { return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); }
+        function isD360Image(url) { return url && url.includes('d360.tech/imaged/'); }
+        function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi|wmv|flv)$/i) || url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')); }
+        
+        function getMediaType(url) { 
+            if (isD360Viewer(url)) return 'd360';
+            if (isVideoUrl(url)) return 'video';
+            if (isD360Image(url)) return 'd360-image';
+            return 'image'; 
+        }
+        
+        // Get the best image to show on front page (prefer regular images over D360 images)
         function getProductImage(product) {
             const media = product.images || [];
+            // First try to find a regular image (not D360 and not video)
             for (let m of media) {
                 const type = getMediaType(m);
                 if (type === 'image') return m;
             }
+            // Then try D360 still image
             for (let m of media) {
-                if (getMediaType(m) === 'video') return m;
+                if (isD360Image(m)) return m;
+            }
+            // Then try video thumbnail
+            for (let m of media) {
+                if (type === 'video') return m;
             }
             return 'https://via.placeholder.com/400x400?text=Style';
         }
@@ -301,11 +317,13 @@
             }
         };
         
-        // Swipe cart
+        // ========== SWIPE CART WITH SWIPE DOWN TO CLOSE ==========
         let isDragging = false, startX = 0, currentTranslate = 0;
+        let touchStartY = 0, isSwipingDown = false;
         const swipeThumb = document.getElementById('swipeThumb');
         const swipeProgress = document.getElementById('swipeProgress');
         const swipeTrack = document.querySelector('.swipe-track');
+        const overlay = document.getElementById('swipeCartOverlay');
         let maxSwipe = 0;
         
         function initSwipe() {
@@ -360,11 +378,92 @@
             else showToast('Your bag is empty!', true);
         }
         
-        function openSwipeCart() { document.getElementById('swipeCartOverlay').classList.add('active'); updateCartPreview(); setTimeout(initSwipe, 150); }
-        function closeSwipeCart() { document.getElementById('swipeCartOverlay').classList.remove('active'); currentTranslate = 0; if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)'; if (swipeProgress) swipeProgress.style.width = '0%'; }
+        // Swipe down to close cart
+        function setupSwipeDownToClose() {
+            if (!overlay) return;
+            
+            overlay.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].clientY;
+                isSwipingDown = true;
+                overlay.classList.add('swiping');
+            });
+            
+            overlay.addEventListener('touchmove', (e) => {
+                if (!isSwipingDown) return;
+                const deltaY = e.touches[0].clientY - touchStartY;
+                if (deltaY > 0 && overlay.classList.contains('active')) {
+                    const translateY = Math.min(deltaY, 300);
+                    overlay.style.transform = `translateY(${translateY}px)`;
+                    e.preventDefault();
+                }
+            });
+            
+            overlay.addEventListener('touchend', (e) => {
+                const deltaY = e.changedTouches[0].clientY - touchStartY;
+                if (deltaY > 100) {
+                    closeSwipeCart();
+                }
+                overlay.style.transform = '';
+                isSwipingDown = false;
+                setTimeout(() => overlay.classList.remove('swiping'), 300);
+            });
+            
+            // Mouse support for swipe down
+            let mouseStartY = 0;
+            let isMouseSwiping = false;
+            
+            overlay.addEventListener('mousedown', (e) => {
+                if (e.target === overlay || e.target.classList.contains('swipe-handle')) {
+                    mouseStartY = e.clientY;
+                    isMouseSwiping = true;
+                }
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isMouseSwiping || !overlay.classList.contains('active')) return;
+                const deltaY = e.clientY - mouseStartY;
+                if (deltaY > 0 && deltaY < 300) {
+                    overlay.style.transform = `translateY(${deltaY}px)`;
+                }
+            });
+            
+            document.addEventListener('mouseup', (e) => {
+                if (!isMouseSwiping) return;
+                const deltaY = e.clientY - mouseStartY;
+                if (deltaY > 100) {
+                    closeSwipeCart();
+                }
+                overlay.style.transform = '';
+                isMouseSwiping = false;
+            });
+        }
+        
+        function openSwipeCart() { 
+            overlay.classList.add('active'); 
+            overlay.style.transform = ''; 
+            updateCartPreview(); 
+            setTimeout(initSwipe, 150); 
+        }
+        
+        function closeSwipeCart() { 
+            overlay.classList.remove('active'); 
+            overlay.style.transform = ''; 
+            currentTranslate = 0; 
+            if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)'; 
+            if (swipeProgress) swipeProgress.style.width = '0%'; 
+        }
         
         document.getElementById('floatingCartBtn')?.addEventListener('click', openSwipeCart);
-        document.getElementById('clearCartSwipeBtn')?.addEventListener('click', async () => { if (currentCart.length && confirm('Clear cart?')) { await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date() }, { onConflict: 'session_id' }); showToast('Cart cleared!'); await updateCartPreview(); closeSwipeCart(); } else if (!currentCart.length) showToast('Cart empty', true); });
+        document.getElementById('clearCartSwipeBtn')?.addEventListener('click', async () => { 
+            if (currentCart.length && confirm('Clear cart?')) { 
+                await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date() }, { onConflict: 'session_id' }); 
+                showToast('Cart cleared!'); 
+                await updateCartPreview(); 
+                closeSwipeCart(); 
+            } else if (!currentCart.length) showToast('Cart empty', true); 
+        });
+        
+        setupSwipeDownToClose();
         
         function shuffleArray(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
         
@@ -379,10 +478,11 @@
                 let html = '';
                 for (const p of stories) {
                     const thumb = getProductImage(p);
-                    const type = getMediaType(p.images?.[0]);
+                    const firstMedia = p.images?.[0];
+                    const type = getMediaType(firstMedia);
                     let badge = '';
                     if (type === 'video') badge = '<div class="story-badge"><i class="fas fa-play"></i></div>';
-                    else if (type === 'd360') badge = '<div class="story-badge"><i class="fas fa-cube"></i></div>';
+                    else if (type === 'd360' || type === 'd360-image') badge = '<div class="story-badge"><i class="fas fa-cube"></i></div>';
                     html += `<div class="story-toggle" onclick='openProductModal(${JSON.stringify(p)})'><div class="story-ring">${type === 'video' ? `<video class="story-thumbnail" src="${thumb}" muted loop playsinline autoplay onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"></video>` : `<img class="story-thumbnail" src="${thumb}" loading="lazy" onerror="this.src='https://via.placeholder.com/70'">`}${badge}</div></div>`;
                 }
                 cont.innerHTML = html;
@@ -416,7 +516,6 @@
                 if (!allProducts.length) { cont.innerHTML = '<div class="empty-state">✨ No products found</div>'; return; }
                 for (const p of allProducts) productsCache[p.id] = { gst: p.gst || 18 };
                 
-                // Show only first 10 products
                 const displayProducts = allProducts.slice(0, 10);
                 
                 let html = '';
@@ -446,7 +545,7 @@
             } catch(e) { cont.innerHTML = '<div class="empty-state">Error loading collection</div>'; }
         }
         
-        // Modal with scrollable gallery (shows all media: images, videos, D360)
+        // Modal with all media types (images, videos, D360 viewer, D360 images)
         window.openProductModal = function(product) {
             const media = (product.images || []).filter(m => m && m.trim());
             const displayMedia = media.length ? media : ['https://via.placeholder.com/400x400?text=Style'];
@@ -454,7 +553,6 @@
             
             const modalMedia = document.getElementById('modalMediaContainer');
             
-            // Build gallery HTML
             let galleryHtml = `<div class="modal-gallery-container"><div class="modal-gallery" id="modalGallery">`;
             for (let i = 0; i < displayMedia.length; i++) {
                 const m = displayMedia[i];
@@ -463,6 +561,8 @@
                     galleryHtml += `<div class="modal-gallery-item"><video src="${m}" class="modal-gallery-video" autoplay muted loop playsinline controls></video><div class="media-badge" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.7);color:var(--gold);padding:4px 10px;border-radius:20px;font-size:10px;">🎬 Video</div></div>`;
                 } else if (type === 'd360') {
                     galleryHtml += `<div class="modal-gallery-item"><div class="modal-gallery-d360"><iframe src="${m}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe><div class="media-badge" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.7);color:var(--gold);padding:4px 10px;border-radius:20px;font-size:10px;">🔄 360°</div></div></div>`;
+                } else if (type === 'd360-image') {
+                    galleryHtml += `<div class="modal-gallery-item"><img class="modal-gallery-image" src="${m}" alt="${product.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400'"><div class="media-badge" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.7);color:var(--gold);padding:4px 10px;border-radius:20px;font-size:10px;">📷 Image</div></div>`;
                 } else {
                     galleryHtml += `<div class="modal-gallery-item"><img class="modal-gallery-image" src="${m}" alt="${product.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400'"></div>`;
                 }
@@ -478,7 +578,6 @@
             
             modalMedia.innerHTML = galleryHtml;
             
-            // Add dots for gallery
             if (displayMedia.length > 1) {
                 setTimeout(() => {
                     const galleryEl = document.getElementById('modalGallery');
