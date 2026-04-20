@@ -247,7 +247,7 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .empty-state { text-align: center; padding: 60px; color: var(--gray); }
         
-        /* Desktop: Show sidebar, hide floating filter */
+        @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (min-width: 1024px) {
             .floating-filter { display: none; }
             .shop-layout { display: flex; gap: 30px; align-items: flex-start; }
@@ -255,19 +255,10 @@
             .products-container { flex: 1; padding: 0; }
             .products-grid { grid-template-columns: repeat(2, 1fr); }
         }
-        
-        /* Mobile: Hide sidebar, show floating filter */
         @media (max-width: 1023px) {
             .filters-section { display: none; }
-            .products-grid { grid-template-columns: 1fr; }
         }
-        
-        @media (min-width: 768px) and (max-width: 1023px) {
-            .products-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (min-width: 1280px) {
-            .products-grid { grid-template-columns: repeat(3, 1fr); }
-        }
+        @media (min-width: 1280px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
     </style>
 </head>
 <body>
@@ -278,22 +269,18 @@
         <div><span class="gemini-text">Style Of Life</span><span class="gemini-sub">SHOP</span></div>
     </div>
     
-    <!-- Floating Filter Button (Mobile Only) -->
     <div class="floating-filter" id="floatingFilterBtn">
         <i class="fas fa-sliders-h"></i>
         <span class="filter-badge" id="filterBadge" style="display: none;">0</span>
     </div>
     
-    <!-- Filter Modal/Drawer (Mobile) -->
     <div id="filterModal" class="filter-modal">
         <div class="filter-drawer">
             <div class="filter-drawer-header">
                 <h3><i class="fas fa-sliders-h"></i> Filter Products</h3>
                 <button class="close-filter" onclick="closeFilterModal()">&times;</button>
             </div>
-            <div class="filter-drawer-content" id="mobileFilterContent">
-                <!-- Filter content will be cloned here -->
-            </div>
+            <div class="filter-drawer-content" id="mobileFilterContent"></div>
             <div class="filter-drawer-footer">
                 <button class="btn-filter" onclick="applyFilters(); closeFilterModal();">Apply Filters</button>
                 <button class="btn-reset" onclick="resetFilters(); closeFilterModal();">Reset All</button>
@@ -317,12 +304,8 @@
     </div>
     
     <div class="shop-layout">
-        <!-- Desktop Filters Sidebar -->
-        <div class="filters-section" id="desktopFilters">
-            <!-- Filter content will be loaded here -->
-        </div>
+        <div class="filters-section" id="desktopFilters"></div>
         
-        <!-- Products Section -->
         <div class="products-container">
             <div class="products-header">
                 <div class="products-count" id="productsCount">Loading products...</div>
@@ -505,7 +488,6 @@
             const desktopFilters = document.getElementById('desktopFilters');
             if (desktopFilters) {
                 mobileContent.innerHTML = desktopFilters.innerHTML;
-                // Re-attach event listeners after cloning
                 attachFilterEvents();
             }
             modal.classList.add('active');
@@ -519,31 +501,20 @@
         };
         
         function attachFilterEvents() {
-            // Re-attach toggle events
             document.querySelectorAll('.filter-header').forEach(header => {
-                header.removeEventListener('click', header.clickHandler);
-                header.clickHandler = () => {
-                    const contentId = header.getAttribute('data-filter-id');
-                    if (contentId) toggleFilter(contentId);
-                };
-                header.addEventListener('click', header.clickHandler);
+                const contentId = header.getAttribute('data-filter-id');
+                if (contentId) {
+                    header.onclick = () => toggleFilter(contentId);
+                }
             });
-            
-            // Re-attach category events
             document.querySelectorAll('.category-option').forEach(el => {
                 const cat = el.getAttribute('data-cat');
-                el.removeEventListener('click', el.clickHandler);
-                el.clickHandler = () => toggleCategory(cat);
-                el.addEventListener('click', el.clickHandler);
+                el.onclick = () => toggleCategory(cat);
             });
-            
-            // Re-attach filter option events
             document.querySelectorAll('[data-filter]').forEach(el => {
                 const type = el.getAttribute('data-filter');
                 const value = el.getAttribute('data-value');
-                el.removeEventListener('click', el.clickHandler);
-                el.clickHandler = () => selectFilter(type, value);
-                el.addEventListener('click', el.clickHandler);
+                el.onclick = () => selectFilter(type, value);
             });
         }
         
@@ -612,19 +583,38 @@
         
         function filterProducts(products) {
             let filtered = [...products];
+            
+            // Filter by categories
             if (selectedFilters.categories.length > 0) {
                 filtered = filtered.filter(p => selectedFilters.categories.includes(p.category));
             }
-            if (selectedFilters.carat) filtered = filtered.filter(p => p.diamond_details?.carat == selectedFilters.carat);
-            if (selectedFilters.color) filtered = filtered.filter(p => p.diamond_details?.color === selectedFilters.color);
-            if (selectedFilters.clarity) filtered = filtered.filter(p => p.diamond_details?.clarity === selectedFilters.clarity);
-            if (selectedFilters.cut) filtered = filtered.filter(p => p.diamond_details?.cut === selectedFilters.cut);
-            if (selectedFilters.polish) filtered = filtered.filter(p => p.diamond_details?.polish === selectedFilters.polish);
-            if (selectedFilters.symmetry) filtered = filtered.filter(p => p.diamond_details?.symmetry === selectedFilters.symmetry);
+            
+            // Filter by diamond specs - only if product has diamond_details
+            if (selectedFilters.carat) {
+                filtered = filtered.filter(p => p.diamond_details && p.diamond_details.carat == selectedFilters.carat);
+            }
+            if (selectedFilters.color) {
+                filtered = filtered.filter(p => p.diamond_details && p.diamond_details.color === selectedFilters.color);
+            }
+            if (selectedFilters.clarity) {
+                filtered = filtered.filter(p => p.diamond_details && p.diamond_details.clarity === selectedFilters.clarity);
+            }
+            if (selectedFilters.cut) {
+                filtered = filtered.filter(p => p.diamond_details && p.diamond_details.cut === selectedFilters.cut);
+            }
+            if (selectedFilters.polish) {
+                filtered = filtered.filter(p => p.diamond_details && p.diamond_details.polish === selectedFilters.polish);
+            }
+            if (selectedFilters.symmetry) {
+                filtered = filtered.filter(p => p.diamond_details && p.diamond_details.symmetry === selectedFilters.symmetry);
+            }
+            
+            // Filter by price
             const minPrice = parseFloat(document.getElementById('minPrice')?.value);
             const maxPrice = parseFloat(document.getElementById('maxPrice')?.value);
             if (minPrice) filtered = filtered.filter(p => p.price >= minPrice);
             if (maxPrice) filtered = filtered.filter(p => p.price <= maxPrice);
+            
             return filtered;
         }
         
@@ -641,17 +631,21 @@
             const container = document.getElementById('activeFilters');
             if (!container) return;
             const filters = [];
-            if (selectedFilters.categories.length > 0) selectedFilters.categories.forEach(cat => filters.push(`Category: ${cat}`));
+            if (selectedFilters.categories.length > 0) {
+                selectedFilters.categories.forEach(cat => filters.push(`Category: ${cat}`));
+            }
             if (selectedFilters.carat) filters.push(`Carat: ${selectedFilters.carat}ct`);
             if (selectedFilters.color) filters.push(`Color: ${selectedFilters.color}`);
             if (selectedFilters.clarity) filters.push(`Clarity: ${selectedFilters.clarity}`);
             if (selectedFilters.cut) filters.push(`Cut: ${selectedFilters.cut}`);
             if (selectedFilters.polish) filters.push(`Polish: ${selectedFilters.polish}`);
             if (selectedFilters.symmetry) filters.push(`Symmetry: ${selectedFilters.symmetry}`);
+            
             const minPrice = document.getElementById('minPrice')?.value;
             const maxPrice = document.getElementById('maxPrice')?.value;
             if (minPrice) filters.push(`Min: ₹${parseInt(minPrice).toLocaleString()}`);
             if (maxPrice) filters.push(`Max: ₹${parseInt(maxPrice).toLocaleString()}`);
+            
             if (filters.length === 0) {
                 container.innerHTML = '<span style="color:var(--gray); font-size:12px;">No active filters</span>';
             } else {
@@ -724,6 +718,7 @@
         }
         
         function buildFilterHTML() {
+            // Get unique carat values from products with diamond_details
             const caratValues = [...new Set(allProducts.filter(p => p.diamond_details?.carat).map(p => p.diamond_details.carat))].sort((a,b) => a-b);
             const colorValues = ['D','E','F','G','H','I','J'];
             const clarityValues = ['FL','IF','VVS1','VVS2','VS1','VS2','SI1','SI2','I1'];
@@ -770,10 +765,13 @@
                 const { data, error } = await supabase.from('products').select('*').order('id');
                 if (error) throw error;
                 allProducts = data || [];
+                
+                // Extract unique categories from products
                 const categoriesSet = new Set();
                 allProducts.forEach(p => { if (p.category) categoriesSet.add(p.category); });
                 availableCategories = Array.from(categoriesSet);
                 
+                // Build filter HTML
                 const filterHTML = buildFilterHTML();
                 const desktopFilters = document.getElementById('desktopFilters');
                 if (desktopFilters) desktopFilters.innerHTML = filterHTML;
