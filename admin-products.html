@@ -6,10 +6,11 @@
     <title>Product Management - Style Of Life Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --primary: #d4af37; --primary-dark: #b8962e; --dark: #1a1a1a; --darker: #0a0a0a; --light: #ffffff; --gray-100: #f8f9fa; --gray-200: #e9ecef; --gray-600: #6c757d; --danger: #dc3545; --success: #28a745; --info: #17a2b8; }
+        :root { --primary: #d4af37; --primary-dark: #b8962e; --dark: #1a1a1a; --darker: #0a0a0a; --light: #ffffff; --gray-100: #f8f9fa; --gray-200: #e9ecef; --gray-600: #6c757d; --danger: #dc3545; --success: #28a745; --info: #17a2b8; --warning: #ffc107; }
         body { font-family: 'Inter', sans-serif; background: var(--gray-100); }
         header { background: var(--darker); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .logo { font-size: 24px; font-weight: 600; color: var(--primary); }
@@ -27,10 +28,13 @@
         .live-badge { background: var(--success); color: white; padding: 6px 14px; border-radius: 30px; font-size: 12px; display: inline-flex; align-items: center; gap: 8px; }
         .admin-badge { background: var(--primary); color: var(--darker); padding: 6px 14px; border-radius: 30px; font-size: 12px; display: inline-flex; align-items: center; gap: 8px; }
         
-        .toolbar { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .toolbar { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; }
+        .toolbar-left, .toolbar-right { display: flex; gap: 15px; flex-wrap: wrap; }
         .btn { background: var(--primary); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
         .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
         .btn-secondary { background: var(--gray-600); }
+        .btn-success { background: var(--success); }
+        .btn-warning { background: var(--warning); color: var(--dark); }
         .btn-danger { background: var(--danger); }
         
         .form-card { background: white; border-radius: 16px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--gray-200); box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: none; }
@@ -39,6 +43,16 @@
         label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--gray-600); }
         input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; }
         input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
+        
+        .bulk-upload-section { background: var(--gray-100); border-radius: 12px; padding: 20px; margin-bottom: 20px; display: none; }
+        .bulk-upload-area { border: 2px dashed var(--gray-300); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .bulk-upload-area:hover { border-color: var(--primary); background: rgba(212,175,55,0.05); }
+        .bulk-upload-area.drag-over { border-color: var(--success); background: rgba(40,167,69,0.1); }
+        .bulk-progress { margin-top: 15px; display: none; }
+        .bulk-progress-bar { height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; }
+        .bulk-progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
+        .error-log { max-height: 200px; overflow-y: auto; font-size: 12px; margin-top: 10px; }
+        .error-item { padding: 5px; border-bottom: 1px solid #eee; color: var(--danger); }
         
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; margin-top: 30px; }
         .product-card { background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; }
@@ -78,7 +92,7 @@
         
         footer { background: var(--darker); color: white; text-align: center; padding: 30px; margin-top: 60px; }
         
-        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .status-stats { gap: 15px; } header { flex-direction: column; text-align: center; } .toolbar { justify-content: center; } }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .status-stats { gap: 15px; } header { flex-direction: column; text-align: center; } .toolbar { flex-direction: column; } .toolbar-left, .toolbar-right { justify-content: center; } }
     </style>
 </head>
 <body>
@@ -110,8 +124,30 @@
         </div>
         
         <div class="toolbar">
-            <button class="btn" onclick="toggleForm()">➕ Add New Product</button>
-            <button class="btn btn-secondary" onclick="loadProducts()">🔄 Refresh</button>
+            <div class="toolbar-left">
+                <button class="btn" onclick="toggleForm()">➕ Add New Product</button>
+                <button class="btn btn-secondary" onclick="loadProducts()">🔄 Refresh</button>
+            </div>
+            <div class="toolbar-right">
+                <button class="btn btn-success" onclick="downloadExcel()">📥 Download Excel</button>
+                <button class="btn btn-warning" onclick="toggleBulkUpload()">📂 Upload Excel/CSV</button>
+            </div>
+        </div>
+        
+        <!-- Bulk Upload Section -->
+        <div class="bulk-upload-section" id="bulkUploadSection">
+            <h3 style="margin-bottom: 15px; color: var(--primary);">📁 Bulk Upload Products</h3>
+            <div class="bulk-upload-area" id="bulkUploadArea" onclick="document.getElementById('bulkFileInput').click()">
+                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--primary);"></i>
+                <p style="margin-top: 10px;">Click or drag & drop Excel / CSV file here</p>
+                <p style="font-size: 12px; color: var(--gray-600);">Supported: .xlsx, .xls, .csv</p>
+            </div>
+            <div class="bulk-progress" id="bulkProgress">
+                <div class="bulk-progress-bar"><div class="bulk-progress-fill" id="bulkProgressFill"></div></div>
+                <p style="font-size: 12px; margin-top: 8px;" id="bulkProgressText">Processing...</p>
+            </div>
+            <div id="bulkResult"></div>
+            <input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display: none;" onchange="handleBulkUpload(this)">
         </div>
         
         <!-- Add/Edit Product Form -->
@@ -196,7 +232,6 @@
             const { data: { session } } = await supabase.auth.getSession();
             
             if (!session) {
-                // Check if we have a session storage flag (for backward compatibility)
                 if (!sessionStorage.getItem('adminLoggedIn')) {
                     window.location.href = 'login.html';
                     return false;
@@ -212,6 +247,7 @@
         }
         
         let pendingAction = null;
+        let allProductsData = [];
         
         // Helper Functions
         function showToast(message, isError = false) {
@@ -266,7 +302,6 @@
             const description = document.getElementById('description').value.trim();
             const imageUrl = document.getElementById('imageUrl').value.trim();
             
-            // Validation
             if (!sku || !name || !category || isNaN(price) || isNaN(stock)) {
                 showToast('Please fill all required fields (SKU, Name, Category, Price, Stock)', true);
                 return;
@@ -277,33 +312,27 @@
                 return;
             }
             
-            // Prepare images array
             let images = imageUrl ? [imageUrl] : [];
-            
             const productData = { sku, name, category, price, gst, stock, description, images };
             
             try {
                 let result;
                 
                 if (productId) {
-                    // Update existing product
                     result = await supabase.from('products').update(productData).eq('id', parseInt(productId));
                     if (result.error) throw result.error;
                     showToast(`✅ Product "${name}" updated in Supabase!`);
                 } else {
-                    // Check if SKU already exists
                     const { data: existing } = await supabase.from('products').select('id').eq('sku', sku).maybeSingle();
                     if (existing) {
                         showToast(`SKU "${sku}" already exists!`, true);
                         return;
                     }
-                    // Insert new product
                     result = await supabase.from('products').insert([productData]);
                     if (result.error) throw result.error;
                     showToast(`✅ Product "${name}" added to Supabase!`);
                 }
                 
-                // Reset and reload
                 toggleForm();
                 loadProducts();
                 updateStatusBar();
@@ -364,6 +393,7 @@
                 
                 document.getElementById('formTitle').textContent = 'Edit Product';
                 document.getElementById('productForm').style.display = 'block';
+                document.getElementById('bulkUploadSection').style.display = 'none';
                 document.getElementById('productForm').scrollIntoView({ behavior: 'smooth' });
                 
             } catch (error) {
@@ -381,6 +411,7 @@
                 
                 if (error) throw error;
                 
+                allProductsData = data || [];
                 await updateStatusBar();
                 
                 if (!data || data.length === 0) {
@@ -427,6 +458,206 @@
             }
         }
         
+        // ========== EXCEL DOWNLOAD ==========
+        window.downloadExcel = function() {
+            if (!allProductsData || allProductsData.length === 0) {
+                showToast('No products to export', true);
+                return;
+            }
+            
+            // Prepare data for Excel
+            const exportData = allProductsData.map(p => ({
+                'SKU': p.sku,
+                'Product Name': p.name,
+                'Category': p.category,
+                'Price (₹)': p.price,
+                'GST (%)': p.gst || 18,
+                'Stock': p.stock,
+                'Description': p.description || '',
+                'Image URL': (p.images && p.images[0]) ? p.images[0] : ''
+            }));
+            
+            // Create worksheet
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Products');
+            
+            // Auto-size columns
+            const colWidths = [
+                {wch:15}, {wch:30}, {wch:15}, {wch:12}, {wch:10}, {wch:10}, {wch:40}, {wch:50}
+            ];
+            ws['!cols'] = colWidths;
+            
+            // Download file
+            XLSX.writeFile(wb, `style_of_life_products_${new Date().toISOString().split('T')[0]}.xlsx`);
+            showToast('✅ Products exported successfully!');
+        };
+        
+        // ========== EXCEL UPLOAD ==========
+        window.toggleBulkUpload = function() {
+            const bulkSection = document.getElementById('bulkUploadSection');
+            const productForm = document.getElementById('productForm');
+            
+            if (bulkSection.style.display === 'none' || bulkSection.style.display === '') {
+                bulkSection.style.display = 'block';
+                productForm.style.display = 'none';
+            } else {
+                bulkSection.style.display = 'none';
+            }
+        };
+        
+        window.handleBulkUpload = async function(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const progressDiv = document.getElementById('bulkProgress');
+            const progressFill = document.getElementById('bulkProgressFill');
+            const progressText = document.getElementById('bulkProgressText');
+            const resultDiv = document.getElementById('bulkResult');
+            
+            progressDiv.style.display = 'block';
+            progressFill.style.width = '10%';
+            progressText.textContent = 'Reading file...';
+            resultDiv.innerHTML = '';
+            
+            const errors = [];
+            let successCount = 0;
+            let errorCount = 0;
+            let skipCount = 0;
+            
+            try {
+                const data = await file.arrayBuffer();
+                const workbook = XLSX.read(data);
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                
+                if (!jsonData || jsonData.length === 0) {
+                    throw new Error('No data found in file');
+                }
+                
+                const totalRows = jsonData.length;
+                
+                for (let i = 0; i < jsonData.length; i++) {
+                    const row = jsonData[i];
+                    const percent = 10 + ((i + 1) / totalRows) * 90;
+                    progressFill.style.width = `${percent}%`;
+                    progressText.textContent = `Processing ${i + 1} of ${totalRows}... (${successCount} added, ${errorCount} failed, ${skipCount} skipped)`;
+                    
+                    // Get values from Excel columns (case insensitive)
+                    const sku = row['SKU'] || row['sku'] || '';
+                    const name = row['Product Name'] || row['product name'] || row['name'] || '';
+                    const category = row['Category'] || row['category'] || '';
+                    const price = parseFloat(row['Price (₹)'] || row['Price'] || row['price'] || 0);
+                    const gst = parseFloat(row['GST (%)'] || row['GST'] || row['gst'] || 18);
+                    const stock = parseInt(row['Stock'] || row['stock'] || 0);
+                    const description = row['Description'] || row['description'] || '';
+                    const imageUrl = row['Image URL'] || row['image url'] || row['images'] || '';
+                    
+                    if (!sku || !name || !category || isNaN(price) || price <= 0) {
+                        errors.push(`Row ${i + 1}: Missing required fields (SKU, Name, Category, Price)`);
+                        errorCount++;
+                        continue;
+                    }
+                    
+                    // Check if SKU already exists
+                    const { data: existing } = await supabase.from('products').select('id').eq('sku', sku).maybeSingle();
+                    if (existing) {
+                        errors.push(`Row ${i + 1}: SKU "${sku}" already exists - skipped`);
+                        skipCount++;
+                        continue;
+                    }
+                    
+                    let images = imageUrl ? [imageUrl] : [];
+                    
+                    const { error } = await supabase.from('products').insert([{
+                        sku, name, category, price, gst, stock, description, images
+                    }]);
+                    
+                    if (error) {
+                        errors.push(`Row ${i + 1}: ${error.message}`);
+                        errorCount++;
+                    } else {
+                        successCount++;
+                    }
+                    
+                    // Small delay to avoid rate limiting
+                    await new Promise(r => setTimeout(r, 50));
+                }
+                
+                progressFill.style.width = '100%';
+                progressText.textContent = `✅ Complete! ${successCount} added, ${errorCount} failed, ${skipCount} skipped`;
+                
+                let errorHtml = '';
+                if (errors.length > 0) {
+                    errorHtml = `<div class="error-log"><strong>⚠️ Errors (${errors.length}):</strong>`;
+                    errors.slice(0, 15).forEach(err => {
+                        errorHtml += `<div class="error-item">${escapeHtml(err)}</div>`;
+                    });
+                    if (errors.length > 15) {
+                        errorHtml += `<div class="error-item">... and ${errors.length - 15} more errors</div>`;
+                    }
+                    errorHtml += `</div>`;
+                }
+                
+                resultDiv.innerHTML = `
+                    <div style="background: ${successCount > 0 ? '#d4edda' : '#f8d7da'}; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                        <strong>📊 Import Summary</strong><br>
+                        ✅ Successfully added: ${successCount}<br>
+                        ❌ Failed: ${errorCount}<br>
+                        ⏭️ Skipped (duplicate SKU): ${skipCount}<br>
+                        📁 Total rows processed: ${totalRows}
+                        ${errorHtml}
+                    </div>
+                `;
+                
+                if (successCount > 0) {
+                    loadProducts();
+                    showToast(`✅ ${successCount} products added to Supabase!`);
+                }
+                
+                setTimeout(() => {
+                    progressDiv.style.display = 'none';
+                }, 5000);
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                progressText.textContent = 'Error processing file';
+                resultDiv.innerHTML = `<div style="background: #f8d7da; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                    <strong>❌ Error:</strong> ${escapeHtml(error.message)}<br><br>
+                    <strong>📋 Required Excel/CSV Format:</strong><br>
+                    First row must contain headers: <strong>SKU, Product Name, Category, Price (₹), GST (%), Stock, Description, Image URL</strong>
+                </div>`;
+            }
+            
+            input.value = '';
+        };
+        
+        // Drag and drop for bulk upload
+        const bulkArea = document.getElementById('bulkUploadArea');
+        if (bulkArea) {
+            bulkArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                bulkArea.classList.add('drag-over');
+            });
+            bulkArea.addEventListener('dragleave', () => {
+                bulkArea.classList.remove('drag-over');
+            });
+            bulkArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                bulkArea.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                if (file && (file.name.endsWith('.csv') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
+                    const input = document.getElementById('bulkFileInput');
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    input.files = dt.files;
+                    handleBulkUpload(input);
+                } else {
+                    showToast('Please upload an Excel or CSV file', true);
+                }
+            });
+        }
+        
         // UI Functions
         function showModal(message) {
             document.getElementById('modalMessage').innerHTML = message;
@@ -445,9 +676,11 @@
         
         window.toggleForm = function() {
             const form = document.getElementById('productForm');
+            const bulkSection = document.getElementById('bulkUploadSection');
             if (form.style.display === 'none' || form.style.display === '') {
                 resetForm();
                 form.style.display = 'block';
+                bulkSection.style.display = 'none';
             } else {
                 form.style.display = 'none';
             }
