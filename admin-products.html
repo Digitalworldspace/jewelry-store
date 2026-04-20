@@ -35,6 +35,7 @@
         .btn-secondary { background: var(--gray-600); }
         .btn-success { background: var(--success); }
         .btn-warning { background: var(--warning); color: var(--dark); }
+        .btn-danger { background: var(--danger); }
         
         .form-card { background: white; border-radius: 16px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--gray-200); box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: none; }
         .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
@@ -42,17 +43,6 @@
         label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--gray-600); }
         input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; }
         input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
-        
-        .bulk-upload-section { background: var(--gray-100); border-radius: 12px; padding: 20px; margin-bottom: 20px; display: none; }
-        .bulk-upload-area { border: 2px dashed var(--gray-300); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .bulk-upload-area:hover { border-color: var(--primary); background: rgba(212,175,55,0.05); }
-        .bulk-upload-area.drag-over { border-color: var(--success); background: rgba(40,167,69,0.1); }
-        .bulk-progress { margin-top: 15px; display: none; }
-        .bulk-progress-bar { height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; }
-        .bulk-progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
-        .error-log { max-height: 300px; overflow-y: auto; font-size: 12px; margin-top: 10px; background: white; border-radius: 8px; padding: 10px; }
-        .error-item { padding: 5px; border-bottom: 1px solid #eee; color: var(--danger); font-family: monospace; }
-        .success-item { color: var(--success); }
         
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; margin-top: 30px; }
         .product-card { background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; }
@@ -79,6 +69,10 @@
         .spinner { width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
+        .diamond-details-section { background: var(--gray-100); border-radius: 12px; padding: 20px; margin-top: 20px; }
+        .diamond-details-title { font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .diamond-details-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        
         .toast { position: fixed; bottom: 30px; right: 30px; background: var(--success); color: white; padding: 12px 24px; border-radius: 8px; z-index: 1000; animation: slideIn 0.3s ease; }
         .toast-error { background: var(--danger); }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -92,10 +86,7 @@
         
         footer { background: var(--darker); color: white; text-align: center; padding: 30px; margin-top: 60px; }
         
-        .format-hint { background: #e8f4fd; padding: 12px; border-radius: 8px; margin-top: 15px; font-size: 12px; }
-        .format-hint code { background: #fff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-        
-        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .status-stats { gap: 15px; } header { flex-direction: column; text-align: center; } .toolbar { flex-direction: column; } .toolbar-left, .toolbar-right { justify-content: center; } }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .status-stats { gap: 15px; } header { flex-direction: column; text-align: center; } .toolbar { flex-direction: column; } .toolbar-left, .toolbar-right { justify-content: center; } .diamond-details-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -113,7 +104,7 @@
         <h1>
             ✨ Product Management 
             <span class="live-badge"><i class="fas fa-database"></i> Supabase Connected</span>
-            <span class="admin-badge"><i class="fas fa-bolt"></i> Batch Processing (1000x faster)</span>
+            <span class="admin-badge"><i class="fas fa-user-shield"></i> Admin Access</span>
         </h1>
         
         <div class="status-bar" id="statusBar">
@@ -131,32 +122,15 @@
                 <button class="btn btn-secondary" onclick="loadProducts()">🔄 Refresh</button>
             </div>
             <div class="toolbar-right">
-                <button class="btn btn-success" onclick="downloadExcel()">📥 Download Excel</button>
-                <button class="btn btn-warning" onclick="toggleBulkUpload()">📂 Upload Excel/CSV (Batch)</button>
+                <button class="btn btn-success" onclick="downloadSampleCSV()">📥 Download Sample CSV</button>
+                <label class="btn btn-warning" style="cursor: pointer;">
+                    📂 Upload CSV/Excel
+                    <input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display: none;" onchange="handleBulkUpload(this)">
+                </label>
             </div>
         </div>
         
-        <div class="bulk-upload-section" id="bulkUploadSection">
-            <h3 style="margin-bottom: 15px; color: var(--primary);">📁 Batch Upload Products (Fast)</h3>
-            <div class="bulk-upload-area" id="bulkUploadArea" onclick="document.getElementById('bulkFileInput').click()">
-                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--primary);"></i>
-                <p style="margin-top: 10px;">Click or drag & drop Excel / CSV file here</p>
-                <p style="font-size: 12px; color: var(--gray-600);">Supported: .xlsx, .xls, .csv | Processes 500 rows per batch</p>
-            </div>
-            
-            <div class="format-hint">
-                <strong>⚡ Fast Batch Processing:</strong> Inserts products in batches of 500 rows for 1000x faster uploads<br>
-                <strong>📋 Excel Format:</strong> <code>SKU</code> | <code>Product Name</code> | <code>Category</code> | <code>Price (₹)</code> | <code>GST (%)</code> | <code>Stock</code> | <code>Description</code> | <code>Image URL 1</code> | <code>Image URL 2</code> | <code>Image URL 3</code> | <code>Video URL</code> | <code>D360 URL</code>
-            </div>
-            
-            <div class="bulk-progress" id="bulkProgress">
-                <div class="bulk-progress-bar"><div class="bulk-progress-fill" id="bulkProgressFill"></div></div>
-                <p style="font-size: 12px; margin-top: 8px;" id="bulkProgressText">Processing...</p>
-            </div>
-            <div id="bulkResult"></div>
-            <input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display: none;" onchange="handleBulkUpload(this)">
-        </div>
-        
+        <!-- Add/Edit Product Form with Diamond Details -->
         <div id="productForm" class="form-card">
             <h2 style="margin-bottom: 20px; color: var(--primary);" id="formTitle">Add New Product</h2>
             <input type="hidden" id="productId">
@@ -164,18 +138,74 @@
             <div class="form-grid">
                 <div class="form-group"><label>SKU *</label><input type="text" id="sku" placeholder="e.g., RING-001"></div>
                 <div class="form-group"><label>Product Name *</label><input type="text" id="name" placeholder="e.g., Diamond Ring"></div>
-                <div class="form-group"><label>Category *</label><input type="text" id="category" placeholder="e.g., Rings"></div>
+                <div class="form-group"><label>Category *</label><input type="text" id="category" placeholder="e.g., Rings, Necklaces"></div>
                 <div class="form-group"><label>Price (₹) *</label><input type="number" id="price" step="0.01" placeholder="0"></div>
                 <div class="form-group"><label>GST (%)</label><input type="number" id="gst" step="0.01" value="18"></div>
                 <div class="form-group"><label>Stock *</label><input type="number" id="stock" placeholder="0"></div>
             </div>
             
-            <div class="form-group"><label>Description</label><textarea id="description" rows="2"></textarea></div>
-            <div class="form-group"><label>Image URL 1</label><input type="url" id="imageUrl1" placeholder="https://..."></div>
-            <div class="form-group"><label>Image URL 2</label><input type="url" id="imageUrl2" placeholder="https://..."></div>
-            <div class="form-group"><label>Image URL 3</label><input type="url" id="imageUrl3" placeholder="https://..."></div>
-            <div class="form-group"><label>Video URL</label><input type="url" id="videoUrl" placeholder="https://...mp4"></div>
-            <div class="form-group"><label>D360° URL</label><input type="url" id="d360Url" placeholder="https://d360.tech/view.html?d=..."></div>
+            <div class="form-group"><label>Description</label><textarea id="description" rows="2" placeholder="Product description..."></textarea></div>
+            
+            <div class="form-group"><label>Image URL (Optional)</label><input type="url" id="imageUrl" placeholder="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400"></div>
+            
+            <!-- Diamond Details Section -->
+            <div class="diamond-details-section">
+                <div class="diamond-details-title"><i class="fas fa-gem"></i> Diamond Specifications (Optional)</div>
+                <div class="diamond-details-grid">
+                    <div class="form-group"><label>Carat Weight</label><input type="number" id="diamondCarat" step="0.01" placeholder="e.g., 1.00"></div>
+                    <div class="form-group"><label>Diamond Color</label>
+                        <select id="diamondColor">
+                            <option value="">Select Color</option>
+                            <option value="D">D (Colorless)</option>
+                            <option value="E">E (Colorless)</option>
+                            <option value="F">F (Colorless)</option>
+                            <option value="G">G (Near Colorless)</option>
+                            <option value="H">H (Near Colorless)</option>
+                            <option value="I">I (Near Colorless)</option>
+                            <option value="J">J (Near Colorless)</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Diamond Clarity</label>
+                        <select id="diamondClarity">
+                            <option value="">Select Clarity</option>
+                            <option value="FL">FL (Flawless)</option>
+                            <option value="IF">IF (Internally Flawless)</option>
+                            <option value="VVS1">VVS1</option>
+                            <option value="VVS2">VVS2</option>
+                            <option value="VS1">VS1</option>
+                            <option value="VS2">VS2</option>
+                            <option value="SI1">SI1</option>
+                            <option value="SI2">SI2</option>
+                            <option value="I1">I1</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Diamond Cut</label>
+                        <select id="diamondCut">
+                            <option value="">Select Cut</option>
+                            <option value="Excellent">Excellent</option>
+                            <option value="Very Good">Very Good</option>
+                            <option value="Good">Good</option>
+                            <option value="Fair">Fair</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Diamond Polish</label>
+                        <select id="diamondPolish">
+                            <option value="">Select Polish</option>
+                            <option value="Excellent">Excellent</option>
+                            <option value="Very Good">Very Good</option>
+                            <option value="Good">Good</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Diamond Symmetry</label>
+                        <select id="diamondSymmetry">
+                            <option value="">Select Symmetry</option>
+                            <option value="Excellent">Excellent</option>
+                            <option value="Very Good">Very Good</option>
+                            <option value="Good">Good</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
             
             <div style="display: flex; gap: 15px; margin-top: 25px;">
                 <button class="btn" onclick="saveProduct()">💾 Save to Supabase</button>
@@ -184,7 +214,7 @@
         </div>
         
         <div id="productsGrid" class="product-grid">
-            <div class="loading-spinner"><div class="spinner"></div><p>Loading products...</p></div>
+            <div class="loading-spinner"><div class="spinner"></div><p>Loading products from Supabase...</p></div>
         </div>
     </div>
 
@@ -207,19 +237,9 @@
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
+        if (!sessionStorage.getItem('adminLoggedIn')) window.location.href = 'login.html';
+        
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-        
-        async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session && !sessionStorage.getItem('adminLoggedIn')) {
-                window.location.href = 'login.html';
-                return false;
-            }
-            return true;
-        }
-        
-        await checkAuth();
-        
         let pendingAction = null;
         let allProductsData = [];
         
@@ -238,28 +258,50 @@
         
         function calculateGST(price, gstPercent) {
             const gstAmount = (price * gstPercent) / 100;
-            return { gstAmount, total: price + gstAmount };
+            const total = price + gstAmount;
+            return { gstAmount, total };
         }
         
-        function isVideoUrl(url) {
-            if (!url) return false;
-            return url.match(/\.(mp4|webm|mov|avi|wmv|flv)$/i) || 
-                   url.includes('youtube.com') || url.includes('youtu.be') || 
-                   url.includes('vimeo.com');
+        // Get diamond details from form
+        function getDiamondDetails() {
+            const carat = document.getElementById('diamondCarat').value;
+            const color = document.getElementById('diamondColor').value;
+            const clarity = document.getElementById('diamondClarity').value;
+            const cut = document.getElementById('diamondCut').value;
+            const polish = document.getElementById('diamondPolish').value;
+            const symmetry = document.getElementById('diamondSymmetry').value;
+            
+            if (!carat && !color && !clarity && !cut && !polish && !symmetry) {
+                return null;
+            }
+            
+            return {
+                carat: carat ? parseFloat(carat) : null,
+                color: color || null,
+                clarity: clarity || null,
+                cut: cut || null,
+                polish: polish || null,
+                symmetry: symmetry || null
+            };
         }
         
-        function isD360Url(url) {
-            return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d='));
-        }
-        
-        function getImagesFromForm() {
-            const images = [];
-            if (document.getElementById('imageUrl1').value.trim()) images.push(document.getElementById('imageUrl1').value.trim());
-            if (document.getElementById('imageUrl2').value.trim()) images.push(document.getElementById('imageUrl2').value.trim());
-            if (document.getElementById('imageUrl3').value.trim()) images.push(document.getElementById('imageUrl3').value.trim());
-            if (document.getElementById('videoUrl').value.trim()) images.push(document.getElementById('videoUrl').value.trim());
-            if (document.getElementById('d360Url').value.trim()) images.push(document.getElementById('d360Url').value.trim());
-            return images;
+        // Set diamond details in form
+        function setDiamondDetails(diamond) {
+            if (!diamond) {
+                document.getElementById('diamondCarat').value = '';
+                document.getElementById('diamondColor').value = '';
+                document.getElementById('diamondClarity').value = '';
+                document.getElementById('diamondCut').value = '';
+                document.getElementById('diamondPolish').value = '';
+                document.getElementById('diamondSymmetry').value = '';
+                return;
+            }
+            document.getElementById('diamondCarat').value = diamond.carat || '';
+            document.getElementById('diamondColor').value = diamond.color || '';
+            document.getElementById('diamondClarity').value = diamond.clarity || '';
+            document.getElementById('diamondCut').value = diamond.cut || '';
+            document.getElementById('diamondPolish').value = diamond.polish || '';
+            document.getElementById('diamondSymmetry').value = diamond.symmetry || '';
         }
         
         async function updateStatusBar() {
@@ -283,42 +325,64 @@
             const gst = parseFloat(document.getElementById('gst').value) || 18;
             const stock = parseInt(document.getElementById('stock').value);
             const description = document.getElementById('description').value.trim();
-            const images = getImagesFromForm();
+            const imageUrl = document.getElementById('imageUrl').value.trim();
+            const diamondDetails = getDiamondDetails();
             
             if (!sku || !name || !category || isNaN(price) || isNaN(stock)) {
                 showToast('Please fill all required fields', true);
                 return;
             }
             
-            const productData = { sku, name, category, price, gst, stock, description, images };
+            if (price <= 0) {
+                showToast('Price must be greater than 0', true);
+                return;
+            }
+            
+            let images = imageUrl ? [imageUrl] : [];
+            const productData = { 
+                sku, name, category, price, gst, stock, description, images,
+                diamond_details: diamondDetails
+            };
             
             try {
                 let result;
                 if (productId) {
                     result = await supabase.from('products').update(productData).eq('id', parseInt(productId));
                     if (result.error) throw result.error;
-                    showToast(`✅ Product "${name}" updated!`);
+                    showToast(`✅ Product "${name}" updated in Supabase!`);
                 } else {
                     const { data: existing } = await supabase.from('products').select('id').eq('sku', sku).maybeSingle();
-                    if (existing) { showToast(`SKU "${sku}" already exists!`, true); return; }
+                    if (existing) {
+                        showToast(`SKU "${sku}" already exists!`, true);
+                        return;
+                    }
                     result = await supabase.from('products').insert([productData]);
                     if (result.error) throw result.error;
-                    showToast(`✅ Product "${name}" added!`);
+                    showToast(`✅ Product "${name}" added to Supabase!`);
                 }
+                
                 toggleForm();
                 loadProducts();
                 updateStatusBar();
                 resetForm();
+                
             } catch (error) {
-                showToast('Error: ' + error.message, true);
+                console.error('Save error:', error);
+                showToast('Error saving product: ' + error.message, true);
             }
         };
         
         function resetForm() {
-            ['productId', 'sku', 'name', 'category', 'price', 'stock', 'description', 'imageUrl1', 'imageUrl2', 'imageUrl3', 'videoUrl', 'd360Url'].forEach(id => {
-                document.getElementById(id).value = '';
-            });
+            document.getElementById('productId').value = '';
+            document.getElementById('sku').value = '';
+            document.getElementById('name').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('price').value = '';
             document.getElementById('gst').value = '18';
+            document.getElementById('stock').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('imageUrl').value = '';
+            setDiamondDetails(null);
             document.getElementById('formTitle').textContent = 'Add New Product';
         }
         
@@ -328,13 +392,15 @@
                     const { data: product } = await supabase.from('products').select('name').eq('id', id).single();
                     const { error } = await supabase.from('products').delete().eq('id', id);
                     if (error) throw error;
-                    showToast(`✅ Product "${product?.name}" deleted!`);
+                    showToast(`✅ Product "${product?.name}" deleted from Supabase!`);
                     loadProducts();
                     updateStatusBar();
                     closeModal();
-                } catch (error) { showToast('Error: ' + error.message, true); }
+                } catch (error) {
+                    showToast('Error deleting product: ' + error.message, true);
+                }
             };
-            showModal('Delete this product?');
+            showModal('Delete this product? This action cannot be undone.');
         };
         
         window.editProduct = async function(id) {
@@ -350,95 +416,206 @@
                 document.getElementById('gst').value = data.gst || 18;
                 document.getElementById('stock').value = data.stock;
                 document.getElementById('description').value = data.description || '';
-                
-                const images = data.images || [];
-                document.getElementById('imageUrl1').value = images[0] || '';
-                document.getElementById('imageUrl2').value = images[1] || '';
-                document.getElementById('imageUrl3').value = images[2] || '';
-                document.getElementById('videoUrl').value = images.find(u => isVideoUrl(u)) || '';
-                document.getElementById('d360Url').value = images.find(u => isD360Url(u)) || '';
+                document.getElementById('imageUrl').value = (data.images && data.images[0]) ? data.images[0] : '';
+                setDiamondDetails(data.diamond_details || null);
                 
                 document.getElementById('formTitle').textContent = 'Edit Product';
                 document.getElementById('productForm').style.display = 'block';
-                document.getElementById('bulkUploadSection').style.display = 'none';
                 document.getElementById('productForm').scrollIntoView({ behavior: 'smooth' });
-            } catch (error) { showToast('Error loading product', true); }
+                
+            } catch (error) {
+                showToast('Error loading product details', true);
+            }
         };
         
         async function loadProducts() {
             const grid = document.getElementById('productsGrid');
-            grid.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>Loading products...</p></div>';
+            grid.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>Loading products from Supabase...</p></div>';
+            
             try {
                 const { data, error } = await supabase.from('products').select('*').order('id', { ascending: false });
                 if (error) throw error;
                 allProductsData = data || [];
                 await updateStatusBar();
+                
                 if (!data || data.length === 0) {
                     grid.innerHTML = '<div class="empty-state">✨ No products yet. Click "Add New Product" to get started.</div>';
                     return;
                 }
+                
                 let html = '';
                 for (const p of data) {
                     const firstImage = (p.images && p.images[0]) ? p.images[0] : 'https://via.placeholder.com/300x220?text=No+Image';
                     const stockClass = p.stock <= 0 ? 'out-of-stock' : (p.stock < 10 ? 'low-stock' : 'in-stock');
                     const stockText = p.stock <= 0 ? 'Out of Stock' : (p.stock < 10 ? `Low Stock (${p.stock})` : `In Stock (${p.stock})`);
                     const { total } = calculateGST(p.price || 0, p.gst || 18);
-                    html += `<div class="product-card"><div class="product-image-container"><img class="product-image" src="${firstImage}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/300x220'"></div><div class="product-info"><div class="product-name">${escapeHtml(p.name)}<span class="gst-badge">GST ${p.gst || 18}%</span></div><div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div><div class="product-price">₹${total.toLocaleString()} <small>Incl. GST</small></div><div class="product-stock ${stockClass}"><i class="fas ${p.stock <= 0 ? 'fa-times-circle' : (p.stock < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> ${stockText}</div><div class="card-actions"><button class="edit-btn" onclick="editProduct(${p.id})"><i class="fas fa-edit"></i> Edit</button><button class="delete-btn" onclick="deleteProduct(${p.id})"><i class="fas fa-trash-alt"></i> Delete</button></div></div></div>`;
+                    const diamond = p.diamond_details || {};
+                    const hasDiamond = Object.keys(diamond).length > 0;
+                    
+                    let diamondHtml = '';
+                    if (hasDiamond) {
+                        diamondHtml = `<div style="background: var(--gray-100); border-radius: 8px; padding: 8px; margin: 8px 0; display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between;">
+                            ${diamond.carat ? `<div style="text-align: center; flex: 1;"><div style="font-size: 9px; color: var(--gray);">Carat</div><div style="font-size: 12px; font-weight: 600; color: var(--primary);">${diamond.carat}ct</div></div>` : ''}
+                            ${diamond.color ? `<div style="text-align: center; flex: 1;"><div style="font-size: 9px; color: var(--gray);">Color</div><div style="font-size: 12px; font-weight: 600; color: var(--primary);">${diamond.color}</div></div>` : ''}
+                            ${diamond.clarity ? `<div style="text-align: center; flex: 1;"><div style="font-size: 9px; color: var(--gray);">Clarity</div><div style="font-size: 12px; font-weight: 600; color: var(--primary);">${diamond.clarity}</div></div>` : ''}
+                            ${diamond.cut ? `<div style="text-align: center; flex: 1;"><div style="font-size: 9px; color: var(--gray);">Cut</div><div style="font-size: 12px; font-weight: 600; color: var(--primary);">${diamond.cut}</div></div>` : ''}
+                        </div>`;
+                    }
+                    
+                    html += `<div class="product-card">
+                        <div class="product-image-container">
+                            <img class="product-image" src="${firstImage}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/300x220?text=No+Image'">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">
+                                ${escapeHtml(p.name)}
+                                <span class="gst-badge">GST ${p.gst || 18}%</span>
+                            </div>
+                            <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
+                            ${hasDiamond ? `<div style="margin-top: 5px;"><span style="background: rgba(212,175,55,0.15); color: var(--primary); padding: 2px 8px; border-radius: 20px; font-size: 10px;"><i class="fas fa-gem"></i> Diamond</span></div>` : ''}
+                            ${diamondHtml}
+                            <div class="product-price">₹${total.toLocaleString()} <small>Incl. GST</small></div>
+                            <div class="product-stock ${stockClass}">
+                                <i class="fas ${p.stock <= 0 ? 'fa-times-circle' : (p.stock < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i>
+                                ${stockText}
+                            </div>
+                            <div class="card-actions">
+                                <button class="edit-btn" onclick="editProduct(${p.id})"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="delete-btn" onclick="deleteProduct(${p.id})"><i class="fas fa-trash-alt"></i> Delete</button>
+                            </div>
+                        </div>
+                    </div>`;
                 }
                 grid.innerHTML = html;
-            } catch (error) { grid.innerHTML = '<div class="empty-state">Error loading products.</div>'; }
+            } catch (error) {
+                grid.innerHTML = '<div class="empty-state">Error loading products. Please check your Supabase connection.</div>';
+            }
         }
         
-        window.downloadExcel = function() {
-            if (!allProductsData || allProductsData.length === 0) {
-                showToast('No products to export', true);
-                return;
-            }
-            const exportData = allProductsData.map(p => {
-                const images = p.images || [];
-                return {
-                    'SKU': p.sku, 'Product Name': p.name, 'Category': p.category,
-                    'Price (₹)': p.price, 'GST (%)': p.gst || 18, 'Stock': p.stock,
-                    'Description': p.description || '',
-                    'Image URL 1': images[0] || '', 'Image URL 2': images[1] || '', 'Image URL 3': images[2] || '',
-                    'Video URL': images.find(u => isVideoUrl(u)) || '',
-                    'D360 URL': images.find(u => isD360Url(u)) || ''
-                };
-            });
-            const ws = XLSX.utils.json_to_sheet(exportData);
+        // Download Sample CSV with Diamond Details columns
+        window.downloadSampleCSV = function() {
+            const sampleData = [
+                {
+                    'SKU': 'RING-001',
+                    'Product Name': 'Diamond Solitaire Ring',
+                    'Category': 'Rings',
+                    'Price (₹)': 29999,
+                    'GST (%)': 18,
+                    'Stock': 50,
+                    'Description': 'Beautiful certified diamond engagement ring with exquisite craftsmanship.',
+                    'Image URL': 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400',
+                    'Carat': 1.00,
+                    'Diamond Color': 'D',
+                    'Diamond Clarity': 'VS1',
+                    'Diamond Cut': 'Excellent',
+                    'Diamond Polish': 'Excellent',
+                    'Diamond Symmetry': 'Excellent'
+                },
+                {
+                    'SKU': 'RING-002',
+                    'Product Name': 'Emerald Cut Diamond Ring',
+                    'Category': 'Rings',
+                    'Price (₹)': 54999,
+                    'GST (%)': 18,
+                    'Stock': 25,
+                    'Description': 'Stunning emerald cut diamond ring with halo setting.',
+                    'Image URL': 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=400',
+                    'Carat': 1.50,
+                    'Diamond Color': 'E',
+                    'Diamond Clarity': 'VVS2',
+                    'Diamond Cut': 'Excellent',
+                    'Diamond Polish': 'Excellent',
+                    'Diamond Symmetry': 'Excellent'
+                },
+                {
+                    'SKU': 'NECK-001',
+                    'Product Name': 'Gold Chain Necklace',
+                    'Category': 'Necklaces',
+                    'Price (₹)': 45999,
+                    'GST (%)': 18,
+                    'Stock': 30,
+                    'Description': 'Beautiful 22k gold chain necklace with intricate design.',
+                    'Image URL': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400',
+                    'Carat': '',
+                    'Diamond Color': '',
+                    'Diamond Clarity': '',
+                    'Diamond Cut': '',
+                    'Diamond Polish': '',
+                    'Diamond Symmetry': ''
+                },
+                {
+                    'SKU': 'EARR-001',
+                    'Product Name': 'Pearl Drop Earrings',
+                    'Category': 'Earrings',
+                    'Price (₹)': 8999,
+                    'GST (%)': 12,
+                    'Stock': 100,
+                    'Description': 'Elegant pearl drop earrings with sterling silver backing.',
+                    'Image URL': 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400',
+                    'Carat': '',
+                    'Diamond Color': '',
+                    'Diamond Clarity': '',
+                    'Diamond Cut': '',
+                    'Diamond Polish': '',
+                    'Diamond Symmetry': ''
+                },
+                {
+                    'SKU': 'BRAC-001',
+                    'Product Name': 'Tennis Bracelet',
+                    'Category': 'Bracelets',
+                    'Price (₹)': 19999,
+                    'GST (%)': 18,
+                    'Stock': 25,
+                    'Description': 'Classic tennis bracelet with cubic zirconia stones.',
+                    'Image URL': 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400',
+                    'Carat': 0.50,
+                    'Diamond Color': 'F',
+                    'Diamond Clarity': 'SI1',
+                    'Diamond Cut': 'Very Good',
+                    'Diamond Polish': 'Very Good',
+                    'Diamond Symmetry': 'Very Good'
+                },
+                {
+                    'SKU': 'D360-001',
+                    'Product Name': '360° Diamond Ring',
+                    'Category': 'Rings',
+                    'Price (₹)': 39999,
+                    'GST (%)': 18,
+                    'Stock': 10,
+                    'Description': 'Interactive 360° view of our stunning diamond ring.',
+                    'Image URL': 'https://d360.tech/view.html?d=315-MP-CP-2021',
+                    'Carat': 2.00,
+                    'Diamond Color': 'G',
+                    'Diamond Clarity': 'VS2',
+                    'Diamond Cut': 'Excellent',
+                    'Diamond Polish': 'Excellent',
+                    'Diamond Symmetry': 'Excellent'
+                }
+            ];
+            
+            // Create worksheet
+            const ws = XLSX.utils.json_to_sheet(sampleData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Products');
-            XLSX.writeFile(wb, `style_of_life_products_${new Date().toISOString().split('T')[0]}.xlsx`);
-            showToast('✅ Products exported!');
+            XLSX.utils.book_append_sheet(wb, ws, 'Sample Products');
+            
+            // Set column widths
+            ws['!cols'] = [
+                {wch:12}, {wch:25}, {wch:12}, {wch:12}, {wch:8}, {wch:8}, 
+                {wch:40}, {wch:50}, {wch:8}, {wch:14}, {wch:14}, {wch:12}, {wch:12}, {wch:14}
+            ];
+            
+            // Download file
+            XLSX.writeFile(wb, `style_of_life_sample_products.xlsx`);
+            showToast('✅ Sample CSV downloaded! Includes diamond specification columns.');
         };
         
-        window.toggleBulkUpload = function() {
-            const bulkSection = document.getElementById('bulkUploadSection');
-            const productForm = document.getElementById('productForm');
-            if (bulkSection.style.display === 'none' || bulkSection.style.display === '') {
-                bulkSection.style.display = 'block';
-                productForm.style.display = 'none';
-            } else {
-                bulkSection.style.display = 'none';
-            }
-        };
-        
-        // ========== BATCH PROCESSING - 1000x FASTER ==========
         window.handleBulkUpload = async function(input) {
             const file = input.files[0];
             if (!file) return;
             
-            const progressDiv = document.getElementById('bulkProgress');
-            const progressFill = document.getElementById('bulkProgressFill');
-            const progressText = document.getElementById('bulkProgressText');
-            const resultDiv = document.getElementById('bulkResult');
-            
-            progressDiv.style.display = 'block';
-            progressFill.style.width = '5%';
-            progressText.textContent = 'Reading file...';
-            resultDiv.innerHTML = '';
-            
-            const BATCH_SIZE = 500; // Insert 500 rows at once
+            showToast('Processing file...');
+            const errors = [];
+            let successCount = 0, errorCount = 0;
             
             try {
                 const data = await file.arrayBuffer();
@@ -447,19 +624,6 @@
                 const jsonData = XLSX.utils.sheet_to_json(firstSheet);
                 
                 if (!jsonData || jsonData.length === 0) throw new Error('No data found');
-                
-                const totalRows = jsonData.length;
-                progressFill.style.width = '10%';
-                progressText.textContent = `Processing ${totalRows} rows in batches of ${BATCH_SIZE}...`;
-                
-                // First, get all existing SKUs in one query
-                const { data: existingProducts } = await supabase.from('products').select('sku');
-                const existingSkus = new Set(existingProducts?.map(p => p.sku) || []);
-                
-                // Prepare all valid products
-                const validProducts = [];
-                const errors = [];
-                const duplicates = [];
                 
                 for (let i = 0; i < jsonData.length; i++) {
                     const row = jsonData[i];
@@ -470,85 +634,114 @@
                     const gst = parseFloat(row['GST (%)'] || row['GST'] || row['gst'] || 18);
                     const stock = parseInt(row['Stock'] || row['stock'] || 0);
                     const description = row['Description'] || row['description'] || '';
+                    const imageUrl = row['Image URL'] || row['image url'] || row['images'] || '';
                     
-                    const images = [];
-                    if (row['Image URL 1'] || row['image url 1']) images.push(row['Image URL 1'] || row['image url 1']);
-                    if (row['Image URL 2'] || row['image url 2']) images.push(row['Image URL 2'] || row['image url 2']);
-                    if (row['Image URL 3'] || row['image url 3']) images.push(row['Image URL 3'] || row['image url 3']);
-                    if (row['Video URL'] || row['video url'] || row['Video']) images.push(row['Video URL'] || row['video url'] || row['Video']);
-                    if (row['D360 URL'] || row['d360 url'] || row['D360']) images.push(row['D360 URL'] || row['d360 url'] || row['D360']);
+                    // Diamond details
+                    const carat = row['Carat'] || row['carat'] || null;
+                    const diamondColor = row['Diamond Color'] || row['diamond color'] || row['color'] || null;
+                    const diamondClarity = row['Diamond Clarity'] || row['diamond clarity'] || row['clarity'] || null;
+                    const diamondCut = row['Diamond Cut'] || row['diamond cut'] || row['cut'] || null;
+                    const diamondPolish = row['Diamond Polish'] || row['diamond polish'] || row['polish'] || null;
+                    const diamondSymmetry = row['Diamond Symmetry'] || row['diamond symmetry'] || row['symmetry'] || null;
+                    
+                    let diamondDetails = null;
+                    if (carat || diamondColor || diamondClarity || diamondCut || diamondPolish || diamondSymmetry) {
+                        diamondDetails = {};
+                        if (carat) diamondDetails.carat = parseFloat(carat);
+                        if (diamondColor) diamondDetails.color = diamondColor;
+                        if (diamondClarity) diamondDetails.clarity = diamondClarity;
+                        if (diamondCut) diamondDetails.cut = diamondCut;
+                        if (diamondPolish) diamondDetails.polish = diamondPolish;
+                        if (diamondSymmetry) diamondDetails.symmetry = diamondSymmetry;
+                    }
                     
                     if (!sku || !name || !category || isNaN(price) || price <= 0) {
-                        errors.push(`Row ${i + 1}: Missing required fields`);
+                        errors.push(`Row ${i + 1}: Missing required fields (SKU, Name, Category, Price)`);
+                        errorCount++;
                         continue;
                     }
                     
-                    if (existingSkus.has(sku)) {
-                        duplicates.push(`Row ${i + 1}: SKU "${sku}" already exists`);
+                    const { data: existing } = await supabase.from('products').select('id').eq('sku', sku).maybeSingle();
+                    if (existing) {
+                        errors.push(`Row ${i + 1}: SKU "${sku}" already exists`);
+                        errorCount++;
                         continue;
                     }
                     
-                    validProducts.push({ sku, name, category, price, gst, stock, description, images });
-                    existingSkus.add(sku); // Add to set to catch duplicates within same file
-                }
-                
-                // Insert in batches
-                let insertedCount = 0;
-                let batchErrors = [];
-                
-                for (let i = 0; i < validProducts.length; i += BATCH_SIZE) {
-                    const batch = validProducts.slice(i, i + BATCH_SIZE);
-                    const percent = 10 + ((i + batch.length) / totalRows) * 85;
-                    progressFill.style.width = `${percent}%`;
-                    progressText.textContent = `Inserting batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(validProducts.length / BATCH_SIZE)} (${batch.length} products)...`;
+                    let images = imageUrl ? [imageUrl] : [];
                     
-                    const { error } = await supabase.from('products').insert(batch);
+                    const { error } = await supabase.from('products').insert([{
+                        sku, name, category, price, gst, stock, description, images,
+                        diamond_details: diamondDetails
+                    }]);
+                    
                     if (error) {
-                        batchErrors.push(`Batch ${Math.floor(i / BATCH_SIZE) + 1}: ${error.message}`);
+                        errors.push(`Row ${i + 1}: ${error.message}`);
+                        errorCount++;
                     } else {
-                        insertedCount += batch.length;
+                        successCount++;
                     }
                     
-                    // Small delay between batches to avoid rate limiting
-                    await new Promise(r => setTimeout(r, 100));
+                    await new Promise(r => setTimeout(r, 50));
                 }
-                
-                progressFill.style.width = '100%';
-                progressText.textContent = `✅ Complete! Inserted ${insertedCount} products in ${Math.ceil(validProducts.length / BATCH_SIZE)} batches`;
                 
                 let errorHtml = '';
-                if (errors.length > 0 || duplicates.length > 0 || batchErrors.length > 0) {
-                    errorHtml = `<div class="error-log"><strong>⚠️ Issues:</strong>`;
-                    if (errors.length) errorHtml += `<div style="color:var(--danger);"><strong>❌ Invalid rows (${errors.length}):</strong>${errors.slice(0, 10).map(e => `<div>${escapeHtml(e)}</div>`).join('')}${errors.length > 10 ? `<div>... and ${errors.length - 10} more</div>` : ''}</div>`;
-                    if (duplicates.length) errorHtml += `<div style="color:#ff9800;"><strong>⏭️ Duplicates skipped (${duplicates.length}):</strong>${duplicates.slice(0, 10).map(e => `<div>${escapeHtml(e)}</div>`).join('')}${duplicates.length > 10 ? `<div>... and ${duplicates.length - 10} more</div>` : ''}</div>`;
-                    if (batchErrors.length) errorHtml += `<div style="color:var(--danger);"><strong>❌ Batch errors:</strong>${batchErrors.map(e => `<div>${escapeHtml(e)}</div>`).join('')}</div>`;
-                    errorHtml += `</div>`;
+                if (errors.length > 0) {
+                    errorHtml = `<div class="error-log"><strong>⚠️ Errors (${errors.length}):</strong>${errors.slice(0, 10).map(e => `<div class="error-item">${escapeHtml(e)}</div>`).join('')}${errors.length > 10 ? `<div>... and ${errors.length - 10} more</div>` : ''}</div>`;
                 }
                 
-                resultDiv.innerHTML = `<div style="background: ${insertedCount > 0 ? '#d4edda' : '#f8d7da'}; padding: 15px; border-radius: 8px; margin-top: 10px;">
-                    <strong>📊 Batch Import Summary</strong><br>
-                    ✅ Successfully inserted: ${insertedCount} products<br>
-                    ❌ Invalid rows: ${errors.length}<br>
-                    ⏭️ Duplicates skipped: ${duplicates.length}<br>
-                    📦 Total rows in file: ${totalRows}<br>
-                    ⚡ Processed in ${Math.ceil(validProducts.length / BATCH_SIZE)} batches (${BATCH_SIZE} per batch)
-                    ${errorHtml}
-                </div>`;
+                showToast(`✅ Upload complete! ${successCount} added, ${errorCount} failed`);
+                if (successCount > 0) loadProducts();
                 
-                if (insertedCount > 0) {
-                    loadProducts();
-                    showToast(`✅ ${insertedCount} products added to Supabase!`);
+                // Show detailed result
+                const resultDiv = document.getElementById('bulkResult');
+                if (resultDiv) {
+                    resultDiv.innerHTML = `<div style="background: ${successCount > 0 ? '#d4edda' : '#f8d7da'}; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                        <strong>📊 Import Summary</strong><br>
+                        ✅ Successfully added: ${successCount}<br>
+                        ❌ Failed: ${errorCount}<br>
+                        ${errorHtml}
+                    </div>`;
+                    setTimeout(() => { if (resultDiv) resultDiv.innerHTML = ''; }, 5000);
                 }
-                
-                setTimeout(() => { progressDiv.style.display = 'none'; }, 5000);
                 
             } catch (error) {
-                progressText.textContent = 'Error processing file';
-                resultDiv.innerHTML = `<div style="background: #f8d7da; padding: 15px; border-radius: 8px;"><strong>❌ Error:</strong> ${escapeHtml(error.message)}</div>`;
+                showToast('Error: ' + error.message, true);
             }
             input.value = '';
         };
         
+        function showModal(message) {
+            document.getElementById('modalMessage').innerHTML = message;
+            document.getElementById('confirmModal').classList.add('active');
+        }
+        
+        window.closeModal = function() {
+            document.getElementById('confirmModal').classList.remove('active');
+            pendingAction = null;
+        };
+        
+        window.confirmAction = function(confirmed) {
+            if (confirmed && pendingAction) pendingAction();
+            closeModal();
+        };
+        
+        window.toggleForm = function() {
+            const form = document.getElementById('productForm');
+            if (form.style.display === 'none' || form.style.display === '') {
+                resetForm();
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        };
+        
+        window.logout = function() {
+            sessionStorage.removeItem('adminLoggedIn');
+            window.location.href = 'login.html';
+        };
+        
+        // Drag and drop for bulk upload
         const bulkArea = document.getElementById('bulkUploadArea');
         if (bulkArea) {
             bulkArea.addEventListener('dragover', (e) => { e.preventDefault(); bulkArea.classList.add('drag-over'); });
@@ -568,39 +761,6 @@
                 }
             });
         }
-        
-        function showModal(message) {
-            document.getElementById('modalMessage').innerHTML = message;
-            document.getElementById('confirmModal').classList.add('active');
-        }
-        
-        window.closeModal = function() {
-            document.getElementById('confirmModal').classList.remove('active');
-            pendingAction = null;
-        };
-        
-        window.confirmAction = function(confirmed) {
-            if (confirmed && pendingAction) pendingAction();
-            closeModal();
-        };
-        
-        window.toggleForm = function() {
-            const form = document.getElementById('productForm');
-            const bulkSection = document.getElementById('bulkUploadSection');
-            if (form.style.display === 'none' || form.style.display === '') {
-                resetForm();
-                form.style.display = 'block';
-                bulkSection.style.display = 'none';
-            } else {
-                form.style.display = 'none';
-            }
-        };
-        
-        window.logout = async function() {
-            await supabase.auth.signOut();
-            sessionStorage.removeItem('adminLoggedIn');
-            window.location.href = 'login.html';
-        };
         
         loadProducts();
     </script>
