@@ -237,33 +237,40 @@
         
         function calculateGST(price, gstPercent) { const gst = (price * gstPercent) / 100; return { gstAmount: gst, total: price + gst }; }
         
-        function isD360Viewer(url) { return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); }
-        function isD360Image(url) { return url && url.includes('d360.tech/imaged/'); }
-        function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi|wmv|flv)$/i) || url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')); }
-        
-        function getMediaType(url) { 
-            if (isD360Viewer(url)) return 'd360';
-            if (isVideoUrl(url)) return 'video';
-            if (isD360Image(url)) return 'd360-image';
-            return 'image'; 
+        // Media type detection - IMPORTANT: D360 images (.jpg) should be treated as regular images on front page
+        function isD360Interactive(url) { 
+            return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); 
+        }
+        function isD360Image(url) { 
+            return url && url.includes('d360.tech/imaged/'); 
+        }
+        function isVideoUrl(url) { 
+            return url && (url.match(/\.(mp4|webm|mov|avi|wmv|flv)$/i) || url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')); 
         }
         
-        // Get the best image to show on front page (prefer regular images over D360 images)
+        // Get media type for modal display (only interactive D360 goes to iframe)
+        function getMediaTypeForModal(url) {
+            if (isD360Interactive(url)) return 'd360-interactive';
+            if (isVideoUrl(url)) return 'video';
+            return 'image'; // This includes D360 images and regular images
+        }
+        
+        // Get the best image to show on front page (always show an image, not video)
         function getProductImage(product) {
             const media = product.images || [];
-            // First try to find a regular image (not D360 and not video)
+            // First priority: Regular images (not D360, not video)
             for (let m of media) {
-                const type = getMediaType(m);
-                if (type === 'image') return m;
+                if (!isD360Interactive(m) && !isVideoUrl(m) && !isD360Image(m)) return m;
             }
-            // Then try D360 still image
+            // Second priority: D360 still images
             for (let m of media) {
                 if (isD360Image(m)) return m;
             }
-            // Then try video thumbnail
+            // Third priority: Video (will show poster frame)
             for (let m of media) {
-                if (type === 'video') return m;
+                if (isVideoUrl(m)) return m;
             }
+            // Last: placeholder
             return 'https://via.placeholder.com/400x400?text=Style';
         }
         
@@ -385,7 +392,6 @@
             overlay.addEventListener('touchstart', (e) => {
                 touchStartY = e.touches[0].clientY;
                 isSwipingDown = true;
-                overlay.classList.add('swiping');
             });
             
             overlay.addEventListener('touchmove', (e) => {
@@ -405,10 +411,9 @@
                 }
                 overlay.style.transform = '';
                 isSwipingDown = false;
-                setTimeout(() => overlay.classList.remove('swiping'), 300);
             });
             
-            // Mouse support for swipe down
+            // Mouse support
             let mouseStartY = 0;
             let isMouseSwiping = false;
             
@@ -479,11 +484,11 @@
                 for (const p of stories) {
                     const thumb = getProductImage(p);
                     const firstMedia = p.images?.[0];
-                    const type = getMediaType(firstMedia);
+                    const isInteractive = isD360Interactive(firstMedia);
                     let badge = '';
-                    if (type === 'video') badge = '<div class="story-badge"><i class="fas fa-play"></i></div>';
-                    else if (type === 'd360' || type === 'd360-image') badge = '<div class="story-badge"><i class="fas fa-cube"></i></div>';
-                    html += `<div class="story-toggle" onclick='openProductModal(${JSON.stringify(p)})'><div class="story-ring">${type === 'video' ? `<video class="story-thumbnail" src="${thumb}" muted loop playsinline autoplay onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"></video>` : `<img class="story-thumbnail" src="${thumb}" loading="lazy" onerror="this.src='https://via.placeholder.com/70'">`}${badge}</div></div>`;
+                    if (isInteractive) badge = '<div class="story-badge"><i class="fas fa-cube"></i></div>';
+                    else if (isVideoUrl(firstMedia)) badge = '<div class="story-badge"><i class="fas fa-play"></i></div>';
+                    html += `<div class="story-toggle" onclick='openProductModal(${JSON.stringify(p)})'><div class="story-ring">${isVideoUrl(firstMedia) ? `<video class="story-thumbnail" src="${thumb}" muted loop playsinline autoplay onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"></video>` : `<img class="story-thumbnail" src="${thumb}" loading="lazy" onerror="this.src='https://via.placeholder.com/70'">`}${badge}</div></div>`;
                 }
                 cont.innerHTML = html;
             } catch(e) { cont.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; }
@@ -545,7 +550,7 @@
             } catch(e) { cont.innerHTML = '<div class="empty-state">Error loading collection</div>'; }
         }
         
-        // Modal with all media types (images, videos, D360 viewer, D360 images)
+        // Modal with all media types (D360 interactive goes to iframe, D360 images as regular images)
         window.openProductModal = function(product) {
             const media = (product.images || []).filter(m => m && m.trim());
             const displayMedia = media.length ? media : ['https://via.placeholder.com/400x400?text=Style'];
@@ -556,14 +561,13 @@
             let galleryHtml = `<div class="modal-gallery-container"><div class="modal-gallery" id="modalGallery">`;
             for (let i = 0; i < displayMedia.length; i++) {
                 const m = displayMedia[i];
-                const type = getMediaType(m);
+                const type = getMediaTypeForModal(m);
                 if (type === 'video') {
                     galleryHtml += `<div class="modal-gallery-item"><video src="${m}" class="modal-gallery-video" autoplay muted loop playsinline controls></video><div class="media-badge" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.7);color:var(--gold);padding:4px 10px;border-radius:20px;font-size:10px;">🎬 Video</div></div>`;
-                } else if (type === 'd360') {
+                } else if (type === 'd360-interactive') {
                     galleryHtml += `<div class="modal-gallery-item"><div class="modal-gallery-d360"><iframe src="${m}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe><div class="media-badge" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.7);color:var(--gold);padding:4px 10px;border-radius:20px;font-size:10px;">🔄 360°</div></div></div>`;
-                } else if (type === 'd360-image') {
-                    galleryHtml += `<div class="modal-gallery-item"><img class="modal-gallery-image" src="${m}" alt="${product.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400'"><div class="media-badge" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.7);color:var(--gold);padding:4px 10px;border-radius:20px;font-size:10px;">📷 Image</div></div>`;
                 } else {
+                    // Regular images AND D360 images (still.jpg) both go here as images
                     galleryHtml += `<div class="modal-gallery-item"><img class="modal-gallery-image" src="${m}" alt="${product.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400'"></div>`;
                 }
             }
