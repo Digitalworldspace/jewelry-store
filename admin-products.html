@@ -36,7 +36,6 @@
         .btn-secondary { background: var(--gray-600); }
         .btn-success { background: var(--success); }
         .btn-warning { background: var(--warning); color: var(--dark); }
-        .btn-danger { background: var(--danger); }
         
         .form-card { background: white; border-radius: 16px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--gray-200); box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: none; }
         .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
@@ -56,15 +55,12 @@
         .error-log { max-height: 250px; overflow-y: auto; font-size: 12px; margin-top: 10px; background: white; border-radius: 8px; padding: 10px; }
         .error-item { padding: 5px; border-bottom: 1px solid #eee; color: var(--danger); font-family: monospace; }
         
-        .diamond-details-section { background: var(--gray-100); border-radius: 12px; padding: 20px; margin-top: 20px; }
-        .diamond-details-title { font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        .diamond-details-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; margin-top: 30px; }
         .product-card { background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; }
         .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .product-image-container { height: 220px; overflow: hidden; background: #f5f5f5; }
+        .product-image-container { height: 220px; overflow: hidden; background: #f5f5f5; position: relative; }
         .product-image { width: 100%; height: 100%; object-fit: cover; }
+        .media-badge { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 20px; font-size: 10px; z-index: 5; }
         .product-info { padding: 20px; }
         .product-name { font-size: 18px; font-weight: 600; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; }
         .gst-badge { background: rgba(212,175,55,0.15); color: var(--primary); padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
@@ -85,7 +81,7 @@
         .spinner { width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        .toast { position: fixed; bottom: 30px; right: 30px; background: var(--success); color: white; padding: 12px 24px; border-radius: 8px; z-index: 1000; animation: slideIn 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: var(--success); color: white; padding: 12px 24px; border-radius: 8px; z-index: 1000; animation: slideIn 0.3s ease; }
         .toast-error { background: var(--danger); }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
@@ -101,7 +97,12 @@
         .format-hint { background: #e8f4fd; padding: 12px; border-radius: 8px; margin-top: 15px; font-size: 12px; }
         .format-hint code { background: #fff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
         
-        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .status-stats { gap: 15px; } header { flex-direction: column; text-align: center; } .toolbar { flex-direction: column; } .toolbar-left, .toolbar-right { justify-content: center; } .diamond-details-grid { grid-template-columns: 1fr; } }
+        .media-preview { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+        .media-item { position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; background: #f5f5f5; border: 1px solid var(--gray-200); }
+        .media-item img, .media-item video { width: 100%; height: 100%; object-fit: cover; }
+        .remove-media { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: white; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; }
+        
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .status-stats { gap: 15px; } header { flex-direction: column; text-align: center; } .toolbar { flex-direction: column; } .toolbar-left, .toolbar-right { justify-content: center; } }
     </style>
 </head>
 <body>
@@ -155,8 +156,8 @@
             </div>
             
             <div class="format-hint">
-                <strong>⚡ Batch Processing:</strong> Inserts products in batches of 500 rows for fast uploads<br>
-                <strong>📋 Required Columns:</strong> <code>SKU</code> | <code>Product Name</code> | <code>Category</code> | <code>Price (₹)</code> | <code>Stock</code>
+                <strong>📋 Excel Format Required:</strong><br>
+                <code>SKU</code> | <code>Product Name</code> | <code>Category</code> | <code>Price (₹)</code> | <code>GST (%)</code> | <code>Stock</code> | <code>Description</code> | <code>Image 1 URL</code> | <code>Image 2 URL</code> | <code>Image 3 URL</code> | <code>Video URL</code>
             </div>
             
             <div class="bulk-progress" id="bulkProgress">
@@ -167,7 +168,7 @@
             <div id="bulkResult"></div>
         </div>
         
-        <!-- Add/Edit Product Form -->
+        <!-- Add/Edit Product Form with Multiple Images -->
         <div id="productForm" class="form-card">
             <h2 style="margin-bottom: 20px; color: var(--primary);" id="formTitle">Add New Product</h2>
             <input type="hidden" id="productId">
@@ -183,7 +184,12 @@
             
             <div class="form-group"><label>Description</label><textarea id="description" rows="2" placeholder="Product description..."></textarea></div>
             
-            <div class="form-group"><label>Image URL (Optional)</label><input type="url" id="imageUrl" placeholder="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400"></div>
+            <div class="form-group"><label>Image 1 URL (Main Image)</label><input type="url" id="image1Url" placeholder="https://images.unsplash.com/..."></div>
+            <div class="form-group"><label>Image 2 URL</label><input type="url" id="image2Url" placeholder="https://images.unsplash.com/..."></div>
+            <div class="form-group"><label>Image 3 URL</label><input type="url" id="image3Url" placeholder="https://images.unsplash.com/..."></div>
+            <div class="form-group"><label>Video URL</label><input type="url" id="videoUrl" placeholder="https://cdn.pixabay.com/video/...mp4"></div>
+            
+            <div id="mediaPreview" class="media-preview"></div>
             
             <div style="display: flex; gap: 15px; margin-top: 25px;">
                 <button class="btn" onclick="saveProduct()">💾 Save to Supabase</button>
@@ -242,6 +248,66 @@
             return { gstAmount, total };
         }
         
+        // Get images array from form
+        function getImagesArray() {
+            const images = [];
+            const img1 = document.getElementById('image1Url').value.trim();
+            const img2 = document.getElementById('image2Url').value.trim();
+            const img3 = document.getElementById('image3Url').value.trim();
+            const video = document.getElementById('videoUrl').value.trim();
+            
+            if (img1) images.push(img1);
+            if (img2) images.push(img2);
+            if (img3) images.push(img3);
+            if (video) images.push(video);
+            
+            return images;
+        }
+        
+        // Update media preview
+        function updateMediaPreview() {
+            const container = document.getElementById('mediaPreview');
+            const images = getImagesArray();
+            if (images.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            images.forEach((url, index) => {
+                const isVideo = url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com');
+                html += `<div class="media-item">
+                    ${isVideo ? `<video src="${url}" style="width:100%;height:100%;object-fit:cover;"></video>` : `<img src="${url}" onerror="this.src='https://via.placeholder.com/80?text=Error'">`}
+                    <div class="remove-media" onclick="removeMedia(${index})">×</div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+        
+        window.removeMedia = function(index) {
+            if (index === 0) document.getElementById('image1Url').value = '';
+            if (index === 1) document.getElementById('image2Url').value = '';
+            if (index === 2) document.getElementById('image3Url').value = '';
+            if (index === 3) document.getElementById('videoUrl').value = '';
+            updateMediaPreview();
+        };
+        
+        // Set images in form
+        function setImagesInForm(images) {
+            document.getElementById('image1Url').value = images[0] || '';
+            document.getElementById('image2Url').value = images[1] || '';
+            document.getElementById('image3Url').value = images[2] || '';
+            let videoUrl = '';
+            for (let img of images) {
+                if (img.match(/\.(mp4|webm|mov|avi)$/i) || img.includes('youtube.com') || img.includes('vimeo.com')) {
+                    videoUrl = img;
+                    break;
+                }
+            }
+            document.getElementById('videoUrl').value = videoUrl || '';
+            updateMediaPreview();
+        }
+        
         async function updateStatusBar() {
             try {
                 const { data, error } = await supabase.from('products').select('id, stock');
@@ -263,7 +329,7 @@
             const gst = parseFloat(document.getElementById('gst').value) || 18;
             const stock = parseInt(document.getElementById('stock').value);
             const description = document.getElementById('description').value.trim();
-            const imageUrl = document.getElementById('imageUrl').value.trim();
+            const images = getImagesArray();
             
             if (!sku || !name || !category || isNaN(price) || isNaN(stock)) {
                 showToast('Please fill all required fields', true);
@@ -271,7 +337,6 @@
             }
             if (price <= 0) { showToast('Price must be greater than 0', true); return; }
             
-            let images = imageUrl ? [imageUrl] : [];
             const productData = { sku, name, category, price, gst, stock, description, images };
             
             try {
@@ -305,7 +370,11 @@
             document.getElementById('gst').value = '18';
             document.getElementById('stock').value = '';
             document.getElementById('description').value = '';
-            document.getElementById('imageUrl').value = '';
+            document.getElementById('image1Url').value = '';
+            document.getElementById('image2Url').value = '';
+            document.getElementById('image3Url').value = '';
+            document.getElementById('videoUrl').value = '';
+            updateMediaPreview();
             document.getElementById('formTitle').textContent = 'Add New Product';
         }
         
@@ -338,7 +407,7 @@
                 document.getElementById('gst').value = data.gst || 18;
                 document.getElementById('stock').value = data.stock;
                 document.getElementById('description').value = data.description || '';
-                document.getElementById('imageUrl').value = (data.images && data.images[0]) ? data.images[0] : '';
+                setImagesInForm(data.images || []);
                 document.getElementById('formTitle').textContent = 'Edit Product';
                 document.getElementById('productForm').style.display = 'block';
                 document.getElementById('bulkUploadSection').style.display = 'none';
@@ -362,13 +431,19 @@
                 }
                 let html = '';
                 for (const p of data) {
-                    const firstImage = (p.images && p.images[0]) ? p.images[0] : 'https://via.placeholder.com/300x220?text=No+Image';
+                    const images = p.images || [];
+                    const firstImage = images[0] || 'https://via.placeholder.com/300x220?text=No+Image';
+                    const isVideo = firstImage.match(/\.(mp4|webm|mov|avi)$/i) || firstImage.includes('youtube.com') || firstImage.includes('vimeo.com');
                     const stockClass = p.stock <= 0 ? 'out-of-stock' : (p.stock < 10 ? 'low-stock' : 'in-stock');
                     const stockText = p.stock <= 0 ? 'Out of Stock' : (p.stock < 10 ? `Low Stock (${p.stock})` : `In Stock (${p.stock})`);
                     const { total } = calculateGST(p.price || 0, p.gst || 18);
+                    const mediaCount = images.length;
                     
                     html += `<div class="product-card">
-                        <div class="product-image-container"><img class="product-image" src="${firstImage}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/300x220?text=No+Image'"></div>
+                        <div class="product-image-container">
+                            ${isVideo ? `<video class="product-image" src="${firstImage}" autoplay muted loop playsinline></video>` : `<img class="product-image" src="${firstImage}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/300x220?text=No+Image'">`}
+                            ${mediaCount > 0 ? `<div class="media-badge">📸 ${mediaCount} media</div>` : ''}
+                        </div>
                         <div class="product-info">
                             <div class="product-name">${escapeHtml(p.name)}<span class="gst-badge">GST ${p.gst || 18}%</span></div>
                             <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
@@ -384,18 +459,68 @@
             }
         }
         
+        // Download Sample CSV with separate columns for images and video
         window.downloadSampleCSV = function() {
             const sampleData = [
-                { 'SKU': 'RING-001', 'Product Name': 'Diamond Solitaire Ring', 'Category': 'Rings', 'Price (₹)': 29999, 'GST (%)': 18, 'Stock': 50, 'Description': 'Beautiful certified diamond engagement ring.', 'Image URL': 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400' },
-                { 'SKU': 'NECK-001', 'Product Name': 'Gold Chain Necklace', 'Category': 'Necklaces', 'Price (₹)': 45999, 'GST (%)': 18, 'Stock': 30, 'Description': 'Beautiful 22k gold chain necklace.', 'Image URL': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400' },
-                { 'SKU': 'EARR-001', 'Product Name': 'Pearl Drop Earrings', 'Category': 'Earrings', 'Price (₹)': 8999, 'GST (%)': 12, 'Stock': 100, 'Description': 'Elegant pearl drop earrings.', 'Image URL': 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400' }
+                { 
+                    'SKU': 'RING-001', 
+                    'Product Name': 'Diamond Solitaire Ring', 
+                    'Category': 'Rings', 
+                    'Price (₹)': 29999, 
+                    'GST (%)': 18, 
+                    'Stock': 50, 
+                    'Description': 'Beautiful certified diamond engagement ring with exquisite craftsmanship.',
+                    'Image 1 URL': 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400',
+                    'Image 2 URL': 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=400',
+                    'Image 3 URL': 'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=400',
+                    'Video URL': ''
+                },
+                { 
+                    'SKU': 'NECK-001', 
+                    'Product Name': 'Gold Chain Necklace', 
+                    'Category': 'Necklaces', 
+                    'Price (₹)': 45999, 
+                    'GST (%)': 18, 
+                    'Stock': 30, 
+                    'Description': 'Beautiful 22k gold chain necklace with intricate design.',
+                    'Image 1 URL': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400',
+                    'Image 2 URL': '',
+                    'Image 3 URL': '',
+                    'Video URL': ''
+                },
+                { 
+                    'SKU': 'EARR-001', 
+                    'Product Name': 'Pearl Drop Earrings', 
+                    'Category': 'Earrings', 
+                    'Price (₹)': 8999, 
+                    'GST (%)': 12, 
+                    'Stock': 100, 
+                    'Description': 'Elegant pearl drop earrings with sterling silver backing.',
+                    'Image 1 URL': 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400',
+                    'Image 2 URL': '',
+                    'Image 3 URL': '',
+                    'Video URL': ''
+                },
+                { 
+                    'SKU': 'VIDEO-001', 
+                    'Product Name': 'Diamond Necklace Video', 
+                    'Category': 'Necklaces', 
+                    'Price (₹)': 25999, 
+                    'GST (%)': 18, 
+                    'Stock': 15, 
+                    'Description': 'Watch our beautiful diamond necklace in motion.',
+                    'Image 1 URL': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400',
+                    'Image 2 URL': '',
+                    'Image 3 URL': '',
+                    'Video URL': 'https://cdn.pixabay.com/video/2022/03/20/113134-693145691_large.mp4'
+                }
             ];
             const ws = XLSX.utils.json_to_sheet(sampleData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Sample Products');
-            ws['!cols'] = [{wch:12}, {wch:25}, {wch:12}, {wch:12}, {wch:8}, {wch:8}, {wch:40}, {wch:50}];
+            ws['!cols'] = [{wch:12}, {wch:25}, {wch:12}, {wch:12}, {wch:8}, {wch:8}, {wch:40}, {wch:50}, {wch:50}, {wch:50}, {wch:50}];
             XLSX.writeFile(wb, `style_of_life_sample_products.xlsx`);
-            showToast('✅ Sample CSV downloaded!');
+            showToast('✅ Sample CSV downloaded! Includes Image 1, Image 2, Image 3, and Video URL columns.');
         };
         
         // ========== BATCH PROCESSING ==========
@@ -448,7 +573,18 @@
                     const gst = parseFloat(row['GST (%)'] || row['GST'] || row['gst'] || 18);
                     const stock = parseInt(row['Stock'] || row['stock'] || 0);
                     const description = row['Description'] || row['description'] || '';
-                    const imageUrl = row['Image URL'] || row['image url'] || row['images'] || '';
+                    
+                    // Get images from separate columns
+                    const img1 = row['Image 1 URL'] || row['image 1 url'] || row['image1'] || '';
+                    const img2 = row['Image 2 URL'] || row['image 2 url'] || row['image2'] || '';
+                    const img3 = row['Image 3 URL'] || row['image 3 url'] || row['image3'] || '';
+                    const videoUrl = row['Video URL'] || row['video url'] || row['video'] || '';
+                    
+                    const images = [];
+                    if (img1) images.push(img1);
+                    if (img2) images.push(img2);
+                    if (img3) images.push(img3);
+                    if (videoUrl) images.push(videoUrl);
                     
                     if (!sku || !name || !category || isNaN(price) || price <= 0) {
                         errors.push(`Row ${i + 1}: Missing required fields (SKU, Name, Category, Price)`);
@@ -462,7 +598,6 @@
                         continue;
                     }
                     
-                    let images = imageUrl ? [imageUrl] : [];
                     validProducts.push({ sku, name, category, price, gst, stock, description, images });
                     existingSkus.add(sku);
                 }
@@ -544,6 +679,12 @@
                 }
             });
         }
+        
+        // Live preview for images
+        document.getElementById('image1Url')?.addEventListener('input', updateMediaPreview);
+        document.getElementById('image2Url')?.addEventListener('input', updateMediaPreview);
+        document.getElementById('image3Url')?.addEventListener('input', updateMediaPreview);
+        document.getElementById('videoUrl')?.addEventListener('input', updateMediaPreview);
         
         function showModal(message) {
             document.getElementById('modalMessage').innerHTML = message;
