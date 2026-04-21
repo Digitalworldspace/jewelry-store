@@ -44,6 +44,21 @@
         input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; }
         input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
         
+        .bulk-upload-section { background: var(--gray-100); border-radius: 12px; padding: 20px; margin-bottom: 20px; display: none; }
+        .bulk-upload-area { border: 2px dashed var(--gray-300); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .bulk-upload-area:hover { border-color: var(--primary); background: rgba(212,175,55,0.05); }
+        .bulk-upload-area.drag-over { border-color: var(--success); background: rgba(40,167,69,0.1); }
+        .bulk-progress { margin-top: 15px; display: none; }
+        .bulk-progress-bar { height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; }
+        .bulk-progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
+        .error-log { max-height: 200px; overflow-y: auto; font-size: 12px; margin-top: 10px; background: white; border-radius: 8px; padding: 10px; }
+        .error-item { padding: 5px; border-bottom: 1px solid #eee; color: var(--danger); font-family: monospace; }
+        .success-item { color: var(--success); }
+        
+        .diamond-details-section { background: var(--gray-100); border-radius: 12px; padding: 20px; margin-top: 20px; }
+        .diamond-details-title { font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .diamond-details-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; margin-top: 30px; }
         .product-card { background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; }
         .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
@@ -69,10 +84,6 @@
         .spinner { width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        .diamond-details-section { background: var(--gray-100); border-radius: 12px; padding: 20px; margin-top: 20px; }
-        .diamond-details-title { font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        .diamond-details-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        
         .toast { position: fixed; bottom: 30px; right: 30px; background: var(--success); color: white; padding: 12px 24px; border-radius: 8px; z-index: 1000; animation: slideIn 0.3s ease; }
         .toast-error { background: var(--danger); }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -85,6 +96,9 @@
         .close-modal { background: none; border: none; font-size: 24px; cursor: pointer; }
         
         footer { background: var(--darker); color: white; text-align: center; padding: 30px; margin-top: 60px; }
+        
+        .format-hint { background: #e8f4fd; padding: 12px; border-radius: 8px; margin-top: 15px; font-size: 12px; }
+        .format-hint code { background: #fff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
         
         @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .status-stats { gap: 15px; } header { flex-direction: column; text-align: center; } .toolbar { flex-direction: column; } .toolbar-left, .toolbar-right { justify-content: center; } .diamond-details-grid { grid-template-columns: 1fr; } }
     </style>
@@ -130,7 +144,28 @@
             </div>
         </div>
         
-        <!-- Add/Edit Product Form with Diamond Details -->
+        <!-- Bulk Upload Section -->
+        <div class="bulk-upload-section" id="bulkUploadSection">
+            <h3 style="margin-bottom: 15px; color: var(--primary);">📁 Bulk Upload Products to Supabase</h3>
+            <div class="bulk-upload-area" id="bulkUploadArea">
+                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--primary);"></i>
+                <p style="margin-top: 10px;">Click or drag & drop CSV / Excel file here</p>
+                <p style="font-size: 12px; color: var(--gray-600);">Supported: .csv, .xlsx, .xls</p>
+            </div>
+            
+            <div class="format-hint">
+                <strong>📋 Excel Format Required:</strong><br>
+                <code>SKU</code> | <code>Product Name</code> | <code>Category</code> | <code>Price (₹)</code> | <code>GST (%)</code> | <code>Stock</code> | <code>Description</code> | <code>Image URL</code> | <code>Carat</code> | <code>Diamond Color</code> | <code>Diamond Clarity</code> | <code>Diamond Cut</code> | <code>Diamond Polish</code> | <code>Diamond Symmetry</code>
+            </div>
+            
+            <div class="bulk-progress" id="bulkProgress">
+                <div class="bulk-progress-bar"><div class="bulk-progress-fill" id="bulkProgressFill"></div></div>
+                <p style="font-size: 12px; margin-top: 8px;" id="bulkProgressText">Processing...</p>
+            </div>
+            <div id="bulkResult"></div>
+        </div>
+        
+        <!-- Add/Edit Product Form -->
         <div id="productForm" class="form-card">
             <h2 style="margin-bottom: 20px; color: var(--primary);" id="formTitle">Add New Product</h2>
             <input type="hidden" id="productId">
@@ -262,7 +297,6 @@
             return { gstAmount, total };
         }
         
-        // Get diamond details from form
         function getDiamondDetails() {
             const carat = document.getElementById('diamondCarat').value;
             const color = document.getElementById('diamondColor').value;
@@ -285,7 +319,6 @@
             };
         }
         
-        // Set diamond details in form
         function setDiamondDetails(diamond) {
             if (!diamond) {
                 document.getElementById('diamondCarat').value = '';
@@ -421,6 +454,7 @@
                 
                 document.getElementById('formTitle').textContent = 'Edit Product';
                 document.getElementById('productForm').style.display = 'block';
+                document.getElementById('bulkUploadSection').style.display = 'none';
                 document.getElementById('productForm').scrollIntoView({ behavior: 'smooth' });
                 
             } catch (error) {
@@ -492,7 +526,7 @@
             }
         }
         
-        // Download Sample CSV with Diamond Details columns
+        // Download Sample CSV with Diamond Details
         window.downloadSampleCSV = function() {
             const sampleData = [
                 {
@@ -558,64 +592,36 @@
                     'Diamond Cut': '',
                     'Diamond Polish': '',
                     'Diamond Symmetry': ''
-                },
-                {
-                    'SKU': 'BRAC-001',
-                    'Product Name': 'Tennis Bracelet',
-                    'Category': 'Bracelets',
-                    'Price (₹)': 19999,
-                    'GST (%)': 18,
-                    'Stock': 25,
-                    'Description': 'Classic tennis bracelet with cubic zirconia stones.',
-                    'Image URL': 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400',
-                    'Carat': 0.50,
-                    'Diamond Color': 'F',
-                    'Diamond Clarity': 'SI1',
-                    'Diamond Cut': 'Very Good',
-                    'Diamond Polish': 'Very Good',
-                    'Diamond Symmetry': 'Very Good'
-                },
-                {
-                    'SKU': 'D360-001',
-                    'Product Name': '360° Diamond Ring',
-                    'Category': 'Rings',
-                    'Price (₹)': 39999,
-                    'GST (%)': 18,
-                    'Stock': 10,
-                    'Description': 'Interactive 360° view of our stunning diamond ring.',
-                    'Image URL': 'https://d360.tech/view.html?d=315-MP-CP-2021',
-                    'Carat': 2.00,
-                    'Diamond Color': 'G',
-                    'Diamond Clarity': 'VS2',
-                    'Diamond Cut': 'Excellent',
-                    'Diamond Polish': 'Excellent',
-                    'Diamond Symmetry': 'Excellent'
                 }
             ];
             
-            // Create worksheet
             const ws = XLSX.utils.json_to_sheet(sampleData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Sample Products');
-            
-            // Set column widths
-            ws['!cols'] = [
-                {wch:12}, {wch:25}, {wch:12}, {wch:12}, {wch:8}, {wch:8}, 
-                {wch:40}, {wch:50}, {wch:8}, {wch:14}, {wch:14}, {wch:12}, {wch:12}, {wch:14}
-            ];
-            
-            // Download file
+            ws['!cols'] = [{wch:12}, {wch:25}, {wch:12}, {wch:12}, {wch:8}, {wch:8}, {wch:40}, {wch:50}, {wch:8}, {wch:14}, {wch:14}, {wch:12}, {wch:12}, {wch:14}];
             XLSX.writeFile(wb, `style_of_life_sample_products.xlsx`);
             showToast('✅ Sample CSV downloaded! Includes diamond specification columns.');
         };
         
+        // Bulk Upload Handler
         window.handleBulkUpload = async function(input) {
             const file = input.files[0];
             if (!file) return;
             
-            showToast('Processing file...');
+            const bulkSection = document.getElementById('bulkUploadSection');
+            const progressDiv = document.getElementById('bulkProgress');
+            const progressFill = document.getElementById('bulkProgressFill');
+            const progressText = document.getElementById('bulkProgressText');
+            const resultDiv = document.getElementById('bulkResult');
+            
+            bulkSection.style.display = 'block';
+            progressDiv.style.display = 'block';
+            progressFill.style.width = '5%';
+            progressText.textContent = 'Reading file...';
+            resultDiv.innerHTML = '';
+            
             const errors = [];
-            let successCount = 0, errorCount = 0;
+            let successCount = 0, errorCount = 0, skipCount = 0;
             
             try {
                 const data = await file.arrayBuffer();
@@ -625,8 +631,16 @@
                 
                 if (!jsonData || jsonData.length === 0) throw new Error('No data found');
                 
+                const totalRows = jsonData.length;
+                progressFill.style.width = '10%';
+                progressText.textContent = `Processing ${totalRows} rows...`;
+                
                 for (let i = 0; i < jsonData.length; i++) {
                     const row = jsonData[i];
+                    const percent = 10 + ((i + 1) / totalRows) * 85;
+                    progressFill.style.width = `${percent}%`;
+                    progressText.textContent = `Processing row ${i + 1} of ${totalRows}... (✅ ${successCount} | ❌ ${errorCount} | ⏭️ ${skipCount})`;
+                    
                     const sku = row['SKU'] || row['sku'] || '';
                     const name = row['Product Name'] || row['product name'] || row['name'] || '';
                     const category = row['Category'] || row['category'] || '';
@@ -644,6 +658,19 @@
                     const diamondPolish = row['Diamond Polish'] || row['diamond polish'] || row['polish'] || null;
                     const diamondSymmetry = row['Diamond Symmetry'] || row['diamond symmetry'] || row['symmetry'] || null;
                     
+                    if (!sku || !name || !category || isNaN(price) || price <= 0) {
+                        errors.push(`Row ${i + 1}: Missing required fields (SKU, Name, Category, Price)`);
+                        errorCount++;
+                        continue;
+                    }
+                    
+                    const { data: existing } = await supabase.from('products').select('id').eq('sku', sku).maybeSingle();
+                    if (existing) {
+                        errors.push(`Row ${i + 1}: SKU "${sku}" already exists - skipped`);
+                        skipCount++;
+                        continue;
+                    }
+                    
                     let diamondDetails = null;
                     if (carat || diamondColor || diamondClarity || diamondCut || diamondPolish || diamondSymmetry) {
                         diamondDetails = {};
@@ -653,19 +680,6 @@
                         if (diamondCut) diamondDetails.cut = diamondCut;
                         if (diamondPolish) diamondDetails.polish = diamondPolish;
                         if (diamondSymmetry) diamondDetails.symmetry = diamondSymmetry;
-                    }
-                    
-                    if (!sku || !name || !category || isNaN(price) || price <= 0) {
-                        errors.push(`Row ${i + 1}: Missing required fields (SKU, Name, Category, Price)`);
-                        errorCount++;
-                        continue;
-                    }
-                    
-                    const { data: existing } = await supabase.from('products').select('id').eq('sku', sku).maybeSingle();
-                    if (existing) {
-                        errors.push(`Row ${i + 1}: SKU "${sku}" already exists`);
-                        errorCount++;
-                        continue;
                     }
                     
                     let images = imageUrl ? [imageUrl] : [];
@@ -682,34 +696,69 @@
                         successCount++;
                     }
                     
-                    await new Promise(r => setTimeout(r, 50));
+                    await new Promise(r => setTimeout(r, 30));
                 }
+                
+                progressFill.style.width = '100%';
+                progressText.textContent = `✅ Complete! Added: ${successCount}, Failed: ${errorCount}, Skipped: ${skipCount}`;
                 
                 let errorHtml = '';
                 if (errors.length > 0) {
-                    errorHtml = `<div class="error-log"><strong>⚠️ Errors (${errors.length}):</strong>${errors.slice(0, 10).map(e => `<div class="error-item">${escapeHtml(e)}</div>`).join('')}${errors.length > 10 ? `<div>... and ${errors.length - 10} more</div>` : ''}</div>`;
+                    errorHtml = `<div class="error-log"><strong>⚠️ Errors (${errors.length}):</strong>`;
+                    errors.slice(0, 15).forEach(err => {
+                        errorHtml += `<div class="error-item">${escapeHtml(err)}</div>`;
+                    });
+                    if (errors.length > 15) {
+                        errorHtml += `<div class="error-item">... and ${errors.length - 15} more</div>`;
+                    }
+                    errorHtml += `</div>`;
                 }
                 
-                showToast(`✅ Upload complete! ${successCount} added, ${errorCount} failed`);
-                if (successCount > 0) loadProducts();
+                resultDiv.innerHTML = `<div style="background: ${successCount > 0 ? '#d4edda' : '#f8d7da'}; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                    <strong>📊 Import Summary</strong><br>
+                    ✅ Successfully added: ${successCount}<br>
+                    ❌ Failed: ${errorCount}<br>
+                    ⏭️ Skipped (duplicate SKU): ${skipCount}<br>
+                    📁 Total rows processed: ${totalRows}
+                    ${errorHtml}
+                </div>`;
                 
-                // Show detailed result
-                const resultDiv = document.getElementById('bulkResult');
-                if (resultDiv) {
-                    resultDiv.innerHTML = `<div style="background: ${successCount > 0 ? '#d4edda' : '#f8d7da'}; padding: 15px; border-radius: 8px; margin-top: 10px;">
-                        <strong>📊 Import Summary</strong><br>
-                        ✅ Successfully added: ${successCount}<br>
-                        ❌ Failed: ${errorCount}<br>
-                        ${errorHtml}
-                    </div>`;
-                    setTimeout(() => { if (resultDiv) resultDiv.innerHTML = ''; }, 5000);
+                if (successCount > 0) {
+                    loadProducts();
+                    showToast(`✅ ${successCount} products added to Supabase!`);
                 }
+                
+                setTimeout(() => { progressDiv.style.display = 'none'; }, 5000);
                 
             } catch (error) {
-                showToast('Error: ' + error.message, true);
+                progressText.textContent = 'Error processing file';
+                resultDiv.innerHTML = `<div style="background: #f8d7da; padding: 15px; border-radius: 8px;"><strong>❌ Error:</strong> ${escapeHtml(error.message)}</div>`;
+                showToast('Error processing file: ' + error.message, true);
             }
             input.value = '';
         };
+        
+        // Setup drag and drop for bulk upload
+        const bulkArea = document.getElementById('bulkUploadArea');
+        if (bulkArea) {
+            bulkArea.addEventListener('click', () => document.getElementById('bulkFileInput').click());
+            bulkArea.addEventListener('dragover', (e) => { e.preventDefault(); bulkArea.classList.add('drag-over'); });
+            bulkArea.addEventListener('dragleave', () => { bulkArea.classList.remove('drag-over'); });
+            bulkArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                bulkArea.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                if (file && (file.name.endsWith('.csv') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
+                    const input = document.getElementById('bulkFileInput');
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    input.files = dt.files;
+                    handleBulkUpload(input);
+                } else {
+                    showToast('Please upload an Excel or CSV file', true);
+                }
+            });
+        }
         
         function showModal(message) {
             document.getElementById('modalMessage').innerHTML = message;
@@ -728,9 +777,11 @@
         
         window.toggleForm = function() {
             const form = document.getElementById('productForm');
+            const bulk = document.getElementById('bulkUploadSection');
             if (form.style.display === 'none' || form.style.display === '') {
                 resetForm();
                 form.style.display = 'block';
+                bulk.style.display = 'none';
             } else {
                 form.style.display = 'none';
             }
@@ -740,27 +791,6 @@
             sessionStorage.removeItem('adminLoggedIn');
             window.location.href = 'login.html';
         };
-        
-        // Drag and drop for bulk upload
-        const bulkArea = document.getElementById('bulkUploadArea');
-        if (bulkArea) {
-            bulkArea.addEventListener('dragover', (e) => { e.preventDefault(); bulkArea.classList.add('drag-over'); });
-            bulkArea.addEventListener('dragleave', () => { bulkArea.classList.remove('drag-over'); });
-            bulkArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                bulkArea.classList.remove('drag-over');
-                const file = e.dataTransfer.files[0];
-                if (file && (file.name.endsWith('.csv') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
-                    const input = document.getElementById('bulkFileInput');
-                    const dt = new DataTransfer();
-                    dt.items.add(file);
-                    input.files = dt.files;
-                    handleBulkUpload(input);
-                } else {
-                    showToast('Please upload an Excel or CSV file', true);
-                }
-            });
-        }
         
         loadProducts();
     </script>
