@@ -55,7 +55,6 @@
         .batch-info { font-size: 12px; color: var(--gray-600); margin-top: 8px; text-align: center; }
         .error-log { max-height: 250px; overflow-y: auto; font-size: 12px; margin-top: 10px; background: white; border-radius: 8px; padding: 10px; }
         .error-item { padding: 5px; border-bottom: 1px solid #eee; color: var(--danger); font-family: monospace; }
-        .success-item { color: var(--success); }
         
         .diamond-details-section { background: var(--gray-100); border-radius: 12px; padding: 20px; margin-top: 20px; }
         .diamond-details-title { font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
@@ -120,7 +119,7 @@
         <h1>
             ✨ Product Management 
             <span class="live-badge"><i class="fas fa-database"></i> Supabase Connected</span>
-            <span class="admin-badge"><i class="fas fa-bolt"></i> Batch Processing (500 rows/batch)</span>
+            <span class="admin-badge"><i class="fas fa-bolt"></i> Batch Processing</span>
         </h1>
         
         <div class="status-bar" id="statusBar">
@@ -140,7 +139,7 @@
             <div class="toolbar-right">
                 <button class="btn btn-success" onclick="downloadSampleCSV()">📥 Download Sample CSV</button>
                 <label class="btn btn-warning" style="cursor: pointer;">
-                    📂 Upload CSV/Excel (Batch)
+                    📂 Upload CSV/Excel
                     <input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display: none;" onchange="handleBulkUpload(this)">
                 </label>
             </div>
@@ -148,16 +147,16 @@
         
         <!-- Bulk Upload Section -->
         <div class="bulk-upload-section" id="bulkUploadSection">
-            <h3 style="margin-bottom: 15px; color: var(--primary);">📁 Batch Upload Products (500 rows per batch)</h3>
+            <h3 style="margin-bottom: 15px; color: var(--primary);">📁 Batch Upload Products</h3>
             <div class="bulk-upload-area" id="bulkUploadArea">
                 <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--primary);"></i>
                 <p style="margin-top: 10px;">Click or drag & drop CSV / Excel file here</p>
-                <p style="font-size: 12px; color: var(--gray-600);">Supported: .csv, .xlsx, .xls | Processes 500 rows per batch</p>
+                <p style="font-size: 12px; color: var(--gray-600);">Supported: .csv, .xlsx, .xls | Batch size: 500 rows</p>
             </div>
             
             <div class="format-hint">
-                <strong>⚡ Fast Batch Processing:</strong> Inserts products in batches of 500 rows for 100x faster uploads<br>
-                <strong>📋 Excel Format:</strong> <code>SKU</code> | <code>Product Name</code> | <code>Category</code> | <code>Price (₹)</code> | <code>GST (%)</code> | <code>Stock</code> | <code>Description</code> | <code>Image URL</code> | <code>Carat</code> | <code>Diamond Color</code> | <code>Diamond Clarity</code> | <code>Diamond Cut</code> | <code>Diamond Polish</code> | <code>Diamond Symmetry</code>
+                <strong>⚡ Batch Processing:</strong> Inserts products in batches of 500 rows for fast uploads<br>
+                <strong>📋 Required Columns:</strong> <code>SKU</code> | <code>Product Name</code> | <code>Category</code> | <code>Price (₹)</code> | <code>Stock</code>
             </div>
             
             <div class="bulk-progress" id="bulkProgress">
@@ -185,65 +184,6 @@
             <div class="form-group"><label>Description</label><textarea id="description" rows="2" placeholder="Product description..."></textarea></div>
             
             <div class="form-group"><label>Image URL (Optional)</label><input type="url" id="imageUrl" placeholder="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400"></div>
-            
-            <!-- Diamond Details Section -->
-            <div class="diamond-details-section">
-                <div class="diamond-details-title"><i class="fas fa-gem"></i> Diamond Specifications (Optional)</div>
-                <div class="diamond-details-grid">
-                    <div class="form-group"><label>Carat Weight</label><input type="number" id="diamondCarat" step="0.01" placeholder="e.g., 1.00"></div>
-                    <div class="form-group"><label>Diamond Color</label>
-                        <select id="diamondColor">
-                            <option value="">Select Color</option>
-                            <option value="D">D (Colorless)</option>
-                            <option value="E">E (Colorless)</option>
-                            <option value="F">F (Colorless)</option>
-                            <option value="G">G (Near Colorless)</option>
-                            <option value="H">H (Near Colorless)</option>
-                            <option value="I">I (Near Colorless)</option>
-                            <option value="J">J (Near Colorless)</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Diamond Clarity</label>
-                        <select id="diamondClarity">
-                            <option value="">Select Clarity</option>
-                            <option value="FL">FL (Flawless)</option>
-                            <option value="IF">IF (Internally Flawless)</option>
-                            <option value="VVS1">VVS1</option>
-                            <option value="VVS2">VVS2</option>
-                            <option value="VS1">VS1</option>
-                            <option value="VS2">VS2</option>
-                            <option value="SI1">SI1</option>
-                            <option value="SI2">SI2</option>
-                            <option value="I1">I1</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Diamond Cut</label>
-                        <select id="diamondCut">
-                            <option value="">Select Cut</option>
-                            <option value="Excellent">Excellent</option>
-                            <option value="Very Good">Very Good</option>
-                            <option value="Good">Good</option>
-                            <option value="Fair">Fair</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Diamond Polish</label>
-                        <select id="diamondPolish">
-                            <option value="">Select Polish</option>
-                            <option value="Excellent">Excellent</option>
-                            <option value="Very Good">Very Good</option>
-                            <option value="Good">Good</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Diamond Symmetry</label>
-                        <select id="diamondSymmetry">
-                            <option value="">Select Symmetry</option>
-                            <option value="Excellent">Excellent</option>
-                            <option value="Very Good">Very Good</option>
-                            <option value="Good">Good</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
             
             <div style="display: flex; gap: 15px; margin-top: 25px;">
                 <button class="btn" onclick="saveProduct()">💾 Save to Supabase</button>
@@ -281,7 +221,7 @@
         let pendingAction = null;
         let allProductsData = [];
         
-        const BATCH_SIZE = 500; // Process 500 rows per batch for maximum speed
+        const BATCH_SIZE = 500;
         
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
@@ -300,43 +240,6 @@
             const gstAmount = (price * gstPercent) / 100;
             const total = price + gstAmount;
             return { gstAmount, total };
-        }
-        
-        function getDiamondDetails() {
-            const carat = document.getElementById('diamondCarat').value;
-            const color = document.getElementById('diamondColor').value;
-            const clarity = document.getElementById('diamondClarity').value;
-            const cut = document.getElementById('diamondCut').value;
-            const polish = document.getElementById('diamondPolish').value;
-            const symmetry = document.getElementById('diamondSymmetry').value;
-            
-            if (!carat && !color && !clarity && !cut && !polish && !symmetry) return null;
-            return {
-                carat: carat ? parseFloat(carat) : null,
-                color: color || null,
-                clarity: clarity || null,
-                cut: cut || null,
-                polish: polish || null,
-                symmetry: symmetry || null
-            };
-        }
-        
-        function setDiamondDetails(diamond) {
-            if (!diamond) {
-                document.getElementById('diamondCarat').value = '';
-                document.getElementById('diamondColor').value = '';
-                document.getElementById('diamondClarity').value = '';
-                document.getElementById('diamondCut').value = '';
-                document.getElementById('diamondPolish').value = '';
-                document.getElementById('diamondSymmetry').value = '';
-                return;
-            }
-            document.getElementById('diamondCarat').value = diamond.carat || '';
-            document.getElementById('diamondColor').value = diamond.color || '';
-            document.getElementById('diamondClarity').value = diamond.clarity || '';
-            document.getElementById('diamondCut').value = diamond.cut || '';
-            document.getElementById('diamondPolish').value = diamond.polish || '';
-            document.getElementById('diamondSymmetry').value = diamond.symmetry || '';
         }
         
         async function updateStatusBar() {
@@ -361,7 +264,6 @@
             const stock = parseInt(document.getElementById('stock').value);
             const description = document.getElementById('description').value.trim();
             const imageUrl = document.getElementById('imageUrl').value.trim();
-            const diamondDetails = getDiamondDetails();
             
             if (!sku || !name || !category || isNaN(price) || isNaN(stock)) {
                 showToast('Please fill all required fields', true);
@@ -370,7 +272,7 @@
             if (price <= 0) { showToast('Price must be greater than 0', true); return; }
             
             let images = imageUrl ? [imageUrl] : [];
-            const productData = { sku, name, category, price, gst, stock, description, images, diamond_details: diamondDetails };
+            const productData = { sku, name, category, price, gst, stock, description, images };
             
             try {
                 let result;
@@ -404,7 +306,6 @@
             document.getElementById('stock').value = '';
             document.getElementById('description').value = '';
             document.getElementById('imageUrl').value = '';
-            setDiamondDetails(null);
             document.getElementById('formTitle').textContent = 'Add New Product';
         }
         
@@ -438,7 +339,6 @@
                 document.getElementById('stock').value = data.stock;
                 document.getElementById('description').value = data.description || '';
                 document.getElementById('imageUrl').value = (data.images && data.images[0]) ? data.images[0] : '';
-                setDiamondDetails(data.diamond_details || null);
                 document.getElementById('formTitle').textContent = 'Edit Product';
                 document.getElementById('productForm').style.display = 'block';
                 document.getElementById('bulkUploadSection').style.display = 'none';
@@ -466,24 +366,12 @@
                     const stockClass = p.stock <= 0 ? 'out-of-stock' : (p.stock < 10 ? 'low-stock' : 'in-stock');
                     const stockText = p.stock <= 0 ? 'Out of Stock' : (p.stock < 10 ? `Low Stock (${p.stock})` : `In Stock (${p.stock})`);
                     const { total } = calculateGST(p.price || 0, p.gst || 18);
-                    const diamond = p.diamond_details || {};
-                    const hasDiamond = Object.keys(diamond).length > 0;
-                    let diamondHtml = '';
-                    if (hasDiamond) {
-                        diamondHtml = `<div style="background: var(--gray-100); border-radius: 8px; padding: 8px; margin: 8px 0; display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between;">
-                            ${diamond.carat ? `<div style="text-align: center; flex: 1;"><div style="font-size: 9px; color: var(--gray);">Carat</div><div style="font-size: 12px; font-weight: 600; color: var(--primary);">${diamond.carat}ct</div></div>` : ''}
-                            ${diamond.color ? `<div style="text-align: center; flex: 1;"><div style="font-size: 9px; color: var(--gray);">Color</div><div style="font-size: 12px; font-weight: 600; color: var(--primary);">${diamond.color}</div></div>` : ''}
-                            ${diamond.clarity ? `<div style="text-align: center; flex: 1;"><div style="font-size: 9px; color: var(--gray);">Clarity</div><div style="font-size: 12px; font-weight: 600; color: var(--primary);">${diamond.clarity}</div></div>` : ''}
-                            ${diamond.cut ? `<div style="text-align: center; flex: 1;"><div style="font-size: 9px; color: var(--gray);">Cut</div><div style="font-size: 12px; font-weight: 600; color: var(--primary);">${diamond.cut}</div></div>` : ''}
-                        </div>`;
-                    }
+                    
                     html += `<div class="product-card">
                         <div class="product-image-container"><img class="product-image" src="${firstImage}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/300x220?text=No+Image'"></div>
                         <div class="product-info">
                             <div class="product-name">${escapeHtml(p.name)}<span class="gst-badge">GST ${p.gst || 18}%</span></div>
                             <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
-                            ${hasDiamond ? `<div style="margin-top: 5px;"><span style="background: rgba(212,175,55,0.15); color: var(--primary); padding: 2px 8px; border-radius: 20px; font-size: 10px;"><i class="fas fa-gem"></i> Diamond</span></div>` : ''}
-                            ${diamondHtml}
                             <div class="product-price">₹${total.toLocaleString()} <small>Incl. GST</small></div>
                             <div class="product-stock ${stockClass}"><i class="fas ${p.stock <= 0 ? 'fa-times-circle' : (p.stock < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> ${stockText}</div>
                             <div class="card-actions"><button class="edit-btn" onclick="editProduct(${p.id})"><i class="fas fa-edit"></i> Edit</button><button class="delete-btn" onclick="deleteProduct(${p.id})"><i class="fas fa-trash-alt"></i> Delete</button></div>
@@ -498,18 +386,19 @@
         
         window.downloadSampleCSV = function() {
             const sampleData = [
-                { 'SKU': 'RING-001', 'Product Name': 'Diamond Solitaire Ring', 'Category': 'Rings', 'Price (₹)': 29999, 'GST (%)': 18, 'Stock': 50, 'Description': 'Beautiful certified diamond engagement ring.', 'Image URL': 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400', 'Carat': 1.00, 'Diamond Color': 'D', 'Diamond Clarity': 'VS1', 'Diamond Cut': 'Excellent', 'Diamond Polish': 'Excellent', 'Diamond Symmetry': 'Excellent' },
-                { 'SKU': 'NECK-001', 'Product Name': 'Gold Chain Necklace', 'Category': 'Necklaces', 'Price (₹)': 45999, 'GST (%)': 18, 'Stock': 30, 'Description': 'Beautiful 22k gold chain necklace.', 'Image URL': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400', 'Carat': '', 'Diamond Color': '', 'Diamond Clarity': '', 'Diamond Cut': '', 'Diamond Polish': '', 'Diamond Symmetry': '' }
+                { 'SKU': 'RING-001', 'Product Name': 'Diamond Solitaire Ring', 'Category': 'Rings', 'Price (₹)': 29999, 'GST (%)': 18, 'Stock': 50, 'Description': 'Beautiful certified diamond engagement ring.', 'Image URL': 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400' },
+                { 'SKU': 'NECK-001', 'Product Name': 'Gold Chain Necklace', 'Category': 'Necklaces', 'Price (₹)': 45999, 'GST (%)': 18, 'Stock': 30, 'Description': 'Beautiful 22k gold chain necklace.', 'Image URL': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400' },
+                { 'SKU': 'EARR-001', 'Product Name': 'Pearl Drop Earrings', 'Category': 'Earrings', 'Price (₹)': 8999, 'GST (%)': 12, 'Stock': 100, 'Description': 'Elegant pearl drop earrings.', 'Image URL': 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400' }
             ];
             const ws = XLSX.utils.json_to_sheet(sampleData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Sample Products');
-            ws['!cols'] = [{wch:12}, {wch:25}, {wch:12}, {wch:12}, {wch:8}, {wch:8}, {wch:40}, {wch:50}, {wch:8}, {wch:14}, {wch:14}, {wch:12}, {wch:12}, {wch:14}];
+            ws['!cols'] = [{wch:12}, {wch:25}, {wch:12}, {wch:12}, {wch:8}, {wch:8}, {wch:40}, {wch:50}];
             XLSX.writeFile(wb, `style_of_life_sample_products.xlsx`);
-            showToast('✅ Sample CSV downloaded! Includes diamond specification columns.');
+            showToast('✅ Sample CSV downloaded!');
         };
         
-        // ========== BATCH PROCESSING - 100x FASTER ==========
+        // ========== BATCH PROCESSING ==========
         window.handleBulkUpload = async function(input) {
             const file = input.files[0];
             if (!file) return;
@@ -529,7 +418,7 @@
             resultDiv.innerHTML = '';
             
             const errors = [];
-            let successCount = 0, errorCount = 0, skipCount = 0;
+            let insertedCount = 0, errorCount = 0, skipCount = 0;
             
             try {
                 const data = await file.arrayBuffer();
@@ -543,13 +432,12 @@
                 progressFill.style.width = '10%';
                 progressText.textContent = `Processing ${totalRows} rows in batches of ${BATCH_SIZE}...`;
                 
-                // First, get all existing SKUs in one query
+                // Get existing SKUs
                 const { data: existingProducts } = await supabase.from('products').select('sku');
                 const existingSkus = new Set(existingProducts?.map(p => p.sku) || []);
                 
-                // Prepare all valid products
+                // Prepare valid products
                 const validProducts = [];
-                const duplicateSkus = [];
                 
                 for (let i = 0; i < jsonData.length; i++) {
                     const row = jsonData[i];
@@ -562,13 +450,6 @@
                     const description = row['Description'] || row['description'] || '';
                     const imageUrl = row['Image URL'] || row['image url'] || row['images'] || '';
                     
-                    const carat = row['Carat'] || row['carat'] || null;
-                    const diamondColor = row['Diamond Color'] || row['diamond color'] || row['color'] || null;
-                    const diamondClarity = row['Diamond Clarity'] || row['diamond clarity'] || row['clarity'] || null;
-                    const diamondCut = row['Diamond Cut'] || row['diamond cut'] || row['cut'] || null;
-                    const diamondPolish = row['Diamond Polish'] || row['diamond polish'] || row['polish'] || null;
-                    const diamondSymmetry = row['Diamond Symmetry'] || row['diamond symmetry'] || row['symmetry'] || null;
-                    
                     if (!sku || !name || !category || isNaN(price) || price <= 0) {
                         errors.push(`Row ${i + 1}: Missing required fields (SKU, Name, Category, Price)`);
                         errorCount++;
@@ -576,30 +457,17 @@
                     }
                     
                     if (existingSkus.has(sku)) {
-                        duplicateSkus.push(`Row ${i + 1}: SKU "${sku}" already exists`);
+                        errors.push(`Row ${i + 1}: SKU "${sku}" already exists - skipped`);
                         skipCount++;
                         continue;
                     }
                     
-                    let diamondDetails = null;
-                    if (carat || diamondColor || diamondClarity || diamondCut || diamondPolish || diamondSymmetry) {
-                        diamondDetails = {};
-                        if (carat) diamondDetails.carat = parseFloat(carat);
-                        if (diamondColor) diamondDetails.color = diamondColor;
-                        if (diamondClarity) diamondDetails.clarity = diamondClarity;
-                        if (diamondCut) diamondDetails.cut = diamondCut;
-                        if (diamondPolish) diamondDetails.polish = diamondPolish;
-                        if (diamondSymmetry) diamondDetails.symmetry = diamondSymmetry;
-                    }
-                    
                     let images = imageUrl ? [imageUrl] : [];
-                    validProducts.push({ sku, name, category, price, gst, stock, description, images, diamond_details: diamondDetails });
+                    validProducts.push({ sku, name, category, price, gst, stock, description, images });
                     existingSkus.add(sku);
                 }
                 
                 // Insert in batches
-                let insertedCount = 0;
-                let batchErrors = [];
                 const totalBatches = Math.ceil(validProducts.length / BATCH_SIZE);
                 
                 for (let i = 0; i < validProducts.length; i += BATCH_SIZE) {
@@ -612,7 +480,7 @@
                     
                     const { error } = await supabase.from('products').insert(batch);
                     if (error) {
-                        batchErrors.push(`Batch ${currentBatch}: ${error.message}`);
+                        errors.push(`Batch ${currentBatch}: ${error.message}`);
                         errorCount += batch.length;
                     } else {
                         insertedCount += batch.length;
@@ -621,29 +489,22 @@
                     await new Promise(r => setTimeout(r, 100));
                 }
                 
-                successCount = insertedCount;
-                errorCount = errorCount + (validProducts.length - insertedCount);
-                
                 progressFill.style.width = '100%';
                 progressText.textContent = `✅ Complete! Inserted ${insertedCount} products in ${totalBatches} batches`;
                 batchInfo.innerHTML = `✨ Total batches: ${totalBatches} | Products per batch: ${BATCH_SIZE}`;
                 
                 let errorHtml = '';
-                if (errors.length > 0 || duplicateSkus.length > 0 || batchErrors.length > 0) {
-                    errorHtml = `<div class="error-log"><strong>⚠️ Issues:</strong>`;
-                    if (errors.length) errorHtml += `<div style="color:var(--danger);"><strong>❌ Invalid rows (${errors.length}):</strong>${errors.slice(0, 10).map(e => `<div>${escapeHtml(e)}</div>`).join('')}${errors.length > 10 ? `<div>... and ${errors.length - 10} more</div>` : ''}</div>`;
-                    if (duplicateSkus.length) errorHtml += `<div style="color:#ff9800;"><strong>⏭️ Duplicates skipped (${duplicateSkus.length}):</strong>${duplicateSkus.slice(0, 10).map(e => `<div>${escapeHtml(e)}</div>`).join('')}${duplicateSkus.length > 10 ? `<div>... and ${duplicateSkus.length - 10} more</div>` : ''}</div>`;
-                    if (batchErrors.length) errorHtml += `<div style="color:var(--danger);"><strong>❌ Batch errors:</strong>${batchErrors.map(e => `<div>${escapeHtml(e)}</div>`).join('')}</div>`;
-                    errorHtml += `</div>`;
+                if (errors.length > 0) {
+                    errorHtml = `<div class="error-log"><strong>⚠️ Issues (${errors.length}):</strong>${errors.slice(0, 15).map(e => `<div class="error-item">${escapeHtml(e)}</div>`).join('')}${errors.length > 15 ? `<div>... and ${errors.length - 15} more</div>` : ''}</div>`;
                 }
                 
                 resultDiv.innerHTML = `<div style="background: ${insertedCount > 0 ? '#d4edda' : '#f8d7da'}; padding: 15px; border-radius: 8px; margin-top: 10px;">
                     <strong>📊 Batch Import Summary</strong><br>
                     ✅ Successfully inserted: ${insertedCount} products<br>
-                    ❌ Invalid rows: ${errors.length}<br>
-                    ⏭️ Duplicates skipped: ${duplicateSkus.length}<br>
+                    ❌ Failed: ${errorCount}<br>
+                    ⏭️ Duplicates skipped: ${skipCount}<br>
                     📦 Total rows in file: ${totalRows}<br>
-                    ⚡ Processed in ${totalBatches} batches (${BATCH_SIZE} per batch)
+                    ⚡ Processed in ${totalBatches} batches
                     ${errorHtml}
                 </div>`;
                 
@@ -656,7 +517,6 @@
                 
             } catch (error) {
                 progressText.textContent = 'Error processing file';
-                batchInfo.innerHTML = '';
                 resultDiv.innerHTML = `<div style="background: #f8d7da; padding: 15px; border-radius: 8px;"><strong>❌ Error:</strong> ${escapeHtml(error.message)}</div>`;
                 showToast('Error processing file: ' + error.message, true);
             }
