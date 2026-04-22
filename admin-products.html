@@ -55,22 +55,33 @@
         .error-log { max-height: 250px; overflow-y: auto; font-size: 12px; margin-top: 10px; background: white; border-radius: 8px; padding: 10px; }
         .error-item { padding: 5px; border-bottom: 1px solid #eee; color: var(--danger); font-family: monospace; }
         
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; margin-top: 30px; }
+        .diamond-section { background: var(--gray-100); border-radius: 12px; padding: 20px; margin-top: 20px; }
+        .diamond-title { font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .diamond-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; margin-top: 30px; }
         .product-card { background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; }
         .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .product-image-container { height: 220px; overflow: hidden; background: #f5f5f5; position: relative; }
+        .product-image-container { height: 250px; overflow: hidden; background: #f5f5f5; position: relative; }
         .product-image { width: 100%; height: 100%; object-fit: cover; }
         .media-badge { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 20px; font-size: 10px; z-index: 5; }
         .product-info { padding: 20px; }
-        .product-name { font-size: 18px; font-weight: 600; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; }
+        .product-name { font-size: 18px; font-weight: 700; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; }
         .gst-badge { background: rgba(212,175,55,0.15); color: var(--primary); padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
-        .product-sku { font-size: 12px; color: var(--gray-600); margin-bottom: 8px; }
-        .product-price { font-size: 20px; font-weight: 700; color: var(--primary); margin: 8px 0; }
+        .diamond-badge { background: rgba(212,175,55,0.15); color: var(--primary); padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+        .product-sku { font-size: 12px; color: var(--gray-600); margin-bottom: 5px; }
+        .product-price { font-size: 22px; font-weight: 700; color: var(--primary); margin: 8px 0; }
         .product-price small { font-size: 11px; color: var(--gray-600); font-weight: normal; }
         .product-stock { font-size: 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 5px; }
         .in-stock { color: var(--success); }
         .low-stock { color: #ff9800; }
         .out-of-stock { color: var(--danger); }
+        
+        .diamond-details { background: var(--gray-100); border-radius: 8px; padding: 10px; margin: 10px 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; }
+        .diamond-detail-item { text-align: center; flex: 1; min-width: 60px; }
+        .diamond-detail-label { font-size: 9px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
+        .diamond-detail-value { font-size: 12px; font-weight: 600; color: var(--primary); }
+        
         .card-actions { display: flex; gap: 10px; margin-top: 12px; }
         .edit-btn, .delete-btn { flex: 1; padding: 8px; border: none; border-radius: 30px; cursor: pointer; font-weight: 500; font-size: 12px; transition: all 0.3s; }
         .edit-btn { background: var(--info); color: white; }
@@ -102,7 +113,7 @@
         .media-item img, .media-item video { width: 100%; height: 100%; object-fit: cover; }
         .remove-media { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: white; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; }
         
-        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .status-stats { gap: 15px; } header { flex-direction: column; text-align: center; } .toolbar { flex-direction: column; } .toolbar-left, .toolbar-right { justify-content: center; } }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .status-stats { gap: 15px; } header { flex-direction: column; text-align: center; } .toolbar { flex-direction: column; } .toolbar-left, .toolbar-right { justify-content: center; } .diamond-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -157,7 +168,7 @@
             
             <div class="format-hint">
                 <strong>📋 Excel Format Required:</strong><br>
-                <code>SKU</code> | <code>Product Name</code> | <code>Category</code> | <code>Price (₹)</code> | <code>GST (%)</code> | <code>Stock</code> | <code>Description</code> | <code>Image 1 URL</code> | <code>Image 2 URL</code> | <code>Image 3 URL</code> | <code>Video URL</code>
+                <code>SKU</code> | <code>Product Name</code> | <code>Category</code> | <code>Price</code> | <code>GST</code> | <code>Stock</code> | <code>Carat</code> | <code>Diamond Color</code> | <code>Diamond Clarity</code> | <code>Diamond Cut</code> | <code>Diamond Polish</code> | <code>Diamond Symmetry</code> | <code>Images URL 1</code> | <code>Images URL 2</code> | <code>Images URL 3</code> | <code>Video URL</code>
             </div>
             
             <div class="bulk-progress" id="bulkProgress">
@@ -168,14 +179,14 @@
             <div id="bulkResult"></div>
         </div>
         
-        <!-- Add/Edit Product Form with Multiple Images -->
+        <!-- Add/Edit Product Form -->
         <div id="productForm" class="form-card">
             <h2 style="margin-bottom: 20px; color: var(--primary);" id="formTitle">Add New Product</h2>
             <input type="hidden" id="productId">
             
             <div class="form-grid">
                 <div class="form-group"><label>SKU *</label><input type="text" id="sku" placeholder="e.g., RING-001"></div>
-                <div class="form-group"><label>Product Name *</label><input type="text" id="name" placeholder="e.g., Diamond Ring"></div>
+                <div class="form-group"><label>Product Name *</label><input type="text" id="product_name" placeholder="e.g., Diamond Ring"></div>
                 <div class="form-group"><label>Category *</label><input type="text" id="category" placeholder="e.g., Rings, Necklaces"></div>
                 <div class="form-group"><label>Price (₹) *</label><input type="number" id="price" step="0.01" placeholder="0"></div>
                 <div class="form-group"><label>GST (%)</label><input type="number" id="gst" step="0.01" value="18"></div>
@@ -184,10 +195,73 @@
             
             <div class="form-group"><label>Description</label><textarea id="description" rows="2" placeholder="Product description..."></textarea></div>
             
-            <div class="form-group"><label>Image 1 URL (Main Image)</label><input type="url" id="image1Url" placeholder="https://images.unsplash.com/..."></div>
-            <div class="form-group"><label>Image 2 URL</label><input type="url" id="image2Url" placeholder="https://images.unsplash.com/..."></div>
-            <div class="form-group"><label>Image 3 URL</label><input type="url" id="image3Url" placeholder="https://images.unsplash.com/..."></div>
-            <div class="form-group"><label>Video URL</label><input type="url" id="videoUrl" placeholder="https://cdn.pixabay.com/video/...mp4"></div>
+            <!-- Diamond Specifications Section -->
+            <div class="diamond-section">
+                <div class="diamond-title"><i class="fas fa-gem"></i> Diamond Specifications (Optional)</div>
+                <div class="diamond-grid">
+                    <div class="form-group"><label>Carat</label><input type="number" id="carat" step="0.01" placeholder="e.g., 1.00"></div>
+                    <div class="form-group"><label>Diamond Color</label>
+                        <select id="diamond_color">
+                            <option value="">Select Color</option>
+                            <option value="D">D (Colorless)</option>
+                            <option value="E">E (Colorless)</option>
+                            <option value="F">F (Colorless)</option>
+                            <option value="G">G (Near Colorless)</option>
+                            <option value="H">H (Near Colorless)</option>
+                            <option value="I">I (Near Colorless)</option>
+                            <option value="J">J (Near Colorless)</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Diamond Clarity</label>
+                        <select id="diamond_clarity">
+                            <option value="">Select Clarity</option>
+                            <option value="FL">FL (Flawless)</option>
+                            <option value="IF">IF (Internally Flawless)</option>
+                            <option value="VVS1">VVS1</option>
+                            <option value="VVS2">VVS2</option>
+                            <option value="VS1">VS1</option>
+                            <option value="VS2">VS2</option>
+                            <option value="SI1">SI1</option>
+                            <option value="SI2">SI2</option>
+                            <option value="I1">I1</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Diamond Cut</label>
+                        <select id="diamond_cut">
+                            <option value="">Select Cut</option>
+                            <option value="Excellent">Excellent</option>
+                            <option value="Very Good">Very Good</option>
+                            <option value="Good">Good</option>
+                            <option value="Fair">Fair</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Diamond Polish</label>
+                        <select id="diamond_polish">
+                            <option value="">Select Polish</option>
+                            <option value="Excellent">Excellent</option>
+                            <option value="Very Good">Very Good</option>
+                            <option value="Good">Good</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Diamond Symmetry</label>
+                        <select id="diamond_symmetry">
+                            <option value="">Select Symmetry</option>
+                            <option value="Excellent">Excellent</option>
+                            <option value="Very Good">Very Good</option>
+                            <option value="Good">Good</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Images Section -->
+            <div class="diamond-section" style="margin-top: 15px;">
+                <div class="diamond-title"><i class="fas fa-image"></i> Product Media</div>
+                <div class="form-group"><label>Images URL 1 (Main Image)</label><input type="url" id="images_url_1" placeholder="https://images.unsplash.com/..."></div>
+                <div class="form-group"><label>Images URL 2</label><input type="url" id="images_url_2" placeholder="https://images.unsplash.com/..."></div>
+                <div class="form-group"><label>Images URL 3</label><input type="url" id="images_url_3" placeholder="https://images.unsplash.com/..."></div>
+                <div class="form-group"><label>Video URL</label><input type="url" id="video_url" placeholder="https://cdn.pixabay.com/video/...mp4"></div>
+            </div>
             
             <div id="mediaPreview" class="media-preview"></div>
             
@@ -248,33 +322,28 @@
             return { gstAmount, total };
         }
         
-        // Get images array from form
-        function getImagesArray() {
-            const images = [];
-            const img1 = document.getElementById('image1Url').value.trim();
-            const img2 = document.getElementById('image2Url').value.trim();
-            const img3 = document.getElementById('image3Url').value.trim();
-            const video = document.getElementById('videoUrl').value.trim();
-            
-            if (img1) images.push(img1);
-            if (img2) images.push(img2);
-            if (img3) images.push(img3);
-            if (video) images.push(video);
-            
-            return images;
+        function getMediaArray() {
+            const media = [];
+            const img1 = document.getElementById('images_url_1').value.trim();
+            const img2 = document.getElementById('images_url_2').value.trim();
+            const img3 = document.getElementById('images_url_3').value.trim();
+            const video = document.getElementById('video_url').value.trim();
+            if (img1) media.push(img1);
+            if (img2) media.push(img2);
+            if (img3) media.push(img3);
+            if (video) media.push(video);
+            return media;
         }
         
-        // Update media preview
         function updateMediaPreview() {
             const container = document.getElementById('mediaPreview');
-            const images = getImagesArray();
-            if (images.length === 0) {
+            const media = getMediaArray();
+            if (media.length === 0) {
                 container.innerHTML = '';
                 return;
             }
-            
             let html = '';
-            images.forEach((url, index) => {
+            media.forEach((url, index) => {
                 const isVideo = url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com');
                 html += `<div class="media-item">
                     ${isVideo ? `<video src="${url}" style="width:100%;height:100%;object-fit:cover;"></video>` : `<img src="${url}" onerror="this.src='https://via.placeholder.com/80?text=Error'">`}
@@ -285,28 +354,12 @@
         }
         
         window.removeMedia = function(index) {
-            if (index === 0) document.getElementById('image1Url').value = '';
-            if (index === 1) document.getElementById('image2Url').value = '';
-            if (index === 2) document.getElementById('image3Url').value = '';
-            if (index === 3) document.getElementById('videoUrl').value = '';
+            if (index === 0) document.getElementById('images_url_1').value = '';
+            if (index === 1) document.getElementById('images_url_2').value = '';
+            if (index === 2) document.getElementById('images_url_3').value = '';
+            if (index === 3) document.getElementById('video_url').value = '';
             updateMediaPreview();
         };
-        
-        // Set images in form
-        function setImagesInForm(images) {
-            document.getElementById('image1Url').value = images[0] || '';
-            document.getElementById('image2Url').value = images[1] || '';
-            document.getElementById('image3Url').value = images[2] || '';
-            let videoUrl = '';
-            for (let img of images) {
-                if (img.match(/\.(mp4|webm|mov|avi)$/i) || img.includes('youtube.com') || img.includes('vimeo.com')) {
-                    videoUrl = img;
-                    break;
-                }
-            }
-            document.getElementById('videoUrl').value = videoUrl || '';
-            updateMediaPreview();
-        }
         
         async function updateStatusBar() {
             try {
@@ -323,34 +376,47 @@
         window.saveProduct = async function() {
             const productId = document.getElementById('productId').value;
             const sku = document.getElementById('sku').value.trim();
-            const name = document.getElementById('name').value.trim();
+            const product_name = document.getElementById('product_name').value.trim();
             const category = document.getElementById('category').value.trim();
             const price = parseFloat(document.getElementById('price').value);
             const gst = parseFloat(document.getElementById('gst').value) || 18;
             const stock = parseInt(document.getElementById('stock').value);
             const description = document.getElementById('description').value.trim();
-            const images = getImagesArray();
+            const carat = document.getElementById('carat').value ? parseFloat(document.getElementById('carat').value) : null;
+            const diamond_color = document.getElementById('diamond_color').value || null;
+            const diamond_clarity = document.getElementById('diamond_clarity').value || null;
+            const diamond_cut = document.getElementById('diamond_cut').value || null;
+            const diamond_polish = document.getElementById('diamond_polish').value || null;
+            const diamond_symmetry = document.getElementById('diamond_symmetry').value || null;
+            const images_url_1 = document.getElementById('images_url_1').value.trim() || null;
+            const images_url_2 = document.getElementById('images_url_2').value.trim() || null;
+            const images_url_3 = document.getElementById('images_url_3').value.trim() || null;
+            const video_url = document.getElementById('video_url').value.trim() || null;
             
-            if (!sku || !name || !category || isNaN(price) || isNaN(stock)) {
-                showToast('Please fill all required fields', true);
+            if (!sku || !product_name || !category || isNaN(price) || isNaN(stock)) {
+                showToast('Please fill all required fields (SKU, Product Name, Category, Price, Stock)', true);
                 return;
             }
             if (price <= 0) { showToast('Price must be greater than 0', true); return; }
             
-            const productData = { sku, name, category, price, gst, stock, description, images };
+            const productData = { 
+                sku, product_name, category, price, gst, stock, description,
+                carat, diamond_color, diamond_clarity, diamond_cut, diamond_polish, diamond_symmetry,
+                images_url_1, images_url_2, images_url_3, video_url
+            };
             
             try {
                 let result;
                 if (productId) {
                     result = await supabase.from('products').update(productData).eq('id', parseInt(productId));
                     if (result.error) throw result.error;
-                    showToast(`✅ Product "${name}" updated in Supabase!`);
+                    showToast(`✅ Product "${product_name}" updated in Supabase!`);
                 } else {
                     const { data: existing } = await supabase.from('products').select('id').eq('sku', sku).maybeSingle();
                     if (existing) { showToast(`SKU "${sku}" already exists!`, true); return; }
                     result = await supabase.from('products').insert([productData]);
                     if (result.error) throw result.error;
-                    showToast(`✅ Product "${name}" added to Supabase!`);
+                    showToast(`✅ Product "${product_name}" added to Supabase!`);
                 }
                 toggleForm();
                 loadProducts();
@@ -364,16 +430,22 @@
         function resetForm() {
             document.getElementById('productId').value = '';
             document.getElementById('sku').value = '';
-            document.getElementById('name').value = '';
+            document.getElementById('product_name').value = '';
             document.getElementById('category').value = '';
             document.getElementById('price').value = '';
             document.getElementById('gst').value = '18';
             document.getElementById('stock').value = '';
             document.getElementById('description').value = '';
-            document.getElementById('image1Url').value = '';
-            document.getElementById('image2Url').value = '';
-            document.getElementById('image3Url').value = '';
-            document.getElementById('videoUrl').value = '';
+            document.getElementById('carat').value = '';
+            document.getElementById('diamond_color').value = '';
+            document.getElementById('diamond_clarity').value = '';
+            document.getElementById('diamond_cut').value = '';
+            document.getElementById('diamond_polish').value = '';
+            document.getElementById('diamond_symmetry').value = '';
+            document.getElementById('images_url_1').value = '';
+            document.getElementById('images_url_2').value = '';
+            document.getElementById('images_url_3').value = '';
+            document.getElementById('video_url').value = '';
             updateMediaPreview();
             document.getElementById('formTitle').textContent = 'Add New Product';
         }
@@ -381,10 +453,10 @@
         window.deleteProduct = async function(id) {
             pendingAction = async () => {
                 try {
-                    const { data: product } = await supabase.from('products').select('name').eq('id', id).single();
+                    const { data: product } = await supabase.from('products').select('product_name').eq('id', id).single();
                     const { error } = await supabase.from('products').delete().eq('id', id);
                     if (error) throw error;
-                    showToast(`✅ Product "${product?.name}" deleted from Supabase!`);
+                    showToast(`✅ Product "${product?.product_name}" deleted from Supabase!`);
                     loadProducts();
                     updateStatusBar();
                     closeModal();
@@ -401,13 +473,23 @@
                 if (error) throw error;
                 document.getElementById('productId').value = data.id;
                 document.getElementById('sku').value = data.sku;
-                document.getElementById('name').value = data.name;
+                document.getElementById('product_name').value = data.product_name;
                 document.getElementById('category').value = data.category || '';
                 document.getElementById('price').value = data.price;
                 document.getElementById('gst').value = data.gst || 18;
                 document.getElementById('stock').value = data.stock;
                 document.getElementById('description').value = data.description || '';
-                setImagesInForm(data.images || []);
+                document.getElementById('carat').value = data.carat || '';
+                document.getElementById('diamond_color').value = data.diamond_color || '';
+                document.getElementById('diamond_clarity').value = data.diamond_clarity || '';
+                document.getElementById('diamond_cut').value = data.diamond_cut || '';
+                document.getElementById('diamond_polish').value = data.diamond_polish || '';
+                document.getElementById('diamond_symmetry').value = data.diamond_symmetry || '';
+                document.getElementById('images_url_1').value = data.images_url_1 || '';
+                document.getElementById('images_url_2').value = data.images_url_2 || '';
+                document.getElementById('images_url_3').value = data.images_url_3 || '';
+                document.getElementById('video_url').value = data.video_url || '';
+                updateMediaPreview();
                 document.getElementById('formTitle').textContent = 'Edit Product';
                 document.getElementById('productForm').style.display = 'block';
                 document.getElementById('bulkUploadSection').style.display = 'none';
@@ -431,22 +513,44 @@
                 }
                 let html = '';
                 for (const p of data) {
-                    const images = p.images || [];
-                    const firstImage = images[0] || 'https://via.placeholder.com/300x220?text=No+Image';
-                    const isVideo = firstImage.match(/\.(mp4|webm|mov|avi)$/i) || firstImage.includes('youtube.com') || firstImage.includes('vimeo.com');
+                    const firstImage = p.images_url_1 || p.images_url_2 || p.video_url || 'https://via.placeholder.com/300x250?text=No+Image';
+                    const isVideo = firstImage && (firstImage.match(/\.(mp4|webm|mov|avi)$/i) || firstImage.includes('youtube.com') || firstImage.includes('vimeo.com'));
                     const stockClass = p.stock <= 0 ? 'out-of-stock' : (p.stock < 10 ? 'low-stock' : 'in-stock');
                     const stockText = p.stock <= 0 ? 'Out of Stock' : (p.stock < 10 ? `Low Stock (${p.stock})` : `In Stock (${p.stock})`);
                     const { total } = calculateGST(p.price || 0, p.gst || 18);
-                    const mediaCount = images.length;
+                    const hasDiamond = p.carat || p.diamond_color || p.diamond_clarity || p.diamond_cut;
+                    
+                    let diamondHtml = '';
+                    if (hasDiamond) {
+                        diamondHtml = `<div class="diamond-details">
+                            ${p.carat ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Carat</div><div class="diamond-detail-value">${p.carat}ct</div></div>` : ''}
+                            ${p.diamond_color ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Color</div><div class="diamond-detail-value">${p.diamond_color}</div></div>` : ''}
+                            ${p.diamond_clarity ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Clarity</div><div class="diamond-detail-value">${p.diamond_clarity}</div></div>` : ''}
+                            ${p.diamond_cut ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Cut</div><div class="diamond-detail-value">${p.diamond_cut}</div></div>` : ''}
+                            ${p.diamond_polish ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Polish</div><div class="diamond-detail-value">${p.diamond_polish}</div></div>` : ''}
+                            ${p.diamond_symmetry ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Symmetry</div><div class="diamond-detail-value">${p.diamond_symmetry}</div></div>` : ''}
+                        </div>`;
+                    }
+                    
+                    let mediaCount = 0;
+                    if (p.images_url_1) mediaCount++;
+                    if (p.images_url_2) mediaCount++;
+                    if (p.images_url_3) mediaCount++;
+                    if (p.video_url) mediaCount++;
                     
                     html += `<div class="product-card">
                         <div class="product-image-container">
-                            ${isVideo ? `<video class="product-image" src="${firstImage}" autoplay muted loop playsinline></video>` : `<img class="product-image" src="${firstImage}" alt="${escapeHtml(p.name)}" onerror="this.src='https://via.placeholder.com/300x220?text=No+Image'">`}
+                            ${isVideo ? `<video class="product-image" src="${firstImage}" autoplay muted loop playsinline></video>` : `<img class="product-image" src="${firstImage}" alt="${escapeHtml(p.product_name)}" onerror="this.src='https://via.placeholder.com/300x250?text=No+Image'">`}
                             ${mediaCount > 0 ? `<div class="media-badge">📸 ${mediaCount} media</div>` : ''}
                         </div>
                         <div class="product-info">
-                            <div class="product-name">${escapeHtml(p.name)}<span class="gst-badge">GST ${p.gst || 18}%</span></div>
+                            <div class="product-name">
+                                ${escapeHtml(p.product_name)}
+                                <span class="gst-badge">GST ${p.gst || 18}%</span>
+                                ${hasDiamond ? '<span class="diamond-badge"><i class="fas fa-gem"></i> Diamond</span>' : ''}
+                            </div>
                             <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
+                            ${diamondHtml}
                             <div class="product-price">₹${total.toLocaleString()} <small>Incl. GST</small></div>
                             <div class="product-stock ${stockClass}"><i class="fas ${p.stock <= 0 ? 'fa-times-circle' : (p.stock < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> ${stockText}</div>
                             <div class="card-actions"><button class="edit-btn" onclick="editProduct(${p.id})"><i class="fas fa-edit"></i> Edit</button><button class="delete-btn" onclick="deleteProduct(${p.id})"><i class="fas fa-trash-alt"></i> Delete</button></div>
@@ -455,72 +559,75 @@
                 }
                 grid.innerHTML = html;
             } catch (error) {
+                console.error('Load error:', error);
                 grid.innerHTML = '<div class="empty-state">Error loading products. Please check your Supabase connection.</div>';
             }
         }
         
-        // Download Sample CSV with separate columns for 3 images and 1 video
+        // Download Sample CSV
         window.downloadSampleCSV = function() {
             const sampleData = [
                 { 
                     'SKU': 'RING-001', 
                     'Product Name': 'Diamond Solitaire Ring', 
                     'Category': 'Rings', 
-                    'Price (₹)': 29999, 
-                    'GST (%)': 18, 
+                    'Price': 29999, 
+                    'GST': 18, 
                     'Stock': 50, 
-                    'Description': 'Beautiful certified diamond engagement ring with exquisite craftsmanship.',
-                    'Image 1 URL': 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400',
-                    'Image 2 URL': 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=400',
-                    'Image 3 URL': 'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=400',
+                    'Carat': 1.00,
+                    'Diamond Color': 'D',
+                    'Diamond Clarity': 'VS1',
+                    'Diamond Cut': 'Excellent',
+                    'Diamond Polish': 'Excellent',
+                    'Diamond Symmetry': 'Excellent',
+                    'Images URL 1': 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400',
+                    'Images URL 2': 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=400',
+                    'Images URL 3': 'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=400',
                     'Video URL': ''
                 },
                 { 
                     'SKU': 'NECK-001', 
                     'Product Name': 'Gold Chain Necklace', 
                     'Category': 'Necklaces', 
-                    'Price (₹)': 45999, 
-                    'GST (%)': 18, 
+                    'Price': 45999, 
+                    'GST': 18, 
                     'Stock': 30, 
-                    'Description': 'Beautiful 22k gold chain necklace with intricate design.',
-                    'Image 1 URL': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400',
-                    'Image 2 URL': '',
-                    'Image 3 URL': '',
-                    'Video URL': ''
-                },
-                { 
-                    'SKU': 'EARR-001', 
-                    'Product Name': 'Pearl Drop Earrings', 
-                    'Category': 'Earrings', 
-                    'Price (₹)': 8999, 
-                    'GST (%)': 12, 
-                    'Stock': 100, 
-                    'Description': 'Elegant pearl drop earrings with sterling silver backing.',
-                    'Image 1 URL': 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400',
-                    'Image 2 URL': '',
-                    'Image 3 URL': '',
+                    'Carat': '',
+                    'Diamond Color': '',
+                    'Diamond Clarity': '',
+                    'Diamond Cut': '',
+                    'Diamond Polish': '',
+                    'Diamond Symmetry': '',
+                    'Images URL 1': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400',
+                    'Images URL 2': '',
+                    'Images URL 3': '',
                     'Video URL': ''
                 },
                 { 
                     'SKU': 'VIDEO-001', 
                     'Product Name': 'Diamond Necklace Video', 
                     'Category': 'Necklaces', 
-                    'Price (₹)': 25999, 
-                    'GST (%)': 18, 
+                    'Price': 25999, 
+                    'GST': 18, 
                     'Stock': 15, 
-                    'Description': 'Watch our beautiful diamond necklace in motion.',
-                    'Image 1 URL': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400',
-                    'Image 2 URL': '',
-                    'Image 3 URL': '',
+                    'Carat': 0.75,
+                    'Diamond Color': 'G',
+                    'Diamond Clarity': 'VS2',
+                    'Diamond Cut': 'Excellent',
+                    'Diamond Polish': 'Excellent',
+                    'Diamond Symmetry': 'Excellent',
+                    'Images URL 1': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400',
+                    'Images URL 2': '',
+                    'Images URL 3': '',
                     'Video URL': 'https://cdn.pixabay.com/video/2022/03/20/113134-693145691_large.mp4'
                 }
             ];
             const ws = XLSX.utils.json_to_sheet(sampleData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Sample Products');
-            ws['!cols'] = [{wch:12}, {wch:25}, {wch:12}, {wch:12}, {wch:8}, {wch:8}, {wch:40}, {wch:50}, {wch:50}, {wch:50}, {wch:50}];
+            ws['!cols'] = [{wch:12}, {wch:25}, {wch:12}, {wch:10}, {wch:6}, {wch:8}, {wch:8}, {wch:14}, {wch:14}, {wch:12}, {wch:12}, {wch:14}, {wch:50}, {wch:50}, {wch:50}, {wch:50}];
             XLSX.writeFile(wb, `style_of_life_sample_products.xlsx`);
-            showToast('✅ Sample CSV downloaded! Includes Image 1, Image 2, Image 3, and Video URL columns.');
+            showToast('✅ Sample CSV downloaded!');
         };
         
         // ========== BATCH PROCESSING ==========
@@ -557,37 +664,33 @@
                 progressFill.style.width = '10%';
                 progressText.textContent = `Processing ${totalRows} rows in batches of ${BATCH_SIZE}...`;
                 
-                // Get existing SKUs
                 const { data: existingProducts } = await supabase.from('products').select('sku');
                 const existingSkus = new Set(existingProducts?.map(p => p.sku) || []);
                 
-                // Prepare valid products
                 const validProducts = [];
                 
                 for (let i = 0; i < jsonData.length; i++) {
                     const row = jsonData[i];
                     const sku = row['SKU'] || row['sku'] || '';
-                    const name = row['Product Name'] || row['product name'] || row['name'] || '';
+                    const product_name = row['Product Name'] || row['product name'] || row['Product Name'] || '';
                     const category = row['Category'] || row['category'] || '';
-                    const price = parseFloat(row['Price (₹)'] || row['Price'] || row['price'] || 0);
-                    const gst = parseFloat(row['GST (%)'] || row['GST'] || row['gst'] || 18);
+                    const price = parseFloat(row['Price'] || row['price'] || 0);
+                    const gst = parseFloat(row['GST'] || row['gst'] || 18);
                     const stock = parseInt(row['Stock'] || row['stock'] || 0);
                     const description = row['Description'] || row['description'] || '';
+                    const carat = row['Carat'] || row['carat'] ? parseFloat(row['Carat'] || row['carat']) : null;
+                    const diamond_color = row['Diamond Color'] || row['diamond color'] || null;
+                    const diamond_clarity = row['Diamond Clarity'] || row['diamond clarity'] || null;
+                    const diamond_cut = row['Diamond Cut'] || row['diamond cut'] || null;
+                    const diamond_polish = row['Diamond Polish'] || row['diamond polish'] || null;
+                    const diamond_symmetry = row['Diamond Symmetry'] || row['diamond symmetry'] || null;
+                    const images_url_1 = row['Images URL 1'] || row['images url 1'] || null;
+                    const images_url_2 = row['Images URL 2'] || row['images url 2'] || null;
+                    const images_url_3 = row['Images URL 3'] || row['images url 3'] || null;
+                    const video_url = row['Video URL'] || row['video url'] || null;
                     
-                    // Get images from separate columns: 3 image columns + 1 video column
-                    const img1 = row['Image 1 URL'] || row['image 1 url'] || row['image1'] || '';
-                    const img2 = row['Image 2 URL'] || row['image 2 url'] || row['image2'] || '';
-                    const img3 = row['Image 3 URL'] || row['image 3 url'] || row['image3'] || '';
-                    const videoUrl = row['Video URL'] || row['video url'] || row['video'] || '';
-                    
-                    const images = [];
-                    if (img1) images.push(img1);
-                    if (img2) images.push(img2);
-                    if (img3) images.push(img3);
-                    if (videoUrl) images.push(videoUrl);
-                    
-                    if (!sku || !name || !category || isNaN(price) || price <= 0) {
-                        errors.push(`Row ${i + 1}: Missing required fields (SKU, Name, Category, Price)`);
+                    if (!sku || !product_name || !category || isNaN(price) || price <= 0) {
+                        errors.push(`Row ${i + 1}: Missing required fields (SKU, Product Name, Category, Price)`);
                         errorCount++;
                         continue;
                     }
@@ -598,11 +701,14 @@
                         continue;
                     }
                     
-                    validProducts.push({ sku, name, category, price, gst, stock, description, images });
+                    validProducts.push({ 
+                        sku, product_name, category, price, gst, stock, description,
+                        carat, diamond_color, diamond_clarity, diamond_cut, diamond_polish, diamond_symmetry,
+                        images_url_1, images_url_2, images_url_3, video_url
+                    });
                     existingSkus.add(sku);
                 }
                 
-                // Insert in batches
                 const totalBatches = Math.ceil(validProducts.length / BATCH_SIZE);
                 
                 for (let i = 0; i < validProducts.length; i += BATCH_SIZE) {
@@ -658,7 +764,6 @@
             input.value = '';
         };
         
-        // Setup drag and drop
         const bulkArea = document.getElementById('bulkUploadArea');
         if (bulkArea) {
             bulkArea.addEventListener('click', () => document.getElementById('bulkFileInput').click());
@@ -680,11 +785,10 @@
             });
         }
         
-        // Live preview for images
-        document.getElementById('image1Url')?.addEventListener('input', updateMediaPreview);
-        document.getElementById('image2Url')?.addEventListener('input', updateMediaPreview);
-        document.getElementById('image3Url')?.addEventListener('input', updateMediaPreview);
-        document.getElementById('videoUrl')?.addEventListener('input', updateMediaPreview);
+        document.getElementById('images_url_1')?.addEventListener('input', updateMediaPreview);
+        document.getElementById('images_url_2')?.addEventListener('input', updateMediaPreview);
+        document.getElementById('images_url_3')?.addEventListener('input', updateMediaPreview);
+        document.getElementById('video_url')?.addEventListener('input', updateMediaPreview);
         
         function showModal(message) {
             document.getElementById('modalMessage').innerHTML = message;
