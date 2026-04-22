@@ -45,19 +45,15 @@
         .swipe-cart-overlay.active { transform: translateY(0); }
         .swipe-handle { width: 50px; height: 5px; background: rgba(255,255,255,0.4); border-radius: 3px; margin: 0 auto 20px; cursor: grab; }
         .swipe-title { text-align: center; color: white; font-size: 18px; font-weight: 600; margin-bottom: 20px; }
-        .swipe-title i { color: var(--gold); margin-right: 8px; }
         .cart-preview { flex: 1; overflow-y: auto; max-height: 45vh; margin-bottom: 15px; }
         .cart-preview-item { display: flex; gap: 12px; background: rgba(255,255,255,0.08); border-radius: 16px; padding: 12px; margin-bottom: 10px; }
         .cart-preview-item img { width: 55px; height: 55px; border-radius: 12px; object-fit: cover; }
-        .cart-preview-item-details { flex: 1; }
-        .cart-preview-item-name { font-size: 14px; font-weight: 600; color: white; margin-bottom: 4px; }
-        .cart-preview-item-price { font-size: 12px; color: var(--gold); }
         .cart-preview-total { text-align: center; padding: 15px; color: white; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 10px; }
         .swipe-container { background: rgba(255,255,255,0.1); border-radius: 50px; padding: 4px; margin: 15px 0 10px; position: relative; cursor: grab; }
         .swipe-track { background: rgba(255,255,255,0.2); border-radius: 50px; position: relative; overflow: hidden; height: 52px; }
-        .swipe-thumb { width: 75px; height: 48px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 50px; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: grab; position: relative; z-index: 2; box-shadow: 0 2px 8px rgba(0,0,0,0.2); font-weight: 600; font-size: 13px; color: var(--black); }
+        .swipe-thumb { width: 75px; height: 48px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 50px; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: grab; position: relative; z-index: 2; }
         .swipe-progress { position: absolute; top: 0; left: 0; height: 100%; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 50px; width: 0%; z-index: 1; }
-        .swipe-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 500; white-space: nowrap; z-index: 1; pointer-events: none; }
+        .swipe-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.7); font-size: 13px; white-space: nowrap; z-index: 1; pointer-events: none; }
         .action-card { background: rgba(255,255,255,0.08); border-radius: 50px; padding: 10px 20px; text-align: center; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.05); }
         .action-card:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); border-color: var(--gold); }
         
@@ -82,7 +78,8 @@
         .product-card { background: var(--white); border-radius: 20px; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); transition: all 0.4s ease; cursor: pointer; }
         .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); border-color: var(--gold); }
         
-        .featured-media, .featured-video { width: 100%; height: 160px; object-fit: cover; }
+        .featured-media { width: 100%; height: 160px; object-fit: cover; transition: transform 0.5s; }
+        .featured-card:hover .featured-media { transform: scale(1.05); }
         .product-image-container { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #f5f5f5; }
         .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         .product-card:hover .product-image { transform: scale(1.05); }
@@ -157,7 +154,12 @@
         .modal-sku { font-size: 12px; color: var(--gray-light); margin-bottom: 12px; }
         .modal-category { display: inline-block; background: var(--gold-light); color: var(--gold-dark); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-bottom: 15px; }
         .modal-price { font-size: 28px; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
-        .modal-price small { font-size: 12px; color: var(--gray); font-weight: normal; }
+        .modal-diamond-details { background: var(--white-light); border-radius: 16px; padding: 15px; margin: 15px 0; }
+        .modal-diamond-title { font-size: 14px; font-weight: 600; color: var(--gold); margin-bottom: 12px; }
+        .modal-diamond-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .modal-diamond-item { text-align: center; }
+        .modal-diamond-label { font-size: 10px; color: var(--gray); text-transform: uppercase; }
+        .modal-diamond-value { font-size: 14px; font-weight: 600; color: var(--black); margin-top: 4px; }
         .modal-desc { font-size: 14px; color: var(--gray); line-height: 1.5; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
         .modal-stock { font-size: 13px; margin-bottom: 20px; padding: 10px; border-radius: 12px; background: var(--white-light); }
         .modal-buttons { display: flex; gap: 12px; }
@@ -176,7 +178,7 @@
             .featured-grid { grid-template-columns: repeat(4, 1fr); max-width: 1200px; margin: 0 auto; }
             .products-grid { grid-template-columns: repeat(2, 1fr); max-width: 1200px; margin: 0 auto; }
             .features-grid { grid-template-columns: repeat(4, 1fr); }
-            .featured-media, .featured-video { height: 200px; }
+            .featured-media { height: 200px; }
         }
         @media (min-width: 1024px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
     </style>
@@ -221,7 +223,7 @@
     
     <div class="bottom-nav"><a data-page="home" class="active"><i class="fas fa-home"></i><span>Home</span></a><a data-page="shop"><i class="fas fa-search"></i><span>Discover</span></a><a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Bag</span></a><a data-page="track"><i class="fas fa-truck"></i><span>Track</span></a><a data-page="customer-portal"><i class="fas fa-user"></i><span>Profile</span></a></div>
     
-    <div id="productModal" class="product-modal"><div class="modal-container"><button class="modal-close" onclick="closeProductModal()">&times;</button><div id="modalMediaContainer" class="modal-gallery-container"></div><div class="modal-info"><div class="modal-name" id="modalName"></div><div class="modal-sku" id="modalSku"></div><div class="modal-category" id="modalCategory"></div><div class="modal-price" id="modalPrice"></div><div class="modal-desc" id="modalDesc"></div><div class="modal-stock" id="modalStock"></div><div class="modal-buttons"><button class="modal-buy" id="modalBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button><button class="modal-cart" id="modalCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button></div></div></div></div>
+    <div id="productModal" class="product-modal"><div class="modal-container"><button class="modal-close" onclick="closeProductModal()">&times;</button><div id="modalMediaContainer" class="modal-gallery-container"></div><div class="modal-info"><div class="modal-name" id="modalName"></div><div class="modal-sku" id="modalSku"></div><div class="modal-category" id="modalCategory"></div><div class="modal-price" id="modalPrice"></div><div id="modalDiamondDetails" class="modal-diamond-details" style="display: none;"><div class="modal-diamond-title"><i class="fas fa-gem"></i> Diamond Specifications</div><div class="modal-diamond-grid"><div class="modal-diamond-item"><div class="modal-diamond-label">Carat</div><div class="modal-diamond-value" id="modalCarat">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Color</div><div class="modal-diamond-value" id="modalColor">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Clarity</div><div class="modal-diamond-value" id="modalClarity">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Cut</div><div class="modal-diamond-value" id="modalCut">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Polish</div><div class="modal-diamond-value" id="modalPolish">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Symmetry</div><div class="modal-diamond-value" id="modalSymmetry">-</div></div></div></div><div class="modal-desc" id="modalDesc"></div><div class="modal-stock" id="modalStock"></div><div class="modal-buttons"><button class="modal-buy" id="modalBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button><button class="modal-cart" id="modalCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button></div></div></div></div>
     
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     
@@ -236,39 +238,16 @@
         
         function calculateGST(price, gstPercent) { const gst = (price * gstPercent) / 100; return { gstAmount: gst, total: price + gst }; }
         
-        // Media type detection
-        function isD360Interactive(url) { 
-            return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); 
-        }
-        function isD360Image(url) { 
-            return url && url.includes('d360.tech/imaged/') && (url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png') || url.includes('still.jpg'));
-        }
-        function isVideoUrl(url) { 
-            return url && (url.match(/\.(mp4|webm|mov|avi|wmv|flv)$/i) || url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')); 
-        }
+        function isD360Interactive(url) { return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); }
+        function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com')); }
         
-        function getMediaTypeForModal(url) {
-            if (isD360Interactive(url)) return 'd360-interactive';
-            if (isVideoUrl(url)) return 'video';
-            return 'image';
-        }
-        
-        // Get the best image to show on front page
+        // Get product image from the correct columns
         function getProductImage(product) {
-            const media = product.images || [];
-            // First priority: Regular images (not D360, not video)
-            for (let m of media) {
-                if (!isD360Interactive(m) && !isVideoUrl(m) && !isD360Image(m)) return m;
-            }
-            // Second priority: D360 still images (like still.jpg)
-            for (let m of media) {
-                if (isD360Image(m)) return m;
-            }
-            // Third priority: Video (will show poster frame)
-            for (let m of media) {
-                if (isVideoUrl(m)) return m;
-            }
-            return 'https://via.placeholder.com/400x400?text=Style';
+            if (product.images_url_1 && product.images_url_1.trim()) return product.images_url_1;
+            if (product.images_url_2 && product.images_url_2.trim()) return product.images_url_2;
+            if (product.images_url_3 && product.images_url_3.trim()) return product.images_url_3;
+            if (product.video_url && product.video_url.trim()) return product.video_url;
+            return 'https://via.placeholder.com/400x400?text=Style+Of+Life';
         }
         
         function navigateTo(page) { if (window.parent !== window) window.parent.postMessage({ page: page }, '*'); else window.location.href = page + '.html'; }
@@ -276,13 +255,34 @@
         
         function showToast(msg, isErr = false) { const t = document.createElement('div'); t.className = 'toast' + (isErr ? ' toast-error' : ''); t.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
         
+        // Swipe cart
+        let isDragging = false, startX = 0, currentTranslate = 0;
+        const swipeThumb = document.getElementById('swipeThumb'), swipeProgress = document.getElementById('swipeProgress'), swipeTrack = document.querySelector('.swipe-track'), overlay = document.getElementById('swipeCartOverlay');
+        let maxSwipe = 0, touchStartY = 0, isSwipingDown = false;
+        
+        function initSwipe() { if (!swipeThumb || !swipeTrack) return; maxSwipe = swipeTrack.getBoundingClientRect().width - 75; swipeThumb.addEventListener('mousedown', startDrag); swipeThumb.addEventListener('touchstart', startDrag); document.addEventListener('mousemove', onDrag); document.addEventListener('touchmove', onDrag); document.addEventListener('mouseup', endDrag); document.addEventListener('touchend', endDrag); }
+        function startDrag(e) { isDragging = true; const clientX = e.clientX || (e.touches && e.touches[0].clientX); startX = clientX - currentTranslate; if (swipeThumb) swipeThumb.style.transition = 'none'; if (swipeProgress) swipeProgress.style.transition = 'none'; e.stopPropagation(); e.preventDefault(); }
+        function onDrag(e) { if (!isDragging) return; e.preventDefault(); const clientX = e.clientX || (e.touches && e.touches[0].clientX); let newTranslate = clientX - startX; newTranslate = Math.max(0, Math.min(newTranslate, maxSwipe)); currentTranslate = newTranslate; if (swipeThumb) swipeThumb.style.transform = `translateX(${currentTranslate}px)`; if (swipeProgress) swipeProgress.style.width = `${(currentTranslate / maxSwipe) * 100}%`; if ((currentTranslate / maxSwipe) >= 0.95) completeSwipe(); }
+        function endDrag() { isDragging = false; if (swipeThumb) swipeThumb.style.transition = 'transform 0.3s ease'; if (swipeProgress) swipeProgress.style.transition = 'width 0.3s ease'; if (currentTranslate < maxSwipe * 0.95) { currentTranslate = 0; if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)'; if (swipeProgress) swipeProgress.style.width = '0%'; } }
+        function completeSwipe() { currentTranslate = 0; if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)'; if (swipeProgress) swipeProgress.style.width = '0%'; closeSwipeCart(); if (currentCart.length > 0) navigateTo('checkout'); else showToast('Your bag is empty!', true); }
+        function setupSwipeDownToClose() { if (!overlay) return; overlay.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; isSwipingDown = true; }); overlay.addEventListener('touchmove', (e) => { if (!isSwipingDown) return; const deltaY = e.touches[0].clientY - touchStartY; if (deltaY > 0 && overlay.classList.contains('active')) { overlay.style.transform = `translateY(${Math.min(deltaY, 300)}px)`; e.preventDefault(); } }); overlay.addEventListener('touchend', (e) => { if (e.changedTouches[0].clientY - touchStartY > 100) closeSwipeCart(); overlay.style.transform = ''; isSwipingDown = false; }); let mouseStartY = 0, isMouseSwiping = false; overlay.addEventListener('mousedown', (e) => { if (e.target === overlay || e.target.classList.contains('swipe-handle')) { mouseStartY = e.clientY; isMouseSwiping = true; } }); document.addEventListener('mousemove', (e) => { if (!isMouseSwiping || !overlay.classList.contains('active')) return; const deltaY = e.clientY - mouseStartY; if (deltaY > 0 && deltaY < 300) overlay.style.transform = `translateY(${deltaY}px)`; }); document.addEventListener('mouseup', (e) => { if (!isMouseSwiping) return; if (e.clientY - mouseStartY > 100) closeSwipeCart(); overlay.style.transform = ''; isMouseSwiping = false; }); }
+        function openSwipeCart() { overlay.classList.add('active'); overlay.style.transform = ''; updateCartPreview(); setTimeout(initSwipe, 150); }
+        function closeSwipeCart() { overlay.classList.remove('active'); overlay.style.transform = ''; currentTranslate = 0; if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)'; if (swipeProgress) swipeProgress.style.width = '0%'; }
+        document.getElementById('floatingCartBtn')?.addEventListener('click', openSwipeCart);
+        document.getElementById('clearCartSwipeBtn')?.addEventListener('click', async () => { if (currentCart.length && confirm('Clear cart?')) { await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date() }, { onConflict: 'session_id' }); showToast('Cart cleared!'); await updateCartPreview(); closeSwipeCart(); } else if (!currentCart.length) showToast('Cart empty', true); });
+        setupSwipeDownToClose();
+        
         async function updateCartCount() {
-            const { data } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
-            const items = data?.items || []; currentCart = items;
-            document.getElementById('cartCount').textContent = items.reduce((s, i) => s + i.quantity, 0);
-            return items;
+            try {
+                const { data } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
+                const items = data?.items || []; currentCart = items;
+                const total = items.reduce((s, i) => s + i.quantity, 0);
+                document.getElementById('cartCount').textContent = total;
+                return items;
+            } catch (error) { return []; }
         }
-        async function fetchProductGST(id) { if (productsCache[id]) return productsCache[id]; const { data } = await supabase.from('products').select('gst').eq('id', id).single(); productsCache[id] = data || { gst: 18 }; return productsCache[id]; }
+        
+        async function fetchProductGST(id) { if (productsCache[id]) return productsCache[id]; try { const { data } = await supabase.from('products').select('gst').eq('id', id).single(); productsCache[id] = data || { gst: 18 }; return productsCache[id]; } catch(e) { return { gst: 18 }; } }
         
         async function updateCartPreview() {
             const items = await updateCartCount();
@@ -314,121 +314,7 @@
             return true;
         };
         
-        window.buyNow = async (id, name, price, sku, img) => { 
-            if (await addToCart(id, name, price, sku, img)) { 
-                showToast(`🛍️ Redirecting to checkout...`);
-                setTimeout(() => navigateTo('checkout'), 600); 
-            }
-        };
-        
-        // ========== SWIPE CART ==========
-        let isDragging = false, startX = 0, currentTranslate = 0;
-        let touchStartY = 0, isSwipingDown = false;
-        const swipeThumb = document.getElementById('swipeThumb');
-        const swipeProgress = document.getElementById('swipeProgress');
-        const swipeTrack = document.querySelector('.swipe-track');
-        const overlay = document.getElementById('swipeCartOverlay');
-        let maxSwipe = 0;
-        
-        function initSwipe() {
-            if (!swipeThumb || !swipeTrack) return;
-            maxSwipe = swipeTrack.getBoundingClientRect().width - 75;
-            swipeThumb.addEventListener('mousedown', startDrag);
-            swipeThumb.addEventListener('touchstart', startDrag);
-            document.addEventListener('mousemove', onDrag);
-            document.addEventListener('touchmove', onDrag);
-            document.addEventListener('mouseup', endDrag);
-            document.addEventListener('touchend', endDrag);
-        }
-        
-        function startDrag(e) {
-            isDragging = true;
-            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            startX = clientX - currentTranslate;
-            if (swipeThumb) swipeThumb.style.transition = 'none';
-            if (swipeProgress) swipeProgress.style.transition = 'none';
-            e.stopPropagation(); e.preventDefault();
-        }
-        
-        function onDrag(e) {
-            if (!isDragging) return;
-            e.preventDefault();
-            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            let newTranslate = clientX - startX;
-            newTranslate = Math.max(0, Math.min(newTranslate, maxSwipe));
-            currentTranslate = newTranslate;
-            if (swipeThumb) swipeThumb.style.transform = `translateX(${currentTranslate}px)`;
-            if (swipeProgress) swipeProgress.style.width = `${(currentTranslate / maxSwipe) * 100}%`;
-            if ((currentTranslate / maxSwipe) >= 0.95) completeSwipe();
-        }
-        
-        function endDrag() {
-            isDragging = false;
-            if (swipeThumb) swipeThumb.style.transition = 'transform 0.3s ease';
-            if (swipeProgress) swipeProgress.style.transition = 'width 0.3s ease';
-            if (currentTranslate < maxSwipe * 0.95) {
-                currentTranslate = 0;
-                if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)';
-                if (swipeProgress) swipeProgress.style.width = '0%';
-            }
-        }
-        
-        function completeSwipe() {
-            currentTranslate = 0;
-            if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)';
-            if (swipeProgress) swipeProgress.style.width = '0%';
-            closeSwipeCart();
-            if (currentCart.length > 0) navigateTo('checkout');
-            else showToast('Your bag is empty!', true);
-        }
-        
-        function setupSwipeDownToClose() {
-            if (!overlay) return;
-            overlay.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; isSwipingDown = true; });
-            overlay.addEventListener('touchmove', (e) => {
-                if (!isSwipingDown) return;
-                const deltaY = e.touches[0].clientY - touchStartY;
-                if (deltaY > 0 && overlay.classList.contains('active')) {
-                    overlay.style.transform = `translateY(${Math.min(deltaY, 300)}px)`;
-                    e.preventDefault();
-                }
-            });
-            overlay.addEventListener('touchend', (e) => {
-                if (e.changedTouches[0].clientY - touchStartY > 100) closeSwipeCart();
-                overlay.style.transform = '';
-                isSwipingDown = false;
-            });
-            let mouseStartY = 0, isMouseSwiping = false;
-            overlay.addEventListener('mousedown', (e) => {
-                if (e.target === overlay || e.target.classList.contains('swipe-handle')) {
-                    mouseStartY = e.clientY;
-                    isMouseSwiping = true;
-                }
-            });
-            document.addEventListener('mousemove', (e) => {
-                if (!isMouseSwiping || !overlay.classList.contains('active')) return;
-                const deltaY = e.clientY - mouseStartY;
-                if (deltaY > 0 && deltaY < 300) overlay.style.transform = `translateY(${deltaY}px)`;
-            });
-            document.addEventListener('mouseup', (e) => {
-                if (!isMouseSwiping) return;
-                if (e.clientY - mouseStartY > 100) closeSwipeCart();
-                overlay.style.transform = '';
-                isMouseSwiping = false;
-            });
-        }
-        
-        function openSwipeCart() { overlay.classList.add('active'); overlay.style.transform = ''; updateCartPreview(); setTimeout(initSwipe, 150); }
-        function closeSwipeCart() { overlay.classList.remove('active'); overlay.style.transform = ''; currentTranslate = 0; if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)'; if (swipeProgress) swipeProgress.style.width = '0%'; }
-        
-        document.getElementById('floatingCartBtn')?.addEventListener('click', openSwipeCart);
-        document.getElementById('clearCartSwipeBtn')?.addEventListener('click', async () => { 
-            if (currentCart.length && confirm('Clear cart?')) { 
-                await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date() }, { onConflict: 'session_id' }); 
-                showToast('Cart cleared!'); await updateCartPreview(); closeSwipeCart(); 
-            } else if (!currentCart.length) showToast('Cart empty', true); 
-        });
-        setupSwipeDownToClose();
+        window.buyNow = async (id, name, price, sku, img) => { if (await addToCart(id, name, price, sku, img)) { showToast(`🛍️ Redirecting to checkout...`); setTimeout(() => navigateTo('checkout'), 600); } };
         
         function shuffleArray(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
         
@@ -443,12 +329,13 @@
                 let html = '';
                 for (const p of stories) {
                     const thumb = getProductImage(p);
-                    const firstMedia = p.images?.[0];
-                    const isInteractive = isD360Interactive(firstMedia);
+                    const firstMedia = p.images_url_1 || p.images_url_2 || p.images_url_3 || p.video_url;
+                    const isVideo = isVideoUrl(firstMedia);
+                    const isD360 = isD360Interactive(firstMedia);
                     let badge = '';
-                    if (isInteractive) badge = '<div class="story-badge"><i class="fas fa-cube"></i></div>';
-                    else if (isVideoUrl(firstMedia)) badge = '<div class="story-badge"><i class="fas fa-play"></i></div>';
-                    html += `<div class="story-toggle" onclick='openProductModal(${JSON.stringify(p)})'><div class="story-ring">${isVideoUrl(firstMedia) ? `<video class="story-thumbnail" src="${thumb}" muted loop playsinline autoplay onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"></video>` : `<img class="story-thumbnail" src="${thumb}" loading="lazy" onerror="this.src='https://via.placeholder.com/70'">`}${badge}</div></div>`;
+                    if (isD360) badge = '<div class="story-badge"><i class="fas fa-cube"></i></div>';
+                    else if (isVideo) badge = '<div class="story-badge"><i class="fas fa-play"></i></div>';
+                    html += `<div class="story-toggle" onclick='openProductModal(${JSON.stringify(p)})'><div class="story-ring">${isVideo ? `<video class="story-thumbnail" src="${thumb}" muted loop playsinline autoplay onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"></video>` : `<img class="story-thumbnail" src="${thumb}" loading="lazy" onerror="this.src='https://via.placeholder.com/70'">`}${badge}</div></div>`;
                 }
                 cont.innerHTML = html;
             } catch(e) { cont.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; }
@@ -466,7 +353,7 @@
                 for (const p of picks) {
                     const img = getProductImage(p);
                     const { total } = calculateGST(p.price, p.gst || 18);
-                    html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'><img class="featured-media" src="${img}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200'"><div class="featured-info"><div class="featured-name">${escapeHtml(p.name)}</div><div class="featured-price">₹${total.toLocaleString()}</div><div class="featured-gst">Incl. ${p.gst||18}% GST</div></div></div>`;
+                    html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'><img class="featured-media" src="${img}" alt="${escapeHtml(p.product_name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200?text=Style'"><div class="featured-info"><div class="featured-name">${escapeHtml(p.product_name)}</div><div class="featured-price">₹${total.toLocaleString()}</div><div class="featured-gst">Incl. ${p.gst||18}% GST</div></div></div>`;
                 }
                 cont.innerHTML = html;
             } catch(e) { cont.innerHTML = '<div class="empty-state">Error loading</div>'; }
@@ -481,27 +368,28 @@
                 if (!allProducts.length) { cont.innerHTML = '<div class="empty-state">✨ No products found</div>'; return; }
                 for (const p of allProducts) productsCache[p.id] = { gst: p.gst || 18 };
                 
-                const displayProducts = allProducts.slice(0, 10);
+                // Show only first 9 products
+                const displayProducts = allProducts.slice(0, 9);
                 
                 let html = '';
                 for (const p of displayProducts) {
                     const img = getProductImage(p);
                     const { total, gstAmount } = calculateGST(p.price, p.gst || 18);
-                    const imgCount = p.images ? p.images.length : 0;
+                    const imgCount = [p.images_url_1, p.images_url_2, p.images_url_3, p.video_url].filter(u => u && u.trim()).length;
                     
                     html += `<div class="product-card" onclick='openProductModal(${JSON.stringify(p)})'>
                         <div class="product-image-container">
-                            <img class="product-image" src="${img}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400?text=Style'">
+                            <img class="product-image" src="${img}" alt="${escapeHtml(p.product_name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400?text=Style+Of+Life'">
                             ${imgCount > 1 ? `<div class="image-badge"><i class="fas fa-images"></i> ${imgCount}</div>` : ''}
                         </div>
                         <div class="product-info">
-                            <div class="product-name">${escapeHtml(p.name)}</div>
+                            <div class="product-name">${escapeHtml(p.product_name)}</div>
                             <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
                             <div class="product-desc">${escapeHtml((p.description || '').substring(0, 100))}${(p.description || '').length > 100 ? '...' : ''}</div>
                             <div class="product-price">₹${total.toLocaleString()} <small>Incl. ${p.gst || 18}% GST</small></div>
                             <div class="product-buttons-icon" onclick="event.stopPropagation()">
-                                <button class="btn-icon-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')"><i class="fas fa-bolt"></i></button>
-                                <button class="btn-icon-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')"><i class="fas fa-shopping-cart"></i></button>
+                                <button class="btn-icon-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')"><i class="fas fa-bolt"></i></button>
+                                <button class="btn-icon-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')"><i class="fas fa-shopping-cart"></i></button>
                             </div>
                         </div>
                     </div>`;
@@ -510,22 +398,23 @@
             } catch(e) { cont.innerHTML = '<div class="empty-state">Error loading collection</div>'; }
         }
         
+        // Modal with all media types
         window.openProductModal = function(product) {
-            const media = (product.images || []).filter(m => m && m.trim());
-            const displayMedia = media.length ? media : ['https://via.placeholder.com/400x400?text=Style'];
+            const media = [product.images_url_1, product.images_url_2, product.images_url_3, product.video_url].filter(m => m && m.trim());
+            const displayMedia = media.length ? media : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
             const { total, gstAmount } = calculateGST(product.price, product.gst || 18);
+            const hasDiamond = product.carat || product.diamond_color || product.diamond_clarity || product.diamond_cut;
             
             const modalMedia = document.getElementById('modalMediaContainer');
             let galleryHtml = `<div class="modal-gallery-container"><div class="modal-gallery" id="modalGallery">`;
             for (let i = 0; i < displayMedia.length; i++) {
                 const m = displayMedia[i];
-                const type = getMediaTypeForModal(m);
-                if (type === 'video') {
+                if (isVideoUrl(m)) {
                     galleryHtml += `<div class="modal-gallery-item"><video src="${m}" class="modal-gallery-video" autoplay muted loop playsinline controls></video><div class="media-badge" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.7);color:var(--gold);padding:4px 10px;border-radius:20px;font-size:10px;">🎬 Video</div></div>`;
-                } else if (type === 'd360-interactive') {
+                } else if (isD360Interactive(m)) {
                     galleryHtml += `<div class="modal-gallery-item"><div class="modal-gallery-d360"><iframe src="${m}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe><div class="media-badge" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.7);color:var(--gold);padding:4px 10px;border-radius:20px;font-size:10px;">🔄 360°</div></div></div>`;
                 } else {
-                    galleryHtml += `<div class="modal-gallery-item"><img class="modal-gallery-image" src="${m}" alt="${product.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400'"></div>`;
+                    galleryHtml += `<div class="modal-gallery-item"><img class="modal-gallery-image" src="${m}" alt="${product.product_name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400'"></div>`;
                 }
             }
             galleryHtml += `</div>`;
@@ -556,19 +445,31 @@
                 }, 50);
             }
             
-            document.getElementById('modalName').innerText = product.name;
+            document.getElementById('modalName').innerText = product.product_name;
             document.getElementById('modalSku').innerText = `SKU: ${product.sku}`;
             document.getElementById('modalCategory').innerText = product.category || 'Fine Jewelry';
             document.getElementById('modalPrice').innerHTML = `₹${total.toLocaleString()} <small>(Incl. ${product.gst || 18}% GST)</small><br><span style="font-size:14px;color:var(--gray);">Base: ₹${product.price.toLocaleString()} + GST: ₹${gstAmount.toLocaleString()}</span>`;
             document.getElementById('modalDesc').innerText = product.description || 'Exquisite handcrafted masterpiece.';
+            
+            const diamondDetailsDiv = document.getElementById('modalDiamondDetails');
+            if (hasDiamond) {
+                diamondDetailsDiv.style.display = 'block';
+                document.getElementById('modalCarat').innerText = product.carat ? `${product.carat} ct` : '-';
+                document.getElementById('modalColor').innerText = product.diamond_color || '-';
+                document.getElementById('modalClarity').innerText = product.diamond_clarity || '-';
+                document.getElementById('modalCut').innerText = product.diamond_cut || '-';
+                document.getElementById('modalPolish').innerText = product.diamond_polish || '-';
+                document.getElementById('modalSymmetry').innerText = product.diamond_symmetry || '-';
+            } else { diamondDetailsDiv.style.display = 'none'; }
+            
             const stockStat = product.stock <= 0 ? 'Out of Stock' : (product.stock < 10 ? `Only ${product.stock} left!` : 'In Stock');
             const stockColor = product.stock <= 0 ? '#dc3545' : (product.stock < 10 ? '#ff9800' : '#28a745');
             document.getElementById('modalStock').innerHTML = `<i class="fas ${product.stock <= 0 ? 'fa-times-circle' : (product.stock < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> ${stockStat}`;
             document.getElementById('modalStock').style.color = stockColor;
             
             const imgUrl = getProductImage(product);
-            document.getElementById('modalBuyBtn').onclick = () => buyNow(product.id, product.name, product.price, product.sku, imgUrl);
-            document.getElementById('modalCartBtn').onclick = () => addToCart(product.id, product.name, product.price, product.sku, imgUrl);
+            document.getElementById('modalBuyBtn').onclick = () => buyNow(product.id, product.product_name, product.price, product.sku, imgUrl);
+            document.getElementById('modalCartBtn').onclick = () => addToCart(product.id, product.product_name, product.price, product.sku, imgUrl);
             document.getElementById('productModal').classList.add('active');
         };
         
