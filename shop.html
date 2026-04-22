@@ -125,8 +125,8 @@
         .filter-option:hover { border-color: var(--gold); }
         .filter-option.active { background: var(--gold); color: white; border-color: var(--gold); }
         
-        .price-range, .carat-range { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
-        .price-range input, .carat-range input { flex: 1; padding: 10px; border: 1px solid var(--gray-200); border-radius: 8px; }
+        .price-range { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+        .price-range input { flex: 1; padding: 10px; border: 1px solid var(--gray-200); border-radius: 8px; }
         
         .filter-actions { display: flex; gap: 10px; padding: 15px 20px; background: var(--white-light); border-top: 1px solid var(--gray-200); }
         .btn-filter { background: var(--gold); color: black; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
@@ -387,8 +387,7 @@
         
         let selectedFilters = {
             categories: [],
-            caratMin: '',
-            caratMax: '',
+            carat: '',
             diamond_color: '',
             diamond_clarity: '',
             diamond_cut: '',
@@ -405,13 +404,15 @@
         function isD360Interactive(url) { return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); }
         function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com')); }
         
-        // Get product image from the correct columns
         function getProductImage(product) {
-            if (product.images_url_1 && product.images_url_1.trim()) return product.images_url_1;
-            if (product.images_url_2 && product.images_url_2.trim()) return product.images_url_2;
-            if (product.images_url_3 && product.images_url_3.trim()) return product.images_url_3;
-            if (product.video_url && product.video_url.trim()) return product.video_url;
-            return 'https://via.placeholder.com/400x400?text=Style';
+            const images = [product.images_url_1, product.images_url_2, product.images_url_3, product.video_url];
+            for (let m of images) {
+                if (m && !isD360Interactive(m) && !isVideoUrl(m)) return m;
+            }
+            for (let m of images) {
+                if (m && isVideoUrl(m)) return m;
+            }
+            return product.images_url_1 || product.images_url_2 || product.images_url_3 || product.video_url || 'https://via.placeholder.com/400x400?text=Style';
         }
         
         function navigateTo(page) { if (window.parent !== window) window.parent.postMessage({ page: page }, '*'); else window.location.href = page + '.html'; }
@@ -480,8 +481,7 @@
         
         function updateFilterBadge() {
             let count = selectedFilters.categories.length;
-            if (selectedFilters.caratMin) count++;
-            if (selectedFilters.caratMax) count++;
+            if (selectedFilters.carat) count++;
             if (selectedFilters.diamond_color) count++;
             if (selectedFilters.diamond_clarity) count++;
             if (selectedFilters.diamond_cut) count++;
@@ -605,16 +605,9 @@
                 filtered = filtered.filter(p => selectedFilters.categories.includes(p.category));
             }
             
-            // Carat range filter
-            const caratMin = parseFloat(selectedFilters.caratMin);
-            const caratMax = parseFloat(selectedFilters.caratMax);
-            if (caratMin) {
-                filtered = filtered.filter(p => p.carat && parseFloat(p.carat) >= caratMin);
+            if (selectedFilters.carat) {
+                filtered = filtered.filter(p => p.carat && parseFloat(p.carat) == selectedFilters.carat);
             }
-            if (caratMax) {
-                filtered = filtered.filter(p => p.carat && parseFloat(p.carat) <= caratMax);
-            }
-            
             if (selectedFilters.diamond_color) {
                 filtered = filtered.filter(p => p.diamond_color === selectedFilters.diamond_color);
             }
@@ -631,8 +624,8 @@
                 filtered = filtered.filter(p => p.diamond_symmetry === selectedFilters.diamond_symmetry);
             }
             
-            const minPrice = parseFloat(selectedFilters.minPrice);
-            const maxPrice = parseFloat(selectedFilters.maxPrice);
+            const minPrice = parseFloat(document.getElementById('minPrice')?.value);
+            const maxPrice = parseFloat(document.getElementById('maxPrice')?.value);
             if (minPrice) filtered = filtered.filter(p => p.price >= minPrice);
             if (maxPrice) filtered = filtered.filter(p => p.price <= maxPrice);
             
@@ -655,21 +648,17 @@
             if (selectedFilters.categories.length > 0) {
                 selectedFilters.categories.forEach(cat => filters.push(`Category: ${cat}`));
             }
-            if (selectedFilters.caratMin || selectedFilters.caratMax) {
-                let caratText = 'Carat: ';
-                if (selectedFilters.caratMin) caratText += `${selectedFilters.caratMin}`;
-                if (selectedFilters.caratMin && selectedFilters.caratMax) caratText += ` - `;
-                if (selectedFilters.caratMax) caratText += `${selectedFilters.caratMax}`;
-                filters.push(caratText);
-            }
+            if (selectedFilters.carat) filters.push(`Carat: ${selectedFilters.carat}ct`);
             if (selectedFilters.diamond_color) filters.push(`Color: ${selectedFilters.diamond_color}`);
             if (selectedFilters.diamond_clarity) filters.push(`Clarity: ${selectedFilters.diamond_clarity}`);
             if (selectedFilters.diamond_cut) filters.push(`Cut: ${selectedFilters.diamond_cut}`);
             if (selectedFilters.diamond_polish) filters.push(`Polish: ${selectedFilters.diamond_polish}`);
             if (selectedFilters.diamond_symmetry) filters.push(`Symmetry: ${selectedFilters.diamond_symmetry}`);
             
-            if (selectedFilters.minPrice) filters.push(`Min Price: ₹${parseInt(selectedFilters.minPrice).toLocaleString()}`);
-            if (selectedFilters.maxPrice) filters.push(`Max Price: ₹${parseInt(selectedFilters.maxPrice).toLocaleString()}`);
+            const minPrice = document.getElementById('minPrice')?.value;
+            const maxPrice = document.getElementById('maxPrice')?.value;
+            if (minPrice) filters.push(`Min: ₹${parseInt(minPrice).toLocaleString()}`);
+            if (maxPrice) filters.push(`Max: ₹${parseInt(maxPrice).toLocaleString()}`);
             
             if (filters.length === 0) {
                 container.innerHTML = '<span style="color:var(--gray); font-size:12px;">No active filters</span>';
@@ -680,25 +669,14 @@
         
         window.removeFilter = function(filterType) {
             if (filterType === 'Category') selectedFilters.categories = [];
-            if (filterType === 'Carat') { 
-                document.getElementById('caratMin')?.value = '';
-                document.getElementById('caratMax')?.value = '';
-                selectedFilters.caratMin = '';
-                selectedFilters.caratMax = '';
-            }
+            if (filterType === 'Carat') { selectedFilters.carat = ''; updateFilterUI('carat'); }
             if (filterType === 'Color') { selectedFilters.diamond_color = ''; updateFilterUI('diamond_color'); }
             if (filterType === 'Clarity') { selectedFilters.diamond_clarity = ''; updateFilterUI('diamond_clarity'); }
             if (filterType === 'Cut') { selectedFilters.diamond_cut = ''; updateFilterUI('diamond_cut'); }
             if (filterType === 'Polish') { selectedFilters.diamond_polish = ''; updateFilterUI('diamond_polish'); }
             if (filterType === 'Symmetry') { selectedFilters.diamond_symmetry = ''; updateFilterUI('diamond_symmetry'); }
-            if (filterType === 'Min Price') { 
-                document.getElementById('minPrice')?.value = '';
-                selectedFilters.minPrice = '';
-            }
-            if (filterType === 'Max Price') { 
-                document.getElementById('maxPrice')?.value = '';
-                selectedFilters.maxPrice = '';
-            }
+            if (filterType === 'Min') { const el = document.getElementById('minPrice'); if (el) el.value = ''; selectedFilters.minPrice = ''; }
+            if (filterType === 'Max') { const el = document.getElementById('maxPrice'); if (el) el.value = ''; selectedFilters.maxPrice = ''; }
             applyFilters();
             updateFilterBadge();
         };
@@ -706,9 +684,6 @@
         window.applyFilters = function() {
             selectedFilters.minPrice = document.getElementById('minPrice')?.value || '';
             selectedFilters.maxPrice = document.getElementById('maxPrice')?.value || '';
-            selectedFilters.caratMin = document.getElementById('caratMin')?.value || '';
-            selectedFilters.caratMax = document.getElementById('caratMax')?.value || '';
-            
             const sortBy = document.getElementById('sortSelect')?.value || 'default';
             let filtered = filterProducts(allProducts);
             filtered = sortProducts(filtered, sortBy);
@@ -734,14 +709,12 @@
         };
         
         window.resetFilters = function() {
-            selectedFilters = { categories: [], caratMin: '', caratMax: '', diamond_color: '', diamond_clarity: '', diamond_cut: '', diamond_polish: '', diamond_symmetry: '', minPrice: '', maxPrice: '' };
+            selectedFilters = { categories: [], carat: '', diamond_color: '', diamond_clarity: '', diamond_cut: '', diamond_polish: '', diamond_symmetry: '', minPrice: '', maxPrice: '' };
             const minPriceEl = document.getElementById('minPrice'); if (minPriceEl) minPriceEl.value = '';
             const maxPriceEl = document.getElementById('maxPrice'); if (maxPriceEl) maxPriceEl.value = '';
-            const caratMinEl = document.getElementById('caratMin'); if (caratMinEl) caratMinEl.value = '';
-            const caratMaxEl = document.getElementById('caratMax'); if (caratMaxEl) caratMaxEl.value = '';
             const sortEl = document.getElementById('sortSelect'); if (sortEl) sortEl.value = 'default';
             updateCategoryUI();
-            ['diamond_color', 'diamond_clarity', 'diamond_cut', 'diamond_polish', 'diamond_symmetry'].forEach(type => updateFilterUI(type));
+            ['carat', 'diamond_color', 'diamond_clarity', 'diamond_cut', 'diamond_polish', 'diamond_symmetry'].forEach(type => updateFilterUI(type));
             applyFilters();
             updateFilterBadge();
         };
@@ -771,6 +744,8 @@
                         ${p.diamond_color ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Color</div><div class="diamond-detail-value">${p.diamond_color}</div></div>` : ''}
                         ${p.diamond_clarity ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Clarity</div><div class="diamond-detail-value">${p.diamond_clarity}</div></div>` : ''}
                         ${p.diamond_cut ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Cut</div><div class="diamond-detail-value">${p.diamond_cut}</div></div>` : ''}
+                        ${p.diamond_polish ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Polish</div><div class="diamond-detail-value">${p.diamond_polish}</div></div>` : ''}
+                        ${p.diamond_symmetry ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Symmetry</div><div class="diamond-detail-value">${p.diamond_symmetry}</div></div>` : ''}
                     </div>`;
                 }
                 
@@ -807,6 +782,7 @@
         
         function buildFilterHTML() {
             // Get unique values from actual products
+            const caratValues = [...new Set(allProducts.filter(p => p.carat).map(p => parseFloat(p.carat))).values()].sort((a,b) => a-b);
             const colorValues = [...new Set(allProducts.filter(p => p.diamond_color).map(p => p.diamond_color))].sort();
             const clarityValues = [...new Set(allProducts.filter(p => p.diamond_clarity).map(p => p.diamond_clarity))].sort();
             const cutValues = [...new Set(allProducts.filter(p => p.diamond_cut).map(p => p.diamond_cut))].sort();
@@ -834,15 +810,7 @@
                         <div class="price-range"><input type="number" id="minPrice" placeholder="Min ₹" value=""><span>-</span><input type="number" id="maxPrice" placeholder="Max ₹" value=""></div>
                     </div>
                 </div>
-                <div class="filter-group">
-                    <div class="filter-header" data-filter-id="caratFilter" onclick="toggleFilter('caratFilter')">
-                        <h4><i class="fas fa-gem"></i> Carat Weight</h4>
-                        <i class="fas fa-chevron-down toggle-icon" id="caratFilterIcon"></i>
-                    </div>
-                    <div class="filter-content" id="caratFilter">
-                        <div class="carat-range"><input type="number" id="caratMin" step="0.01" placeholder="Min Carat" value=""><span>-</span><input type="number" id="caratMax" step="0.01" placeholder="Max Carat" value=""></div>
-                    </div>
-                </div>
+                ${caratValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="caratFilter" onclick="toggleFilter('caratFilter')"><h4><i class="fas fa-gem"></i> Carat Weight</h4><i class="fas fa-chevron-down toggle-icon" id="caratFilterIcon"></i></div><div class="filter-content" id="caratFilter"><div class="filter-options">${caratValues.map(v => `<div class="filter-option" data-filter="carat" data-value="${v}" onclick="selectFilter('carat', '${v}')">${v} ct</div>`).join('')}</div></div></div>` : ''}
                 ${colorValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="colorFilter" onclick="toggleFilter('colorFilter')"><h4><i class="fas fa-palette"></i> Diamond Color</h4><i class="fas fa-chevron-down toggle-icon" id="colorFilterIcon"></i></div><div class="filter-content" id="colorFilter"><div class="filter-options">${colorValues.map(v => `<div class="filter-option" data-filter="diamond_color" data-value="${v}" onclick="selectFilter('diamond_color', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
                 ${clarityValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="clarityFilter" onclick="toggleFilter('clarityFilter')"><h4><i class="fas fa-eye"></i> Diamond Clarity</h4><i class="fas fa-chevron-down toggle-icon" id="clarityFilterIcon"></i></div><div class="filter-content" id="clarityFilter"><div class="filter-options">${clarityValues.map(v => `<div class="filter-option" data-filter="diamond_clarity" data-value="${v}" onclick="selectFilter('diamond_clarity', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
                 ${cutValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="cutFilter" onclick="toggleFilter('cutFilter')"><h4><i class="fas fa-cut"></i> Diamond Cut</h4><i class="fas fa-chevron-down toggle-icon" id="cutFilterIcon"></i></div><div class="filter-content" id="cutFilter"><div class="filter-options">${cutValues.map(v => `<div class="filter-option" data-filter="diamond_cut" data-value="${v}" onclick="selectFilter('diamond_cut', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
