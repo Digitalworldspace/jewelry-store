@@ -125,8 +125,8 @@
         .filter-option:hover { border-color: var(--gold); }
         .filter-option.active { background: var(--gold); color: white; border-color: var(--gold); }
         
-        .price-range { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
-        .price-range input { flex: 1; padding: 10px; border: 1px solid var(--gray-200); border-radius: 8px; }
+        .price-range, .carat-range { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+        .price-range input, .carat-range input { flex: 1; padding: 10px; border: 1px solid var(--gray-200); border-radius: 8px; }
         
         .filter-actions { display: flex; gap: 10px; padding: 15px 20px; background: var(--white-light); border-top: 1px solid var(--gray-200); }
         .btn-filter { background: var(--gold); color: black; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
@@ -387,7 +387,8 @@
         
         let selectedFilters = {
             categories: [],
-            carat: '',
+            caratMin: '',
+            caratMax: '',
             diamond_color: '',
             diamond_clarity: '',
             diamond_cut: '',
@@ -481,7 +482,8 @@
         
         function updateFilterBadge() {
             let count = selectedFilters.categories.length;
-            if (selectedFilters.carat) count++;
+            if (selectedFilters.caratMin) count++;
+            if (selectedFilters.caratMax) count++;
             if (selectedFilters.diamond_color) count++;
             if (selectedFilters.diamond_clarity) count++;
             if (selectedFilters.diamond_cut) count++;
@@ -540,46 +542,126 @@
             if (e.target === document.getElementById('filterModal')) closeFilterModal();
         });
         
+        // ========== CART FUNCTIONS ==========
         async function updateCartCount() {
-            const { data } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
-            const items = data?.items || []; currentCart = items;
-            document.getElementById('cartCount').textContent = items.reduce((s, i) => s + i.quantity, 0);
-            return items;
+            try {
+                const { data, error } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
+                if (error) throw error;
+                const items = data?.items || [];
+                currentCart = items;
+                const total = items.reduce((sum, item) => sum + item.quantity, 0);
+                const badge = document.getElementById('cartCount');
+                if (badge) badge.textContent = total;
+                return items;
+            } catch (error) {
+                console.error('Error updating cart count:', error);
+                return [];
+            }
         }
         
-        async function fetchProductGST(id) { if (productsCache[id]) return productsCache[id]; const { data } = await supabase.from('products').select('gst').eq('id', id).single(); productsCache[id] = data || { gst: 18 }; return productsCache[id]; }
+        async function fetchProductGST(id) { 
+            if (productsCache[id]) return productsCache[id]; 
+            try {
+                const { data, error } = await supabase.from('products').select('gst').eq('id', id).single();
+                if (error) throw error;
+                productsCache[id] = data || { gst: 18 };
+                return productsCache[id];
+            } catch (error) { 
+                return { gst: 18 }; 
+            }
+        }
         
         async function updateCartPreview() {
             const items = await updateCartCount();
             const container = document.getElementById('cartPreviewContent');
-            if (!items.length) { container.innerHTML = `<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);"><i class="fas fa-shopping-cart" style="font-size:48px;"></i><p>Your cart is empty</p></div>`; return; }
+            if (!items.length) { 
+                container.innerHTML = `<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);"><i class="fas fa-shopping-cart" style="font-size:48px;"></i><p>Your cart is empty</p><p style="font-size:12px;margin-top:10px;">Add beautiful jewelry to your bag</p></div>`; 
+                return; 
+            }
             let subtotal = 0, totalGST = 0, html = '';
             for (const item of items) {
                 const { gst: gstPercent } = await fetchProductGST(item.id);
                 const { gstAmount, total } = calculateGST(item.price, gstPercent);
                 subtotal += item.price * item.quantity;
                 totalGST += gstAmount * item.quantity;
-                html += `<div class="cart-preview-item"><img src="${item.image}" onerror="this.src='https://via.placeholder.com/55'"><div><div style="font-weight:600;">${escapeHtml(item.name)}</div><div>₹${item.price} × ${item.quantity}</div><div style="font-size:10px;">GST: ₹${(gstAmount * item.quantity).toFixed(2)}</div></div><div style="color:var(--gold);">₹${(total * item.quantity).toFixed(2)}</div></div>`;
+                html += `<div class="cart-preview-item">
+                    <img src="${item.image}" onerror="this.src='https://via.placeholder.com/55'">
+                    <div style="flex:1;">
+                        <div style="font-weight:600; color:white;">${escapeHtml(item.name)}</div>
+                        <div style="font-size:12px; color:var(--gold);">₹${item.price.toLocaleString()} × ${item.quantity}</div>
+                        <div style="font-size:10px; color:#aaa;">GST ${gstPercent}%: ₹${(gstAmount * item.quantity).toFixed(2)}</div>
+                    </div>
+                    <div style="color:var(--gold); font-weight:bold;">₹${(total * item.quantity).toFixed(2)}</div>
+                </div>`;
             }
             const shipping = subtotal >= 3000 ? 0 : 100;
             const grand = subtotal + totalGST + shipping;
-            container.innerHTML = html + `<div class="cart-preview-total"><div>Subtotal: ₹${subtotal}</div><div>GST: ₹${totalGST.toFixed(2)}</div><div>Shipping: ₹${shipping}</div><div style="font-size:18px;">Total: ₹${grand.toFixed(2)}</div></div>`;
+            container.innerHTML = html + `<div class="cart-preview-total">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Subtotal</span><span>₹${subtotal.toLocaleString()}</span></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Total GST</span><span>₹${totalGST.toFixed(2)}</span></div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Shipping</span><span>₹${shipping}</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:18px; margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.1);"><span>Total</span><span style="color:var(--gold);">₹${grand.toFixed(2)}</span></div>
+            </div>`;
         }
         
         window.addToCart = async (id, name, price, sku, img) => {
-            const { gst: gstPercent } = await fetchProductGST(id);
-            let { data: cart } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
-            let items = cart?.items || [];
-            const existing = items.find(i => i.id === id);
-            if (existing) existing.quantity++;
-            else items.push({ id, sku, name, price, gst: gstPercent, quantity: 1, image: img });
-            await supabase.from('carts').upsert({ session_id: sessionId, items, total: items.reduce((s, i) => s + (i.price * i.quantity), 0), updated_at: new Date() }, { onConflict: 'session_id' });
-            showToast(`✨ ${name} added to bag!`);
-            await updateCartPreview();
-            return true;
+            try {
+                const { gst: gstPercent } = await fetchProductGST(id);
+                let { data: cart } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
+                let items = cart?.items || [];
+                const existing = items.find(i => i.id === id);
+                if (existing) {
+                    existing.quantity += 1;
+                } else {
+                    items.push({ id, sku, name, price, gst: gstPercent, quantity: 1, image: img });
+                }
+                const total = items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+                const { error } = await supabase.from('carts').upsert({ 
+                    session_id: sessionId, 
+                    items: items, 
+                    total: total, 
+                    updated_at: new Date().toISOString() 
+                }, { onConflict: 'session_id' });
+                if (error) throw error;
+                showToast(`✨ ${name} added to bag!`);
+                await updateCartPreview();
+                return true;
+            } catch (error) {
+                console.error('Add to cart error:', error);
+                showToast('Failed to add item to cart', true);
+                return false;
+            }
         };
         
-        window.buyNow = async (id, name, price, sku, img) => { if (await addToCart(id, name, price, sku, img)) { showToast(`🛍️ Redirecting...`); setTimeout(() => navigateTo('checkout'), 600); } };
+        window.buyNow = async (id, name, price, sku, img) => { 
+            const added = await addToCart(id, name, price, sku, img);
+            if (added) {
+                showToast(`🛍️ Redirecting to checkout...`);
+                setTimeout(() => navigateTo('checkout'), 800);
+            }
+        };
+        
+        // Clear cart from swipe
+        document.getElementById('clearCartSwipeBtn')?.addEventListener('click', async () => { 
+            if (currentCart.length && confirm('Clear all items from your bag?')) { 
+                try {
+                    await supabase.from('carts').upsert({ 
+                        session_id: sessionId, 
+                        items: [], 
+                        total: 0, 
+                        updated_at: new Date().toISOString() 
+                    }, { onConflict: 'session_id' }); 
+                    showToast('Bag cleared! 🗑️'); 
+                    await updateCartPreview(); 
+                    closeSwipeCart();
+                    updateCartCount();
+                } catch (error) {
+                    showToast('Failed to clear cart', true);
+                }
+            } else if (!currentCart.length) { 
+                showToast('Bag is already empty', true); 
+            } 
+        });
         
         // Swipe cart
         let isDragging = false, startX = 0, currentTranslate = 0;
@@ -590,12 +672,11 @@
         function startDrag(e) { isDragging = true; const clientX = e.clientX || (e.touches && e.touches[0].clientX); startX = clientX - currentTranslate; if (swipeThumb) swipeThumb.style.transition = 'none'; if (swipeProgress) swipeProgress.style.transition = 'none'; e.stopPropagation(); e.preventDefault(); }
         function onDrag(e) { if (!isDragging) return; e.preventDefault(); const clientX = e.clientX || (e.touches && e.touches[0].clientX); let newTranslate = clientX - startX; newTranslate = Math.max(0, Math.min(newTranslate, maxSwipe)); currentTranslate = newTranslate; if (swipeThumb) swipeThumb.style.transform = `translateX(${currentTranslate}px)`; if (swipeProgress) swipeProgress.style.width = `${(currentTranslate / maxSwipe) * 100}%`; if ((currentTranslate / maxSwipe) >= 0.95) completeSwipe(); }
         function endDrag() { isDragging = false; if (swipeThumb) swipeThumb.style.transition = 'transform 0.3s ease'; if (swipeProgress) swipeProgress.style.transition = 'width 0.3s ease'; if (currentTranslate < maxSwipe * 0.95) { currentTranslate = 0; if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)'; if (swipeProgress) swipeProgress.style.width = '0%'; } }
-        function completeSwipe() { currentTranslate = 0; if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)'; if (swipeProgress) swipeProgress.style.width = '0%'; closeSwipeCart(); if (currentCart.length > 0) navigateTo('checkout'); else showToast('Your bag is empty!', true); }
+        function completeSwipe() { currentTranslate = 0; if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)'; if (swipeProgress) swipeProgress.style.width = '0%'; closeSwipeCart(); if (currentCart.length > 0) navigateTo('checkout'); else showToast('Your bag is empty! Add items first', true); }
         function setupSwipeDownToClose() { if (!overlay) return; overlay.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; isSwipingDown = true; }); overlay.addEventListener('touchmove', (e) => { if (!isSwipingDown) return; const deltaY = e.touches[0].clientY - touchStartY; if (deltaY > 0 && overlay.classList.contains('active')) { overlay.style.transform = `translateY(${Math.min(deltaY, 300)}px)`; e.preventDefault(); } }); overlay.addEventListener('touchend', (e) => { if (e.changedTouches[0].clientY - touchStartY > 100) closeSwipeCart(); overlay.style.transform = ''; isSwipingDown = false; }); let mouseStartY = 0, isMouseSwiping = false; overlay.addEventListener('mousedown', (e) => { if (e.target === overlay || e.target.classList.contains('swipe-handle')) { mouseStartY = e.clientY; isMouseSwiping = true; } }); document.addEventListener('mousemove', (e) => { if (!isMouseSwiping || !overlay.classList.contains('active')) return; const deltaY = e.clientY - mouseStartY; if (deltaY > 0 && deltaY < 300) overlay.style.transform = `translateY(${deltaY}px)`; }); document.addEventListener('mouseup', (e) => { if (!isMouseSwiping) return; if (e.clientY - mouseStartY > 100) closeSwipeCart(); overlay.style.transform = ''; isMouseSwiping = false; }); }
         function openSwipeCart() { overlay.classList.add('active'); overlay.style.transform = ''; updateCartPreview(); setTimeout(initSwipe, 150); }
         function closeSwipeCart() { overlay.classList.remove('active'); overlay.style.transform = ''; currentTranslate = 0; if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)'; if (swipeProgress) swipeProgress.style.width = '0%'; }
         document.getElementById('floatingCartBtn')?.addEventListener('click', openSwipeCart);
-        document.getElementById('clearCartSwipeBtn')?.addEventListener('click', async () => { if (currentCart.length && confirm('Clear cart?')) { await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date() }, { onConflict: 'session_id' }); showToast('Cart cleared!'); await updateCartPreview(); closeSwipeCart(); } else if (!currentCart.length) showToast('Cart empty', true); });
         setupSwipeDownToClose();
         
         function filterProducts(products) {
@@ -605,27 +686,19 @@
                 filtered = filtered.filter(p => selectedFilters.categories.includes(p.category));
             }
             
-            if (selectedFilters.carat) {
-                filtered = filtered.filter(p => p.carat && parseFloat(p.carat) == selectedFilters.carat);
-            }
-            if (selectedFilters.diamond_color) {
-                filtered = filtered.filter(p => p.diamond_color === selectedFilters.diamond_color);
-            }
-            if (selectedFilters.diamond_clarity) {
-                filtered = filtered.filter(p => p.diamond_clarity === selectedFilters.diamond_clarity);
-            }
-            if (selectedFilters.diamond_cut) {
-                filtered = filtered.filter(p => p.diamond_cut === selectedFilters.diamond_cut);
-            }
-            if (selectedFilters.diamond_polish) {
-                filtered = filtered.filter(p => p.diamond_polish === selectedFilters.diamond_polish);
-            }
-            if (selectedFilters.diamond_symmetry) {
-                filtered = filtered.filter(p => p.diamond_symmetry === selectedFilters.diamond_symmetry);
-            }
+            const caratMin = parseFloat(selectedFilters.caratMin);
+            const caratMax = parseFloat(selectedFilters.caratMax);
+            if (caratMin) filtered = filtered.filter(p => p.carat && parseFloat(p.carat) >= caratMin);
+            if (caratMax) filtered = filtered.filter(p => p.carat && parseFloat(p.carat) <= caratMax);
             
-            const minPrice = parseFloat(document.getElementById('minPrice')?.value);
-            const maxPrice = parseFloat(document.getElementById('maxPrice')?.value);
+            if (selectedFilters.diamond_color) filtered = filtered.filter(p => p.diamond_color === selectedFilters.diamond_color);
+            if (selectedFilters.diamond_clarity) filtered = filtered.filter(p => p.diamond_clarity === selectedFilters.diamond_clarity);
+            if (selectedFilters.diamond_cut) filtered = filtered.filter(p => p.diamond_cut === selectedFilters.diamond_cut);
+            if (selectedFilters.diamond_polish) filtered = filtered.filter(p => p.diamond_polish === selectedFilters.diamond_polish);
+            if (selectedFilters.diamond_symmetry) filtered = filtered.filter(p => p.diamond_symmetry === selectedFilters.diamond_symmetry);
+            
+            const minPrice = parseFloat(selectedFilters.minPrice);
+            const maxPrice = parseFloat(selectedFilters.maxPrice);
             if (minPrice) filtered = filtered.filter(p => p.price >= minPrice);
             if (maxPrice) filtered = filtered.filter(p => p.price <= maxPrice);
             
@@ -648,17 +721,20 @@
             if (selectedFilters.categories.length > 0) {
                 selectedFilters.categories.forEach(cat => filters.push(`Category: ${cat}`));
             }
-            if (selectedFilters.carat) filters.push(`Carat: ${selectedFilters.carat}ct`);
+            if (selectedFilters.caratMin || selectedFilters.caratMax) {
+                let caratText = 'Carat: ';
+                if (selectedFilters.caratMin) caratText += `${selectedFilters.caratMin}`;
+                if (selectedFilters.caratMin && selectedFilters.caratMax) caratText += ` - `;
+                if (selectedFilters.caratMax) caratText += `${selectedFilters.caratMax}`;
+                filters.push(caratText);
+            }
             if (selectedFilters.diamond_color) filters.push(`Color: ${selectedFilters.diamond_color}`);
             if (selectedFilters.diamond_clarity) filters.push(`Clarity: ${selectedFilters.diamond_clarity}`);
             if (selectedFilters.diamond_cut) filters.push(`Cut: ${selectedFilters.diamond_cut}`);
             if (selectedFilters.diamond_polish) filters.push(`Polish: ${selectedFilters.diamond_polish}`);
             if (selectedFilters.diamond_symmetry) filters.push(`Symmetry: ${selectedFilters.diamond_symmetry}`);
-            
-            const minPrice = document.getElementById('minPrice')?.value;
-            const maxPrice = document.getElementById('maxPrice')?.value;
-            if (minPrice) filters.push(`Min: ₹${parseInt(minPrice).toLocaleString()}`);
-            if (maxPrice) filters.push(`Max: ₹${parseInt(maxPrice).toLocaleString()}`);
+            if (selectedFilters.minPrice) filters.push(`Min Price: ₹${parseInt(selectedFilters.minPrice).toLocaleString()}`);
+            if (selectedFilters.maxPrice) filters.push(`Max Price: ₹${parseInt(selectedFilters.maxPrice).toLocaleString()}`);
             
             if (filters.length === 0) {
                 container.innerHTML = '<span style="color:var(--gray); font-size:12px;">No active filters</span>';
@@ -669,14 +745,25 @@
         
         window.removeFilter = function(filterType) {
             if (filterType === 'Category') selectedFilters.categories = [];
-            if (filterType === 'Carat') { selectedFilters.carat = ''; updateFilterUI('carat'); }
+            if (filterType === 'Carat') { 
+                document.getElementById('caratMin')?.value = '';
+                document.getElementById('caratMax')?.value = '';
+                selectedFilters.caratMin = '';
+                selectedFilters.caratMax = '';
+            }
             if (filterType === 'Color') { selectedFilters.diamond_color = ''; updateFilterUI('diamond_color'); }
             if (filterType === 'Clarity') { selectedFilters.diamond_clarity = ''; updateFilterUI('diamond_clarity'); }
             if (filterType === 'Cut') { selectedFilters.diamond_cut = ''; updateFilterUI('diamond_cut'); }
             if (filterType === 'Polish') { selectedFilters.diamond_polish = ''; updateFilterUI('diamond_polish'); }
             if (filterType === 'Symmetry') { selectedFilters.diamond_symmetry = ''; updateFilterUI('diamond_symmetry'); }
-            if (filterType === 'Min') { const el = document.getElementById('minPrice'); if (el) el.value = ''; selectedFilters.minPrice = ''; }
-            if (filterType === 'Max') { const el = document.getElementById('maxPrice'); if (el) el.value = ''; selectedFilters.maxPrice = ''; }
+            if (filterType === 'Min Price') { 
+                document.getElementById('minPrice')?.value = '';
+                selectedFilters.minPrice = '';
+            }
+            if (filterType === 'Max Price') { 
+                document.getElementById('maxPrice')?.value = '';
+                selectedFilters.maxPrice = '';
+            }
             applyFilters();
             updateFilterBadge();
         };
@@ -684,6 +771,9 @@
         window.applyFilters = function() {
             selectedFilters.minPrice = document.getElementById('minPrice')?.value || '';
             selectedFilters.maxPrice = document.getElementById('maxPrice')?.value || '';
+            selectedFilters.caratMin = document.getElementById('caratMin')?.value || '';
+            selectedFilters.caratMax = document.getElementById('caratMax')?.value || '';
+            
             const sortBy = document.getElementById('sortSelect')?.value || 'default';
             let filtered = filterProducts(allProducts);
             filtered = sortProducts(filtered, sortBy);
@@ -701,7 +791,6 @@
             renderProducts();
             const countEl = document.getElementById('productsCount');
             if (countEl) countEl.innerHTML = `Showing ${Math.min(currentDisplayCount, displayedProducts.length)} of ${displayedProducts.length} products`;
-            
             const loadMoreContainer = document.getElementById('loadMoreContainer');
             if (currentDisplayCount >= displayedProducts.length) {
                 loadMoreContainer.style.display = 'none';
@@ -709,12 +798,14 @@
         };
         
         window.resetFilters = function() {
-            selectedFilters = { categories: [], carat: '', diamond_color: '', diamond_clarity: '', diamond_cut: '', diamond_polish: '', diamond_symmetry: '', minPrice: '', maxPrice: '' };
+            selectedFilters = { categories: [], caratMin: '', caratMax: '', diamond_color: '', diamond_clarity: '', diamond_cut: '', diamond_polish: '', diamond_symmetry: '', minPrice: '', maxPrice: '' };
             const minPriceEl = document.getElementById('minPrice'); if (minPriceEl) minPriceEl.value = '';
             const maxPriceEl = document.getElementById('maxPrice'); if (maxPriceEl) maxPriceEl.value = '';
+            const caratMinEl = document.getElementById('caratMin'); if (caratMinEl) caratMinEl.value = '';
+            const caratMaxEl = document.getElementById('caratMax'); if (caratMaxEl) caratMaxEl.value = '';
             const sortEl = document.getElementById('sortSelect'); if (sortEl) sortEl.value = 'default';
             updateCategoryUI();
-            ['carat', 'diamond_color', 'diamond_clarity', 'diamond_cut', 'diamond_polish', 'diamond_symmetry'].forEach(type => updateFilterUI(type));
+            ['diamond_color', 'diamond_clarity', 'diamond_cut', 'diamond_polish', 'diamond_symmetry'].forEach(type => updateFilterUI(type));
             applyFilters();
             updateFilterBadge();
         };
@@ -722,7 +813,6 @@
         function renderProducts() {
             const container = document.getElementById('productsGrid');
             const productsToShow = displayedProducts.slice(0, currentDisplayCount);
-            
             if (!productsToShow.length) { container.innerHTML = '<div class="empty-state">✨ No products match your filters</div>'; return; }
             
             let html = '';
@@ -730,7 +820,6 @@
                 const img = getProductImage(p);
                 const { total } = calculateGST(p.price, p.gst || 18);
                 const hasDiamond = p.carat || p.diamond_color || p.diamond_clarity || p.diamond_cut;
-                
                 let mediaCount = 0;
                 if (p.images_url_1) mediaCount++;
                 if (p.images_url_2) mediaCount++;
@@ -744,8 +833,6 @@
                         ${p.diamond_color ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Color</div><div class="diamond-detail-value">${p.diamond_color}</div></div>` : ''}
                         ${p.diamond_clarity ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Clarity</div><div class="diamond-detail-value">${p.diamond_clarity}</div></div>` : ''}
                         ${p.diamond_cut ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Cut</div><div class="diamond-detail-value">${p.diamond_cut}</div></div>` : ''}
-                        ${p.diamond_polish ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Polish</div><div class="diamond-detail-value">${p.diamond_polish}</div></div>` : ''}
-                        ${p.diamond_symmetry ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Symmetry</div><div class="diamond-detail-value">${p.diamond_symmetry}</div></div>` : ''}
                     </div>`;
                 }
                 
@@ -781,8 +868,6 @@
         }
         
         function buildFilterHTML() {
-            // Get unique values from actual products
-            const caratValues = [...new Set(allProducts.filter(p => p.carat).map(p => parseFloat(p.carat))).values()].sort((a,b) => a-b);
             const colorValues = [...new Set(allProducts.filter(p => p.diamond_color).map(p => p.diamond_color))].sort();
             const clarityValues = [...new Set(allProducts.filter(p => p.diamond_clarity).map(p => p.diamond_clarity))].sort();
             const cutValues = [...new Set(allProducts.filter(p => p.diamond_cut).map(p => p.diamond_cut))].sort();
@@ -810,7 +895,15 @@
                         <div class="price-range"><input type="number" id="minPrice" placeholder="Min ₹" value=""><span>-</span><input type="number" id="maxPrice" placeholder="Max ₹" value=""></div>
                     </div>
                 </div>
-                ${caratValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="caratFilter" onclick="toggleFilter('caratFilter')"><h4><i class="fas fa-gem"></i> Carat Weight</h4><i class="fas fa-chevron-down toggle-icon" id="caratFilterIcon"></i></div><div class="filter-content" id="caratFilter"><div class="filter-options">${caratValues.map(v => `<div class="filter-option" data-filter="carat" data-value="${v}" onclick="selectFilter('carat', '${v}')">${v} ct</div>`).join('')}</div></div></div>` : ''}
+                <div class="filter-group">
+                    <div class="filter-header" data-filter-id="caratFilter" onclick="toggleFilter('caratFilter')">
+                        <h4><i class="fas fa-gem"></i> Carat Weight</h4>
+                        <i class="fas fa-chevron-down toggle-icon" id="caratFilterIcon"></i>
+                    </div>
+                    <div class="filter-content" id="caratFilter">
+                        <div class="carat-range"><input type="number" id="caratMin" step="0.01" placeholder="Min Carat" value=""><span>-</span><input type="number" id="caratMax" step="0.01" placeholder="Max Carat" value=""></div>
+                    </div>
+                </div>
                 ${colorValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="colorFilter" onclick="toggleFilter('colorFilter')"><h4><i class="fas fa-palette"></i> Diamond Color</h4><i class="fas fa-chevron-down toggle-icon" id="colorFilterIcon"></i></div><div class="filter-content" id="colorFilter"><div class="filter-options">${colorValues.map(v => `<div class="filter-option" data-filter="diamond_color" data-value="${v}" onclick="selectFilter('diamond_color', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
                 ${clarityValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="clarityFilter" onclick="toggleFilter('clarityFilter')"><h4><i class="fas fa-eye"></i> Diamond Clarity</h4><i class="fas fa-chevron-down toggle-icon" id="clarityFilterIcon"></i></div><div class="filter-content" id="clarityFilter"><div class="filter-options">${clarityValues.map(v => `<div class="filter-option" data-filter="diamond_clarity" data-value="${v}" onclick="selectFilter('diamond_clarity', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
                 ${cutValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="cutFilter" onclick="toggleFilter('cutFilter')"><h4><i class="fas fa-cut"></i> Diamond Cut</h4><i class="fas fa-chevron-down toggle-icon" id="cutFilterIcon"></i></div><div class="filter-content" id="cutFilter"><div class="filter-options">${cutValues.map(v => `<div class="filter-option" data-filter="diamond_cut" data-value="${v}" onclick="selectFilter('diamond_cut', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
@@ -848,6 +941,10 @@
                         if (icon) icon.classList.add('rotated');
                     }
                 }, 100);
+                
+                // Initialize cart
+                await updateCartPreview();
+                await updateCartCount();
             } catch(e) { container.innerHTML = '<div class="empty-state">Error loading collection</div>'; }
         }
         
@@ -928,7 +1025,8 @@
         
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
         
-        updateCartPreview();
+        // Initialize
+        updateCartCount();
         loadProducts();
     </script>
 </body>
