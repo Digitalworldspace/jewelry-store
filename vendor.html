@@ -12,7 +12,6 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* DNA Theme - Animated Background */
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #1a1a2e 100%);
@@ -22,7 +21,7 @@
             overflow-x: hidden;
         }
         
-        /* Animated DNA Helix Background */
+        /* Animated Background */
         .dna-background {
             position: fixed;
             top: 0;
@@ -34,12 +33,6 @@
             pointer-events: none;
         }
         
-        .dna-helix {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-        
         .dna-strand {
             position: absolute;
             width: 2px;
@@ -48,56 +41,22 @@
             left: 20%;
             animation: dnaFloat 8s ease-in-out infinite;
         }
-        
         .dna-strand:nth-child(2) { left: 40%; animation-delay: -2s; }
         .dna-strand:nth-child(3) { left: 60%; animation-delay: -4s; }
         .dna-strand:nth-child(4) { left: 80%; animation-delay: -6s; }
-        
-        .dna-node {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: radial-gradient(circle, var(--gold), transparent);
-            border-radius: 50%;
-            left: 20%;
-            animation: nodePulse 3s ease-in-out infinite;
-        }
         
         @keyframes dnaFloat {
             0%, 100% { transform: translateY(0); opacity: 0.3; }
             50% { transform: translateY(-20px); opacity: 0.8; }
         }
         
-        @keyframes nodePulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.5); opacity: 1; }
-        }
-        
-        /* Floating particles */
-        .particle {
-            position: absolute;
-            background: radial-gradient(circle, rgba(212,175,55,0.4), transparent);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: float 15s infinite linear;
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.5; }
-            90% { opacity: 0.5; }
-            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
-        }
-        
-        /* Glassmorphism Effect */
+        /* Glassmorphism */
         .glass-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(212, 175, 55, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
         
-        /* Main Content - relative to background */
         .vendor-header, .vendor-sidebar, .vendor-main, .stat-card, .chart-card, .form-card, .product-card, .modal-content {
             position: relative;
             z-index: 10;
@@ -117,21 +76,18 @@
             top: 0;
             z-index: 100;
             border-bottom: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
         
         .logo {
             font-size: 28px;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--gold), #fff8e7, var(--gold));
+            background: linear-gradient(135deg, #D4AF37, #fff8e7, #D4AF37);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
         }
-        
         .logo span {
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            background: linear-gradient(135deg, #D4AF37, #B8962E);
             color: #0a0a0a;
             padding: 4px 12px;
             border-radius: 30px;
@@ -139,23 +95,14 @@
             margin-left: 8px;
         }
         
-        .vendor-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
         .vendor-badge {
             background: rgba(212, 175, 55, 0.15);
             border: 1px solid rgba(212, 175, 55, 0.3);
-            backdrop-filter: blur(10px);
             padding: 8px 20px;
             border-radius: 40px;
             font-size: 14px;
-            font-weight: 500;
         }
-        
-        .vendor-badge i { color: var(--gold); margin-right: 8px; }
+        .vendor-badge i { color: #D4AF37; margin-right: 8px; }
         
         .logout-btn {
             background: rgba(239, 68, 68, 0.15);
@@ -165,14 +112,8 @@
             border-radius: 40px;
             cursor: pointer;
             transition: all 0.3s;
-            font-weight: 500;
         }
-        
-        .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.2);
-        }
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.3); transform: translateY(-2px); }
         
         /* Sidebar */
         .vendor-sidebar {
@@ -181,7 +122,6 @@
             backdrop-filter: blur(15px);
             border-right: 1px solid rgba(212, 175, 55, 0.2);
             padding: 30px 20px;
-            position: relative;
         }
         
         .nav-item {
@@ -190,25 +130,21 @@
             gap: 12px;
             padding: 14px 18px;
             color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
             border-radius: 12px;
             margin-bottom: 8px;
             transition: all 0.3s;
             cursor: pointer;
-            font-weight: 500;
         }
-        
         .nav-item:hover, .nav-item.active {
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.05));
-            color: var(--gold);
+            color: #D4AF37;
             transform: translateX(5px);
-            border-left: 3px solid var(--gold);
+            border-left: 3px solid #D4AF37;
         }
-        
-        .nav-item i { width: 24px; font-size: 18px; }
+        .nav-item i { width: 24px; }
         .nav-badge {
             margin-left: auto;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            background: linear-gradient(135deg, #D4AF37, #B8962E);
             color: #0a0a0a;
             padding: 2px 10px;
             border-radius: 30px;
@@ -217,13 +153,13 @@
         }
         
         /* Main Content */
-        .vendor-layout { display: flex; min-height: calc(100vh - 80px); position: relative; z-index: 10; }
+        .vendor-layout { display: flex; min-height: calc(100vh - 80px); }
         .vendor-main { flex: 1; padding: 30px; overflow-x: auto; }
         
         .page-title {
             font-size: 32px;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--gold), #fff8e7);
+            background: linear-gradient(135deg, #D4AF37, #fff8e7);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -239,24 +175,10 @@
             padding: 22px;
             border: 1px solid rgba(212, 175, 55, 0.2);
             transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
         }
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-        .stat-card:hover::before { opacity: 1; }
-        .stat-card:hover { transform: translateY(-5px); border-color: var(--gold); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); }
-        .stat-icon { font-size: 36px; color: var(--gold); margin-bottom: 12px; }
-        .stat-value { font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #fff, var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .stat-card:hover { transform: translateY(-5px); border-color: #D4AF37; }
+        .stat-icon { font-size: 36px; color: #D4AF37; margin-bottom: 12px; }
+        .stat-value { font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #fff, #D4AF37); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .stat-label { font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-top: 5px; }
         
         /* Charts */
@@ -268,7 +190,7 @@
             padding: 20px;
             border: 1px solid rgba(212, 175, 55, 0.2);
         }
-        .chart-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; color: var(--gold); }
+        .chart-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; color: #D4AF37; }
         canvas { max-height: 250px; }
         
         /* Products Grid */
@@ -281,21 +203,19 @@
             border: 1px solid rgba(212, 175, 55, 0.2);
             transition: all 0.3s;
         }
-        .product-card:hover { transform: translateY(-5px); border-color: var(--gold); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); }
+        .product-card:hover { transform: translateY(-5px); border-color: #D4AF37; }
         .product-image { width: 100%; height: 180px; object-fit: cover; background: rgba(0,0,0,0.3); }
         .product-info { padding: 15px; }
-        .product-name { font-size: 16px; font-weight: 600; margin-bottom: 5px; color: #fff; }
-        .product-price { font-size: 18px; font-weight: 700; color: var(--gold); }
+        .product-name { font-size: 16px; font-weight: 600; color: #fff; }
+        .product-price { font-size: 18px; font-weight: 700; color: #D4AF37; }
         .product-status { display: inline-block; padding: 2px 12px; border-radius: 30px; font-size: 10px; margin-top: 8px; }
-        .status-pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
-        .status-approved { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
-        .status-rejected { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .status-pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .status-approved { background: rgba(16, 185, 129, 0.2); color: #10b981; }
         .card-actions { display: flex; gap: 10px; margin-top: 12px; }
-        .card-actions button { flex: 1; padding: 8px; border: none; border-radius: 30px; cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.3s; }
-        .btn-edit { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
-        .btn-edit:hover { background: rgba(59, 130, 246, 0.4); transform: translateY(-2px); }
-        .btn-delete { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
-        .btn-delete:hover { background: rgba(239, 68, 68, 0.4); transform: translateY(-2px); }
+        .card-actions button { flex: 1; padding: 8px; border: none; border-radius: 30px; cursor: pointer; font-size: 12px; transition: all 0.3s; }
+        .btn-edit { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .btn-delete { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .btn-edit:hover, .btn-delete:hover { transform: translateY(-2px); }
         
         /* Form */
         .form-card {
@@ -307,7 +227,7 @@
         }
         .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 13px; color: rgba(255, 255, 255, 0.7); }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 13px; color: rgba(255, 255, 255, 0.7); }
         .form-group input, .form-group textarea, .form-group select {
             width: 100%;
             padding: 12px;
@@ -316,17 +236,14 @@
             border-radius: 12px;
             font-size: 14px;
             color: white;
-            transition: all 0.3s;
         }
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
             outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+            border-color: #D4AF37;
         }
-        .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(255, 255, 255, 0.4); }
         
         .btn-primary {
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            background: linear-gradient(135deg, #D4AF37, #B8962E);
             color: #0a0a0a;
             padding: 12px 28px;
             border: none;
@@ -343,8 +260,6 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 40px;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
         }
         .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
         
@@ -359,14 +274,14 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        .bulk-area:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.05); transform: scale(1.01); }
+        .bulk-area:hover { border-color: #D4AF37; background: rgba(212, 175, 55, 0.05); }
         .progress-bar { height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden; margin-top: 20px; display: none; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); width: 0%; transition: width 0.3s; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #D4AF37, #F5E6C6); width: 0%; transition: width 0.3s; }
         
         /* Table */
-        .orders-table { width: 100%; border-collapse: collapse; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border-radius: 16px; overflow: hidden; }
+        .orders-table { width: 100%; border-collapse: collapse; background: rgba(255, 255, 255, 0.05); border-radius: 16px; overflow: hidden; }
         .orders-table th, .orders-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-        .orders-table th { background: rgba(0, 0, 0, 0.3); font-weight: 600; color: var(--gold); }
+        .orders-table th { background: rgba(0, 0, 0, 0.3); color: #D4AF37; }
         
         /* Modal */
         .modal {
@@ -398,25 +313,32 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            background: linear-gradient(135deg, #D4AF37, #B8962E);
             color: #0a0a0a;
             padding: 12px 24px;
             border-radius: 40px;
             z-index: 1000;
             font-weight: 700;
             animation: slideIn 0.3s;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         }
         .toast-error { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
         .loading { text-align: center; padding: 60px; color: rgba(255,255,255,0.6); }
-        .spinner { width: 40px; height: 40px; border: 3px solid rgba(212,175,55,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
+        .spinner { width: 40px; height: 40px; border: 3px solid rgba(212,175,55,0.2); border-top-color: #D4AF37; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
         .media-preview { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
         .media-preview-item { width: 80px; height: 80px; border-radius: 12px; overflow: hidden; background: rgba(0,0,0,0.3); border: 1px solid rgba(212,175,55,0.3); }
-        .format-hint { background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 12px; margin-top: 20px; border-left: 3px solid var(--gold); }
+        .profile-info {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 3px solid #D4AF37;
+        }
+        .profile-info p { margin: 8px 0; color: rgba(255,255,255,0.8); }
+        .profile-info strong { color: #D4AF37; }
         
         @media (max-width: 768px) {
             .vendor-layout { flex-direction: column; }
@@ -424,23 +346,17 @@
             .nav-item { white-space: nowrap; }
             .form-grid { grid-template-columns: 1fr; }
             .charts-grid { grid-template-columns: 1fr; }
-            .vendor-header { padding: 15px 20px; }
-            .vendor-main { padding: 20px; }
         }
     </style>
 </head>
 <body>
-    <!-- DNA Animated Background -->
     <div class="dna-background">
-        <div class="dna-helix">
-            <div class="dna-strand"></div>
-            <div class="dna-strand"></div>
-            <div class="dna-strand"></div>
-            <div class="dna-strand"></div>
-        </div>
+        <div class="dna-strand"></div>
+        <div class="dna-strand"></div>
+        <div class="dna-strand"></div>
+        <div class="dna-strand"></div>
     </div>
     
-    <!-- Header -->
     <div class="vendor-header">
         <div class="logo">STYLE OF LIFE <span>VENDOR DNA</span></div>
         <div class="vendor-info" id="vendorInfo">
@@ -450,31 +366,15 @@
     </div>
     
     <div class="vendor-layout">
-        <!-- Sidebar -->
         <div class="vendor-sidebar">
-            <div class="nav-item active" data-page="dashboard">
-                <i class="fas fa-chart-line"></i> Dashboard
-            </div>
-            <div class="nav-item" data-page="products">
-                <i class="fas fa-box"></i> My Products
-                <span class="nav-badge" id="productCount">0</span>
-            </div>
-            <div class="nav-item" data-page="add-product">
-                <i class="fas fa-plus-circle"></i> Add Product
-            </div>
-            <div class="nav-item" data-page="bulk-upload">
-                <i class="fas fa-file-upload"></i> Bulk Upload
-            </div>
-            <div class="nav-item" data-page="orders">
-                <i class="fas fa-shopping-cart"></i> Orders
-                <span class="nav-badge" id="orderCount">0</span>
-            </div>
-            <div class="nav-item" data-page="profile">
-                <i class="fas fa-user-circle"></i> Profile
-            </div>
+            <div class="nav-item active" data-page="dashboard"><i class="fas fa-chart-line"></i> Dashboard</div>
+            <div class="nav-item" data-page="products"><i class="fas fa-box"></i> My Products <span class="nav-badge" id="productCount">0</span></div>
+            <div class="nav-item" data-page="add-product"><i class="fas fa-plus-circle"></i> Add Product</div>
+            <div class="nav-item" data-page="bulk-upload"><i class="fas fa-file-upload"></i> Bulk Upload</div>
+            <div class="nav-item" data-page="orders"><i class="fas fa-shopping-cart"></i> Orders <span class="nav-badge" id="orderCount">0</span></div>
+            <div class="nav-item" data-page="profile"><i class="fas fa-user-circle"></i> Profile</div>
         </div>
         
-        <!-- Main Content -->
         <div class="vendor-main">
             <!-- Dashboard -->
             <div id="dashboardPage">
@@ -523,9 +423,8 @@
                     </div>
                     <div class="form-group"><label>Description</label><textarea id="description" rows="2" placeholder="Product description..."></textarea></div>
                     
-                    <!-- Media Section -->
                     <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin: 15px 0;">
-                        <h4 style="margin-bottom: 10px; color: var(--gold);"><i class="fas fa-image"></i> Product Media (URLs only)</h4>
+                        <h4 style="margin-bottom: 10px; color: #D4AF37;"><i class="fas fa-image"></i> Product Media (URLs only)</h4>
                         <div class="form-group"><label>Image 1 URL (Main)</label><input type="url" id="image1_url" placeholder="https://..."></div>
                         <div class="form-group"><label>Image 2 URL</label><input type="url" id="image2_url" placeholder="https://..."></div>
                         <div class="form-group"><label>Image 3 URL</label><input type="url" id="image3_url" placeholder="https://..."></div>
@@ -533,9 +432,8 @@
                         <div id="mediaPreview" class="media-preview"></div>
                     </div>
                     
-                    <!-- Diamond Specifications -->
                     <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin: 15px 0;">
-                        <h4 style="margin-bottom: 10px; color: var(--gold);"><i class="fas fa-gem"></i> Diamond Specifications (Optional)</h4>
+                        <h4 style="margin-bottom: 10px; color: #D4AF37;"><i class="fas fa-gem"></i> Diamond Specifications (Optional)</h4>
                         <div class="form-grid">
                             <div class="form-group"><label>Carat</label><input type="number" id="carat" step="0.01" placeholder="e.g., 1.00"></div>
                             <div class="form-group"><label>Diamond Color</label><select id="diamond_color"><option value="">Select</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option><option value="I">I</option><option value="J">J</option></select></div>
@@ -559,15 +457,18 @@
                     <div class="page-title">📂 Bulk Upload DNA</div>
                     <div style="color: rgba(255,255,255,0.6);">Upload multiple products at once using CSV/Excel</div>
                 </div>
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+                    <button class="btn-primary" onclick="downloadSampleExcel()"><i class="fas fa-download"></i> Download Sample Excel</button>
+                </div>
                 <div class="bulk-area" id="bulkUploadArea">
-                    <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--gold);"></i>
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #D4AF37;"></i>
                     <p style="margin-top: 10px;">Click or drag & drop CSV / Excel file here</p>
                     <p style="font-size: 12px; color: rgba(255,255,255,0.6);">Supported: .csv, .xlsx, .xls</p>
                 </div>
                 <div class="progress-bar" id="bulkProgress"><div class="progress-fill" id="bulkProgressFill"></div></div>
                 <div id="bulkResult"></div>
                 <input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display: none;">
-                <div class="format-hint">
+                <div class="format-hint" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-top: 20px; border-left: 3px solid #D4AF37;">
                     <strong>📋 Excel Format Required:</strong><br>
                     <code>SKU | Product Name | Category | Price (₹) | GST (%) | Stock | Description | Image 1 URL | Image 2 URL | Image 3 URL | Video URL | Carat | Diamond Color | Diamond Clarity | Diamond Cut | Diamond Polish | Diamond Symmetry</code>
                 </div>
@@ -592,21 +493,25 @@
                     <div class="form-grid">
                         <div class="form-group"><label>Business Name *</label><input type="text" id="business_name" placeholder="Your business name"></div>
                         <div class="form-group"><label>Owner Name *</label><input type="text" id="owner_name" placeholder="Your full name"></div>
-                        <div class="form-group"><label>Email *</label><input type="email" id="vendor_email" placeholder="Email"></div>
+                        <div class="form-group"><label>Email *</label><input type="email" id="vendor_email" placeholder="Email" readonly style="background: rgba(0,0,0,0.5);"></div>
                         <div class="form-group"><label>Phone</label><input type="tel" id="phone" placeholder="Contact number"></div>
                         <div class="form-group"><label>Address</label><textarea id="address" rows="2" placeholder="Business address"></textarea></div>
                         <div class="form-group"><label>GST Number</label><input type="text" id="gst_number" placeholder="GSTIN"></div>
                     </div>
                     <button class="btn-primary" onclick="updateProfile()"><i class="fas fa-save"></i> Update DNA Profile</button>
+                    
+                    <div id="profileSavedInfo" class="profile-info" style="display: none;">
+                        <h4 style="color: #D4AF37; margin-bottom: 10px;"><i class="fas fa-check-circle"></i> Saved Profile Information</h4>
+                        <div id="savedProfileContent"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Confirmation Modal -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
-            <h3 style="color: var(--gold);">Confirm Action</h3>
+            <h3 style="color: #D4AF37;">Confirm Action</h3>
             <p id="modalMessage" style="margin-top: 15px;">Are you sure?</p>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button class="btn-primary" onclick="confirmAction(true)">Yes</button>
@@ -626,23 +531,6 @@
         let salesChart = null;
         let categoryChart = null;
         
-        // Generate floating particles
-        function createParticles() {
-            const container = document.querySelector('.dna-background');
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                const size = Math.random() * 4 + 2;
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 15 + 's';
-                particle.style.animationDuration = 10 + Math.random() * 10 + 's';
-                container.appendChild(particle);
-            }
-        }
-        createParticles();
-        
         // Check authentication
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
@@ -659,6 +547,7 @@
             }
             vendorData = vendor;
             document.getElementById('businessName').innerText = vendor.business_name || 'Vendor';
+            document.getElementById('vendor_email').value = vendor.email || currentUser.email;
             loadDashboard();
             loadProducts();
             loadOrders();
@@ -672,12 +561,12 @@
             modal.style.zIndex = '2000';
             modal.innerHTML = `
                 <div class="modal-content" style="max-width: 400px;">
-                    <h3 style="color: var(--gold); margin-bottom: 20px;"><i class="fas fa-dna"></i> Vendor DNA Login</h3>
+                    <h3 style="color: #D4AF37; margin-bottom: 20px;"><i class="fas fa-dna"></i> Vendor DNA Login</h3>
                     <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"></div>
                     <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Password"></div>
                     <button class="btn-primary" onclick="login()" style="width:100%;"><i class="fas fa-sign-in-alt"></i> Login</button>
                     <hr style="margin: 15px 0; border-color: rgba(255,255,255,0.1);">
-                    <p style="text-align: center; font-size: 13px;">New vendor? <a href="#" onclick="showRegister()" style="color: var(--gold);">Register here</a></p>
+                    <p style="text-align: center; font-size: 13px;">New vendor? <a href="#" onclick="showRegister()" style="color: #D4AF37;">Register here</a></p>
                 </div>
             `;
             document.body.appendChild(modal);
@@ -692,7 +581,7 @@
             window.showRegister = () => {
                 modal.innerHTML = `
                     <div class="modal-content" style="max-width: 450px;">
-                        <h3 style="color: var(--gold);"><i class="fas fa-user-plus"></i> Register Vendor DNA</h3>
+                        <h3 style="color: #D4AF37;"><i class="fas fa-user-plus"></i> Register Vendor DNA</h3>
                         <div class="form-group"><label>Business Name *</label><input type="text" id="regBusinessName"></div>
                         <div class="form-group"><label>Owner Name *</label><input type="text" id="regOwnerName"></div>
                         <div class="form-group"><label>Email *</label><input type="email" id="regEmail"></div>
@@ -946,6 +835,56 @@
             container.innerHTML = html;
         }
         
+        // Download Sample Excel
+        window.downloadSampleExcel = function() {
+            const sampleData = [
+                {
+                    'SKU': 'RING-001',
+                    'Product Name': 'Diamond Solitaire Ring',
+                    'Category': 'Rings',
+                    'Price (₹)': 29999,
+                    'GST (%)': 18,
+                    'Stock': 50,
+                    'Description': 'Beautiful diamond ring',
+                    'Image 1 URL': 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400',
+                    'Image 2 URL': 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=400',
+                    'Image 3 URL': '',
+                    'Video URL': '',
+                    'Carat': 1.00,
+                    'Diamond Color': 'D',
+                    'Diamond Clarity': 'VS1',
+                    'Diamond Cut': 'Excellent',
+                    'Diamond Polish': 'Excellent',
+                    'Diamond Symmetry': 'Excellent'
+                },
+                {
+                    'SKU': 'NECK-001',
+                    'Product Name': 'Gold Necklace',
+                    'Category': 'Necklaces',
+                    'Price (₹)': 45999,
+                    'GST (%)': 18,
+                    'Stock': 30,
+                    'Description': 'Beautiful gold necklace',
+                    'Image 1 URL': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400',
+                    'Image 2 URL': '',
+                    'Image 3 URL': '',
+                    'Video URL': '',
+                    'Carat': '',
+                    'Diamond Color': '',
+                    'Diamond Clarity': '',
+                    'Diamond Cut': '',
+                    'Diamond Polish': '',
+                    'Diamond Symmetry': ''
+                }
+            ];
+            const ws = XLSX.utils.json_to_sheet(sampleData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Sample Products');
+            ws['!cols'] = [{wch:12}, {wch:25}, {wch:12}, {wch:12}, {wch:8}, {wch:8}, {wch:40}, {wch:50}, {wch:50}, {wch:50}, {wch:50}, {wch:8}, {wch:14}, {wch:14}, {wch:12}, {wch:12}, {wch:14}];
+            XLSX.writeFile(wb, `vendor_sample_products.xlsx`);
+            showToast('Sample Excel downloaded!');
+        };
+        
         // Bulk Upload
         const bulkArea = document.getElementById('bulkUploadArea');
         const bulkInput = document.getElementById('bulkFileInput');
@@ -975,6 +914,7 @@
                 const workbook = XLSX.read(data);
                 const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
                 let success = 0, fail = 0;
+                const errors = [];
                 for (let i = 0; i < jsonData.length; i++) {
                     const row = jsonData[i];
                     const product = {
@@ -998,18 +938,56 @@
                         vendor_id: currentUser.id,
                         status: 'pending'
                     };
-                    if (!product.sku || !product.product_name || !product.category || isNaN(product.price)) { fail++; continue; }
+                    if (!product.sku || !product.product_name || !product.category || isNaN(product.price)) { 
+                        fail++; 
+                        errors.push(`Row ${i+1}: Missing required fields`);
+                        continue; 
+                    }
                     const { error } = await supabase.from('vendor_products').insert([product]);
-                    if (error) fail++;
+                    if (error) { fail++; errors.push(`Row ${i+1}: ${error.message}`); }
                     else success++;
                     progressFill.style.width = `${10 + ((i + 1) / jsonData.length) * 90}%`;
                 }
                 progressFill.style.width = '100%';
-                resultDiv.innerHTML = `<div style="background: rgba(16,185,129,0.2); padding: 15px; border-radius: 12px; margin-top: 15px; border: 1px solid rgba(16,185,129,0.3);"><strong>✅ Upload Complete!</strong><br>Successfully added: ${success}<br>Failed: ${fail}</div>`;
+                let errorHtml = errors.length > 0 ? `<div style="margin-top:10px; font-size:12px; color:#f87171;">${errors.slice(0,5).join('<br>')}${errors.length > 5 ? `<br>... and ${errors.length-5} more` : ''}</div>` : '';
+                resultDiv.innerHTML = `<div style="background: rgba(16,185,129,0.2); padding: 15px; border-radius: 12px; margin-top: 15px; border: 1px solid rgba(16,185,129,0.3);">
+                    <strong>✅ Upload Complete!</strong><br>Successfully added: ${success}<br>Failed: ${fail}${errorHtml}</div>`;
                 if (success > 0) loadProducts();
                 setTimeout(() => { progressBar.style.display = 'none'; }, 3000);
             } catch (err) {
                 resultDiv.innerHTML = `<div style="background: rgba(239,68,68,0.2); padding: 15px; border-radius: 12px;"><strong>Error:</strong> ${err.message}</div>`;
+            }
+        }
+        
+        // Profile Functions
+        function loadProfile() {
+            if (!vendorData) return;
+            document.getElementById('business_name').value = vendorData.business_name || '';
+            document.getElementById('owner_name').value = vendorData.owner_name || '';
+            document.getElementById('vendor_email').value = vendorData.email || currentUser?.email || '';
+            document.getElementById('phone').value = vendorData.phone || '';
+            document.getElementById('address').value = vendorData.address || '';
+            document.getElementById('gst_number').value = vendorData.gst_number || '';
+            displaySavedProfile();
+        }
+        
+        function displaySavedProfile() {
+            const profileInfoDiv = document.getElementById('profileSavedInfo');
+            const contentDiv = document.getElementById('savedProfileContent');
+            if (vendorData && (vendorData.business_name || vendorData.owner_name || vendorData.phone || vendorData.address || vendorData.gst_number)) {
+                contentDiv.innerHTML = `
+                    <p><strong><i class="fas fa-store"></i> Business Name:</strong> ${escapeHtml(vendorData.business_name || '-')}</p>
+                    <p><strong><i class="fas fa-user"></i> Owner Name:</strong> ${escapeHtml(vendorData.owner_name || '-')}</p>
+                    <p><strong><i class="fas fa-envelope"></i> Email:</strong> ${escapeHtml(vendorData.email || currentUser?.email || '-')}</p>
+                    <p><strong><i class="fas fa-phone"></i> Phone:</strong> ${escapeHtml(vendorData.phone || '-')}</p>
+                    <p><strong><i class="fas fa-map-marker-alt"></i> Address:</strong> ${escapeHtml(vendorData.address || '-')}</p>
+                    <p><strong><i class="fas fa-file-invoice"></i> GST Number:</strong> ${escapeHtml(vendorData.gst_number || '-')}</p>
+                    <p><strong><i class="fas fa-clock"></i> Member Since:</strong> ${new Date(vendorData.created_at).toLocaleDateString()}</p>
+                    <p><strong><i class="fas fa-tag"></i> Status:</strong> <span style="color: ${vendorData.status === 'approved' ? '#10b981' : (vendorData.status === 'rejected' ? '#ef4444' : '#f59e0b')}">${vendorData.status || 'pending'}</span></p>
+                `;
+                profileInfoDiv.style.display = 'block';
+            } else {
+                profileInfoDiv.style.display = 'none';
             }
         }
         
@@ -1023,19 +1001,12 @@
                 updated_at: new Date()
             };
             const { error } = await supabase.from('vendors').update(updates).eq('id', currentUser.id);
-            if (error) showToast('Update failed', true);
-            else { showToast('Profile updated!'); vendorData = { ...vendorData, ...updates }; document.getElementById('businessName').innerText = updates.business_name; }
+            if (error) { showToast('Update failed: ' + error.message, true); return; }
+            vendorData = { ...vendorData, ...updates };
+            document.getElementById('businessName').innerText = updates.business_name;
+            displaySavedProfile();
+            showToast('Profile updated successfully!');
         };
-        
-        function loadProfile() {
-            if (!vendorData) return;
-            document.getElementById('business_name').value = vendorData.business_name || '';
-            document.getElementById('owner_name').value = vendorData.owner_name || '';
-            document.getElementById('vendor_email').value = vendorData.email || '';
-            document.getElementById('phone').value = vendorData.phone || '';
-            document.getElementById('address').value = vendorData.address || '';
-            document.getElementById('gst_number').value = vendorData.gst_number || '';
-        }
         
         function closeModal() { document.getElementById('confirmModal').classList.remove('active'); pendingAction = null; }
         window.confirmAction = (yes) => { if (yes && pendingAction) pendingAction(); closeModal(); };
