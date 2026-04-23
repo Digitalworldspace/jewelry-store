@@ -69,6 +69,7 @@
         .section-header { text-align: center; margin-bottom: 35px; }
         .section-title { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; display: inline-block; }
         .section-title::before, .section-title::after { content: '✦'; color: var(--gold); margin: 0 15px; }
+        .section-subtitle { font-size: 14px; color: var(--gray); margin-top: 8px; }
         
         .featured-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
         .products-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
@@ -144,15 +145,9 @@
         .modal-gallery-d360 iframe { width: 100%; height: 100%; border: none; }
         .modal-gallery-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; border: none; z-index: 10; transition: all 0.3s; }
         .modal-gallery-arrow:hover { background: var(--gold); color: black; }
-        .modal-gallery-arrow-left { left: 10px; }
-        .modal-gallery-arrow-right { right: 10px; }
-        .modal-gallery-dots { position: absolute; bottom: 12px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; z-index: 5; }
-        .modal-gallery-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.2s; }
-        .modal-gallery-dot.active { width: 20px; border-radius: 3px; background: var(--gold); }
         .modal-info { padding: 20px; }
         .modal-name { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
         .modal-sku { font-size: 12px; color: var(--gray-light); margin-bottom: 12px; }
-        .modal-category { display: inline-block; background: var(--gold-light); color: var(--gold-dark); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-bottom: 15px; }
         .modal-price { font-size: 28px; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
         .modal-diamond-details { background: var(--white-light); border-radius: 16px; padding: 15px; margin: 15px 0; }
         .modal-diamond-title { font-size: 14px; font-weight: 600; color: var(--gold); margin-bottom: 12px; }
@@ -161,7 +156,6 @@
         .modal-diamond-label { font-size: 10px; color: var(--gray); text-transform: uppercase; }
         .modal-diamond-value { font-size: 14px; font-weight: 600; color: var(--black); margin-top: 4px; }
         .modal-desc { font-size: 14px; color: var(--gray); line-height: 1.5; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
-        .modal-stock { font-size: 13px; margin-bottom: 20px; padding: 10px; border-radius: 12px; background: var(--white-light); }
         .modal-buttons { display: flex; gap: 12px; }
         .modal-buy { flex: 1; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: black; padding: 14px; border: none; border-radius: 40px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; }
         .modal-buy:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212,175,55,0.3); }
@@ -223,7 +217,7 @@
     
     <div class="bottom-nav"><a data-page="home" class="active"><i class="fas fa-home"></i><span>Home</span></a><a data-page="shop"><i class="fas fa-search"></i><span>Discover</span></a><a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Bag</span></a><a data-page="track"><i class="fas fa-truck"></i><span>Track</span></a><a data-page="customer-portal"><i class="fas fa-user"></i><span>Profile</span></a></div>
     
-    <div id="productModal" class="product-modal"><div class="modal-container"><button class="modal-close" onclick="closeProductModal()">&times;</button><div id="modalMediaContainer" class="modal-gallery-container"></div><div class="modal-info"><div class="modal-name" id="modalName"></div><div class="modal-sku" id="modalSku"></div><div class="modal-category" id="modalCategory"></div><div class="modal-price" id="modalPrice"></div><div id="modalDiamondDetails" class="modal-diamond-details" style="display: none;"><div class="modal-diamond-title"><i class="fas fa-gem"></i> Diamond Specifications</div><div class="modal-diamond-grid"><div class="modal-diamond-item"><div class="modal-diamond-label">Carat</div><div class="modal-diamond-value" id="modalCarat">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Color</div><div class="modal-diamond-value" id="modalColor">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Clarity</div><div class="modal-diamond-value" id="modalClarity">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Cut</div><div class="modal-diamond-value" id="modalCut">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Polish</div><div class="modal-diamond-value" id="modalPolish">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Symmetry</div><div class="modal-diamond-value" id="modalSymmetry">-</div></div></div></div><div class="modal-desc" id="modalDesc"></div><div class="modal-stock" id="modalStock"></div><div class="modal-buttons"><button class="modal-buy" id="modalBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button><button class="modal-cart" id="modalCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button></div></div></div></div>
+    <div id="productModal" class="product-modal"><div class="modal-container"><button class="modal-close" onclick="closeProductModal()">&times;</button><div id="modalMediaContainer" class="modal-gallery-container"></div><div class="modal-info"><div class="modal-name" id="modalName"></div><div class="modal-sku" id="modalSku"></div><div class="modal-price" id="modalPrice"></div><div id="modalDiamondDetails" class="modal-diamond-details" style="display: none;"><div class="modal-diamond-title"><i class="fas fa-gem"></i> Diamond Specifications</div><div class="modal-diamond-grid"><div class="modal-diamond-item"><div class="modal-diamond-label">Carat</div><div class="modal-diamond-value" id="modalCarat">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Color</div><div class="modal-diamond-value" id="modalColor">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Clarity</div><div class="modal-diamond-value" id="modalClarity">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Cut</div><div class="modal-diamond-value" id="modalCut">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Polish</div><div class="modal-diamond-value" id="modalPolish">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Symmetry</div><div class="modal-diamond-value" id="modalSymmetry">-</div></div></div></div><div class="modal-desc" id="modalDesc"></div><div class="modal-buttons"><button class="modal-buy" id="modalBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button><button class="modal-cart" id="modalCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button></div></div></div></div>
     
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     
@@ -241,11 +235,10 @@
         function isD360Interactive(url) { return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); }
         function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com')); }
         
-        // Get product image from the correct columns
         function getProductImage(product) {
-            if (product.images_url_1 && product.images_url_1.trim()) return product.images_url_1;
-            if (product.images_url_2 && product.images_url_2.trim()) return product.images_url_2;
-            if (product.images_url_3 && product.images_url_3.trim()) return product.images_url_3;
+            if (product.image1_url && product.image1_url.trim()) return product.image1_url;
+            if (product.image2_url && product.image2_url.trim()) return product.image2_url;
+            if (product.image3_url && product.image3_url.trim()) return product.image3_url;
             if (product.video_url && product.video_url.trim()) return product.video_url;
             return 'https://via.placeholder.com/400x400?text=Style+Of+Life';
         }
@@ -255,7 +248,7 @@
         
         function showToast(msg, isErr = false) { const t = document.createElement('div'); t.className = 'toast' + (isErr ? ' toast-error' : ''); t.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
         
-        // Swipe cart
+        // Swipe cart implementation
         let isDragging = false, startX = 0, currentTranslate = 0;
         const swipeThumb = document.getElementById('swipeThumb'), swipeProgress = document.getElementById('swipeProgress'), swipeTrack = document.querySelector('.swipe-track'), overlay = document.getElementById('swipeCartOverlay');
         let maxSwipe = 0, touchStartY = 0, isSwipingDown = false;
@@ -294,7 +287,7 @@
                 const { gstAmount, total } = calculateGST(item.price, gstPercent);
                 subtotal += item.price * item.quantity;
                 totalGST += gstAmount * item.quantity;
-                html += `<div class="cart-preview-item"><img src="${item.image}" onerror="this.src='https://via.placeholder.com/55'"><div class="cart-preview-item-details"><div class="cart-preview-item-name">${escapeHtml(item.name)}</div><div class="cart-preview-item-price">₹${item.price.toLocaleString()} × ${item.quantity}</div><div style="font-size:10px;color:#aaa;">GST ${gstPercent}%: ₹${(gstAmount * item.quantity).toFixed(2)}</div></div><div style="color:var(--gold);font-weight:bold;">₹${(total * item.quantity).toFixed(2)}</div></div>`;
+                html += `<div class="cart-preview-item"><img src="${item.image}" onerror="this.src='https://via.placeholder.com/55'"><div><div>${escapeHtml(item.name)}</div><div>₹${item.price.toLocaleString()} × ${item.quantity}</div><div style="font-size:10px;">GST ${gstPercent}%: ₹${(gstAmount * item.quantity).toFixed(2)}</div></div><div style="color:var(--gold);font-weight:bold;">₹${(total * item.quantity).toFixed(2)}</div></div>`;
             }
             const shipping = subtotal >= 3000 ? 0 : 100;
             const grand = subtotal + totalGST + shipping;
@@ -329,7 +322,7 @@
                 let html = '';
                 for (const p of stories) {
                     const thumb = getProductImage(p);
-                    const firstMedia = p.images_url_1 || p.images_url_2 || p.images_url_3 || p.video_url;
+                    const firstMedia = p.image1_url || p.image2_url || p.image3_url || p.video_url;
                     const isVideo = isVideoUrl(firstMedia);
                     const isD360 = isD360Interactive(firstMedia);
                     let badge = '';
@@ -353,29 +346,59 @@
                 for (const p of picks) {
                     const img = getProductImage(p);
                     const { total } = calculateGST(p.price, p.gst || 18);
-                    html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'><img class="featured-media" src="${img}" alt="${escapeHtml(p.product_name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200?text=Style'"><div class="featured-info"><div class="featured-name">${escapeHtml(p.product_name)}</div><div class="featured-price">₹${total.toLocaleString()}</div><div class="featured-gst">Incl. ${p.gst||18}% GST</div></div></div>`;
+                    html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'><img class="featured-media" src="${img}" alt="${escapeHtml(p.product_name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200?text=Style'"><div class="featured-info"><div class="featured-name">${escapeHtml(p.product_name)}</div><div class="featured-price">₹${total.toLocaleString()}</div></div></div>`;
                 }
                 cont.innerHTML = html;
             } catch(e) { cont.innerHTML = '<div class="empty-state">Error loading</div>'; }
         }
         
-        async function loadProducts() {
+        // Unified product loading - merges both products and approved vendor_products into a single collection
+        async function loadUnifiedProducts() {
             const cont = document.getElementById('productsGrid');
             if (!cont) return;
             cont.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div>';
             try {
-                if (!allProducts.length) { const { data } = await supabase.from('products').select('*').order('id'); allProducts = data || []; }
-                if (!allProducts.length) { cont.innerHTML = '<div class="empty-state">✨ No products found</div>'; return; }
+                // Fetch from both tables
+                const [productsRes, vendorProductsRes] = await Promise.all([
+                    supabase.from('products').select('*'),
+                    supabase.from('vendor_products').select('*').eq('status', 'approved')
+                ]);
+                
+                const mainProducts = productsRes.data || [];
+                const vendorProducts = vendorProductsRes.data || [];
+                
+                // Combine both arrays
+                let combined = [...mainProducts, ...vendorProducts];
+                
+                // Remove duplicates by SKU (if same SKU exists, prefer vendor? just keep first)
+                const uniqueMap = new Map();
+                for (const product of combined) {
+                    if (!uniqueMap.has(product.sku)) {
+                        uniqueMap.set(product.sku, product);
+                    }
+                }
+                combined = Array.from(uniqueMap.values());
+                
+                // Shuffle for organic feel
+                const shuffled = shuffleArray([...combined]);
+                allProducts = shuffled;
+                
+                // Cache GST values
                 for (const p of allProducts) productsCache[p.id] = { gst: p.gst || 18 };
                 
-                // Show only first 9 products
-                const displayProducts = allProducts.slice(0, 9);
+                if (!allProducts.length) { 
+                    cont.innerHTML = '<div class="empty-state">✨ Our collection is being curated. Check back soon!</div>'; 
+                    return; 
+                }
+                
+                // Display all products (limit to 12 for homepage, but show more)
+                const displayProducts = allProducts.slice(0, 12);
                 
                 let html = '';
                 for (const p of displayProducts) {
                     const img = getProductImage(p);
-                    const { total, gstAmount } = calculateGST(p.price, p.gst || 18);
-                    const imgCount = [p.images_url_1, p.images_url_2, p.images_url_3, p.video_url].filter(u => u && u.trim()).length;
+                    const { total } = calculateGST(p.price, p.gst || 18);
+                    const imgCount = [p.image1_url, p.image2_url, p.image3_url, p.video_url].filter(u => u && u.trim()).length;
                     
                     html += `<div class="product-card" onclick='openProductModal(${JSON.stringify(p)})'>
                         <div class="product-image-container">
@@ -395,12 +418,15 @@
                     </div>`;
                 }
                 cont.innerHTML = html;
-            } catch(e) { cont.innerHTML = '<div class="empty-state">Error loading collection</div>'; }
+            } catch(e) { 
+                console.error('Load error:', e);
+                cont.innerHTML = '<div class="empty-state">Unable to load collection at this time.</div>'; 
+            }
         }
         
-        // Modal with all media types
+        // Universal modal for any product (handles both sources)
         window.openProductModal = function(product) {
-            const media = [product.images_url_1, product.images_url_2, product.images_url_3, product.video_url].filter(m => m && m.trim());
+            const media = [product.image1_url, product.image2_url, product.image3_url, product.video_url].filter(m => m && m.trim());
             const displayMedia = media.length ? media : ['https://via.placeholder.com/400x400?text=Style+Of+Life'];
             const { total, gstAmount } = calculateGST(product.price, product.gst || 18);
             const hasDiamond = product.carat || product.diamond_color || product.diamond_clarity || product.diamond_cut;
@@ -447,7 +473,6 @@
             
             document.getElementById('modalName').innerText = product.product_name;
             document.getElementById('modalSku').innerText = `SKU: ${product.sku}`;
-            document.getElementById('modalCategory').innerText = product.category || 'Fine Jewelry';
             document.getElementById('modalPrice').innerHTML = `₹${total.toLocaleString()} <small>(Incl. ${product.gst || 18}% GST)</small><br><span style="font-size:14px;color:var(--gray);">Base: ₹${product.price.toLocaleString()} + GST: ₹${gstAmount.toLocaleString()}</span>`;
             document.getElementById('modalDesc').innerText = product.description || 'Exquisite handcrafted masterpiece.';
             
@@ -462,11 +487,6 @@
                 document.getElementById('modalSymmetry').innerText = product.diamond_symmetry || '-';
             } else { diamondDetailsDiv.style.display = 'none'; }
             
-            const stockStat = product.stock <= 0 ? 'Out of Stock' : (product.stock < 10 ? `Only ${product.stock} left!` : 'In Stock');
-            const stockColor = product.stock <= 0 ? '#dc3545' : (product.stock < 10 ? '#ff9800' : '#28a745');
-            document.getElementById('modalStock').innerHTML = `<i class="fas ${product.stock <= 0 ? 'fa-times-circle' : (product.stock < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> ${stockStat}`;
-            document.getElementById('modalStock').style.color = stockColor;
-            
             const imgUrl = getProductImage(product);
             document.getElementById('modalBuyBtn').onclick = () => buyNow(product.id, product.product_name, product.price, product.sku, imgUrl);
             document.getElementById('modalCartBtn').onclick = () => addToCart(product.id, product.product_name, product.price, product.sku, imgUrl);
@@ -478,10 +498,12 @@
         
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
         
+        // Initialize everything
         updateCartPreview();
-        loadStories();
-        loadFeatured();
-        loadProducts();
+        loadUnifiedProducts().then(() => {
+            loadStories();
+            loadFeatured();
+        });
     </script>
 </body>
 </html>
