@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Vendor Portal - Style Of Life | Shark & Whale Theme</title>
+    <title>Vendor Portal - Style Of Life | Deep Sea Theme</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
-    <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0a2a3a 0%, #0d3b4f 25%, #0a2a3a 50%, #06212e 75%, #0a2a3a 100%);
+            background: linear-gradient(135deg, #021118 0%, #0a2a3a 30%, #0d3b4f 70%, #021118 100%);
             color: #ffffff;
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
         }
         
+        /* Deep Ocean Background */
         .ocean-bg {
             position: fixed;
             top: 0;
@@ -29,6 +29,16 @@
             height: 100%;
             z-index: 0;
             overflow: hidden;
+        }
+        
+        .ocean-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(2,17,24,0.3) 0%, rgba(2,17,24,0.8) 100%);
+            pointer-events: none;
         }
         
         .wave {
@@ -40,12 +50,12 @@
             background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(20,80,100,0.3)" fill-opacity="0.5" d="M0,192L48,197.3C96,203,192,213,288,208C384,203,480,181,576,170.7C672,160,768,160,864,165.3C960,171,1056,181,1152,181.3C1248,181,1344,171,1392,165.3L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') repeat-x;
             background-size: cover;
             animation: waveMove 20s linear infinite;
-            opacity: 0.5;
+            opacity: 0.4;
         }
         
         .wave:nth-child(2) {
             bottom: 20px;
-            opacity: 0.3;
+            opacity: 0.2;
             animation: waveMove 15s linear infinite reverse;
         }
         
@@ -54,40 +64,98 @@
             100% { background-position-x: 1440px; }
         }
         
-        /* REALISTIC SHARK ANIMATION */
-        .real-shark {
+        /* Giant Squid Animation */
+        .giant-squid {
             position: fixed;
-            bottom: 12%;
-            right: -250px;
-            width: 200px;
-            height: 80px;
+            top: 15%;
+            right: -200px;
+            width: 180px;
+            height: 120px;
             z-index: 5;
-            animation: swimRealShark 28s ease-in-out infinite;
+            animation: swimSquid 35s ease-in-out infinite;
             pointer-events: none;
             filter: drop-shadow(0 5px 15px rgba(0,0,0,0.4));
         }
         
-        .real-shark-body {
+        .squid-head {
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle at 30% 40%, #7a5a6a, #3a2a3a);
+            border-radius: 45% 55% 50% 50%;
+        }
+        
+        .squid-eye {
+            position: absolute;
+            top: 35px;
+            left: 55px;
+            width: 12px;
+            height: 12px;
+            background: #00d4ff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00d4ff;
+        }
+        
+        .squid-tentacle {
+            position: absolute;
+            width: 6px;
+            height: 60px;
+            background: linear-gradient(to bottom, #6a4a5a, #3a2a3a);
+            border-radius: 3px;
+            bottom: -10px;
+        }
+        
+        .squid-tentacle:nth-child(3) { left: 50px; transform: rotate(-15deg); animation: tentacleSway 3s infinite alternate; }
+        .squid-tentacle:nth-child(4) { left: 70px; transform: rotate(-5deg); animation: tentacleSway 2.5s infinite alternate 0.3s; }
+        .squid-tentacle:nth-child(5) { left: 90px; transform: rotate(5deg); animation: tentacleSway 3.2s infinite alternate 0.6s; }
+        .squid-tentacle:nth-child(6) { left: 110px; transform: rotate(15deg); animation: tentacleSway 2.8s infinite alternate 0.9s; }
+        
+        @keyframes tentacleSway {
+            0% { transform: rotate(-20deg); }
+            100% { transform: rotate(20deg); }
+        }
+        
+        @keyframes swimSquid {
+            0% { transform: translateX(0) translateY(0px); right: -200px; }
+            30% { transform: translateX(0) translateY(-15px); }
+            70% { transform: translateX(0) translateY(10px); }
+            100% { transform: translateX(-2200px) translateY(0px); right: 100%; }
+        }
+        
+        /* Great White Shark */
+        .great-white {
+            position: fixed;
+            bottom: 15%;
+            left: -250px;
+            width: 220px;
+            height: 85px;
+            z-index: 5;
+            animation: swimSharkFromLeft 32s ease-in-out infinite;
+            pointer-events: none;
+            filter: drop-shadow(0 5px 12px rgba(0,0,0,0.4));
+        }
+        
+        .shark-body {
             position: relative;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #5a7a8a, #2c4a5a, #1a3a4a);
+            background: linear-gradient(135deg, #6a8a9a, #3a5a6a);
             border-radius: 55% 45% 50% 50% / 60% 55% 40% 45%;
-            box-shadow: inset -10px 0 15px rgba(0,0,0,0.2), inset 10px 0 10px rgba(255,255,255,0.1);
         }
         
-        .real-shark-eye {
+        .shark-eye {
             position: absolute;
-            top: 20px;
-            right: 35px;
+            top: 22px;
+            right: 40px;
             width: 12px;
             height: 12px;
-            background: radial-gradient(circle, #fff, #ddd);
+            background: #fff;
             border-radius: 50%;
-            box-shadow: 0 0 5px rgba(0,212,255,0.6);
         }
         
-        .real-shark-eye::after {
+        .shark-eye::after {
             content: '';
             position: absolute;
             top: 3px;
@@ -98,273 +166,135 @@
             border-radius: 50%;
         }
         
-        .real-shark-gills {
-            position: absolute;
-            top: 30px;
-            right: 80px;
-            display: flex;
-            gap: 4px;
-            flex-direction: column;
-        }
-        
-        .real-shark-gills span {
-            width: 20px;
-            height: 2px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 2px;
-        }
-        
-        .real-shark-fin {
+        .shark-fin {
             position: absolute;
             top: -22px;
-            right: 60px;
+            right: 65px;
             width: 0;
             height: 0;
             border-left: 20px solid transparent;
             border-right: 20px solid transparent;
-            border-bottom: 35px solid #2c4a5a;
-            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+            border-bottom: 35px solid #3a5a6a;
         }
         
-        .real-shark-tail {
+        .shark-tail {
             position: absolute;
-            left: -35px;
-            top: 18px;
+            left: -40px;
+            top: 20px;
             width: 0;
             height: 0;
             border-top: 22px solid transparent;
             border-bottom: 22px solid transparent;
-            border-right: 40px solid #2c4a5a;
-            filter: drop-shadow(-3px 0 3px rgba(0,0,0,0.2));
+            border-right: 45px solid #3a5a6a;
         }
         
-        .real-shark-belly {
-            position: absolute;
-            bottom: 5px;
-            left: 20px;
-            right: 20px;
-            height: 25px;
-            background: rgba(210, 230, 240, 0.3);
-            border-radius: 0 0 40% 40%;
+        @keyframes swimSharkFromLeft {
+            0% { transform: translateX(0) translateY(0px); left: -250px; }
+            30% { transform: translateX(0) translateY(-10px); }
+            70% { transform: translateX(0) translateY(8px); }
+            100% { transform: translateX(2300px) translateY(0px); left: 100%; }
         }
         
-        @keyframes swimRealShark {
-            0% { transform: translateX(0) translateY(0) rotate(0deg); right: -250px; }
-            25% { transform: translateX(0) translateY(-8px) rotate(2deg); }
-            50% { transform: translateX(0) translateY(5px) rotate(-1deg); }
-            75% { transform: translateX(0) translateY(-3px) rotate(1deg); }
-            100% { transform: translateX(-2000px) translateY(0) rotate(0deg); right: 100%; }
-        }
-        
-        /* REALISTIC WHALE ANIMATION */
-        .real-whale {
+        /* Jellyfish Swarm */
+        .jellyfish {
             position: fixed;
             bottom: 20%;
-            left: -350px;
-            width: 320px;
-            height: 140px;
-            z-index: 4;
-            animation: swimRealWhale 40s ease-in-out infinite;
+            right: 5%;
+            width: 45px;
+            height: 60px;
+            animation: floatJelly 12s infinite alternate;
             pointer-events: none;
-            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.3));
+            z-index: 3;
         }
         
-        .real-whale-body {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(ellipse at 35% 45%, #3a6a7a, #1a4a5a, #0a3a4a);
-            border-radius: 50% 45% 55% 50% / 65% 55% 45% 35%;
-            box-shadow: inset -15px 0 20px rgba(0,0,0,0.2), inset 20px 0 15px rgba(100,200,255,0.1);
-        }
-        
-        .real-whale-eye {
-            position: absolute;
-            top: 40px;
-            left: 85px;
-            width: 18px;
-            height: 18px;
-            background: radial-gradient(circle, #fff, #e0e8f0);
+        .jelly-cap {
+            width: 45px;
+            height: 30px;
+            background: radial-gradient(circle, rgba(0,212,255,0.4), rgba(0,150,200,0.15));
             border-radius: 50%;
-            box-shadow: 0 0 8px rgba(0,212,255,0.7);
+            filter: blur(3px);
         }
         
-        .real-whale-eye::after {
-            content: '';
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            width: 7px;
-            height: 7px;
-            background: #021118;
-            border-radius: 50%;
-        }
-        
-        .real-whale-mouth {
-            position: absolute;
-            bottom: 25px;
-            left: 50px;
-            width: 80px;
-            height: 20px;
-            background: #0a2a3a;
-            border-radius: 0 0 30px 30px;
-            border-top: 1px solid rgba(0,212,255,0.3);
-        }
-        
-        .real-whale-fin {
-            position: absolute;
-            top: 40px;
-            right: 60px;
-            width: 55px;
-            height: 65px;
-            background: linear-gradient(135deg, #1a5a6a, #0a4a5a);
-            border-radius: 60% 40% 50% 50%;
-            transform: rotate(10deg);
-            box-shadow: -3px 0 5px rgba(0,0,0,0.2);
-        }
-        
-        .real-whale-tail {
-            position: absolute;
-            left: -70px;
-            top: 40px;
-            width: 80px;
-            height: 75px;
-            background: linear-gradient(135deg, #1a5a6a, #0a4a5a);
-            clip-path: polygon(0% 0%, 100% 25%, 100% 75%, 0% 100%);
-            transform: rotate(-8deg);
-            border-radius: 0 30% 30% 0;
-        }
-        
-        .real-whale-spray {
-            position: absolute;
-            top: -45px;
-            left: 110px;
-            width: 12px;
-            height: 45px;
-            background: linear-gradient(to top, rgba(0,212,255,0.7), rgba(0,212,255,0));
-            border-radius: 50%;
-            animation: whaleSpray 1.5s ease-out infinite;
-        }
-        
-        .real-whale-spray::before {
-            content: '';
-            position: absolute;
-            width: 8px;
+        .jelly-tentacle {
+            width: 2px;
             height: 35px;
-            background: linear-gradient(to top, rgba(0,212,255,0.5), transparent);
-            border-radius: 50%;
-            left: -12px;
-            top: -5px;
-            animation: whaleSpray 1.8s infinite 0.3s;
+            background: linear-gradient(to bottom, #00d4ff, transparent);
+            margin: 0 5px;
+            float: left;
+            animation: sway 3s infinite;
         }
         
-        .real-whale-spray::after {
-            content: '';
-            position: absolute;
-            width: 8px;
-            height: 35px;
-            background: linear-gradient(to top, rgba(0,212,255,0.5), transparent);
-            border-radius: 50%;
-            right: -12px;
-            top: -5px;
-            animation: whaleSpray 1.6s infinite 0.6s;
+        @keyframes floatJelly {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-25px) rotate(6deg); }
         }
         
-        @keyframes whaleSpray {
-            0% { opacity: 0.9; transform: scaleY(1); }
-            100% { opacity: 0; transform: scaleY(2.5) translateY(-15px); }
+        @keyframes sway {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(10deg); }
         }
         
-        @keyframes swimRealWhale {
-            0% { transform: translateX(0) translateY(0px); left: -350px; }
-            20% { transform: translateX(0) translateY(-12px); }
-            50% { transform: translateX(0) translateY(8px); }
-            80% { transform: translateX(0) translateY(-5px); }
-            100% { transform: translateX(2200px) translateY(0px); left: 100%; }
-        }
-        
-        /* Additional sea creatures */
-        .dolphin {
+        /* Small Fish School */
+        .fish-school {
             position: fixed;
+            left: -80px;
             top: 40%;
-            right: -120px;
-            width: 100px;
-            height: 40px;
-            background: linear-gradient(135deg, #5a9aaa, #2a6a7a);
-            border-radius: 50% 45% 45% 50%;
-            animation: swimDolphin 18s linear infinite;
+            display: flex;
+            gap: 8px;
+            animation: swimSchool 20s linear infinite;
             pointer-events: none;
             z-index: 3;
         }
         
-        .dolphin::before {
-            content: '';
-            position: absolute;
-            left: -20px;
-            top: 8px;
-            width: 0;
-            height: 0;
-            border-top: 12px solid transparent;
-            border-bottom: 12px solid transparent;
-            border-right: 25px solid #2a6a7a;
-        }
-        
-        @keyframes swimDolphin {
-            0% { transform: translateX(0); right: -120px; }
-            100% { transform: translateX(-1800px); right: 100%; }
-        }
-        
-        .fish {
-            position: fixed;
-            left: -50px;
-            top: 20%;
-            width: 40px;
-            height: 20px;
-            background: #ff6b6b;
+        .school-fish {
+            width: 25px;
+            height: 12px;
+            background: #ff9966;
             border-radius: 50%;
-            animation: swimFish 15s linear infinite;
-            pointer-events: none;
-            z-index: 3;
+            position: relative;
         }
         
-        .fish::before {
+        .school-fish::before {
             content: '';
             position: absolute;
-            right: -10px;
-            top: 2px;
+            right: -6px;
+            top: 1px;
             width: 0;
             height: 0;
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent;
-            border-left: 15px solid #ff6b6b;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 10px solid #ff9966;
         }
         
-        @keyframes swimFish {
-            0% { transform: translateX(0); left: -50px; }
+        @keyframes swimSchool {
+            0% { transform: translateX(0); left: -80px; }
             100% { transform: translateX(2000px); left: 100%; }
         }
         
+        /* Bioluminescent Bubbles */
         .bubble {
             position: fixed;
-            background: radial-gradient(circle, rgba(255,255,255,0.4), rgba(255,255,255,0.1));
+            background: radial-gradient(circle, rgba(0,212,255,0.5), rgba(0,100,150,0.1));
             border-radius: 50%;
             pointer-events: none;
             z-index: 2;
             animation: bubbleRise 8s ease-in-out infinite;
+            box-shadow: 0 0 5px rgba(0,212,255,0.3);
         }
         
         @keyframes bubbleRise {
-            0% { transform: translateY(0) scale(1); opacity: 0.6; }
-            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+            0% { transform: translateY(0) scale(1); opacity: 0.7; }
+            100% { transform: translateY(-100vh) scale(1.3); opacity: 0; }
         }
         
+        /* Main UI */
         .vendor-header, .vendor-sidebar, .vendor-main, .stat-card, .chart-card, .form-card, .product-card {
             position: relative;
             z-index: 10;
         }
         
         .vendor-header {
-            background: rgba(5, 30, 40, 0.85);
+            background: rgba(2, 17, 24, 0.85);
             backdrop-filter: blur(20px);
             padding: 20px 40px;
             display: flex;
@@ -375,7 +305,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 2px solid rgba(0, 200, 255, 0.3);
+            border-bottom: 2px solid rgba(0, 212, 255, 0.4);
         }
         
         .logo {
@@ -418,7 +348,7 @@
         
         .vendor-sidebar {
             width: 280px;
-            background: rgba(5, 30, 40, 0.7);
+            background: rgba(2, 17, 24, 0.75);
             backdrop-filter: blur(15px);
             border-right: 1px solid rgba(0, 212, 255, 0.2);
             padding: 30px 20px;
@@ -429,7 +359,7 @@
             align-items: center;
             gap: 12px;
             padding: 14px 18px;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.8);
             border-radius: 12px;
             margin-bottom: 8px;
             transition: all 0.3s;
@@ -438,7 +368,7 @@
         
         .nav-item:hover, .nav-item.active {
             background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.05));
-            color: #00d4ff;
+            color: #00f5ff;
             transform: translateX(5px);
             border-left: 3px solid #00d4ff;
         }
@@ -477,7 +407,7 @@
             border: 1px solid rgba(0, 212, 255, 0.2);
             transition: all 0.3s;
         }
-        .stat-card:hover { transform: translateY(-5px); border-color: #00d4ff; }
+        .stat-card:hover { transform: translateY(-5px); border-color: #00d4ff; box-shadow: 0 8px 20px rgba(0,212,255,0.15); }
         .stat-icon { font-size: 36px; color: #00d4ff; margin-bottom: 12px; }
         .stat-value { font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #fff, #00d4ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .stat-label { font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-top: 5px; }
@@ -639,52 +569,68 @@
 </head>
 <body>
     <div class="ocean-bg">
+        <div class="ocean-gradient"></div>
         <div class="wave"></div>
         <div class="wave"></div>
     </div>
     
-    <!-- REALISTIC SHARK -->
-    <div class="real-shark">
-        <div class="real-shark-body">
-            <div class="real-shark-eye"></div>
-            <div class="real-shark-gills">
-                <span></span><span></span><span></span>
-            </div>
-            <div class="real-shark-fin"></div>
-            <div class="real-shark-tail"></div>
-            <div class="real-shark-belly"></div>
+    <!-- GIANT SQUID -->
+    <div class="giant-squid">
+        <div class="squid-head"></div>
+        <div class="squid-eye"></div>
+        <div class="squid-tentacle"></div>
+        <div class="squid-tentacle"></div>
+        <div class="squid-tentacle"></div>
+        <div class="squid-tentacle"></div>
+    </div>
+    
+    <!-- GREAT WHITE SHARK -->
+    <div class="great-white">
+        <div class="shark-body">
+            <div class="shark-eye"></div>
+            <div class="shark-fin"></div>
+            <div class="shark-tail"></div>
         </div>
     </div>
     
-    <!-- REALISTIC WHALE -->
-    <div class="real-whale">
-        <div class="real-whale-body">
-            <div class="real-whale-eye"></div>
-            <div class="real-whale-mouth"></div>
-            <div class="real-whale-fin"></div>
-            <div class="real-whale-tail"></div>
-            <div class="real-whale-spray"></div>
-        </div>
+    <!-- JELLYFISH -->
+    <div class="jellyfish">
+        <div class="jelly-cap"></div>
+        <div class="jelly-tentacle"></div>
+        <div class="jelly-tentacle"></div>
+        <div class="jelly-tentacle"></div>
+        <div class="jelly-tentacle"></div>
+    </div>
+    <div class="jellyfish" style="bottom: 45%; right: 12%; animation-duration: 15s; transform: scale(0.7);">
+        <div class="jelly-cap"></div>
+        <div class="jelly-tentacle"></div>
+        <div class="jelly-tentacle"></div>
+        <div class="jelly-tentacle"></div>
     </div>
     
-    <!-- DOLPHIN AND FISH -->
-    <div class="dolphin"></div>
-    <div class="fish" style="top: 30%; animation-duration: 12s;"></div>
-    <div class="fish" style="top: 60%; animation-duration: 18s; animation-delay: -5s;"></div>
+    <!-- FISH SCHOOL -->
+    <div class="fish-school">
+        <div class="school-fish"></div>
+        <div class="school-fish"></div>
+        <div class="school-fish"></div>
+        <div class="school-fish"></div>
+        <div class="school-fish"></div>
+    </div>
     
-    <!-- BUBBLES -->
-    <div class="bubble" style="bottom: 10%; left: 20%; width: 8px; height: 8px; animation-duration: 6s;"></div>
-    <div class="bubble" style="bottom: 5%; left: 40%; width: 12px; height: 12px; animation-duration: 8s;"></div>
-    <div class="bubble" style="bottom: 15%; left: 60%; width: 6px; height: 6px; animation-duration: 5s;"></div>
-    <div class="bubble" style="bottom: 20%; left: 75%; width: 10px; height: 10px; animation-duration: 7s;"></div>
-    <div class="bubble" style="bottom: 25%; left: 10%; width: 14px; height: 14px; animation-duration: 9s; animation-delay: 2s;"></div>
-    <div class="bubble" style="bottom: 45%; left: 85%; width: 5px; height: 5px; animation-duration: 4s; animation-delay: 1s;"></div>
+    <!-- BIOLUMINESCENT BUBBLES -->
+    <div class="bubble" style="bottom: 10%; left: 15%; width: 8px; height: 8px; animation-duration: 6s;"></div>
+    <div class="bubble" style="bottom: 5%; left: 35%; width: 12px; height: 12px; animation-duration: 8s;"></div>
+    <div class="bubble" style="bottom: 15%; left: 55%; width: 6px; height: 6px; animation-duration: 5s;"></div>
+    <div class="bubble" style="bottom: 20%; left: 80%; width: 10px; height: 10px; animation-duration: 7s;"></div>
+    <div class="bubble" style="bottom: 30%; left: 25%; width: 14px; height: 14px; animation-duration: 9s; animation-delay: 2s;"></div>
+    <div class="bubble" style="bottom: 50%; left: 70%; width: 5px; height: 5px; animation-duration: 4s; animation-delay: 1s;"></div>
+    <div class="bubble" style="bottom: 65%; left: 45%; width: 9px; height: 9px; animation-duration: 7.5s; animation-delay: 3s;"></div>
     
     <div class="vendor-header">
-        <div class="logo">STYLE OF LIFE <span>SHARK & WHALE VENDOR</span></div>
+        <div class="logo">🌊 STYLE OF LIFE <span>DEEP SEA VENDOR</span></div>
         <div class="vendor-info" id="vendorInfo">
-            <div class="vendor-badge"><i class="fas fa-shark"></i> <span id="businessName">Loading...</span></div>
-            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Exit</button>
+            <div class="vendor-badge"><i class="fas fa-fish"></i> <span id="businessName">Loading...</span></div>
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Surface</button>
         </div>
     </div>
     
@@ -701,8 +647,8 @@
         <div class="vendor-main">
             <div id="dashboardPage">
                 <div class="page-header">
-                    <div class="page-title">🦈🐋 Shark & Whale Vendor Dashboard</div>
-                    <div style="color: rgba(255,255,255,0.6);">Ride the wave of success with ocean giants</div>
+                    <div class="page-title">🐙 Deep Sea Vendor Dashboard</div>
+                    <div style="color: rgba(255,255,255,0.6);">Dive deep into success</div>
                 </div>
                 <div class="stats-grid" id="statsGrid">
                     <div class="stat-card"><div class="stat-icon"><i class="fas fa-box"></i></div><div class="stat-value" id="statProducts">0</div><div class="stat-label">Total Products</div></div>
@@ -718,16 +664,16 @@
             
             <div id="productsPage" style="display: none;">
                 <div class="page-header">
-                    <div class="page-title">📦 My Shark Products</div>
-                    <div style="color: rgba(255,255,255,0.6);">Manage your product catalog</div>
+                    <div class="page-title">📦 My Ocean Treasures</div>
+                    <div style="color: rgba(255,255,255,0.6);">Manage your underwater collection</div>
                 </div>
-                <div class="products-grid" id="productsGrid"><div class="loading"><div class="spinner"></div><p>Loading products...</p></div></div>
+                <div class="products-grid" id="productsGrid"><div class="loading"><div class="spinner"></div><p>Loading treasures...</p></div></div>
             </div>
             
             <div id="addProductPage" style="display: none;">
                 <div class="page-header">
-                    <div class="page-title">➕ Create New Product</div>
-                    <div style="color: rgba(255,255,255,0.6);">List your product for millions of customers</div>
+                    <div class="page-title">➕ Add New Ocean Treasure</div>
+                    <div style="color: rgba(255,255,255,0.6);">List your product for deep sea explorers</div>
                 </div>
                 <div class="form-card" style="display: block;">
                     <input type="hidden" id="editProductId">
@@ -748,7 +694,7 @@
                         <div class="form-group"><label>Image 1 URL (Main)</label><input type="url" id="image1_url" placeholder="https://..."></div>
                         <div class="form-group"><label>Image 2 URL</label><input type="url" id="image2_url" placeholder="https://..."></div>
                         <div class="form-group"><label>Image 3 URL</label><input type="url" id="image3_url" placeholder="https://..."></div>
-                        <div class="form-group"><label>Video URL</label><input type="url" id="video_url" placeholder="https://...mp4 or YouTube link or d360.tech/view.html?d=..."></div>
+                        <div class="form-group"><label>Video URL</label><input type="url" id="video_url" placeholder="https://...mp4 or d360.tech/view.html?d=..."></div>
                         <div id="mediaPreview" class="media-preview"></div>
                     </div>
                     
@@ -773,7 +719,7 @@
             
             <div id="bulkUploadPage" style="display: none;">
                 <div class="page-header">
-                    <div class="page-title">📂 Shark Bulk Upload</div>
+                    <div class="page-title">📂 Deep Sea Bulk Upload</div>
                     <div style="color: rgba(255,255,255,0.6);">Fast batch upload (500 rows per batch)</div>
                 </div>
                 <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
@@ -804,7 +750,7 @@
             
             <div id="profilePage" style="display: none;">
                 <div class="page-header">
-                    <div class="page-title">👤 Shark Profile</div>
+                    <div class="page-title">👤 Deep Sea Profile</div>
                     <div style="color: rgba(255,255,255,0.6);">Manage your business information</div>
                 </div>
                 <div class="form-card" style="display: block;">
@@ -838,11 +784,22 @@
         </div>
     </div>
     
-    <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
+    <script type="importmap">
+        {
+            "imports": {
+                "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
+            }
+        }
+    </script>
+    
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
-        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        // Supabase Configuration
+        const SUPABASE_URL = "https://kkvgdagjboxhtuyqlomq.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrdmdkYWdqYm94aHR1eXFsb21xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzgyMTksImV4cCI6MjA5MDA1NDIxOX0.5A4UUcvwAi5UM8K81mmrN3lOTmzUYq70qRouaVqpwDA";
+        
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let currentUser = null;
         let vendorData = null;
         let pendingAction = null;
@@ -871,7 +828,7 @@
                 if (!vendor) {
                     const newVendor = {
                         id: currentUser.id,
-                        business_name: currentUser.email?.split('@')[0] || 'New Vendor',
+                        business_name: currentUser.email?.split('@')[0] || 'Deep Sea Vendor',
                         owner_name: currentUser.email?.split('@')[0] || 'Vendor',
                         email: currentUser.email,
                         status: 'approved'
@@ -894,7 +851,7 @@
                     vendorData = vendor;
                 }
                 
-                document.getElementById('businessName').innerText = vendorData.business_name || 'Vendor';
+                document.getElementById('businessName').innerText = vendorData.business_name || 'Deep Sea Vendor';
                 document.getElementById('vendor_email').value = vendorData.email || currentUser.email;
                 
                 await loadDashboard();
@@ -916,17 +873,17 @@
             modal.style.zIndex = '2000';
             modal.innerHTML = `
                 <div class="modal-content" style="max-width: 400px;">
-                    <h3 style="color: #00d4ff; margin-bottom: 20px;"><i class="fas fa-shark"></i> Shark & Whale Vendor Login</h3>
+                    <h3 style="color: #00d4ff; margin-bottom: 20px;"><i class="fas fa-fish"></i> Deep Sea Vendor Login</h3>
                     <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"></div>
                     <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Password"></div>
-                    <button class="btn-primary" onclick="login()" style="width:100%;"><i class="fas fa-sign-in-alt"></i> Login</button>
+                    <button class="btn-primary" id="loginBtn" style="width:100%;"><i class="fas fa-sign-in-alt"></i> Dive In</button>
                     <hr style="margin: 15px 0; border-color: rgba(255,255,255,0.1);">
-                    <p style="text-align: center; font-size: 13px;">New vendor? <a href="#" onclick="showRegister()" style="color: #00d4ff;">Register here</a></p>
+                    <p style="text-align: center; font-size: 13px;">New vendor? <a href="#" id="showRegisterLink" style="color: #00d4ff;">Register here</a></p>
                 </div>
             `;
             document.body.appendChild(modal);
             
-            window.login = async () => {
+            document.getElementById('loginBtn').onclick = async () => {
                 const email = document.getElementById('loginEmail').value;
                 const password = document.getElementById('loginPassword').value;
                 const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -935,20 +892,21 @@
                 location.reload();
             };
             
-            window.showRegister = () => {
+            document.getElementById('showRegisterLink').onclick = (e) => {
+                e.preventDefault();
                 modal.innerHTML = `
                     <div class="modal-content" style="max-width: 450px;">
-                        <h3 style="color: #00d4ff;"><i class="fas fa-user-plus"></i> Register Shark Vendor</h3>
+                        <h3 style="color: #00d4ff;"><i class="fas fa-user-plus"></i> Register Deep Sea Vendor</h3>
                         <div class="form-group"><label>Business Name *</label><input type="text" id="regBusinessName"></div>
                         <div class="form-group"><label>Owner Name *</label><input type="text" id="regOwnerName"></div>
                         <div class="form-group"><label>Email *</label><input type="email" id="regEmail"></div>
                         <div class="form-group"><label>Password *</label><input type="password" id="regPassword"></div>
                         <div class="form-group"><label>Phone</label><input type="tel" id="regPhone"></div>
-                        <button class="btn-primary" onclick="register()" style="width:100%;">Register</button>
+                        <button class="btn-primary" id="registerBtn" style="width:100%;">Register</button>
                     </div>
                 `;
                 
-                window.register = async () => {
+                document.getElementById('registerBtn').onclick = async () => {
                     const email = document.getElementById('regEmail').value;
                     const password = document.getElementById('regPassword').value;
                     const businessName = document.getElementById('regBusinessName').value;
@@ -989,12 +947,12 @@
                     <div class="form-group"><label>Business Name</label><input type="text" id="completeBusinessName"></div>
                     <div class="form-group"><label>Owner Name</label><input type="text" id="completeOwnerName"></div>
                     <div class="form-group"><label>Phone</label><input type="tel" id="completePhone"></div>
-                    <button class="btn-primary" onclick="completeProfile()" style="width:100%;">Save Profile</button>
+                    <button class="btn-primary" id="completeProfileBtn" style="width:100%;">Save Profile</button>
                 </div>
             `;
             document.body.appendChild(modal);
             
-            window.completeProfile = async () => {
+            document.getElementById('completeProfileBtn').onclick = async () => {
                 const updates = {
                     business_name: document.getElementById('completeBusinessName').value,
                     owner_name: document.getElementById('completeOwnerName').value,
@@ -1076,14 +1034,14 @@
                 
                 if (categoryChart) categoryChart.destroy();
                 const ctx2 = document.getElementById('categoryChart')?.getContext('2d');
-                if (ctx2) {
+                if (ctx2 && categoryLabels.length) {
                     categoryChart = new Chart(ctx2, { type: 'pie', data: { labels: categoryLabels, datasets: [{ data: categoryData, backgroundColor: ['#00d4ff', '#0099cc', '#7fffd4', '#60a5fa', '#f87171'] }] }, options: { plugins: { legend: { labels: { color: '#fff' } } } } });
                 }
                 
                 if (salesChart) salesChart.destroy();
                 const ctx1 = document.getElementById('salesChart')?.getContext('2d');
                 if (ctx1) {
-                    salesChart = new Chart(ctx1, { type: 'line', data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ label: 'Sales (₹)', data: [0, 0, 0, 0, 0, 0, 0], borderColor: '#00d4ff', backgroundColor: 'rgba(0,212,255,0.1)', fill: true }] }, options: { plugins: { legend: { labels: { color: '#fff' } } } } });
+                    salesChart = new Chart(ctx1, { type: 'line', data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ label: 'Sales (₹)', data: [0, 0, 0, 0, 0, 0, 0], borderColor: '#00d4ff', backgroundColor: 'rgba(0,212,255,0.1)', fill: true, tension: 0.3 }] }, options: { plugins: { legend: { labels: { color: '#fff' } } } } });
                 }
             } catch (error) {
                 console.error('Dashboard error:', error);
@@ -1092,12 +1050,12 @@
         
         async function loadProducts() {
             const grid = document.getElementById('productsGrid');
-            grid.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading products...</p></div>';
+            grid.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading treasures...</p></div>';
             try {
                 const { data, error } = await supabase.from('vendor_products').select('*').eq('vendor_id', currentUser.id).order('id', { ascending: false });
                 if (error) throw error;
                 if (!data || data.length === 0) { 
-                    grid.innerHTML = '<div class="empty-state">✨ No products yet. Click "Add Product" to get started.</div>'; 
+                    grid.innerHTML = '<div style="text-align:center;padding:60px;">✨ No treasures yet. Click "Add Product" to dive in.</div>'; 
                     return; 
                 }
                 let html = '';
@@ -1122,7 +1080,7 @@
                 document.getElementById('productCount').innerText = data.length;
             } catch (error) {
                 console.error('Load products error:', error);
-                grid.innerHTML = '<div class="empty-state">Error loading products. Please refresh.</div>';
+                grid.innerHTML = '<div style="text-align:center;padding:60px;">Error loading products. Please refresh.</div>';
             }
         }
         
@@ -1147,7 +1105,11 @@
                 diamond_cut: document.getElementById('diamond_cut').value || null,
                 diamond_polish: document.getElementById('diamond_polish').value || null,
                 diamond_symmetry: document.getElementById('diamond_symmetry').value || null,
-                status: 'pending'
+                status: 'pending',
+                views: 0,
+                orders_count: 0,
+                created_at: new Date(),
+                updated_at: new Date()
             };
             if (!productData.sku || !productData.product_name || !productData.category || isNaN(productData.price)) {
                 showToast('Please fill required fields', true); 
@@ -1156,6 +1118,7 @@
             try {
                 let result;
                 if (id) {
+                    productData.updated_at = new Date();
                     result = await supabase.from('vendor_products').update(productData).eq('id', id);
                     showToast('Product updated successfully!');
                 } else {
@@ -1197,14 +1160,11 @@
         };
         
         window.deleteProduct = async function(id) {
-            pendingAction = async () => {
+            if (confirm('Delete this product? This action cannot be undone.')) {
                 const { error } = await supabase.from('vendor_products').delete().eq('id', id);
                 if (error) showToast('Delete failed', true);
                 else { showToast('Product deleted'); await loadProducts(); await loadDashboard(); }
-                closeModal();
-            };
-            document.getElementById('modalMessage').innerText = 'Delete this product?';
-            document.getElementById('confirmModal').classList.add('active');
+            }
         };
         
         window.cancelProductForm = function() {
@@ -1236,7 +1196,7 @@
             try {
                 const { data, error } = await supabase.from('vendor_orders').select('*').eq('vendor_id', currentUser.id).order('created_at', { ascending: false });
                 if (error) throw error;
-                if (!data || data.length === 0) { container.innerHTML = '<div class="empty-state">No orders yet</div>'; return; }
+                if (!data || data.length === 0) { container.innerHTML = '<div style="text-align:center;padding:60px;">No orders yet</div>'; return; }
                 document.getElementById('orderCount').innerText = data.length;
                 let html = '<table class="orders-table"><thead><tr><th>Order ID</th><th>Product</th><th>Quantity</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
                 data.forEach(o => {
@@ -1245,7 +1205,7 @@
                 html += '</tbody></table>';
                 container.innerHTML = html;
             } catch (error) {
-                container.innerHTML = '<div class="empty-state">Error loading orders</div>';
+                container.innerHTML = '<div style="text-align:center;padding:60px;">Error loading orders</div>';
             }
         }
         
@@ -1257,7 +1217,7 @@
             const ws = XLSX.utils.json_to_sheet(sampleData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Sample Products');
-            XLSX.writeFile(wb, `shark_vendor_sample_products.xlsx`);
+            XLSX.writeFile(wb, `deep_sea_vendor_sample_products.xlsx`);
             showToast('Sample Excel downloaded!');
         };
         
@@ -1332,7 +1292,11 @@
                         sku, product_name, category, price, gst, stock, description,
                         image1_url, image2_url, image3_url, video_url,
                         carat, diamond_color, diamond_clarity, diamond_cut, diamond_polish, diamond_symmetry,
-                        status: 'pending'
+                        status: 'pending',
+                        views: 0,
+                        orders_count: 0,
+                        created_at: new Date(),
+                        updated_at: new Date()
                     });
                 }
                 
@@ -1426,11 +1390,10 @@
             showToast('Profile updated successfully!');
         };
         
-        function closeModal() { document.getElementById('confirmModal').classList.remove('active'); pendingAction = null; }
-        window.confirmAction = (yes) => { if (yes && pendingAction) pendingAction(); closeModal(); };
         window.logout = async () => { await supabase.auth.signOut(); sessionStorage.clear(); window.location.reload(); };
         
+        // Initialize
         checkAuth();
     </script>
 </body>
-</html>
+    </html>
