@@ -267,11 +267,6 @@
         }
         .form-group input:focus { border-color: #00d4ff; outline: none; }
         
-        /* Blank text box style (no dropdown arrows) */
-        .form-group input.text-input {
-            background: rgba(0, 0, 0, 0.3);
-        }
-        
         .btn-primary {
             background: linear-gradient(135deg, #00d4ff, #0099cc);
             color: #0a2a3a;
@@ -302,6 +297,29 @@
         .company-stat-item { text-align: center; }
         .company-stat-label { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; }
         .company-stat-value { font-size: 20px; font-weight: 700; color: #00d4ff; }
+        
+        /* Bulk Upload Styles */
+        .bulk-area {
+            text-align: center;
+            padding: 50px;
+            border: 2px dashed rgba(0, 212, 255, 0.4);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .bulk-area:hover { border-color: #00d4ff; background: rgba(0,212,255,0.05); }
+        .progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 20px; display: none; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #00d4ff, #7fffd4); width: 0%; transition: width 0.3s; }
+        .batch-status { font-size: 12px; margin-top: 10px; text-align: center; color: rgba(255,255,255,0.6); }
+        .format-hint {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            font-size: 12px;
+            border-left: 3px solid #00d4ff;
+        }
+        .format-hint code { background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px; font-family: monospace; }
         
         .toast {
             position: fixed;
@@ -417,7 +435,7 @@
                     <div class="form-grid">
                         <div class="form-group"><label>SKU *</label><input type="text" id="sku" placeholder="Unique product code"></div>
                         <div class="form-group"><label>Product Name *</label><input type="text" id="product_name" placeholder="Product name"></div>
-                        <div class="form-group"><label>Category *</label><input type="text" id="category" class="text-input" placeholder="e.g., Rings, Necklaces, Earrings, Bracelets, Pendants"></div>
+                        <div class="form-group"><label>Category *</label><input type="text" id="category" placeholder="e.g., Rings, Necklaces, Earrings, Bracelets, Pendants"></div>
                         <div class="form-group"><label>Price (₹) *</label><input type="number" id="price" step="0.01"></div>
                         <div class="form-group"><label>GST (%)</label><input type="number" id="gst" value="18"></div>
                         <div class="form-group"><label>Stock *</label><input type="number" id="stock"></div>
@@ -430,14 +448,14 @@
                         <div class="form-group"><label>Video URL</label><input type="url" id="video_url" placeholder="https://...mp4 or 360 view link"></div>
                     </div>
                     <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin: 15px 0;">
-                        <h4 style="color: #00d4ff;"><i class="fas fa-gem"></i> Diamond Specifications (Optional - Type any values)</h4>
+                        <h4 style="color: #00d4ff;"><i class="fas fa-gem"></i> Diamond Specifications (Optional)</h4>
                         <div class="form-grid">
-                            <div class="form-group"><label>Carat</label><input type="number" id="carat" step="0.01" placeholder="e.g., 1.00, 0.75, 2.50"></div>
-                            <div class="form-group"><label>Diamond Color</label><input type="text" id="diamond_color" class="text-input" placeholder="e.g., D, E, F, G, H, I, J, K, L, M, N..."></div>
-                            <div class="form-group"><label>Diamond Clarity</label><input type="text" id="diamond_clarity" class="text-input" placeholder="e.g., FL, IF, VVS1, VVS2, VS1, VS2, SI1, SI2, I1, I2, I3"></div>
-                            <div class="form-group"><label>Diamond Cut</label><input type="text" id="diamond_cut" class="text-input" placeholder="e.g., Excellent, Very Good, Good, Fair, Poor, Ideal"></div>
-                            <div class="form-group"><label>Diamond Polish</label><input type="text" id="diamond_polish" class="text-input" placeholder="e.g., Excellent, Very Good, Good, Fair"></div>
-                            <div class="form-group"><label>Diamond Symmetry</label><input type="text" id="diamond_symmetry" class="text-input" placeholder="e.g., Excellent, Very Good, Good, Fair"></div>
+                            <div class="form-group"><label>Carat</label><input type="number" id="carat" step="0.01" placeholder="e.g., 1.00"></div>
+                            <div class="form-group"><label>Diamond Color</label><input type="text" id="diamond_color" placeholder="e.g., D, E, F, G, H, I, J"></div>
+                            <div class="form-group"><label>Diamond Clarity</label><input type="text" id="diamond_clarity" placeholder="e.g., FL, IF, VVS1, VS1, SI1"></div>
+                            <div class="form-group"><label>Diamond Cut</label><input type="text" id="diamond_cut" placeholder="e.g., Excellent, Very Good, Good"></div>
+                            <div class="form-group"><label>Diamond Polish</label><input type="text" id="diamond_polish" placeholder="e.g., Excellent, Very Good"></div>
+                            <div class="form-group"><label>Diamond Symmetry</label><input type="text" id="diamond_symmetry" placeholder="e.g., Excellent, Very Good"></div>
                         </div>
                     </div>
                     <div style="display: flex; gap: 15px;">
@@ -448,14 +466,33 @@
             </div>
             
             <div id="bulkUploadPage" style="display: none;">
-                <div class="page-header"><div class="page-title">📂 Bulk Upload</div></div>
-                <div class="form-card" style="text-align: center; padding: 40px;" id="bulkUploadArea">
-                    <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #00d4ff;"></i>
-                    <p style="margin-top: 10px;">Click or drag & drop CSV / Excel file</p>
-                    <button class="btn-primary" style="margin-top: 15px;" onclick="downloadSampleExcel()"><i class="fas fa-download"></i> Download Sample</button>
+                <div class="page-header">
+                    <div class="page-title">📂 Bulk Upload Products</div>
+                    <div style="color: rgba(255,255,255,0.6);">Upload multiple products at once using Excel/CSV</div>
                 </div>
-                <input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display: none;">
-                <div id="bulkResult"></div>
+                <div class="form-card">
+                    <div class="bulk-area" id="bulkUploadArea">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #00d4ff;"></i>
+                        <p style="margin-top: 10px;">Click or drag & drop CSV / Excel file here</p>
+                        <p style="font-size: 12px; color: rgba(255,255,255,0.6);">Supported: .csv, .xlsx, .xls | Max 500 rows per batch</p>
+                    </div>
+                    <input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display: none;">
+                    
+                    <div class="progress-bar" id="bulkProgress">
+                        <div class="progress-fill" id="bulkProgressFill"></div>
+                    </div>
+                    <div class="batch-status" id="batchStatus"></div>
+                    <div id="bulkResult"></div>
+                    
+                    <div class="format-hint">
+                        <strong>📋 Excel Format Required - Download Sample Below:</strong><br>
+                        <code>SKU | Product Name | Category | Price (₹) | GST (%) | Stock | Description | Image URL 1 | Image URL 2 | Image URL 3 | Video URL | Carat | Diamond Color | Diamond Clarity | Diamond Cut | Diamond Polish | Diamond Symmetry</code>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: center; margin-top: 20px;">
+                        <button class="btn-primary" onclick="downloadSampleExcel()"><i class="fas fa-download"></i> Download Sample Excel File</button>
+                    </div>
+                </div>
             </div>
             
             <div id="ordersPage" style="display: none;">
@@ -493,6 +530,8 @@
         let allVendorCompanies = [];
         let currentCompanyId = null;
         let caratChart, colorChart, clarityChart, salesChart;
+        
+        const BATCH_SIZE = 500;
         
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
@@ -626,165 +665,4 @@
             if (error || !data?.length) { container.innerHTML = '<div class="loading">📭 No orders yet for your products</div>'; return; }
             document.getElementById('ordersCompanyName').innerHTML = `<i class="fas fa-building"></i> Showing orders for: <strong>${vendorData?.business_name || 'Your Company'}</strong>`;
             let html = '<table class="orders-table"><thead><tr><th>Order ID</th><th>Product</th><th>Quantity</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
-            data.forEach(o => { html += `<tr><td>${o.order_id}</td><td>${escapeHtml(o.product_name)}</td><td>${o.quantity}</td><td>₹${o.total_amount.toLocaleString()}</td><td><span style="background:rgba(0,212,255,0.2); padding:2px 8px; border-radius:20px;">${o.order_status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`; });
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
-        
-        window.saveProduct = async function() {
-            const id = document.getElementById('editProductId').value;
-            const productData = {
-                vendor_id: currentCompanyId,
-                sku: document.getElementById('sku').value.trim(),
-                product_name: document.getElementById('product_name').value.trim(),
-                category: document.getElementById('category').value.trim(),
-                price: parseFloat(document.getElementById('price').value),
-                gst: parseFloat(document.getElementById('gst').value) || 18,
-                stock: parseInt(document.getElementById('stock').value) || 0,
-                description: document.getElementById('description').value,
-                image1_url: document.getElementById('image1_url').value,
-                image2_url: document.getElementById('image2_url').value,
-                image3_url: document.getElementById('image3_url').value,
-                video_url: document.getElementById('video_url').value,
-                carat: document.getElementById('carat').value ? parseFloat(document.getElementById('carat').value) : null,
-                diamond_color: document.getElementById('diamond_color').value || null,
-                diamond_clarity: document.getElementById('diamond_clarity').value || null,
-                diamond_cut: document.getElementById('diamond_cut').value || null,
-                diamond_polish: document.getElementById('diamond_polish').value || null,
-                diamond_symmetry: document.getElementById('diamond_symmetry').value || null,
-                status: 'pending',
-                updated_at: new Date()
-            };
-            if (!productData.sku || !productData.product_name || !productData.category || isNaN(productData.price)) { showToast('Fill required fields', true); return; }
-            if (id) {
-                await supabase.from('vendor_products').update(productData).eq('id', id);
-                showToast('Product updated!');
-            } else {
-                await supabase.from('vendor_products').insert([productData]);
-                showToast('Product added! Waiting for admin approval.');
-            }
-            cancelProductForm();
-            await loadProductsForCompany(currentCompanyId);
-            await loadDashboardForCompany(currentCompanyId);
-        };
-        
-        window.editProduct = async function(id) {
-            const { data } = await supabase.from('vendor_products').select('*').eq('id', id).single();
-            document.getElementById('editProductId').value = data.id;
-            document.getElementById('sku').value = data.sku;
-            document.getElementById('product_name').value = data.product_name;
-            document.getElementById('category').value = data.category || '';
-            document.getElementById('price').value = data.price;
-            document.getElementById('gst').value = data.gst;
-            document.getElementById('stock').value = data.stock;
-            document.getElementById('description').value = data.description || '';
-            document.getElementById('image1_url').value = data.image1_url || '';
-            document.getElementById('image2_url').value = data.image2_url || '';
-            document.getElementById('image3_url').value = data.image3_url || '';
-            document.getElementById('video_url').value = data.video_url || '';
-            document.getElementById('carat').value = data.carat || '';
-            document.getElementById('diamond_color').value = data.diamond_color || '';
-            document.getElementById('diamond_clarity').value = data.diamond_clarity || '';
-            document.getElementById('diamond_cut').value = data.diamond_cut || '';
-            document.getElementById('diamond_polish').value = data.diamond_polish || '';
-            document.getElementById('diamond_symmetry').value = data.diamond_symmetry || '';
-            document.querySelector('.nav-item[data-page="add-product"]').click();
-        };
-        
-        window.deleteProduct = async function(id) { if (confirm('Delete this product?')) { await supabase.from('vendor_products').delete().eq('id', id); showToast('Product deleted'); await loadProductsForCompany(currentCompanyId); await loadDashboardForCompany(currentCompanyId); } };
-        window.cancelProductForm = function() { document.getElementById('editProductId').value = ''; document.querySelector('.nav-item[data-page="products"]').click(); };
-        window.updateProfile = async function() { await supabase.from('vendors').update({ business_name: document.getElementById('business_name').value, owner_name: document.getElementById('owner_name').value, phone: document.getElementById('phone').value, gst_number: document.getElementById('gst_number').value, address: document.getElementById('address').value }).eq('id', currentCompanyId); showToast('Profile updated!'); location.reload(); };
-        
-        window.downloadSampleExcel = function() {
-            const sampleData = [{ 'SKU': 'RING-001', 'Product Name': 'Diamond Solitaire Ring', 'Category': 'Rings', 'Price (₹)': 29999, 'GST (%)': 18, 'Stock': 50, 'Description': 'Beautiful diamond ring', 'Image 1 URL': 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400', 'Image 2 URL': '', 'Image 3 URL': '', 'Video URL': '', 'Carat': 1.00, 'Diamond Color': 'D', 'Diamond Clarity': 'VS1', 'Diamond Cut': 'Excellent', 'Diamond Polish': 'Excellent', 'Diamond Symmetry': 'Excellent' }];
-            const ws = XLSX.utils.json_to_sheet(sampleData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Sample Products');
-            XLSX.writeFile(wb, `vendor_sample_products.xlsx`);
-            showToast('Sample Excel downloaded!');
-        };
-        
-        window.logout = async () => { await supabase.auth.signOut(); location.reload(); };
-        
-        function showLoginModal() {
-            const modal = document.createElement('div');
-            modal.className = 'modal active';
-            modal.style.position = 'fixed';
-            modal.style.top = '0';
-            modal.style.left = '0';
-            modal.style.width = '100%';
-            modal.style.height = '100%';
-            modal.style.background = 'rgba(0,0,0,0.9)';
-            modal.style.zIndex = '2000';
-            modal.style.display = 'flex';
-            modal.style.justifyContent = 'center';
-            modal.style.alignItems = 'center';
-            modal.innerHTML = `<div style="background:#0a2a3a; padding:30px; border-radius:20px; max-width:400px; width:90%;"><h2 style="color:#00d4ff;">Deep Sea Login</h2><input type="email" id="loginEmail" placeholder="Email" style="width:100%; padding:12px; margin:10px 0; border-radius:10px;"><input type="password" id="loginPassword" placeholder="Password" style="width:100%; padding:12px; margin:10px 0; border-radius:10px;"><button class="btn-primary" id="loginBtn" style="width:100%;">Dive In</button><p style="margin-top:15px;"><a href="#" id="showRegisterLink" style="color:#00d4ff;">Register as Vendor</a></p></div>`;
-            document.body.appendChild(modal);
-            document.getElementById('loginBtn').onclick = async () => {
-                const email = document.getElementById('loginEmail').value;
-                const password = document.getElementById('loginPassword').value;
-                await supabase.auth.signInWithPassword({ email, password });
-                location.reload();
-            };
-        }
-        
-        function showToast(msg, isErr = false) { const t = document.createElement('div'); t.className = 'toast' + (isErr ? ' toast-error' : ''); t.innerHTML = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
-        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
-        
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const page = item.getAttribute('data-page');
-                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                item.classList.add('active');
-                document.getElementById('dashboardPage').style.display = page === 'dashboard' ? 'block' : 'none';
-                document.getElementById('productsPage').style.display = page === 'products' ? 'block' : 'none';
-                document.getElementById('addProductPage').style.display = page === 'add-product' ? 'block' : 'none';
-                document.getElementById('bulkUploadPage').style.display = page === 'bulk-upload' ? 'block' : 'none';
-                document.getElementById('ordersPage').style.display = page === 'orders' ? 'block' : 'none';
-                document.getElementById('profilePage').style.display = page === 'profile' ? 'block' : 'none';
-            });
-        });
-        
-        document.getElementById('bulkUploadArea')?.addEventListener('click', () => document.getElementById('bulkFileInput').click());
-        document.getElementById('bulkFileInput')?.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const data = await file.arrayBuffer();
-            const workbook = XLSX.read(data);
-            const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-            let success = 0;
-            for (const row of json) {
-                const product = { 
-                    vendor_id: currentCompanyId, 
-                    sku: row.SKU, 
-                    product_name: row['Product Name'], 
-                    category: row.Category, 
-                    price: row['Price (₹)'] || row.Price, 
-                    gst: row['GST (%)'] || row.GST || 18, 
-                    stock: row.Stock || 0, 
-                    description: row.Description || '',
-                    image1_url: row['Image 1 URL'] || '',
-                    image2_url: row['Image 2 URL'] || '',
-                    image3_url: row['Image 3 URL'] || '',
-                    video_url: row['Video URL'] || '',
-                    carat: row.Carat || null, 
-                    diamond_color: row['Diamond Color'] || null, 
-                    diamond_clarity: row['Diamond Clarity'] || null, 
-                    diamond_cut: row['Diamond Cut'] || null,
-                    diamond_polish: row['Diamond Polish'] || null,
-                    diamond_symmetry: row['Diamond Symmetry'] || null,
-                    status: 'pending', 
-                    created_at: new Date() 
-                };
-                if (product.sku && product.product_name && product.category && product.price) { await supabase.from('vendor_products').insert([product]); success++; }
-            }
-            showToast(`✅ ${success} products uploaded!`);
-            await loadProductsForCompany(currentCompanyId);
-            await loadDashboardForCompany(currentCompanyId);
-        });
-        
-        checkAuth();
-    </script>
-</body>
-</html>
+            data.forEach(o => { html += `<tr><td>${o.order_id}</td><td>${escapeHtml(o.product_name)}</td
