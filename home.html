@@ -7,7 +7,6 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="js/config.js"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -231,11 +230,15 @@
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
-        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        // Supabase Configuration
+        const SUPABASE_URL = "https://kkvgdagjboxhtuyqlomq.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrdmdkYWdqYm94aHR1eXFsb21xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzgyMTksImV4cCI6MjA5MDA1NDIxOX0.5A4UUcvwAi5UM8K81mmrN3lOTmzUYq70qRouaVqpwDA";
+        
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let sessionId = localStorage.getItem('sessionId');
         if (!sessionId) { sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); localStorage.setItem('sessionId', sessionId); }
         
-        let currentCart = [], allProducts = []; // Unified collection of all products (main + vendor)
+        let currentCart = [], allProducts = [];
         
         function calculateGST(price, gstPercent) { const gst = (price * gstPercent) / 100; return { gstAmount: gst, total: price + gst }; }
         
@@ -335,11 +338,12 @@
                 const vendorProducts = vendorRes.data || [];
                 
                 console.log(`Loaded ${mainProducts.length} main products and ${vendorProducts.length} vendor products`);
+                console.log('Vendor products:', vendorProducts);
                 
                 // Combine both arrays into a single unified collection
                 let combined = [...mainProducts, ...vendorProducts];
                 
-                // Remove duplicates by SKU (if same SKU exists, keep the first occurrence)
+                // Remove duplicates by SKU
                 const uniqueMap = new Map();
                 for (const product of combined) {
                     if (!uniqueMap.has(product.sku)) {
