@@ -3,146 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Style Of Life - Brand Portal</title>
+    <title>Style Of Life - Admin Dashboard | Vendor Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="js/config.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* Light Theme (Default) */
         :root {
-            --bg-primary: #f5f7fa;
-            --bg-secondary: #ffffff;
-            --bg-card: #ffffff;
-            --text-primary: #1a1a2e;
-            --text-secondary: #666666;
-            --text-muted: #999999;
-            --border: #e9ecef;
-            --sidebar-bg: #ffffff;
-            --header-bg: #ffffff;
-            --shadow: 0 2px 10px rgba(0,0,0,0.05);
-            --shadow-lg: 0 10px 30px rgba(0,0,0,0.08);
-            --gold: #D4AF37;
-            --gold-dark: #B8962E;
-            --gold-light: #F5E6C6;
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --primary-light: #f5e6c6;
+            --white: #ffffff;
+            --white-light: #faf7f2;
+            --gray-100: #f1f3f5;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
             --info: #3b82f6;
-        }
-        
-        /* Dark Theme */
-        body.dark {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #141414;
-            --bg-card: #1a1a1a;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --text-muted: #666666;
-            --border: #2a2a2a;
-            --sidebar-bg: #0d0d0d;
-            --header-bg: #0d0d0d;
-            --shadow: 0 2px 10px rgba(0,0,0,0.3);
-            --shadow-lg: 0 10px 30px rgba(0,0,0,0.5);
+            --purple: #8b5cf6;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
         }
         
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            transition: background 0.3s ease, color 0.3s ease;
+            background: var(--white-light);
+            color: var(--gray-800);
             overflow-x: hidden;
         }
         
         /* Theme Toggle */
         .theme-toggle {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
             border-radius: 40px;
             padding: 4px;
             display: flex;
             gap: 4px;
             cursor: pointer;
-            transition: all 0.3s;
         }
+        .theme-option { padding: 6px 14px; border-radius: 32px; font-size: 12px; font-weight: 500; cursor: pointer; color: var(--gray-600); }
+        .theme-option.active { background: var(--primary); color: #1a1a1a; }
         
-        .theme-option {
-            padding: 8px 16px;
-            border-radius: 32px;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.3s;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-        
-        .theme-option.active {
-            background: var(--gold);
-            color: #1a1a1a;
-        }
-        
-        .theme-option:hover:not(.active) {
-            background: rgba(212,175,55,0.1);
-        }
-        
-        /* Google Gemini Style Logo */
-        .gemini-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-        }
-        
-        .gemini-star {
-            width: 36px;
-            height: 36px;
-            position: relative;
-        }
-        
-        .gemini-star svg {
-            width: 100%;
-            height: 100%;
-            animation: starPulse 2s ease-in-out infinite;
-        }
-        
-        .gemini-star svg .star-outline {
-            stroke: url(#geminiGradient);
-            stroke-width: 2;
-            fill: var(--bg-card);
-        }
-        
-        @keyframes starPulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.9; }
-        }
-        
-        .gemini-text {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #4285F4, #EA4335, #FBBC05, #34A853);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        
-        .gemini-sub {
-            font-size: 8px;
-            letter-spacing: 2px;
-            color: var(--text-muted);
-            margin-left: 5px;
+        body.dark {
+            --white: #1a1a1a;
+            --white-light: #0a0a0a;
+            --gray-100: #1a1a1a;
+            --gray-200: #2a2a2a;
+            --gray-800: #e0e0e0;
         }
         
         /* Header */
         .admin-header {
-            background: var(--header-bg);
-            backdrop-filter: blur(10px);
+            background: var(--white);
             padding: 12px 30px;
             display: flex;
             justify-content: space-between;
@@ -150,987 +73,326 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .brand {
-            display: flex;
-            align-items: center;
+            border-bottom: 1px solid var(--gray-200);
+            flex-wrap: wrap;
             gap: 15px;
         }
         
-        .brand-name {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
+        .gemini-logo { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .gemini-star { width: 36px; height: 36px; }
+        .gemini-star svg { width: 100%; height: 100%; animation: starPulse 2s ease-in-out infinite; }
+        @keyframes starPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .gemini-text { font-size: 18px; font-weight: 700; background: linear-gradient(135deg, #4285F4, #EA4335, #FBBC05, #34A853); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .gemini-sub { font-size: 8px; letter-spacing: 2px; color: var(--gray-600); margin-left: 5px; }
         
-        .brand-badge {
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: #1a1a1a;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 600;
-        }
-        
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
+        .header-actions { display: flex; align-items: center; gap: 20px; }
+        .logout-btn { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); color: var(--danger); padding: 8px 16px; border-radius: 40px; cursor: pointer; font-weight: 500; }
         
         /* Sidebar */
-        .sidebar {
-            position: fixed;
-            top: 60px;
-            left: 0;
-            width: 260px;
-            height: calc(100vh - 60px);
-            background: var(--sidebar-bg);
-            border-right: 1px solid var(--border);
-            overflow-y: auto;
-            transition: all 0.3s;
-            z-index: 99;
-        }
-        
-        .sidebar-nav {
-            padding: 20px;
-        }
-        
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            border-radius: 12px;
-            margin-bottom: 6px;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-        
-        .nav-item i {
-            width: 22px;
-            font-size: 18px;
-        }
-        
-        .nav-item:hover {
-            background: rgba(212,175,55,0.1);
-            color: var(--gold);
-        }
-        
-        .nav-item.active {
-            background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
-            color: var(--gold);
-            border-left: 3px solid var(--gold);
-        }
+        .sidebar { position: fixed; top: 60px; left: 0; width: 260px; height: calc(100vh - 60px); background: var(--white); border-right: 1px solid var(--gray-200); overflow-y: auto; z-index: 99; }
+        .sidebar-nav { padding: 20px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: var(--gray-700); text-decoration: none; border-radius: 12px; margin-bottom: 6px; transition: all 0.3s; font-weight: 500; }
+        .nav-item i { width: 22px; }
+        .nav-item:hover, .nav-item.active { background: rgba(212,175,55,0.1); color: var(--primary); }
         
         /* Main Content */
-        .main-content {
-            margin-left: 260px;
-            padding: 30px;
-            min-height: calc(100vh - 60px);
-        }
+        .main-content { margin-left: 260px; padding: 30px; min-height: calc(100vh - 60px); }
         
-        /* Welcome Section */
-        .welcome-card {
-            background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02));
-            border-radius: 24px;
-            padding: 30px;
-            margin-bottom: 30px;
-            border: 1px solid var(--border);
-        }
+        .welcome-card { background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02)); border-radius: 24px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--gray-200); }
+        .welcome-title { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--primary-light)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .date-badge { display: inline-block; background: var(--gray-100); padding: 6px 14px; border-radius: 20px; font-size: 12px; margin-top: 12px; }
         
-        .welcome-title {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, var(--gold), var(--gold-light));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--white); border-radius: 20px; padding: 20px; border: 1px solid var(--gray-200); transition: all 0.3s; }
+        .stat-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+        .stat-icon { width: 48px; height: 48px; background: rgba(212,175,55,0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--primary); margin-bottom: 12px; }
+        .stat-value { font-size: 32px; font-weight: 800; }
+        .stat-label { font-size: 12px; color: var(--gray-500); text-transform: uppercase; }
         
-        .welcome-subtitle {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
+        .quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .action-card { background: var(--white); border-radius: 20px; padding: 20px; text-align: center; border: 1px solid var(--gray-200); transition: all 0.3s; cursor: pointer; text-decoration: none; display: block; }
+        .action-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+        .action-icon { width: 60px; height: 60px; background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05)); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 28px; color: var(--primary); }
+        .action-title { font-weight: 600; margin-bottom: 5px; }
+        .action-desc { font-size: 12px; color: var(--gray-500); }
         
-        .date-badge {
-            display: inline-block;
-            background: var(--bg-secondary);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            margin-top: 12px;
-            border: 1px solid var(--border);
-        }
+        .charts-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; margin-bottom: 30px; }
+        .chart-card { background: var(--white); border-radius: 20px; padding: 20px; border: 1px solid var(--gray-200); }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        canvas { max-height: 250px; width: 100%; }
         
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
+        .data-card { background: var(--white); border-radius: 20px; padding: 20px; margin-bottom: 30px; border: 1px solid var(--gray-200); }
+        .data-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--gray-200); }
+        .data-header h3 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .view-link { color: var(--primary); text-decoration: none; font-size: 13px; }
         
-        .stat-card {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid var(--border);
-            transition: all 0.3s;
-        }
+        .vendor-pending-section { background: rgba(139, 92, 246, 0.05); border-left: 3px solid var(--purple); margin-bottom: 30px; }
         
-        .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--gold);
-        }
+        .admin-table { width: 100%; border-collapse: collapse; }
+        .admin-table th, .admin-table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--gray-200); }
+        .admin-table th { color: var(--gray-500); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+        .admin-table tr:hover { background: rgba(212,175,55,0.03); }
         
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(212,175,55,0.1);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: var(--gold);
-        }
-        
-        .stat-title {
-            font-size: 13px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .stat-value {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 5px;
-        }
-        
-        .stat-trend {
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .trend-up { color: var(--success); }
-        .trend-down { color: var(--danger); }
-        
-        /* Quick Actions */
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .action-card {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid var(--border);
-            transition: all 0.3s;
-            cursor: pointer;
-            text-decoration: none;
-            display: block;
-        }
-        
-        .action-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--gold);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .action-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            font-size: 28px;
-            color: var(--gold);
-        }
-        
-        .action-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--text-primary);
-        }
-        
-        .action-desc {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        
-        /* Charts Row */
-        .charts-row {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .chart-card {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid var(--border);
-        }
-        
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .chart-header h3 {
-            font-size: 16px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .chart-period {
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        
-        canvas {
-            max-height: 280px;
-            width: 100%;
-        }
-        
-        /* Info Cards */
-        .info-cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .info-card {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid var(--border);
-            text-align: center;
-        }
-        
-        .info-card i {
-            font-size: 32px;
-            color: var(--gold);
-            margin-bottom: 12px;
-        }
-        
-        .info-value {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 5px;
-        }
-        
-        .info-label {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        
-        /* Tables */
-        .data-card {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 30px;
-            border: 1px solid var(--border);
-        }
-        
-        .data-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .data-header h3 {
-            font-size: 18px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .view-link {
-            color: var(--gold);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        
-        .view-link:hover {
-            transform: translateX(3px);
-        }
-        
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .admin-table th,
-        .admin-table td {
-            padding: 12px 10px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .admin-table th {
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-        
-        .admin-table tr:hover {
-            background: rgba(212,175,55,0.03);
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .status-pending { background: rgba(245,158,11,0.15); color: var(--warning); }
-        .status-processing { background: rgba(59,130,246,0.15); color: var(--info); }
-        .status-shipped { background: rgba(16,185,129,0.15); color: var(--success); }
-        .status-delivered { background: rgba(16,185,129,0.2); color: var(--success); }
-        .status-cancelled { background: rgba(239,68,68,0.15); color: var(--danger); }
+        .status-approved { background: rgba(16,185,129,0.15); color: var(--success); }
+        .status-rejected { background: rgba(239,68,68,0.15); color: var(--danger); }
         
-        /* Loading */
-        .loading {
-            text-align: center;
-            padding: 40px;
-        }
+        .approve-btn, .reject-btn { padding: 6px 12px; border: none; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin: 0 3px; }
+        .approve-btn { background: var(--success); color: white; }
+        .reject-btn { background: var(--danger); color: white; }
+        .approve-btn:hover, .reject-btn:hover { transform: translateY(-1px); opacity: 0.9; }
         
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border);
-            border-top-color: var(--gold);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 15px;
-        }
+        .vendor-product-img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
         
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: #1a1a1a;
-            padding: 12px 24px;
-            border-radius: 40px;
-            z-index: 1000;
-            font-size: 13px;
-            font-weight: 600;
-            animation: slideIn 0.3s ease;
-        }
-        
-        .toast-error {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        /* Mobile Responsive */
-        @media (max-width: 1024px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .charts-row,
-            .info-cards,
-            .quick-actions {
-                grid-template-columns: 1fr;
-            }
-        }
+        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 101; background: var(--white); border: 1px solid var(--gray-200); padding: 10px; border-radius: 12px; cursor: pointer; }
         
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                position: fixed;
-                z-index: 200;
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            .mobile-menu-btn {
-                display: block;
-                background: none;
-                border: none;
-                font-size: 24px;
-                color: var(--text-primary);
-                cursor: pointer;
-            }
-            .admin-table {
-                display: none;
-            }
-            .mobile-table-card {
-                display: block;
-            }
+            .mobile-menu-btn { display: block; }
+            .sidebar { transform: translateX(-100%); position: fixed; z-index: 200; }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 20px; padding-top: 60px; }
+            .stats-grid, .quick-actions, .charts-row { grid-template-columns: 1fr; }
+            .admin-table { display: none; }
+            .mobile-table-card { display: block; }
         }
         
-        .mobile-menu-btn {
-            display: none;
-        }
+        .mobile-table-card { display: none; background: var(--white); border-radius: 16px; padding: 15px; margin-bottom: 12px; border: 1px solid var(--gray-200); }
+        .mobile-table-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-200); }
+        .mobile-table-row:last-child { border-bottom: none; }
         
-        .mobile-table-card {
-            display: none;
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 15px;
-            margin-bottom: 12px;
-            border: 1px solid var(--border);
-        }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: var(--success); color: white; padding: 12px 24px; border-radius: 40px; z-index: 1000; animation: slideIn 0.3s; }
+        .toast-error { background: var(--danger); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
-        .mobile-table-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .mobile-table-row:last-child {
-            border-bottom: none;
-        }
-        
-        .mobile-table-label {
-            color: var(--text-muted);
-            font-size: 12px;
-        }
-        
-        .mobile-table-value {
-            font-weight: 500;
-            text-align: right;
-        }
-        
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: var(--border);
-            border-radius: 3px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--gold);
-            border-radius: 3px;
-        }
+        .loading { text-align: center; padding: 40px; }
+        .spinner { width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <!-- Mobile Menu Button -->
-    <button class="mobile-menu-btn" id="mobileMenuBtn" style="position: fixed; top: 15px; left: 15px; z-index: 101;">
-        <i class="fas fa-bars"></i>
-    </button>
+    <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
     
-    <!-- Header -->
     <div class="admin-header">
-        <div class="brand">
-            <div class="gemini-logo" onclick="window.location.href='index.html'">
-                <div class="gemini-star">
-                    <svg viewBox="0 0 24 24" width="100%" height="100%">
-                        <defs>
-                            <linearGradient id="geminiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#4285F4;stop-opacity:1" />
-                                <stop offset="33%" style="stop-color:#EA4335;stop-opacity:1" />
-                                <stop offset="66%" style="stop-color:#FBBC05;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#34A853;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                        <path class="star-outline" d="M12 2L15 9H22L16 14L19 21L12 16.5L5 21L8 14L2 9H9L12 2Z" fill="currentColor" stroke="url(#geminiGradient)" stroke-width="2" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <div>
-                    <span class="gemini-text">Style Of Life</span>
-                    <span class="gemini-sub">BRAND PORTAL</span>
-                </div>
-            </div>
+        <div class="gemini-logo" onclick="window.location.href='index.html'">
+            <div class="gemini-star"><svg viewBox="0 0 24 24"><defs><linearGradient id="gg"><stop offset="0%" stop-color="#4285F4"/><stop offset="33%" stop-color="#EA4335"/><stop offset="66%" stop-color="#FBBC05"/><stop offset="100%" stop-color="#34A853"/></linearGradient></defs><path d="M12 2L15 9H22L16 14L19 21L12 16.5L5 21L8 14L2 9H9L12 2Z" fill="white" stroke="url(#gg)" stroke-width="2"/></svg></div>
+            <div><span class="gemini-text">Style Of Life</span><span class="gemini-sub">ADMIN</span></div>
         </div>
         <div class="header-actions">
-            <div class="theme-toggle" id="themeToggle">
-                <span class="theme-option active" data-theme="light">☀️ Light</span>
-                <span class="theme-option" data-theme="dark">🌙 Dark</span>
-            </div>
-            <button class="logout-btn" onclick="logout()" style="background: rgba(239,68,68,0.1); border: 1px solid var(--danger); color: var(--danger); padding: 8px 16px; border-radius: 40px; cursor: pointer; font-weight: 500;">
-                <i class="fas fa-sign-out-alt"></i> Exit
-            </button>
+            <div class="theme-toggle" id="themeToggle"><span class="theme-option active" data-theme="light">☀️ Light</span><span class="theme-option" data-theme="dark">🌙 Dark</span></div>
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Exit</button>
         </div>
     </div>
     
-    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-nav">
-            <a href="admin.html" class="nav-item active">
-                <i class="fas fa-chart-line"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="admin-products.html" class="nav-item">
-                <i class="fas fa-box"></i>
-                <span>Products</span>
-            </a>
-            <a href="admin-orders.html" class="nav-item">
-                <i class="fas fa-shopping-cart"></i>
-                <span>Orders</span>
-            </a>
-            <a href="admin-customers.html" class="nav-item">
-                <i class="fas fa-users"></i>
-                <span>Customers</span>
-            </a>
-            <a href="admin-analytics.html" class="nav-item">
-                <i class="fas fa-chart-pie"></i>
-                <span>Analytics</span>
-            </a>
+            <a href="admin.html" class="nav-item active"><i class="fas fa-chart-line"></i><span>Dashboard</span></a>
+            <a href="admin-products.html" class="nav-item"><i class="fas fa-box"></i><span>Main Products</span></a>
+            <a href="admin-vendor-products.html" class="nav-item"><i class="fas fa-store"></i><span>Vendor Products</span></a>
+            <a href="admin-orders.html" class="nav-item"><i class="fas fa-shopping-cart"></i><span>Orders</span></a>
+            <a href="admin-customers.html" class="nav-item"><i class="fas fa-users"></i><span>Customers</span></a>
+            <a href="admin-analytics.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Analytics</span></a>
         </div>
     </div>
     
-    <!-- Main Content -->
     <div class="main-content">
-        <!-- Welcome Card -->
         <div class="welcome-card">
             <div class="welcome-title">Welcome back, Admin</div>
-            <div class="welcome-subtitle">Here's what's happening with your brand today</div>
             <div class="date-badge" id="dateTime"></div>
         </div>
         
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon"><i class="fas fa-gem"></i></div>
-                </div>
-                <div class="stat-title">Total Products</div>
-                <div class="stat-value" id="totalProducts">--</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
-                </div>
-                <div class="stat-title">Total Orders</div>
-                <div class="stat-value" id="totalOrders">--</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
-                </div>
-                <div class="stat-title">Total Revenue</div>
-                <div class="stat-value" id="totalRevenue">--</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
-                </div>
-                <div class="stat-title">Pending Orders</div>
-                <div class="stat-value" id="pendingOrders">--</div>
-            </div>
-        </div>
+        <div class="stats-grid" id="statsGrid"></div>
         
-        <!-- Quick Actions -->
         <div class="quick-actions">
-            <a href="admin-products.html" class="action-card">
-                <div class="action-icon"><i class="fas fa-plus-circle"></i></div>
-                <div class="action-title">Add New Product</div>
-                <div class="action-desc">Create a new product listing</div>
-            </a>
-            <a href="admin-orders.html" class="action-card">
-                <div class="action-icon"><i class="fas fa-eye"></i></div>
-                <div class="action-title">View All Orders</div>
-                <div class="action-desc">Manage customer orders</div>
-            </a>
-            <a href="admin-customers.html" class="action-card">
-                <div class="action-icon"><i class="fas fa-users"></i></div>
-                <div class="action-title">Customer Management</div>
-                <div class="action-desc">View and manage customers</div>
-            </a>
+            <a href="admin-products.html" class="action-card"><div class="action-icon"><i class="fas fa-plus-circle"></i></div><div class="action-title">Add Product</div><div class="action-desc">Create new listing</div></a>
+            <a href="admin-vendor-products.html" class="action-card"><div class="action-icon"><i class="fas fa-store"></i></div><div class="action-title">Vendor Products</div><div class="action-desc">Manage artisan submissions</div></a>
+            <a href="admin-orders.html" class="action-card"><div class="action-icon"><i class="fas fa-eye"></i></div><div class="action-title">View Orders</div><div class="action-desc">Manage customer orders</div></a>
         </div>
         
-        <!-- Charts Row -->
+        <!-- PENDING VENDOR PRODUCTS SECTION (Approve/Disapprove) -->
+        <div class="data-card vendor-pending-section">
+            <div class="data-header">
+                <h3><i class="fas fa-store" style="color: var(--purple);"></i> Pending Vendor Approvals</h3>
+                <a href="admin-vendor-products.html" class="view-link">View All →</a>
+            </div>
+            <div id="pendingVendorList"><div class="loading"><div class="spinner"></div><p>Loading pending approvals...</p></div></div>
+        </div>
+        
         <div class="charts-row">
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3><i class="fas fa-chart-line" style="color: var(--gold);"></i> Orders Trend</h3>
-                    <select id="periodSelect" class="chart-period" onchange="loadOrdersChart()">
-                        <option value="7">Last 7 Days</option>
-                        <option value="30" selected>Last 30 Days</option>
-                        <option value="90">Last 90 Days</option>
-                    </select>
-                </div>
-                <canvas id="ordersChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3><i class="fas fa-chart-pie" style="color: var(--gold);"></i> Order Status</h3>
-                </div>
-                <canvas id="statusChart"></canvas>
-            </div>
+            <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-line"></i> Orders Trend</h3><select id="periodSelect" onchange="loadOrdersChart()"><option value="7">Last 7 Days</option><option value="30" selected>Last 30 Days</option></select></div><canvas id="ordersChart"></canvas></div>
+            <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-pie"></i> Order Status</h3></div><canvas id="statusChart"></canvas></div>
         </div>
         
-        <!-- Info Cards -->
-        <div class="info-cards">
-            <div class="info-card">
-                <i class="fas fa-user-plus"></i>
-                <div class="info-value" id="newCustomers">--</div>
-                <div class="info-label">New Customers (This Month)</div>
-            </div>
-            <div class="info-card">
-                <i class="fas fa-chart-line"></i>
-                <div class="info-value" id="avgOrderValue">--</div>
-                <div class="info-label">Average Order Value</div>
-            </div>
-            <div class="info-card">
-                <i class="fas fa-check-circle"></i>
-                <div class="info-value" id="completedOrders">--</div>
-                <div class="info-label">Completed Orders (All Time)</div>
-            </div>
-        </div>
-        
-        <!-- Recent Orders -->
-        <div class="data-card">
-            <div class="data-header">
-                <h3><i class="fas fa-recent"></i> Recent Orders</h3>
-                <a href="admin-orders.html" class="view-link">View All →</a>
-            </div>
-            <div id="recentOrders"><div class="loading"><div class="spinner"></div><p>Loading orders...</p></div></div>
-        </div>
-        
-        <!-- Top Products -->
-        <div class="data-card">
-            <div class="data-header">
-                <h3><i class="fas fa-fire"></i> Top Selling Products</h3>
-                <a href="admin-products.html" class="view-link">Manage Products →</a>
-            </div>
-            <div id="topProducts"><div class="loading"><div class="spinner"></div><p>Loading products...</p></div></div>
-        </div>
+        <div class="data-card"><div class="data-header"><h3><i class="fas fa-clock"></i> Recent Orders</h3><a href="admin-orders.html" class="view-link">View All →</a></div><div id="recentOrders"><div class="loading"><div class="spinner"></div></div></div></div>
     </div>
     
-    <script type="importmap">
-        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
-    </script>
+    <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
-        if (!sessionStorage.getItem('adminLoggedIn')) {
-            window.location.href = 'login.html';
-        }
+        if (!sessionStorage.getItem('adminLoggedIn')) window.location.href = 'login.html';
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-        let ordersChart = null;
-        let statusChart = null;
+        let ordersChart = null, statusChart = null;
         
-        // Theme Toggle
-        function initTheme() {
-            const savedTheme = localStorage.getItem('adminTheme') || 'light';
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark');
-                document.querySelectorAll('.theme-option').forEach(opt => {
-                    opt.classList.toggle('active', opt.dataset.theme === 'dark');
-                });
-            }
+        function showToast(msg, isErr = false) {
+            const t = document.createElement('div');
+            t.className = 'toast' + (isErr ? ' toast-error' : '');
+            t.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
         }
         
-        function setTheme(theme) {
-            if (theme === 'dark') {
-                document.body.classList.add('dark');
-            } else {
-                document.body.classList.remove('dark');
-            }
-            localStorage.setItem('adminTheme', theme);
-            document.querySelectorAll('.theme-option').forEach(opt => {
-                opt.classList.toggle('active', opt.dataset.theme === theme);
-            });
-        }
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
         
-        document.querySelectorAll('.theme-option').forEach(opt => {
-            opt.addEventListener('click', () => {
-                setTheme(opt.dataset.theme);
-            });
-        });
-        
-        // Mobile Sidebar
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const sidebar = document.getElementById('sidebar');
-        
-        if (mobileMenuBtn) {
-            mobileMenuBtn.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
-            });
-        }
-        
-        document.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768 && !sidebar.contains(e.target) && e.target !== mobileMenuBtn) {
-                sidebar.classList.remove('open');
-            }
-        });
-        
-        function updateDateTime() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('dateTime').innerHTML = now.toLocaleDateString('en-IN', options);
-        }
-        updateDateTime();
-        
-        function showToast(message, isError = false) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            if (isError) toast.classList.add('toast-error');
-            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-        
-        function renderMobileOrders(orders) {
-            let html = '';
-            orders.slice(0, 5).forEach(o => {
-                html += `
-                    <div class="mobile-table-card">
-                        <div class="mobile-table-row">
-                            <span class="mobile-table-label">Order ID</span>
-                            <span class="mobile-table-value"><strong>${o.order_id}</strong></span>
-                        </div>
-                        <div class="mobile-table-row">
-                            <span class="mobile-table-label">Customer</span>
-                            <span class="mobile-table-value">${o.customer_name}</span>
-                        </div>
-                        <div class="mobile-table-row">
-                            <span class="mobile-table-label">Amount</span>
-                            <span class="mobile-table-value">₹${(o.total || 0).toLocaleString()}</span>
-                        </div>
-                        <div class="mobile-table-row">
-                            <span class="mobile-table-label">Status</span>
-                            <span class="mobile-table-value"><span class="status-badge status-${o.status?.toLowerCase() || 'pending'}">${o.status || 'Pending'}</span></span>
-                        </div>
-                        <div class="mobile-table-row">
-                            <span class="mobile-table-label">Date</span>
-                            <span class="mobile-table-value">${new Date(o.created_at).toLocaleDateString()}</span>
-                        </div>
-                    </div>
-                `;
-            });
-            return html;
-        }
-        
-        function renderMobileProducts(products) {
-            let html = '';
-            products.forEach(p => {
-                const stockStatus = p.stock > 20 ? 'In Stock' : (p.stock > 0 ? 'Low Stock' : 'Out of Stock');
-                const statusClass = p.stock > 0 ? 'status-shipped' : 'status-cancelled';
-                html += `
-                    <div class="mobile-table-card">
-                        <div class="mobile-table-row">
-                            <span class="mobile-table-label">Product</span>
-                            <span class="mobile-table-value"><strong>${p.name}</strong></span>
-                        </div>
-                        <div class="mobile-table-row">
-                            <span class="mobile-table-label">SKU</span>
-                            <span class="mobile-table-value">${p.sku}</span>
-                        </div>
-                        <div class="mobile-table-row">
-                            <span class="mobile-table-label">Price</span>
-                            <span class="mobile-table-value">₹${(p.price || 0).toLocaleString()}</span>
-                        </div>
-                        <div class="mobile-table-row">
-                            <span class="mobile-table-label">Stock</span>
-                            <span class="mobile-table-value">${p.stock || 0}</span>
-                        </div>
-                        <div class="mobile-table-row">
-                            <span class="mobile-table-label">Status</span>
-                            <span class="mobile-table-value"><span class="status-badge ${statusClass}">${stockStatus}</span></span>
-                        </div>
-                    </div>
-                `;
-            });
-            return html;
-        }
-        
-        async function loadDashboard() {
+        // Approve Vendor Product
+        window.approveVendorProduct = async function(id, productName) {
+            if (!confirm(`Approve "${productName}"? It will appear on the shop page.`)) return;
             try {
-                const { count: productsCount } = await supabase.from('products').select('*', { count: 'exact', head: true });
-                const { data: orders } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+                const { error } = await supabase.from('vendor_products').update({ status: 'approved', updated_at: new Date() }).eq('id', id);
+                if (error) throw error;
+                showToast(`✅ "${productName}" approved!`);
+                loadPendingVendorProducts();
+                loadStats();
+            } catch (err) { showToast('Error: ' + err.message, true); }
+        };
+        
+        // Reject Vendor Product
+        window.rejectVendorProduct = async function(id, productName) {
+            if (!confirm(`Reject "${productName}"? It will NOT appear on the shop page.`)) return;
+            try {
+                const { error } = await supabase.from('vendor_products').update({ status: 'rejected', updated_at: new Date() }).eq('id', id);
+                if (error) throw error;
+                showToast(`❌ "${productName}" rejected.`);
+                loadPendingVendorProducts();
+                loadStats();
+            } catch (err) { showToast('Error: ' + err.message, true); }
+        };
+        
+        async function loadPendingVendorProducts() {
+            const container = document.getElementById('pendingVendorList');
+            try {
+                const { data, error } = await supabase.from('vendor_products').select('*').eq('status', 'pending').order('created_at', { ascending: false }).limit(10);
+                if (error) throw error;
                 
-                const totalOrders = orders?.length || 0;
-                const totalRevenue = orders?.reduce((sum, o) => sum + (o.total || 0), 0) || 0;
-                const pendingOrders = orders?.filter(o => o.status === 'Pending' || o.status === 'pending').length || 0;
-                const completedOrders = orders?.filter(o => o.status === 'Delivered' || o.status === 'delivered').length || 0;
-                const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-                const uniqueCustomers = [...new Set(orders?.map(o => o.email || o.customer_email))];
-                const newCustomers = uniqueCustomers.length;
-                
-                document.getElementById('totalProducts').textContent = productsCount || 0;
-                document.getElementById('totalOrders').textContent = totalOrders;
-                document.getElementById('totalRevenue').textContent = `₹${(totalRevenue / 100000).toFixed(1)}L`;
-                document.getElementById('pendingOrders').textContent = pendingOrders;
-                document.getElementById('newCustomers').textContent = newCustomers;
-                document.getElementById('avgOrderValue').textContent = `₹${Math.round(avgOrderValue).toLocaleString()}`;
-                document.getElementById('completedOrders').textContent = completedOrders;
-                
-                const recentOrdersDiv = document.getElementById('recentOrders');
-                if (!orders || orders.length === 0) {
-                    recentOrdersDiv.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>No orders yet</p></div>';
-                } else {
-                    let desktopHtml = '<table class="admin-table"><thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>';
-                    orders.slice(0, 8).forEach(o => {
-                        const itemsCount = o.items?.length || 0;
-                        desktopHtml += `<tr><td><strong>${o.order_id}</strong></td><td>${o.customer_name}</td><td>${itemsCount} item(s)</td><td>₹${(o.total || 0).toLocaleString()}</td><td><span class="status-badge status-${o.status?.toLowerCase() || 'pending'}">${o.status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`;
-                    });
-                    desktopHtml += '</tbody></table>';
-                    const mobileHtml = renderMobileOrders(orders);
-                    recentOrdersDiv.innerHTML = desktopHtml + `<div class="mobile-orders-container">${mobileHtml}</div>`;
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; padding: 30px; color: var(--gray-500);"><i class="fas fa-check-circle"></i> No pending vendor products</div>';
+                    return;
                 }
                 
-                const { data: products } = await supabase.from('products').select('*').order('id').limit(5);
-                const topProductsDiv = document.getElementById('topProducts');
-                if (!products || products.length === 0) {
-                    topProductsDiv.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><p>No products yet</p></div>';
-                } else {
-                    let desktopHtml = '<table class="admin-table"><thead><tr><th>SKU</th><th>Product Name</th><th>Price</th><th>Stock</th><th>Status</th></tr></thead><tbody>';
-                    products.forEach(p => {
-                        const stockStatus = p.stock > 20 ? 'In Stock' : (p.stock > 0 ? 'Low Stock' : 'Out of Stock');
-                        const statusClass = p.stock > 0 ? 'status-shipped' : 'status-cancelled';
-                        desktopHtml += `<tr><td>${p.sku}</td><td><strong>${p.name}</strong></td><td>₹${(p.price || 0).toLocaleString()}</td><td>${p.stock || 0}</td><td><span class="status-badge ${statusClass}">${stockStatus}</span></td></tr>`;
-                    });
-                    desktopHtml += '</tbody></table>';
-                    const mobileHtml = renderMobileProducts(products);
-                    topProductsDiv.innerHTML = desktopHtml + `<div class="mobile-products-container">${mobileHtml}</div>`;
+                let desktopHtml = '<table class="admin-table"><thead><tr><th>Image</th><th>Product</th><th>SKU</th><th>Price</th><th>Vendor</th><th>Actions</th></tr></thead><tbody>';
+                let mobileHtml = '';
+                
+                for (const p of data) {
+                    const imgUrl = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/50';
+                    desktopHtml += `
+                        <tr>
+                            <td><img class="vendor-product-img" src="${imgUrl}" onerror="this.src='https://via.placeholder.com/50'"></td>
+                            <td><strong>${escapeHtml(p.product_name)}</strong><br><span style="font-size:11px;color:var(--gray-500);">${p.category || 'Jewelry'}</span></td>
+                            <td>${p.sku}</td>
+                            <td>₹${(p.price || 0).toLocaleString()}</td>
+                            <td><span style="font-size:11px;">Vendor ID: ${p.vendor_id?.slice(0,8)}...</span></td>
+                            <td>
+                                <button class="approve-btn" onclick="approveVendorProduct(${p.id}, '${escapeHtml(p.product_name).replace(/'/g, "\\'")}')"><i class="fas fa-check"></i> Approve</button>
+                                <button class="reject-btn" onclick="rejectVendorProduct(${p.id}, '${escapeHtml(p.product_name).replace(/'/g, "\\'")}')"><i class="fas fa-times"></i> Reject</button>
+                            </td>
+                        </tr>
+                    `;
+                    
+                    mobileHtml += `
+                        <div class="mobile-table-card">
+                            <div class="mobile-table-row"><span class="mobile-table-label">Product</span><span class="mobile-table-value"><strong>${escapeHtml(p.product_name)}</strong></span></div>
+                            <div class="mobile-table-row"><span class="mobile-table-label">SKU</span><span class="mobile-table-value">${p.sku}</span></div>
+                            <div class="mobile-table-row"><span class="mobile-table-label">Price</span><span class="mobile-table-value">₹${(p.price || 0).toLocaleString()}</span></div>
+                            <div class="mobile-table-row"><span class="mobile-table-label">Actions</span><span class="mobile-table-value"><button class="approve-btn" onclick="approveVendorProduct(${p.id}, '${escapeHtml(p.product_name).replace(/'/g, "\\'")}')">Approve</button> <button class="reject-btn" onclick="rejectVendorProduct(${p.id}, '${escapeHtml(p.product_name).replace(/'/g, "\\'")}')">Reject</button></span></div>
+                        </div>
+                    `;
                 }
+                desktopHtml += '</tbody></table>';
+                container.innerHTML = desktopHtml + `<div class="mobile-vendor-container">${mobileHtml}</div>`;
                 
-                await loadOrdersChart();
-                await loadStatusChart(orders);
-                
-            } catch (error) {
-                console.error('Error loading dashboard:', error);
-                showToast('Error loading dashboard data', true);
-            }
+                const style = document.createElement('style');
+                style.textContent = `@media (max-width:768px){.admin-table{display:none}.mobile-vendor-container{display:block}}@media (min-width:769px){.mobile-vendor-container{display:none}}`;
+                document.head.appendChild(style);
+            } catch (err) { console.error(err); container.innerHTML = '<div class="empty-state">Error loading pending products</div>'; }
+        }
+        
+        async function loadStats() {
+            const [mainCount, vendorCount, ordersCount, pendingVendor] = await Promise.all([
+                supabase.from('products').select('*', { count: 'exact', head: true }),
+                supabase.from('vendor_products').select('*', { count: 'exact', head: true }),
+                supabase.from('orders').select('*', { count: 'exact', head: true }),
+                supabase.from('vendor_products').select('*', { count: 'exact', head: true }).eq('status', 'pending')
+            ]);
+            const { data: orders } = await supabase.from('orders').select('total');
+            const totalRevenue = orders?.reduce((s, o) => s + (o.total || 0), 0) || 0;
+            
+            document.getElementById('statsGrid').innerHTML = `
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-gem"></i></div><div class="stat-value">${mainCount.count || 0}</div><div class="stat-label">Main Products</div></div>
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-store"></i></div><div class="stat-value">${vendorCount.count || 0}</div><div class="stat-label">Vendor Products</div></div>
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-value">${pendingVendor.count || 0}</div><div class="stat-label">Pending Approvals</div></div>
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-rupee-sign"></i></div><div class="stat-value">₹${(totalRevenue / 100000).toFixed(1)}L</div><div class="stat-label">Total Revenue</div></div>
+            `;
         }
         
         async function loadOrdersChart() {
             const period = parseInt(document.getElementById('periodSelect').value);
-            try {
-                const { data: orders } = await supabase.from('orders').select('created_at, total').order('created_at', { ascending: true });
-                if (!orders || orders.length === 0) return;
-                
-                const dateMap = new Map();
-                const today = new Date();
-                for (let i = period - 1; i >= 0; i--) {
-                    const date = new Date();
-                    date.setDate(today.getDate() - i);
-                    const dateStr = date.toISOString().split('T')[0];
-                    dateMap.set(dateStr, { date: date, count: 0, revenue: 0 });
-                }
-                
-                orders.forEach(order => {
-                    const orderDate = new Date(order.created_at).toISOString().split('T')[0];
-                    if (dateMap.has(orderDate)) {
-                        const data = dateMap.get(orderDate);
-                        data.count++;
-                        data.revenue += order.total || 0;
-                    }
-                });
-                
-                const labels = [], counts = [], revenues = [];
-                for (const [dateStr, data] of dateMap) {
-                    labels.push(data.date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }));
-                    counts.push(data.count);
-                    revenues.push(data.revenue);
-                }
-                
-                const ctx = document.getElementById('ordersChart').getContext('2d');
-                if (ordersChart) ordersChart.destroy();
-                ordersChart = new Chart(ctx, {
-                    type: 'line',
-                    data: { labels: labels, datasets: [
-                        { label: 'Orders', data: counts, borderColor: '#d4af37', backgroundColor: 'rgba(212,175,55,0.1)', borderWidth: 2, fill: true, tension: 0.4, yAxisID: 'y' },
-                        { label: 'Revenue (₹)', data: revenues, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', borderWidth: 2, fill: true, tension: 0.4, yAxisID: 'y1' }
-                    ] },
-                    options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true }, y1: { position: 'right', beginAtZero: true, grid: { display: false } } } }
-                });
-            } catch (error) { console.error('Error loading orders chart:', error); }
+            const { data: orders } = await supabase.from('orders').select('created_at, total').order('created_at', { ascending: true });
+            if (!orders) return;
+            const dateMap = new Map();
+            const today = new Date();
+            for (let i = period - 1; i >= 0; i--) { const d = new Date(); d.setDate(today.getDate() - i); dateMap.set(d.toISOString().split('T')[0], { date: d, count: 0, revenue: 0 }); }
+            orders.forEach(o => { const d = new Date(o.created_at).toISOString().split('T')[0]; if (dateMap.has(d)) { const data = dateMap.get(d); data.count++; data.revenue += o.total || 0; } });
+            const labels = [], counts = [], revenues = [];
+            for (const [_, data] of dateMap) { labels.push(data.date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })); counts.push(data.count); revenues.push(data.revenue); }
+            const ctx = document.getElementById('ordersChart').getContext('2d');
+            if (ordersChart) ordersChart.destroy();
+            ordersChart = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Orders', data: counts, borderColor: '#d4af37', backgroundColor: 'rgba(212,175,55,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: true } });
         }
         
-        async function loadStatusChart(orders) {
-            try {
-                if (!orders || orders.length === 0) return;
-                const statusCounts = { 'pending': 0, 'processing': 0, 'shipped': 0, 'delivered': 0, 'cancelled': 0 };
-                orders.forEach(order => { const s = order.status?.toLowerCase() || 'pending'; if (statusCounts[s] !== undefined) statusCounts[s]++; else statusCounts.pending++; });
-                const ctx = document.getElementById('statusChart').getContext('2d');
-                if (statusChart) statusChart.destroy();
-                statusChart = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: { labels: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'], datasets: [{ data: [statusCounts.pending, statusCounts.processing, statusCounts.shipped, statusCounts.delivered, statusCounts.cancelled], backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ef4444'], borderWidth: 0 }] },
-                    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { color: getComputedStyle(document.body).getPropertyValue('--text-secondary') } } } }
-                });
-            } catch (error) { console.error('Error loading status chart:', error); }
+        async function loadStatusChart() {
+            const { data: orders } = await supabase.from('orders').select('status');
+            if (!orders) return;
+            const statuses = { pending: 0, processing: 0, shipped: 0, delivered: 0, cancelled: 0 };
+            orders.forEach(o => { const s = o.status?.toLowerCase() || 'pending'; if (statuses[s] !== undefined) statuses[s]++; else statuses.pending++; });
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            if (statusChart) statusChart.destroy();
+            statusChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'], datasets: [{ data: [statuses.pending, statuses.processing, statuses.shipped, statuses.delivered, statuses.cancelled], backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ef4444'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } } });
         }
         
-        window.loadOrdersChart = loadOrdersChart;
-        
-        function logout() {
-            sessionStorage.removeItem('adminLoggedIn');
-            showToast('Logged out successfully');
-            setTimeout(() => window.location.href = 'login.html', 500);
+        async function loadRecentOrders() {
+            const { data: orders } = await supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(5);
+            const container = document.getElementById('recentOrders');
+            if (!orders || orders.length === 0) { container.innerHTML = '<div class="empty-state">No orders yet</div>'; return; }
+            let html = '<table class="admin-table"><thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>';
+            orders.forEach(o => { html += `<tr><td><strong>${o.order_id}</strong></td><td>${escapeHtml(o.customer_name)}</td><td>₹${(o.total || 0).toLocaleString()}</td><td><span class="status-badge status-${o.status?.toLowerCase() || 'pending'}">${o.status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`; });
+            html += '</tbody></table>';
+            container.innerHTML = html;
         }
         
-        window.logout = logout;
+        function updateDateTime() { document.getElementById('dateTime').innerHTML = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); }
+        
+        // Theme
+        function initTheme() { const saved = localStorage.getItem('adminTheme') || 'light'; if (saved === 'dark') document.body.classList.add('dark'); document.querySelectorAll('.theme-option').forEach(opt => opt.classList.toggle('active', opt.dataset.theme === saved)); }
+        function setTheme(theme) { if (theme === 'dark') document.body.classList.add('dark'); else document.body.classList.remove('dark'); localStorage.setItem('adminTheme', theme); document.querySelectorAll('.theme-option').forEach(opt => opt.classList.toggle('active', opt.dataset.theme === theme)); }
+        document.querySelectorAll('.theme-option').forEach(opt => opt.addEventListener('click', () => setTheme(opt.dataset.theme)));
+        
+        // Mobile sidebar
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        mobileBtn?.addEventListener('click', () => sidebar.classList.toggle('open'));
+        document.addEventListener('click', (e) => { if (window.innerWidth <= 768 && !sidebar.contains(e.target) && e.target !== mobileBtn) sidebar.classList.remove('open'); });
+        
+        window.logout = function() { sessionStorage.removeItem('adminLoggedIn'); window.location.href = 'login.html'; };
         
         initTheme();
-        loadDashboard();
-        setInterval(loadDashboard, 60000);
+        updateDateTime();
+        loadStats();
+        loadPendingVendorProducts();
+        loadOrdersChart();
+        loadStatusChart();
+        loadRecentOrders();
+        setInterval(() => { loadStats(); loadPendingVendorProducts(); }, 30000);
     </script>
 </body>
 </html>
