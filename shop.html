@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Shop - Style Of Life | Luxury Jewelry</title>
+    <title>Shop - Style Of Life | Luxury Jewelry from Main Store & Artisans</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,10 +12,17 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --gold: #D4AF37; --gold-light: #F5E6B3; --gold-dark: #B8962E;
-            --white: #FFFFFF; --white-light: #F8F9FA; --black: #1A1A1A;
-            --gray: #666666; --gray-light: #999999;
-            --shadow: 0 2px 10px rgba(0,0,0,0.05); --shadow-hover: 0 10px 30px rgba(0,0,0,0.1);
+            --gold: #D4AF37;
+            --gold-light: #F5E6B3;
+            --gold-dark: #B8962E;
+            --white: #FFFFFF;
+            --white-light: #F8F9FA;
+            --black: #1A1A1A;
+            --gray: #666666;
+            --gray-light: #999999;
+            --purple: #8b5cf6;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --shadow-hover: 0 10px 30px rgba(0,0,0,0.1);
         }
         body { font-family: 'Inter', sans-serif; background: var(--white-light); color: var(--black); overflow-x: hidden; padding-bottom: 70px; }
         .light-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%); }
@@ -32,104 +39,44 @@
         .shop-header h1 span { color: var(--gold); }
         .shop-header p { color: rgba(255,255,255,0.8); max-width: 600px; margin: 0 auto; }
         
-        .floating-filter {
-            position: fixed;
-            bottom: 80px;
-            left: 20px;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 5px 20px rgba(212,175,55,0.4);
-            transition: all 0.3s;
-        }
+        .floating-filter { position: fixed; bottom: 80px; left: 20px; width: 50px; height: 50px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; box-shadow: 0 5px 20px rgba(212,175,55,0.4); }
         .floating-filter:hover { transform: scale(1.1); }
         .floating-filter i { font-size: 22px; color: var(--black); }
-        .filter-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--danger);
-            color: white;
-            font-size: 10px;
-            font-weight: bold;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .filter-badge { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; font-size: 10px; font-weight: bold; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; display: none; }
         
-        .filter-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            display: none;
-            justify-content: flex-end;
-        }
+        .filter-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: none; justify-content: flex-end; }
         .filter-modal.active { display: flex; }
-        .filter-drawer {
-            width: 85%;
-            max-width: 350px;
-            height: 100%;
-            background: var(--white);
-            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            animation: slideIn 0.3s ease;
-        }
+        .filter-drawer { width: 85%; max-width: 350px; height: 100%; background: var(--white); box-shadow: -2px 0 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; animation: slideIn 0.3s ease; }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-        .filter-drawer-header {
-            padding: 20px;
-            background: var(--gold);
-            color: var(--black);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .filter-drawer-header h3 { font-size: 18px; display: flex; align-items: center; gap: 8px; }
-        .close-filter { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--black); }
+        .filter-drawer-header { padding: 20px; background: var(--gold); color: var(--black); display: flex; justify-content: space-between; align-items: center; }
+        .filter-drawer-header h3 { font-size: 18px; }
+        .close-filter { background: none; border: none; font-size: 24px; cursor: pointer; }
         .filter-drawer-content { flex: 1; overflow-y: auto; padding: 15px; }
         .filter-drawer-footer { padding: 15px; border-top: 1px solid var(--gray-200); display: flex; gap: 10px; }
         .filter-drawer-footer button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
         
-        .filters-section { background: white; border-radius: 16px; margin: 30px 20px; box-shadow: var(--shadow); overflow: hidden; }
+        .filters-section { background: white; border-radius: 16px; margin: 30px 20px; box-shadow: var(--shadow); overflow: hidden; display: none; }
         .filter-group { border-bottom: 1px solid var(--gray-200); }
-        .filter-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; cursor: pointer; transition: background 0.3s; }
-        .filter-header:hover { background: rgba(212,175,55,0.05); }
-        .filter-header h4 { font-size: 15px; font-weight: 600; color: var(--black); display: flex; align-items: center; gap: 8px; }
-        .filter-header i { color: var(--gold); font-size: 14px; }
-        .filter-header .toggle-icon { color: var(--gray); transition: transform 0.3s; }
-        .filter-header .toggle-icon.rotated { transform: rotate(180deg); }
+        .filter-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; cursor: pointer; }
+        .filter-header h4 { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .filter-header i { color: var(--gold); }
         .filter-content { padding: 0 20px 15px 20px; display: none; }
         .filter-content.show { display: block; }
-        
         .filter-options { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
         .filter-option { background: var(--white-light); padding: 6px 14px; border-radius: 30px; font-size: 13px; cursor: pointer; transition: all 0.3s; border: 1px solid transparent; }
         .filter-option:hover { border-color: var(--gold); }
         .filter-option.active { background: var(--gold); color: white; border-color: var(--gold); }
         
-        .price-range, .carat-range { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
-        .price-range input, .carat-range input { flex: 1; padding: 10px; border: 1px solid var(--gray-200); border-radius: 8px; }
+        .price-range { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+        .price-range input { flex: 1; padding: 10px; border: 1px solid var(--gray-200); border-radius: 8px; }
         
-        .filter-actions { display: flex; gap: 10px; padding: 15px 20px; background: var(--white-light); border-top: 1px solid var(--gray-200); }
+        .filter-actions { display: flex; gap: 10px; padding: 15px 20px; background: var(--white-light); }
         .btn-filter { background: var(--gold); color: black; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
         .btn-reset { background: var(--gray-600); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
         
         .active-filters { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 20px; background: var(--white-light); border-top: 1px solid var(--gray-200); }
         .filter-tag { background: rgba(212,175,55,0.15); color: var(--gold); padding: 4px 10px; border-radius: 20px; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; }
         .filter-tag i { cursor: pointer; font-size: 10px; }
-        .filter-tag i:hover { color: var(--danger); }
         
         .shop-layout { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
         .products-container { padding: 0 0 50px; }
@@ -144,84 +91,32 @@
         .product-image-container { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #f5f5f5; }
         .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         .product-card:hover .product-image { transform: scale(1.05); }
-        .media-badge { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 20px; font-size: 10px; z-index: 5; }
+        
+        .vendor-badge { position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, var(--purple), #6d28d9); color: white; font-size: 10px; padding: 4px 10px; border-radius: 20px; z-index: 5; display: flex; align-items: center; gap: 4px; }
+        .main-badge { position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); font-size: 10px; padding: 4px 10px; border-radius: 20px; z-index: 5; display: flex; align-items: center; gap: 4px; }
         
         .product-info { padding: 18px; }
-        .product-name { font-size: 18px; font-weight: 700; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; }
-        .diamond-badge { background: rgba(212,175,55,0.15); color: var(--gold); padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+        .product-name { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
         .product-sku { font-size: 11px; color: var(--gray-light); margin-bottom: 8px; }
-        .product-price { font-size: 20px; font-weight: 700; color: var(--gold); margin: 8px 0; }
+        .product-desc { font-size: 13px; color: var(--gray); line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-price { font-size: 22px; font-weight: 700; color: var(--gold); margin-bottom: 4px; }
         .product-price small { font-size: 11px; color: var(--gray); font-weight: normal; }
         
-        .diamond-details { background: var(--white-light); border-radius: 12px; padding: 10px; margin: 10px 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; }
-        .diamond-detail-item { text-align: center; flex: 1; min-width: 50px; }
-        .diamond-detail-label { font-size: 9px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
+        .diamond-details { background: var(--white-light); border-radius: 12px; padding: 10px; margin: 10px 0; display: flex; flex-wrap: wrap; gap: 10px; }
+        .diamond-detail-item { text-align: center; flex: 1; }
+        .diamond-detail-label { font-size: 9px; color: var(--gray); text-transform: uppercase; }
         .diamond-detail-value { font-size: 12px; font-weight: 600; color: var(--gold); }
         
         .product-buttons-icon { display: flex; gap: 12px; margin-top: 12px; }
         .btn-icon-buy, .btn-icon-cart { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; border: none; font-size: 18px; }
         .btn-icon-buy { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); }
-        .btn-icon-buy:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 4px 12px rgba(212,175,55,0.4); }
         .btn-icon-cart { background: var(--white); border: 1.5px solid var(--gold); color: var(--gold); }
-        .btn-icon-cart:hover { background: var(--gold); color: var(--black); transform: translateY(-3px) scale(1.05); }
+        .btn-icon-buy:hover, .btn-icon-cart:hover { transform: translateY(-3px) scale(1.05); }
         
-        .floating-cart { position: fixed; bottom: 80px; right: 20px; width: 55px; height: 55px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; box-shadow: 0 5px 20px rgba(212,175,55,0.4); transition: all 0.3s; }
+        .floating-cart { position: fixed; bottom: 80px; right: 20px; width: 55px; height: 55px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; box-shadow: 0 5px 20px rgba(212,175,55,0.4); }
         .floating-cart:hover { transform: scale(1.1); }
         .floating-cart i { font-size: 24px; color: var(--black); }
         .floating-cart-badge { position: absolute; top: -5px; right: -5px; background: var(--black); color: var(--gold); font-size: 11px; font-weight: bold; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        
-        .swipe-cart-overlay { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.92); backdrop-filter: blur(20px); z-index: 2000; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1); border-radius: 30px 30px 0 0; padding: 20px; max-height: 85vh; display: flex; flex-direction: column; }
-        .swipe-cart-overlay.active { transform: translateY(0); }
-        .swipe-handle { width: 50px; height: 5px; background: rgba(255,255,255,0.4); border-radius: 3px; margin: 0 auto 20px; cursor: grab; }
-        .swipe-title { text-align: center; color: white; font-size: 18px; font-weight: 600; margin-bottom: 20px; }
-        .cart-preview { flex: 1; overflow-y: auto; max-height: 45vh; margin-bottom: 15px; }
-        .cart-preview-item { display: flex; gap: 12px; background: rgba(255,255,255,0.08); border-radius: 16px; padding: 12px; margin-bottom: 10px; }
-        .cart-preview-item img { width: 55px; height: 55px; border-radius: 12px; object-fit: cover; }
-        .cart-preview-total { text-align: center; padding: 15px; color: white; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 10px; }
-        .swipe-container { background: rgba(255,255,255,0.1); border-radius: 50px; padding: 4px; margin: 15px 0 10px; position: relative; cursor: grab; }
-        .swipe-track { background: rgba(255,255,255,0.2); border-radius: 50px; position: relative; overflow: hidden; height: 52px; }
-        .swipe-thumb { width: 75px; height: 48px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 50px; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: grab; position: relative; z-index: 2; }
-        .swipe-progress { position: absolute; top: 0; left: 0; height: 100%; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 50px; width: 0%; z-index: 1; }
-        .swipe-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.7); font-size: 13px; white-space: nowrap; pointer-events: none; }
-        .action-card { background: rgba(255,255,255,0.08); border-radius: 50px; padding: 10px 20px; text-align: center; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; }
-        
-        .product-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: none; justify-content: center; align-items: center; }
-        .product-modal.active { display: flex; }
-        .modal-container { background: white; border-radius: 28px; max-width: 90%; width: 400px; max-height: 85vh; overflow-y: auto; position: relative; animation: modalZoom 0.3s ease; }
-        @keyframes modalZoom { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; z-index: 10; }
-        .modal-close:hover { background: var(--gold); color: black; }
-        .modal-gallery-container { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #1a1a1a; }
-        .modal-gallery { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; width: 100%; height: 100%; }
-        .modal-gallery::-webkit-scrollbar { display: none; }
-        .modal-gallery-item { min-width: 100%; width: 100%; height: 100%; scroll-snap-align: start; position: relative; }
-        .modal-gallery-image { width: 100%; height: 100%; object-fit: cover; }
-        .modal-gallery-video { width: 100%; height: 100%; object-fit: cover; }
-        .modal-gallery-d360 { width: 100%; height: 100%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; flex-direction: column; color: var(--gold); }
-        .modal-gallery-d360 iframe { width: 100%; height: 100%; border: none; }
-        .modal-gallery-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; border: none; z-index: 10; }
-        .modal-gallery-arrow:hover { background: var(--gold); color: black; }
-        .modal-gallery-arrow-left { left: 10px; }
-        .modal-gallery-arrow-right { right: 10px; }
-        .modal-gallery-dots { position: absolute; bottom: 12px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; z-index: 5; }
-        .modal-gallery-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; }
-        .modal-gallery-dot.active { width: 20px; border-radius: 3px; background: var(--gold); }
-        .modal-info { padding: 20px; }
-        .modal-name { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-        .modal-sku { font-size: 12px; color: var(--gray-light); margin-bottom: 12px; }
-        .modal-category { display: inline-block; background: var(--gold-light); color: var(--gold-dark); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-bottom: 15px; }
-        .modal-price { font-size: 28px; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
-        .modal-diamond-details { background: var(--white-light); border-radius: 16px; padding: 15px; margin: 15px 0; }
-        .modal-diamond-title { font-size: 14px; font-weight: 600; color: var(--gold); margin-bottom: 12px; }
-        .modal-diamond-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .modal-diamond-item { text-align: center; }
-        .modal-diamond-label { font-size: 10px; color: var(--gray); text-transform: uppercase; }
-        .modal-diamond-value { font-size: 14px; font-weight: 600; color: var(--black); margin-top: 4px; }
-        .modal-desc { font-size: 14px; color: var(--gray); line-height: 1.5; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
-        .modal-stock { font-size: 13px; margin-bottom: 20px; padding: 10px; border-radius: 12px; background: var(--white-light); }
-        .modal-buttons { display: flex; gap: 12px; }
-        .modal-buy { flex: 1; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: black; padding: 14px; border: none; border-radius: 40px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .modal-cart { flex: 1; background: white; border: 2px solid var(--gold); color: var(--gold); padding: 14px; border-radius: 40px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
         
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 10px 20px 20px; border-top: 1px solid rgba(0,0,0,0.05); z-index: 100; }
         .bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--gray); text-decoration: none; font-size: 10px; cursor: pointer; }
@@ -238,15 +133,14 @@
         .empty-state { text-align: center; padding: 60px; color: var(--gray); }
         
         .load-more-container { text-align: center; margin-top: 40px; }
-        .load-more-btn { background: var(--gold); color: var(--black); padding: 12px 30px; border: none; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
-        .load-more-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212,175,55,0.3); }
+        .load-more-btn { background: var(--gold); color: var(--black); padding: 12px 30px; border: none; border-radius: 40px; font-weight: 600; cursor: pointer; }
         
         @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (min-width: 1024px) {
             .floating-filter { display: none; }
             .shop-layout { display: flex; gap: 30px; align-items: flex-start; }
             .filters-section { width: 300px; margin: 0; position: sticky; top: 20px; display: block !important; }
-            .products-container { flex: 1; padding: 0; }
+            .products-container { flex: 1; }
             .products-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 1023px) { .filters-section { display: none; } }
@@ -261,38 +155,21 @@
         <div><span class="gemini-text">Style Of Life</span><span class="gemini-sub">SHOP</span></div>
     </div>
     
-    <div class="floating-filter" id="floatingFilterBtn">
-        <i class="fas fa-sliders-h"></i>
-        <span class="filter-badge" id="filterBadge" style="display: none;">0</span>
-    </div>
+    <div class="floating-filter" id="floatingFilterBtn"><i class="fas fa-sliders-h"></i><span class="filter-badge" id="filterBadge"></span></div>
     
     <div id="filterModal" class="filter-modal">
         <div class="filter-drawer">
-            <div class="filter-drawer-header">
-                <h3><i class="fas fa-sliders-h"></i> Filter Products</h3>
-                <button class="close-filter" onclick="closeFilterModal()">&times;</button>
-            </div>
+            <div class="filter-drawer-header"><h3><i class="fas fa-sliders-h"></i> Filter Products</h3><button class="close-filter" onclick="closeFilterModal()">&times;</button></div>
             <div class="filter-drawer-content" id="mobileFilterContent"></div>
-            <div class="filter-drawer-footer">
-                <button class="btn-filter" onclick="applyFilters(); closeFilterModal();">Apply Filters</button>
-                <button class="btn-reset" onclick="resetFilters(); closeFilterModal();">Reset All</button>
-            </div>
+            <div class="filter-drawer-footer"><button class="btn-filter" onclick="applyFilters(); closeFilterModal();">Apply Filters</button><button class="btn-reset" onclick="resetFilters(); closeFilterModal();">Reset All</button></div>
         </div>
     </div>
     
     <div class="floating-cart" id="floatingCartBtn"><i class="fas fa-shopping-bag"></i><span class="floating-cart-badge" id="cartCount">0</span></div>
     
-    <div id="swipeCartOverlay" class="swipe-cart-overlay">
-        <div class="swipe-handle"></div>
-        <div class="swipe-title"><i class="fas fa-shopping-bag"></i> Your Shopping Bag</div>
-        <div id="cartPreviewContent" class="cart-preview"><div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);"><i class="fas fa-shopping-cart" style="font-size:48px;"></i><p>Your cart is empty</p></div></div>
-        <div style="text-align:center;"><div class="action-card" id="clearCartSwipeBtn"><i class="fas fa-trash-alt"></i><span>Clear Cart</span></div></div>
-        <div class="swipe-container" id="swipeContainer"><div class="swipe-track"><div class="swipe-progress" id="swipeProgress"></div><div class="swipe-thumb" id="swipeThumb"><i class="fas fa-chevron-right"></i><span>Slide</span></div><div class="swipe-text">→ Slide to checkout →</div></div></div>
-    </div>
-    
     <div class="shop-header">
         <h1>Our <span>Collection</span></h1>
-        <p>Discover timeless masterpieces crafted with passion and precision. Each piece tells a unique story of elegance.</p>
+        <p>Discover timeless masterpieces from Style Of Life and talented partner artisans.</p>
     </div>
     
     <div class="shop-layout">
@@ -305,16 +182,10 @@
                     <option value="default">Sort by: Default</option>
                     <option value="price_asc">Price: Low to High</option>
                     <option value="price_desc">Price: High to Low</option>
-                    <option value="carat_asc">Carat: Low to High</option>
-                    <option value="carat_desc">Carat: High to Low</option>
                 </select>
             </div>
-            <div class="products-grid" id="productsGrid">
-                <div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div>
-            </div>
-            <div class="load-more-container" id="loadMoreContainer" style="display: none;">
-                <button class="load-more-btn" onclick="loadMoreProducts()">Load More Products</button>
-            </div>
+            <div class="products-grid" id="productsGrid"><div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div></div>
+            <div class="load-more-container" id="loadMoreContainer" style="display: none;"><button class="load-more-btn" onclick="loadMoreProducts()">Load More Products</button></div>
         </div>
     </div>
     
@@ -326,38 +197,7 @@
         <a data-page="customer-portal"><i class="fas fa-user"></i><span>Profile</span></a>
     </div>
     
-    <div id="productModal" class="product-modal">
-        <div class="modal-container">
-            <button class="modal-close" onclick="closeProductModal()">&times;</button>
-            <div id="modalMediaContainer" class="modal-gallery-container"></div>
-            <div class="modal-info">
-                <div class="modal-name" id="modalName"></div>
-                <div class="modal-sku" id="modalSku"></div>
-                <div class="modal-category" id="modalCategory"></div>
-                <div class="modal-price" id="modalPrice"></div>
-                <div id="modalDiamondDetails" class="modal-diamond-details" style="display: none;">
-                    <div class="modal-diamond-title"><i class="fas fa-gem"></i> Diamond Specifications</div>
-                    <div class="modal-diamond-grid">
-                        <div class="modal-diamond-item"><div class="modal-diamond-label">Carat</div><div class="modal-diamond-value" id="modalCarat">-</div></div>
-                        <div class="modal-diamond-item"><div class="modal-diamond-label">Color</div><div class="modal-diamond-value" id="modalColor">-</div></div>
-                        <div class="modal-diamond-item"><div class="modal-diamond-label">Clarity</div><div class="modal-diamond-value" id="modalClarity">-</div></div>
-                        <div class="modal-diamond-item"><div class="modal-diamond-label">Cut</div><div class="modal-diamond-value" id="modalCut">-</div></div>
-                        <div class="modal-diamond-item"><div class="modal-diamond-label">Polish</div><div class="modal-diamond-value" id="modalPolish">-</div></div>
-                        <div class="modal-diamond-item"><div class="modal-diamond-label">Symmetry</div><div class="modal-diamond-value" id="modalSymmetry">-</div></div>
-                    </div>
-                </div>
-                <div class="modal-desc" id="modalDesc"></div>
-                <div class="modal-stock" id="modalStock"></div>
-                <div class="modal-buttons">
-                    <button class="modal-buy" id="modalBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button>
-                    <button class="modal-cart" id="modalCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
-    
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
@@ -365,440 +205,87 @@
         let sessionId = localStorage.getItem('sessionId');
         if (!sessionId) { sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); localStorage.setItem('sessionId', sessionId); }
         
-        let currentCart = [], productsCache = {}, allProducts = [];
-        let displayedProducts = [];
+        let allProducts = [];
+        let filteredProducts = [];
         let currentDisplayCount = 30;
         
-        let selectedFilters = {
-            categories: [],
-            caratMin: '',
-            caratMax: '',
-            diamond_color: '',
-            diamond_clarity: '',
-            diamond_cut: '',
-            diamond_polish: '',
-            diamond_symmetry: '',
-            minPrice: '',
-            maxPrice: ''
-        };
-        
+        let selectedFilters = { sources: [], categories: [], minPrice: '', maxPrice: '' };
         let availableCategories = [];
         
         function calculateGST(price, gstPercent) { const gst = (price * gstPercent) / 100; return { gstAmount: gst, total: price + gst }; }
-        
-        function isD360Interactive(url) { return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); }
-        function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com')); }
-        
-        function getProductImage(product) {
-            if (product.images_url_1 && product.images_url_1.trim()) return product.images_url_1;
-            if (product.images_url_2 && product.images_url_2.trim()) return product.images_url_2;
-            if (product.images_url_3 && product.images_url_3.trim()) return product.images_url_3;
-            if (product.video_url && product.video_url.trim()) return product.video_url;
-            return 'https://via.placeholder.com/400x400?text=Style';
-        }
-        
-        function navigateTo(page) { if (window.parent !== window) window.parent.postMessage({ page: page }, '*'); else window.location.href = page + '.html'; }
+        function navigateTo(page) { window.location.href = page + '.html'; }
         document.querySelectorAll('[data-page]').forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); navigateTo(el.getAttribute('data-page')); }));
         
         function showToast(msg, isErr = false) { const t = document.createElement('div'); t.className = 'toast' + (isErr ? ' toast-error' : ''); t.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
         
-        window.toggleFilter = function(filterId) {
-            const content = document.getElementById(filterId);
-            const icon = document.getElementById(filterId + 'Icon');
-            if (content.classList.contains('show')) {
-                content.classList.remove('show');
-                icon.classList.remove('rotated');
-            } else {
-                content.classList.add('show');
-                icon.classList.add('rotated');
-            }
-        };
-        
-        window.toggleCategory = function(category) {
-            const index = selectedFilters.categories.indexOf(category);
-            if (index === -1) {
-                selectedFilters.categories.push(category);
-            } else {
-                selectedFilters.categories.splice(index, 1);
-            }
-            updateCategoryUI();
-            applyFilters();
-            updateFilterBadge();
-        };
-        
-        function updateCategoryUI() {
-            document.querySelectorAll('.category-option').forEach(el => {
-                const cat = el.getAttribute('data-cat');
-                if (selectedFilters.categories.includes(cat)) {
-                    el.classList.add('active');
-                } else {
-                    el.classList.remove('active');
-                }
-            });
-        }
-        
-        window.selectFilter = function(type, value) {
-            if (selectedFilters[type] === value) {
-                selectedFilters[type] = '';
-            } else {
-                selectedFilters[type] = value;
-            }
-            updateFilterUI(type);
-            applyFilters();
-            updateFilterBadge();
-        };
-        
-        function updateFilterUI(type) {
-            const selector = `[data-filter="${type}"]`;
-            document.querySelectorAll(selector).forEach(el => {
-                const val = el.getAttribute('data-value');
-                if (selectedFilters[type] === val) {
-                    el.classList.add('active');
-                } else {
-                    el.classList.remove('active');
-                }
-            });
-        }
-        
-        function updateFilterBadge() {
-            let count = selectedFilters.categories.length;
-            if (selectedFilters.caratMin) count++;
-            if (selectedFilters.caratMax) count++;
-            if (selectedFilters.diamond_color) count++;
-            if (selectedFilters.diamond_clarity) count++;
-            if (selectedFilters.diamond_cut) count++;
-            if (selectedFilters.diamond_polish) count++;
-            if (selectedFilters.diamond_symmetry) count++;
-            if (selectedFilters.minPrice) count++;
-            if (selectedFilters.maxPrice) count++;
-            
-            const badge = document.getElementById('filterBadge');
-            if (count > 0) {
-                badge.style.display = 'flex';
-                badge.textContent = count;
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-        
-        function openFilterModal() {
-            const modal = document.getElementById('filterModal');
-            const mobileContent = document.getElementById('mobileFilterContent');
-            const desktopFilters = document.getElementById('desktopFilters');
-            if (desktopFilters) {
-                mobileContent.innerHTML = desktopFilters.innerHTML;
-                attachFilterEvents();
-            }
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        window.closeFilterModal = function() {
-            const modal = document.getElementById('filterModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
-        };
-        
-        function attachFilterEvents() {
-            document.querySelectorAll('.filter-header').forEach(header => {
-                const contentId = header.getAttribute('data-filter-id');
-                if (contentId) {
-                    header.onclick = () => toggleFilter(contentId);
-                }
-            });
-            document.querySelectorAll('.category-option').forEach(el => {
-                const cat = el.getAttribute('data-cat');
-                el.onclick = () => toggleCategory(cat);
-            });
-            document.querySelectorAll('[data-filter]').forEach(el => {
-                const type = el.getAttribute('data-filter');
-                const value = el.getAttribute('data-value');
-                el.onclick = () => selectFilter(type, value);
-            });
-            document.getElementById('minPrice').oninput = applyFilters;
-            document.getElementById('maxPrice').oninput = applyFilters;
-            document.getElementById('caratMin').oninput = applyFilters;
-            document.getElementById('caratMax').oninput = applyFilters;
-        }
-        
-        document.getElementById('floatingFilterBtn')?.addEventListener('click', openFilterModal);
-        document.getElementById('filterModal')?.addEventListener('click', (e) => {
-            if (e.target === document.getElementById('filterModal')) closeFilterModal();
-        });
-        
         async function updateCartCount() {
-            try {
-                const { data, error } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
-                if (error) throw error;
-                const items = data?.items || [];
-                currentCart = items;
-                const total = items.reduce((sum, item) => sum + item.quantity, 0);
-                const badge = document.getElementById('cartCount');
-                if (badge) badge.textContent = total;
-                return items;
-            } catch (error) { return []; }
+            const { data } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
+            const items = data?.items || [];
+            document.getElementById('cartCount').textContent = items.reduce((s, i) => s + i.quantity, 0);
         }
         
-        async function fetchProductGST(id) { 
-            if (productsCache[id]) return productsCache[id]; 
-            try {
-                const { data, error } = await supabase.from('products').select('gst').eq('id', id).single();
-                if (error) throw error;
-                productsCache[id] = data || { gst: 18 };
-                return productsCache[id];
-            } catch (error) { return { gst: 18 }; }
-        }
-        
-        async function updateCartPreview() {
-            const items = await updateCartCount();
-            const container = document.getElementById('cartPreviewContent');
-            if (!items.length) { 
-                container.innerHTML = `<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);"><i class="fas fa-shopping-cart" style="font-size:48px;"></i><p>Your cart is empty</p></div>`; 
-                return; 
-            }
-            let subtotal = 0, totalGST = 0, html = '';
-            for (const item of items) {
-                const { gst: gstPercent } = await fetchProductGST(item.id);
-                const { gstAmount, total } = calculateGST(item.price, gstPercent);
-                subtotal += item.price * item.quantity;
-                totalGST += gstAmount * item.quantity;
-                html += `<div class="cart-preview-item"><img src="${item.image}" onerror="this.src='https://via.placeholder.com/55'"><div><div style="font-weight:600;">${escapeHtml(item.name)}</div><div>₹${item.price.toLocaleString()} × ${item.quantity}</div><div style="font-size:10px;">GST: ₹${(gstAmount * item.quantity).toFixed(2)}</div></div><div style="color:var(--gold);">₹${(total * item.quantity).toFixed(2)}</div></div>`;
-            }
-            const shipping = subtotal >= 3000 ? 0 : 100;
-            const grand = subtotal + totalGST + shipping;
-            container.innerHTML = html + `<div class="cart-preview-total"><div>Subtotal: ₹${subtotal.toLocaleString()}</div><div>GST: ₹${totalGST.toFixed(2)}</div><div>Shipping: ₹${shipping}</div><div style="font-size:18px;margin-top:10px;">Total: ₹${grand.toFixed(2)}</div></div>`;
-        }
-        
-        window.addToCart = async (id, name, price, sku, img) => {
-            try {
-                const { gst: gstPercent } = await fetchProductGST(id);
-                let { data: cart } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
-                let items = cart?.items || [];
-                const existing = items.find(i => i.id === id);
-                if (existing) existing.quantity++;
-                else items.push({ id, sku, name, price, gst: gstPercent, quantity: 1, image: img });
-                await supabase.from('carts').upsert({ session_id: sessionId, items, total: items.reduce((s, i) => s + (i.price * i.quantity), 0), updated_at: new Date() }, { onConflict: 'session_id' });
-                showToast(`✨ ${name} added to bag!`);
-                await updateCartPreview();
-                return true;
-            } catch (error) { showToast('Failed to add', true); return false; }
+        window.addToCart = async (id, name, price, sku, img, gst = 18) => {
+            let { data: cart } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
+            let items = cart?.items || [];
+            const existing = items.find(i => i.id === id);
+            if (existing) existing.quantity++;
+            else items.push({ id, sku, name, price, gst, quantity: 1, image: img });
+            await supabase.from('carts').upsert({ session_id: sessionId, items, total: items.reduce((s, i) => s + (i.price * i.quantity), 0), updated_at: new Date() }, { onConflict: 'session_id' });
+            showToast(`✨ ${name} added to bag!`);
+            await updateCartCount();
         };
         
-        window.buyNow = async (id, name, price, sku, img) => { 
-            if (await addToCart(id, name, price, sku, img)) { 
-                showToast(`🛍️ Redirecting to checkout...`);
-                setTimeout(() => navigateTo('checkout'), 600); 
-            } 
-        };
+        window.buyNow = async (id, name, price, sku, img, gst) => { await addToCart(id, name, price, sku, img, gst); setTimeout(() => navigateTo('checkout'), 600); };
         
-        document.getElementById('clearCartSwipeBtn')?.addEventListener('click', async () => { 
-            if (currentCart.length && confirm('Clear your bag?')) { 
-                await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date() }, { onConflict: 'session_id' }); 
-                showToast('Bag cleared!'); 
-                await updateCartPreview(); 
-                closeSwipeCart();
-                updateCartCount();
-            } 
-        });
-        
-        let isDragging = false, startX = 0, currentTranslate = 0;
-        const swipeThumb = document.getElementById('swipeThumb'), swipeProgress = document.getElementById('swipeProgress'), swipeTrack = document.querySelector('.swipe-track'), overlay = document.getElementById('swipeCartOverlay');
-        let maxSwipe = 0, touchStartY = 0, isSwipingDown = false;
-        
-        function initSwipe() { if (!swipeThumb || !swipeTrack) return; maxSwipe = swipeTrack.getBoundingClientRect().width - 75; swipeThumb.addEventListener('mousedown', startDrag); swipeThumb.addEventListener('touchstart', startDrag); document.addEventListener('mousemove', onDrag); document.addEventListener('touchmove', onDrag); document.addEventListener('mouseup', endDrag); document.addEventListener('touchend', endDrag); }
-        function startDrag(e) { isDragging = true; const clientX = e.clientX || (e.touches && e.touches[0].clientX); startX = clientX - currentTranslate; if (swipeThumb) swipeThumb.style.transition = 'none'; if (swipeProgress) swipeProgress.style.transition = 'none'; e.stopPropagation(); e.preventDefault(); }
-        function onDrag(e) { if (!isDragging) return; e.preventDefault(); const clientX = e.clientX || (e.touches && e.touches[0].clientX); let newTranslate = clientX - startX; newTranslate = Math.max(0, Math.min(newTranslate, maxSwipe)); currentTranslate = newTranslate; if (swipeThumb) swipeThumb.style.transform = `translateX(${currentTranslate}px)`; if (swipeProgress) swipeProgress.style.width = `${(currentTranslate / maxSwipe) * 100}%`; if ((currentTranslate / maxSwipe) >= 0.95) completeSwipe(); }
-        function endDrag() { isDragging = false; if (swipeThumb) swipeThumb.style.transition = 'transform 0.3s ease'; if (swipeProgress) swipeProgress.style.transition = 'width 0.3s ease'; if (currentTranslate < maxSwipe * 0.95) { currentTranslate = 0; if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)'; if (swipeProgress) swipeProgress.style.width = '0%'; } }
-        function completeSwipe() { currentTranslate = 0; if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)'; if (swipeProgress) swipeProgress.style.width = '0%'; closeSwipeCart(); if (currentCart.length > 0) navigateTo('checkout'); else showToast('Your bag is empty!', true); }
-        function setupSwipeDownToClose() { if (!overlay) return; overlay.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; isSwipingDown = true; }); overlay.addEventListener('touchmove', (e) => { if (!isSwipingDown) return; const deltaY = e.touches[0].clientY - touchStartY; if (deltaY > 0 && overlay.classList.contains('active')) { overlay.style.transform = `translateY(${Math.min(deltaY, 300)}px)`; e.preventDefault(); } }); overlay.addEventListener('touchend', (e) => { if (e.changedTouches[0].clientY - touchStartY > 100) closeSwipeCart(); overlay.style.transform = ''; isSwipingDown = false; }); let mouseStartY = 0, isMouseSwiping = false; overlay.addEventListener('mousedown', (e) => { if (e.target === overlay || e.target.classList.contains('swipe-handle')) { mouseStartY = e.clientY; isMouseSwiping = true; } }); document.addEventListener('mousemove', (e) => { if (!isMouseSwiping || !overlay.classList.contains('active')) return; const deltaY = e.clientY - mouseStartY; if (deltaY > 0 && deltaY < 300) overlay.style.transform = `translateY(${deltaY}px)`; }); document.addEventListener('mouseup', (e) => { if (!isMouseSwiping) return; if (e.clientY - mouseStartY > 100) closeSwipeCart(); overlay.style.transform = ''; isMouseSwiping = false; }); }
-        function openSwipeCart() { overlay.classList.add('active'); overlay.style.transform = ''; updateCartPreview(); setTimeout(initSwipe, 150); }
-        function closeSwipeCart() { overlay.classList.remove('active'); overlay.style.transform = ''; currentTranslate = 0; if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)'; if (swipeProgress) swipeProgress.style.width = '0%'; }
-        document.getElementById('floatingCartBtn')?.addEventListener('click', openSwipeCart);
-        setupSwipeDownToClose();
-        
-        function filterProducts(products) {
-            let filtered = [...products];
-            if (selectedFilters.categories.length > 0) {
-                filtered = filtered.filter(p => selectedFilters.categories.includes(p.category));
-            }
-            const caratMin = parseFloat(selectedFilters.caratMin);
-            const caratMax = parseFloat(selectedFilters.caratMax);
-            if (caratMin) filtered = filtered.filter(p => p.carat && parseFloat(p.carat) >= caratMin);
-            if (caratMax) filtered = filtered.filter(p => p.carat && parseFloat(p.carat) <= caratMax);
-            if (selectedFilters.diamond_color) filtered = filtered.filter(p => p.diamond_color === selectedFilters.diamond_color);
-            if (selectedFilters.diamond_clarity) filtered = filtered.filter(p => p.diamond_clarity === selectedFilters.diamond_clarity);
-            if (selectedFilters.diamond_cut) filtered = filtered.filter(p => p.diamond_cut === selectedFilters.diamond_cut);
-            if (selectedFilters.diamond_polish) filtered = filtered.filter(p => p.diamond_polish === selectedFilters.diamond_polish);
-            if (selectedFilters.diamond_symmetry) filtered = filtered.filter(p => p.diamond_symmetry === selectedFilters.diamond_symmetry);
-            const minPrice = parseFloat(selectedFilters.minPrice);
-            const maxPrice = parseFloat(selectedFilters.maxPrice);
-            if (minPrice) filtered = filtered.filter(p => p.price >= minPrice);
-            if (maxPrice) filtered = filtered.filter(p => p.price <= maxPrice);
-            return filtered;
-        }
-        
-        function sortProducts(products, sortBy) {
-            const sorted = [...products];
-            if (sortBy === 'price_asc') sorted.sort((a, b) => a.price - b.price);
-            else if (sortBy === 'price_desc') sorted.sort((a, b) => b.price - a.price);
-            else if (sortBy === 'carat_asc') sorted.sort((a, b) => (a.carat || 0) - (b.carat || 0));
-            else if (sortBy === 'carat_desc') sorted.sort((a, b) => (b.carat || 0) - (a.carat || 0));
-            return sorted;
-        }
-        
-        function updateActiveFiltersDisplay() {
-            const container = document.getElementById('activeFilters');
-            if (!container) return;
-            const filters = [];
-            if (selectedFilters.categories.length > 0) {
-                selectedFilters.categories.forEach(cat => filters.push(`Category: ${cat}`));
-            }
-            if (selectedFilters.caratMin || selectedFilters.caratMax) {
-                let caratText = 'Carat: ';
-                if (selectedFilters.caratMin) caratText += `${selectedFilters.caratMin}`;
-                if (selectedFilters.caratMin && selectedFilters.caratMax) caratText += ` - `;
-                if (selectedFilters.caratMax) caratText += `${selectedFilters.caratMax}`;
-                filters.push(caratText);
-            }
-            if (selectedFilters.diamond_color) filters.push(`Color: ${selectedFilters.diamond_color}`);
-            if (selectedFilters.diamond_clarity) filters.push(`Clarity: ${selectedFilters.diamond_clarity}`);
-            if (selectedFilters.diamond_cut) filters.push(`Cut: ${selectedFilters.diamond_cut}`);
-            if (selectedFilters.diamond_polish) filters.push(`Polish: ${selectedFilters.diamond_polish}`);
-            if (selectedFilters.diamond_symmetry) filters.push(`Symmetry: ${selectedFilters.diamond_symmetry}`);
-            if (selectedFilters.minPrice) filters.push(`Min Price: ₹${parseInt(selectedFilters.minPrice).toLocaleString()}`);
-            if (selectedFilters.maxPrice) filters.push(`Max Price: ₹${parseInt(selectedFilters.maxPrice).toLocaleString()}`);
-            if (filters.length === 0) {
-                container.innerHTML = '<span style="color:var(--gray); font-size:12px;">No active filters</span>';
-            } else {
-                container.innerHTML = filters.map(f => `<span class="filter-tag">${f} <i class="fas fa-times" onclick="removeFilter('${f.split(':')[0]}')"></i></span>`).join('');
-            }
-        }
-        
-        window.removeFilter = function(filterType) {
-            if (filterType === 'Category') selectedFilters.categories = [];
-            if (filterType === 'Carat') { 
-                document.getElementById('caratMin').value = '';
-                document.getElementById('caratMax').value = '';
-                selectedFilters.caratMin = '';
-                selectedFilters.caratMax = '';
-            }
-            if (filterType === 'Color') { selectedFilters.diamond_color = ''; updateFilterUI('diamond_color'); }
-            if (filterType === 'Clarity') { selectedFilters.diamond_clarity = ''; updateFilterUI('diamond_clarity'); }
-            if (filterType === 'Cut') { selectedFilters.diamond_cut = ''; updateFilterUI('diamond_cut'); }
-            if (filterType === 'Polish') { selectedFilters.diamond_polish = ''; updateFilterUI('diamond_polish'); }
-            if (filterType === 'Symmetry') { selectedFilters.diamond_symmetry = ''; updateFilterUI('diamond_symmetry'); }
-            if (filterType === 'Min Price') { document.getElementById('minPrice').value = ''; selectedFilters.minPrice = ''; }
-            if (filterType === 'Max Price') { document.getElementById('maxPrice').value = ''; selectedFilters.maxPrice = ''; }
-            applyFilters();
-            updateFilterBadge();
-        };
-        
-        window.applyFilters = function() {
-            selectedFilters.minPrice = document.getElementById('minPrice')?.value || '';
-            selectedFilters.maxPrice = document.getElementById('maxPrice')?.value || '';
-            selectedFilters.caratMin = document.getElementById('caratMin')?.value || '';
-            selectedFilters.caratMax = document.getElementById('caratMax')?.value || '';
-            const sortBy = document.getElementById('sortSelect')?.value || 'default';
-            let filtered = filterProducts(allProducts);
-            filtered = sortProducts(filtered, sortBy);
-            displayedProducts = filtered;
-            currentDisplayCount = 30;
-            updateActiveFiltersDisplay();
-            renderProducts();
-            const countEl = document.getElementById('productsCount');
-            if (countEl) countEl.innerHTML = `Showing ${Math.min(currentDisplayCount, displayedProducts.length)} of ${displayedProducts.length} products`;
-            updateFilterBadge();
-        };
-        
-        window.loadMoreProducts = function() {
-            currentDisplayCount += 30;
-            renderProducts();
-            const countEl = document.getElementById('productsCount');
-            if (countEl) countEl.innerHTML = `Showing ${Math.min(currentDisplayCount, displayedProducts.length)} of ${displayedProducts.length} products`;
-            const loadMoreContainer = document.getElementById('loadMoreContainer');
-            if (currentDisplayCount >= displayedProducts.length) {
-                loadMoreContainer.style.display = 'none';
-            }
-        };
-        
-        window.resetFilters = function() {
-            selectedFilters = { categories: [], caratMin: '', caratMax: '', diamond_color: '', diamond_clarity: '', diamond_cut: '', diamond_polish: '', diamond_symmetry: '', minPrice: '', maxPrice: '' };
-            document.getElementById('minPrice').value = '';
-            document.getElementById('maxPrice').value = '';
-            document.getElementById('caratMin').value = '';
-            document.getElementById('caratMax').value = '';
-            document.getElementById('sortSelect').value = 'default';
-            updateCategoryUI();
-            ['diamond_color', 'diamond_clarity', 'diamond_cut', 'diamond_polish', 'diamond_symmetry'].forEach(type => updateFilterUI(type));
-            applyFilters();
-            updateFilterBadge();
-        };
-        
-        function renderProducts() {
+        // LOAD BOTH MAIN + APPROVED VENDOR PRODUCTS
+        async function loadAllProducts() {
             const container = document.getElementById('productsGrid');
-            const productsToShow = displayedProducts.slice(0, currentDisplayCount);
-            if (!productsToShow.length) { container.innerHTML = '<div class="empty-state">✨ No products match your filters</div>'; return; }
-            let html = '';
-            for (const p of productsToShow) {
-                const img = getProductImage(p);
-                const { total } = calculateGST(p.price, p.gst || 18);
-                const hasDiamond = p.carat || p.diamond_color || p.diamond_clarity || p.diamond_cut;
-                let mediaCount = 0;
-                if (p.images_url_1) mediaCount++;
-                if (p.images_url_2) mediaCount++;
-                if (p.images_url_3) mediaCount++;
-                if (p.video_url) mediaCount++;
-                let diamondHtml = '';
-                if (hasDiamond) {
-                    diamondHtml = `<div class="diamond-details">
-                        ${p.carat ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Carat</div><div class="diamond-detail-value">${p.carat}ct</div></div>` : ''}
-                        ${p.diamond_color ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Color</div><div class="diamond-detail-value">${p.diamond_color}</div></div>` : ''}
-                        ${p.diamond_clarity ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Clarity</div><div class="diamond-detail-value">${p.diamond_clarity}</div></div>` : ''}
-                        ${p.diamond_cut ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Cut</div><div class="diamond-detail-value">${p.diamond_cut}</div></div>` : ''}
-                    </div>`;
-                }
-                html += `<div class="product-card" onclick='openProductModal(${JSON.stringify(p)})'>
-                    <div class="product-image-container">
-                        <img class="product-image" src="${img}" alt="${escapeHtml(p.product_name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400?text=Style'">
-                        ${mediaCount > 0 ? `<div class="media-badge">📸 ${mediaCount} media</div>` : ''}
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">
-                            ${escapeHtml(p.product_name)}
-                            <span class="gst-badge">GST ${p.gst || 18}%</span>
-                            ${hasDiamond ? '<span class="diamond-badge"><i class="fas fa-gem"></i> Diamond</span>' : ''}
-                        </div>
-                        <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
-                        ${diamondHtml}
-                        <div class="product-price">₹${total.toLocaleString()} <small>Incl. GST</small></div>
-                        <div class="product-buttons-icon" onclick="event.stopPropagation()">
-                            <button class="btn-icon-buy" onclick="event.stopPropagation(); buyNow(${p.id}, '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')"><i class="fas fa-bolt"></i></button>
-                            <button class="btn-icon-cart" onclick="event.stopPropagation(); addToCart(${p.id}, '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}')"><i class="fas fa-shopping-cart"></i></button>
-                        </div>
-                    </div>
-                </div>`;
-            }
-            container.innerHTML = html;
-            const loadMoreContainer = document.getElementById('loadMoreContainer');
-            if (displayedProducts.length > currentDisplayCount) {
-                loadMoreContainer.style.display = 'block';
-            } else {
-                loadMoreContainer.style.display = 'none';
-            }
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div>';
+            try {
+                const [mainRes, vendorRes] = await Promise.all([
+                    supabase.from('products').select('*'),
+                    supabase.from('vendor_products').select('*').eq('status', 'approved')
+                ]);
+                
+                const mainProducts = mainRes.data || [];
+                const vendorProducts = vendorRes.data || [];
+                
+                console.log(`✅ Shop loaded: ${mainProducts.length} main products, ${vendorProducts.length} approved vendor products`);
+                
+                const mainMarked = mainProducts.map(p => ({ ...p, source: 'main', product_name: p.product_name || p.name }));
+                const vendorMarked = vendorProducts.map(p => ({ ...p, source: 'vendor', product_name: p.product_name }));
+                
+                allProducts = [...mainMarked, ...vendorMarked];
+                
+                // Extract categories
+                const categorySet = new Set();
+                allProducts.forEach(p => { if (p.category) categorySet.add(p.category); });
+                availableCategories = Array.from(categorySet);
+                
+                buildFilterUI();
+                applyFilters();
+                
+            } catch(e) { console.error(e); container.innerHTML = '<div class="empty-state">Error loading collection</div>'; }
         }
         
-        function buildFilterHTML() {
-            const colorValues = [...new Set(allProducts.filter(p => p.diamond_color).map(p => p.diamond_color))].sort();
-            const clarityValues = [...new Set(allProducts.filter(p => p.diamond_clarity).map(p => p.diamond_clarity))].sort();
-            const cutValues = [...new Set(allProducts.filter(p => p.diamond_cut).map(p => p.diamond_cut))].sort();
-            const polishValues = [...new Set(allProducts.filter(p => p.diamond_polish).map(p => p.diamond_polish))].sort();
-            const symmetryValues = [...new Set(allProducts.filter(p => p.diamond_symmetry).map(p => p.diamond_symmetry))].sort();
-            
-            return `
+        function buildFilterUI() {
+            const filterHtml = `
                 <div class="filter-group">
-                    <div class="filter-header" data-filter-id="categoryFilter" onclick="toggleFilter('categoryFilter')">
-                        <h4><i class="fas fa-tags"></i> Jewelry Category</h4>
-                        <i class="fas fa-chevron-down toggle-icon" id="categoryFilterIcon"></i>
+                    <div class="filter-header" onclick="toggleFilter('sourceFilter')">
+                        <h4><i class="fas fa-store"></i> Source</h4>
+                        <i class="fas fa-chevron-down" id="sourceFilterIcon"></i>
+                    </div>
+                    <div class="filter-content" id="sourceFilter">
+                        <div class="filter-options">
+                            <div class="filter-option source-option" data-source="main" onclick="toggleSource('main')">🏛️ Main Store</div>
+                            <div class="filter-option source-option" data-source="vendor" onclick="toggleSource('vendor')">🎨 Artisan</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-header" onclick="toggleFilter('categoryFilter')">
+                        <h4><i class="fas fa-tags"></i> Category</h4>
+                        <i class="fas fa-chevron-down" id="categoryFilterIcon"></i>
                     </div>
                     <div class="filter-content" id="categoryFilter">
                         <div class="filter-options" id="categoryOptions">
@@ -807,134 +294,213 @@
                     </div>
                 </div>
                 <div class="filter-group">
-                    <div class="filter-header" data-filter-id="priceFilter" onclick="toggleFilter('priceFilter')">
+                    <div class="filter-header" onclick="toggleFilter('priceFilter')">
                         <h4><i class="fas fa-rupee-sign"></i> Price Range</h4>
-                        <i class="fas fa-chevron-down toggle-icon" id="priceFilterIcon"></i>
+                        <i class="fas fa-chevron-down" id="priceFilterIcon"></i>
                     </div>
                     <div class="filter-content" id="priceFilter">
                         <div class="price-range"><input type="number" id="minPrice" placeholder="Min ₹" value=""><span>-</span><input type="number" id="maxPrice" placeholder="Max ₹" value=""></div>
                     </div>
                 </div>
-                <div class="filter-group">
-                    <div class="filter-header" data-filter-id="caratFilter" onclick="toggleFilter('caratFilter')">
-                        <h4><i class="fas fa-gem"></i> Carat Weight</h4>
-                        <i class="fas fa-chevron-down toggle-icon" id="caratFilterIcon"></i>
-                    </div>
-                    <div class="filter-content" id="caratFilter">
-                        <div class="carat-range"><input type="number" id="caratMin" step="0.01" placeholder="Min Carat" value=""><span>-</span><input type="number" id="caratMax" step="0.01" placeholder="Max Carat" value=""></div>
-                    </div>
-                </div>
-                ${colorValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="colorFilter" onclick="toggleFilter('colorFilter')"><h4><i class="fas fa-palette"></i> Diamond Color</h4><i class="fas fa-chevron-down toggle-icon" id="colorFilterIcon"></i></div><div class="filter-content" id="colorFilter"><div class="filter-options">${colorValues.map(v => `<div class="filter-option" data-filter="diamond_color" data-value="${v}" onclick="selectFilter('diamond_color', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
-                ${clarityValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="clarityFilter" onclick="toggleFilter('clarityFilter')"><h4><i class="fas fa-eye"></i> Diamond Clarity</h4><i class="fas fa-chevron-down toggle-icon" id="clarityFilterIcon"></i></div><div class="filter-content" id="clarityFilter"><div class="filter-options">${clarityValues.map(v => `<div class="filter-option" data-filter="diamond_clarity" data-value="${v}" onclick="selectFilter('diamond_clarity', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
-                ${cutValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="cutFilter" onclick="toggleFilter('cutFilter')"><h4><i class="fas fa-cut"></i> Diamond Cut</h4><i class="fas fa-chevron-down toggle-icon" id="cutFilterIcon"></i></div><div class="filter-content" id="cutFilter"><div class="filter-options">${cutValues.map(v => `<div class="filter-option" data-filter="diamond_cut" data-value="${v}" onclick="selectFilter('diamond_cut', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
-                ${polishValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="polishFilter" onclick="toggleFilter('polishFilter')"><h4><i class="fas fa-chart-line"></i> Diamond Polish</h4><i class="fas fa-chevron-down toggle-icon" id="polishFilterIcon"></i></div><div class="filter-content" id="polishFilter"><div class="filter-options">${polishValues.map(v => `<div class="filter-option" data-filter="diamond_polish" data-value="${v}" onclick="selectFilter('diamond_polish', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
-                ${symmetryValues.length ? `<div class="filter-group"><div class="filter-header" data-filter-id="symmetryFilter" onclick="toggleFilter('symmetryFilter')"><h4><i class="fas fa-sync-alt"></i> Diamond Symmetry</h4><i class="fas fa-chevron-down toggle-icon" id="symmetryFilterIcon"></i></div><div class="filter-content" id="symmetryFilter"><div class="filter-options">${symmetryValues.map(v => `<div class="filter-option" data-filter="diamond_symmetry" data-value="${v}" onclick="selectFilter('diamond_symmetry', '${v}')">${v}</div>`).join('')}</div></div></div>` : ''}
                 <div class="filter-actions"><button class="btn-filter" onclick="applyFilters()">Apply Filters</button><button class="btn-reset" onclick="resetFilters()">Reset All</button></div>
                 <div id="activeFilters" class="active-filters"></div>
             `;
+            document.getElementById('desktopFilters').innerHTML = filterHtml;
+            document.getElementById('mobileFilterContent').innerHTML = filterHtml;
+            attachFilterEvents();
         }
         
-        async function loadProducts() {
+        function attachFilterEvents() {
+            document.querySelectorAll('.source-option').forEach(el => {
+                if (selectedFilters.sources.includes(el.getAttribute('data-source'))) el.classList.add('active');
+            });
+            document.querySelectorAll('.category-option').forEach(el => {
+                if (selectedFilters.categories.includes(el.getAttribute('data-cat'))) el.classList.add('active');
+            });
+            document.getElementById('minPrice').value = selectedFilters.minPrice;
+            document.getElementById('maxPrice').value = selectedFilters.maxPrice;
+        }
+        
+        window.toggleFilter = function(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById(id + 'Icon');
+            content.classList.toggle('show');
+            icon.classList.toggle('rotated');
+        };
+        
+        window.toggleSource = function(source) {
+            const index = selectedFilters.sources.indexOf(source);
+            if (index === -1) selectedFilters.sources.push(source);
+            else selectedFilters.sources.splice(index, 1);
+            updateSourceUI();
+            applyFilters();
+        };
+        
+        window.toggleCategory = function(category) {
+            const index = selectedFilters.categories.indexOf(category);
+            if (index === -1) selectedFilters.categories.push(category);
+            else selectedFilters.categories.splice(index, 1);
+            updateCategoryUI();
+            applyFilters();
+        };
+        
+        function updateSourceUI() {
+            document.querySelectorAll('.source-option').forEach(el => {
+                const src = el.getAttribute('data-source');
+                if (selectedFilters.sources.includes(src)) el.classList.add('active');
+                else el.classList.remove('active');
+            });
+        }
+        
+        function updateCategoryUI() {
+            document.querySelectorAll('.category-option').forEach(el => {
+                const cat = el.getAttribute('data-cat');
+                if (selectedFilters.categories.includes(cat)) el.classList.add('active');
+                else el.classList.remove('active');
+            });
+        }
+        
+        function updateActiveFiltersDisplay() {
+            const container = document.getElementById('activeFilters');
+            if (!container) return;
+            const filters = [];
+            if (selectedFilters.sources.length) filters.push(`Source: ${selectedFilters.sources.join(', ')}`);
+            if (selectedFilters.categories.length) filters.push(`Category: ${selectedFilters.categories.join(', ')}`);
+            if (selectedFilters.minPrice) filters.push(`Min: ₹${parseInt(selectedFilters.minPrice).toLocaleString()}`);
+            if (selectedFilters.maxPrice) filters.push(`Max: ₹${parseInt(selectedFilters.maxPrice).toLocaleString()}`);
+            if (filters.length === 0) container.innerHTML = '<span style="color:var(--gray); font-size:12px;">No active filters</span>';
+            else container.innerHTML = filters.map(f => `<span class="filter-tag">${f} <i class="fas fa-times" onclick="removeFilterTag('${f.split(':')[0]}')"></i></span>`).join('');
+            document.getElementById('filterBadge').style.display = filters.length ? 'flex' : 'none';
+            if (filters.length) document.getElementById('filterBadge').textContent = filters.length;
+        }
+        
+        window.removeFilterTag = function(type) {
+            if (type === 'Source') selectedFilters.sources = [];
+            if (type === 'Category') selectedFilters.categories = [];
+            if (type === 'Min') { document.getElementById('minPrice').value = ''; selectedFilters.minPrice = ''; }
+            if (type === 'Max') { document.getElementById('maxPrice').value = ''; selectedFilters.maxPrice = ''; }
+            updateSourceUI(); updateCategoryUI(); applyFilters();
+        };
+        
+        window.applyFilters = function() {
+            selectedFilters.minPrice = document.getElementById('minPrice')?.value || '';
+            selectedFilters.maxPrice = document.getElementById('maxPrice')?.value || '';
+            
+            let filtered = [...allProducts];
+            
+            if (selectedFilters.sources.length) {
+                filtered = filtered.filter(p => selectedFilters.sources.includes(p.source));
+            }
+            if (selectedFilters.categories.length) {
+                filtered = filtered.filter(p => selectedFilters.categories.includes(p.category));
+            }
+            const minPrice = parseFloat(selectedFilters.minPrice);
+            const maxPrice = parseFloat(selectedFilters.maxPrice);
+            if (minPrice) filtered = filtered.filter(p => p.price >= minPrice);
+            if (maxPrice) filtered = filtered.filter(p => p.price <= maxPrice);
+            
+            const sortBy = document.getElementById('sortSelect')?.value || 'default';
+            if (sortBy === 'price_asc') filtered.sort((a, b) => a.price - b.price);
+            if (sortBy === 'price_desc') filtered.sort((a, b) => b.price - a.price);
+            
+            filteredProducts = filtered;
+            currentDisplayCount = 30;
+            renderProducts();
+            updateActiveFiltersDisplay();
+            document.getElementById('productsCount').innerHTML = `Showing ${Math.min(currentDisplayCount, filteredProducts.length)} of ${filteredProducts.length} products`;
+            document.getElementById('loadMoreContainer').style.display = filteredProducts.length > currentDisplayCount ? 'block' : 'none';
+        };
+        
+        window.loadMoreProducts = function() {
+            currentDisplayCount += 30;
+            renderProducts();
+            document.getElementById('productsCount').innerHTML = `Showing ${Math.min(currentDisplayCount, filteredProducts.length)} of ${filteredProducts.length} products`;
+            document.getElementById('loadMoreContainer').style.display = filteredProducts.length > currentDisplayCount ? 'block' : 'none';
+        };
+        
+        window.resetFilters = function() {
+            selectedFilters = { sources: [], categories: [], minPrice: '', maxPrice: '' };
+            document.getElementById('minPrice').value = '';
+            document.getElementById('maxPrice').value = '';
+            document.getElementById('sortSelect').value = 'default';
+            updateSourceUI(); updateCategoryUI();
+            applyFilters();
+        };
+        
+        function renderProducts() {
             const container = document.getElementById('productsGrid');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div>';
-            try {
-                const { data, error } = await supabase.from('products').select('*').order('id');
-                if (error) throw error;
-                allProducts = data || [];
-                const categoriesSet = new Set();
-                allProducts.forEach(p => { if (p.category) categoriesSet.add(p.category); });
-                availableCategories = Array.from(categoriesSet);
-                const filterHTML = buildFilterHTML();
-                const desktopFilters = document.getElementById('desktopFilters');
-                if (desktopFilters) desktopFilters.innerHTML = filterHTML;
-                for (const p of allProducts) productsCache[p.id] = { gst: p.gst || 18 };
-                applyFilters();
-                setTimeout(() => {
-                    const firstFilter = document.querySelector('.filter-content');
-                    if (firstFilter) {
-                        firstFilter.classList.add('show');
-                        const icon = document.getElementById(firstFilter.id + 'Icon');
-                        if (icon) icon.classList.add('rotated');
-                    }
-                }, 100);
-            } catch(e) { container.innerHTML = '<div class="empty-state">Error loading collection</div>'; }
+            const productsToShow = filteredProducts.slice(0, currentDisplayCount);
+            if (!productsToShow.length) { container.innerHTML = '<div class="empty-state">✨ No products match your filters</div>'; return; }
+            
+            let html = '';
+            for (const p of productsToShow) {
+                const img = p.images_url_1 || p.image1_url || p.images_url_2 || p.image2_url || p.images_url_3 || p.image3_url || p.video_url || 'https://via.placeholder.com/400x400?text=Style';
+                const gstPercent = p.gst || 18;
+                const { total } = calculateGST(p.price || 0, gstPercent);
+                const badge = p.source === 'vendor' 
+                    ? '<div class="vendor-badge"><i class="fas fa-store"></i> Artisan</div>' 
+                    : '<div class="main-badge"><i class="fas fa-crown"></i> Style Of Life</div>';
+                
+                const hasDiamond = p.carat || p.diamond_color || p.diamond_clarity;
+                let diamondHtml = '';
+                if (hasDiamond) {
+                    diamondHtml = `<div class="diamond-details">
+                        ${p.carat ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Carat</div><div class="diamond-detail-value">${p.carat}ct</div></div>` : ''}
+                        ${p.diamond_color ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Color</div><div class="diamond-detail-value">${p.diamond_color}</div></div>` : ''}
+                        ${p.diamond_clarity ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Clarity</div><div class="diamond-detail-value">${p.diamond_clarity}</div></div>` : ''}
+                    </div>`;
+                }
+                
+                html += `<div class="product-card" onclick='openProductModal(${JSON.stringify(p)})'>
+                    <div class="product-image-container">
+                        ${badge}
+                        <img class="product-image" src="${img}" alt="${escapeHtml(p.product_name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/400'">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-name">${escapeHtml(p.product_name)}</div>
+                        <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
+                        ${diamondHtml}
+                        <div class="product-desc">${escapeHtml((p.description || '').substring(0, 80))}</div>
+                        <div class="product-price">₹${total.toLocaleString()} <small>Incl. GST</small></div>
+                        <div class="product-buttons-icon" onclick="event.stopPropagation()">
+                            <button class="btn-icon-buy" onclick="event.stopPropagation(); buyNow('${p.id}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}', ${gstPercent})"><i class="fas fa-bolt"></i></button>
+                            <button class="btn-icon-cart" onclick="event.stopPropagation(); addToCart('${p.id}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}', ${gstPercent})"><i class="fas fa-shopping-cart"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            }
+            container.innerHTML = html;
         }
         
         window.openProductModal = function(product) {
-            const media = [product.images_url_1, product.images_url_2, product.images_url_3, product.video_url].filter(m => m && m.trim());
-            const displayMedia = media.length ? media : ['https://via.placeholder.com/400x400?text=Style'];
-            const { total, gstAmount } = calculateGST(product.price, product.gst || 18);
-            const hasDiamond = product.carat || product.diamond_color || product.diamond_clarity || product.diamond_cut;
-            const modalMedia = document.getElementById('modalMediaContainer');
-            let galleryHtml = `<div class="modal-gallery-container"><div class="modal-gallery" id="modalGallery">`;
-            for (let i = 0; i < displayMedia.length; i++) {
-                const m = displayMedia[i];
-                if (isVideoUrl(m)) {
-                    galleryHtml += `<div class="modal-gallery-item"><video src="${m}" class="modal-gallery-video" autoplay muted loop playsinline controls></video><div class="media-badge" style="position:absolute;bottom:10px;right:10px;">🎬 Video</div></div>`;
-                } else if (isD360Interactive(m)) {
-                    galleryHtml += `<div class="modal-gallery-item"><div class="modal-gallery-d360"><iframe src="${m}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe><div class="media-badge" style="position:absolute;bottom:10px;right:10px;">🔄 360°</div></div></div>`;
-                } else {
-                    galleryHtml += `<div class="modal-gallery-item"><img class="modal-gallery-image" src="${m}" alt="${product.product_name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400'"></div>`;
-                }
-            }
-            galleryHtml += `</div>`;
-            if (displayMedia.length > 1) {
-                galleryHtml += `<button class="modal-gallery-arrow modal-gallery-arrow-left" onclick="event.stopPropagation(); document.getElementById('modalGallery').scrollBy({left: -document.getElementById('modalGallery').clientWidth, behavior:'smooth'})"><i class="fas fa-chevron-left"></i></button>
-                                <button class="modal-gallery-arrow modal-gallery-arrow-right" onclick="event.stopPropagation(); document.getElementById('modalGallery').scrollBy({left: document.getElementById('modalGallery').clientWidth, behavior:'smooth'})"><i class="fas fa-chevron-right"></i></button>
-                                <div class="modal-gallery-dots" id="modalGalleryDots"></div>`;
-            }
-            galleryHtml += `</div>`;
-            modalMedia.innerHTML = galleryHtml;
-            if (displayMedia.length > 1) {
-                setTimeout(() => {
-                    const galleryEl = document.getElementById('modalGallery');
-                    const dotsContainer = document.getElementById('modalGalleryDots');
-                    if (galleryEl && dotsContainer) {
-                        for (let i = 0; i < displayMedia.length; i++) {
-                            const dot = document.createElement('div'); dot.className = 'modal-gallery-dot';
-                            if (i === 0) dot.classList.add('active');
-                            dot.addEventListener('click', () => galleryEl.scrollTo({ left: galleryEl.clientWidth * i, behavior: 'smooth' }));
-                            dotsContainer.appendChild(dot);
-                        }
-                        galleryEl.addEventListener('scroll', () => {
-                            const idx = Math.round(galleryEl.scrollLeft / galleryEl.clientWidth);
-                            Array.from(dotsContainer.children).forEach((d, i) => d.classList.toggle('active', i === idx));
-                        });
-                    }
-                }, 50);
-            }
-            document.getElementById('modalName').innerText = product.product_name;
-            document.getElementById('modalSku').innerText = `SKU: ${product.sku}`;
-            document.getElementById('modalCategory').innerText = product.category || 'Fine Jewelry';
-            document.getElementById('modalPrice').innerHTML = `₹${total.toLocaleString()} <small>(Incl. ${product.gst || 18}% GST)</small><br><span style="font-size:14px;color:var(--gray);">Base: ₹${product.price.toLocaleString()} + GST: ₹${gstAmount.toLocaleString()}</span>`;
-            document.getElementById('modalDesc').innerText = product.description || 'Exquisite handcrafted masterpiece.';
-            const diamondDetailsDiv = document.getElementById('modalDiamondDetails');
-            if (hasDiamond) {
-                diamondDetailsDiv.style.display = 'block';
-                document.getElementById('modalCarat').innerText = product.carat ? `${product.carat} ct` : '-';
-                document.getElementById('modalColor').innerText = product.diamond_color || '-';
-                document.getElementById('modalClarity').innerText = product.diamond_clarity || '-';
-                document.getElementById('modalCut').innerText = product.diamond_cut || '-';
-                document.getElementById('modalPolish').innerText = product.diamond_polish || '-';
-                document.getElementById('modalSymmetry').innerText = product.diamond_symmetry || '-';
-            } else { diamondDetailsDiv.style.display = 'none'; }
-            const stockStat = product.stock <= 0 ? 'Out of Stock' : (product.stock < 10 ? `Only ${product.stock} left!` : 'In Stock');
-            const stockColor = product.stock <= 0 ? '#dc3545' : (product.stock < 10 ? '#ff9800' : '#28a745');
-            document.getElementById('modalStock').innerHTML = `<i class="fas ${product.stock <= 0 ? 'fa-times-circle' : (product.stock < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> ${stockStat}`;
-            document.getElementById('modalStock').style.color = stockColor;
-            const imgUrl = getProductImage(product);
-            document.getElementById('modalBuyBtn').onclick = () => buyNow(product.id, product.product_name, product.price, product.sku, imgUrl);
-            document.getElementById('modalCartBtn').onclick = () => addToCart(product.id, product.product_name, product.price, product.sku, imgUrl);
-            document.getElementById('productModal').classList.add('active');
+            const img = product.images_url_1 || product.image1_url || 'https://via.placeholder.com/400';
+            const { total } = calculateGST(product.price || 0, product.gst || 18);
+            const modalHtml = `
+                <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:2000;display:flex;justify-content:center;align-items:center;" onclick="this.remove()">
+                    <div style="background:white;border-radius:28px;max-width:90%;width:400px;max-height:85vh;overflow-y:auto;padding:20px;" onclick="event.stopPropagation()">
+                        <img src="${img}" style="width:100%;border-radius:16px;margin-bottom:15px;">
+                        <h2 style="font-size:22px;">${escapeHtml(product.product_name)}</h2>
+                        <div style="color:var(--gold);font-size:28px;font-weight:700;margin:10px 0;">₹${total.toLocaleString()}</div>
+                        <p>${escapeHtml(product.description || 'Exquisite handcrafted piece.')}</p>
+                        <div style="display:flex;gap:12px;margin-top:20px;">
+                            <button class="btn-icon-buy" style="flex:1;border-radius:40px;" onclick="buyNow('${product.id}', '${escapeHtml(product.product_name).replace(/'/g, "\\'")}', ${product.price}, '${product.sku}', '${img}', ${product.gst || 18}); document.body.lastChild.remove();">Buy Now</button>
+                            <button class="btn-icon-cart" style="flex:1;border-radius:40px;" onclick="addToCart('${product.id}', '${escapeHtml(product.product_name).replace(/'/g, "\\'")}', ${product.price}, '${product.sku}', '${img}', ${product.gst || 18}); document.body.lastChild.remove();">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
         };
         
-        window.closeProductModal = () => document.getElementById('productModal').classList.remove('active');
-        document.getElementById('productModal')?.addEventListener('click', (e) => { if (e.target === e.currentTarget) closeProductModal(); });
+        function openFilterModal() { document.getElementById('filterModal').classList.add('active'); document.body.style.overflow = 'hidden'; }
+        window.closeFilterModal = function() { document.getElementById('filterModal').classList.remove('active'); document.body.style.overflow = ''; };
+        document.getElementById('floatingFilterBtn')?.addEventListener('click', openFilterModal);
+        document.getElementById('filterModal')?.addEventListener('click', (e) => { if (e.target === document.getElementById('filterModal')) closeFilterModal(); });
         
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
         
-        updateCartPreview();
-        loadProducts();
+        updateCartCount();
+        loadAllProducts();
     </script>
 </body>
 </html>
