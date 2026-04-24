@@ -173,6 +173,24 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .empty-state { text-align: center; padding: 60px; color: var(--gray); }
         
+        /* Vendor badge on products */
+        .vendor-source-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(135deg, #D4AF37, #B8962E);
+            color: #1A1A1A;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 20px;
+            z-index: 6;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .vendor-source-badge i { font-size: 8px; }
+        
         @media (min-width: 768px) {
             .hero-title { font-size: 64px; }
             .featured-grid { grid-template-columns: repeat(4, 1fr); max-width: 1200px; margin: 0 auto; }
@@ -223,7 +241,7 @@
     
     <div class="bottom-nav"><a data-page="home" class="active"><i class="fas fa-home"></i><span>Home</span></a><a data-page="shop"><i class="fas fa-search"></i><span>Discover</span></a><a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Bag</span></a><a data-page="track"><i class="fas fa-truck"></i><span>Track</span></a><a data-page="customer-portal"><i class="fas fa-user"></i><span>Profile</span></a></div>
     
-    <div id="productModal" class="product-modal"><div class="modal-container"><button class="modal-close" onclick="closeProductModal()">&times;</button><div id="modalMediaContainer" class="modal-gallery-container"></div><div class="modal-info"><div class="modal-name" id="modalName"></div><div class="modal-sku" id="modalSku"></div><div class="modal-category" id="modalCategory"></div><div class="modal-price" id="modalPrice"></div><div id="modalDiamondDetails" class="modal-diamond-details" style="display: none;"><div class="modal-diamond-title"><i class="fas fa-gem"></i> Diamond Specifications</div><div class="modal-diamond-grid"><div class="modal-diamond-item"><div class="modal-diamond-label">Carat</div><div class="modal-diamond-value" id="modalCarat">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Color</div><div class="modal-diamond-value" id="modalColor">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Clarity</div><div class="modal-diamond-value" id="modalClarity">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Cut</div><div class="modal-diamond-value" id="modalCut">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Polish</div><div class="modal-diamond-value" id="modalPolish">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Symmetry</div><div class="modal-diamond-value" id="modalSymmetry">-</div></div></div></div><div class="modal-desc" id="modalDesc"></div><div class="modal-stock" id="modalStock"></div><div class="modal-buttons"><button class="modal-buy" id="modalBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button><button class="modal-cart" id="modalCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button></div></div></div></div>
+    <div id="productModal" class="product-modal"><div class="modal-container"><button class="modal-close" onclick="closeProductModal()">&times;</button><div id="modalMediaContainer" class="modal-gallery-container"></div><div class="modal-info"><div class="modal-name" id="modalName"></div><div class="modal-sku" id="modalSku"></div><div class="modal-category" id="modalCategory"></div><div class="modal-price" id="modalPrice"></div><div id="modalDiamondDetails" class="modal-diamond-details" style="display: none;"><div class="modal-diamond-title"><i class="fas fa-gem"></i> Diamond Specifications</div><div class="modal-diamond-grid"><div class="modal-diamond-item"><div class="modal-diamond-label">Carat</div><div class="modal-diamond-value" id="modalCarat">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Color</div><div class="modal-diamond-value" id="modalColor">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Clarity</div><div class="modal-diamond-value" id="modalClarity">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Cut</div><div class="modal-diamond-value" id="modalCut">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Polish</div><div class="modal-diamond-value" id="modalPolish">-</div></div><div class="modal-diamond-item"><div class="modal-diamond-label">Symmetry</div><div class="modal-diamond-value" id="modalSymmetry">-</div></div></div></div><div class="modal-desc" id="modalDesc"></div><div class="modal-stock id="modalStock"></div><div class="modal-buttons"><button class="modal-buy" id="modalBuyBtn"><i class="fas fa-bolt"></i> Buy Now</button><button class="modal-cart" id="modalCartBtn"><i class="fas fa-shopping-cart"></i> Add to Cart</button></div></div></div></div>
     
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     
@@ -322,26 +340,32 @@
         
         function shuffleArray(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
         
-        // LOAD UNIFIED PRODUCTS - Merges main products and vendor products
+        // LOAD UNIFIED PRODUCTS - Merges main products AND vendor_products
         async function loadUnifiedProducts() {
             const cont = document.getElementById('productsGrid');
             if (!cont) return;
             cont.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div>';
             try {
-                // Fetch from both tables: main products AND vendor_products (approved only)
+                console.log('🔍 Fetching products from Supabase...');
+                
+                // Fetch from BOTH tables: products AND vendor_products
                 const [mainRes, vendorRes] = await Promise.all([
                     supabase.from('products').select('*'),
-                    supabase.from('vendor_products').select('*').eq('status', 'approved')
+                    supabase.from('vendor_products').select('*').eq('status', 'approved')  // Only show approved vendor products
                 ]);
                 
                 const mainProducts = mainRes.data || [];
                 const vendorProducts = vendorRes.data || [];
                 
-                console.log(`Loaded ${mainProducts.length} main products and ${vendorProducts.length} vendor products`);
-                console.log('Vendor products:', vendorProducts);
+                console.log(`✅ Loaded: ${mainProducts.length} main products, ${vendorProducts.length} vendor products`);
+                console.log('📦 Vendor products sample:', vendorProducts.slice(0, 3));
+                
+                // Mark source for debugging (optional, not shown to users)
+                const mainMarked = mainProducts.map(p => ({ ...p, source: 'main' }));
+                const vendorMarked = vendorProducts.map(p => ({ ...p, source: 'vendor' }));
                 
                 // Combine both arrays into a single unified collection
-                let combined = [...mainProducts, ...vendorProducts];
+                let combined = [...mainMarked, ...vendorMarked];
                 
                 // Remove duplicates by SKU
                 const uniqueMap = new Map();
@@ -352,7 +376,7 @@
                 }
                 combined = Array.from(uniqueMap.values());
                 
-                // Shuffle for organic mixed display
+                // Shuffle for organic mixed display - main and vendor products appear together naturally
                 const shuffled = shuffleArray([...combined]);
                 allProducts = shuffled;
                 
@@ -360,6 +384,8 @@
                     cont.innerHTML = '<div class="empty-state">✨ Our collection is being curated. Check back soon!</div>'; 
                     return; 
                 }
+                
+                console.log(`🔄 Total unique products after merge: ${allProducts.length}`);
                 
                 // Display products (show up to 12 on homepage)
                 const displayProducts = allProducts.slice(0, 12);
@@ -371,8 +397,12 @@
                     const { total } = calculateGST(p.price, gstPercent);
                     const imgCount = [p.image1_url, p.image2_url, p.image3_url, p.video_url, p.images_url_1, p.images_url_2, p.images_url_3].filter(u => u && u.trim()).length;
                     
+                    // Optional: subtle indicator for vendor products (remove if you don't want any distinction)
+                    const vendorBadge = p.source === 'vendor' ? '<div class="vendor-source-badge"><i class="fas fa-store"></i> Artisan</div>' : '';
+                    
                     html += `<div class="product-card" onclick='openUnifiedProductModal(${JSON.stringify(p)})'>
                         <div class="product-image-container">
+                            ${vendorBadge}
                             <img class="product-image" src="${img}" alt="${escapeHtml(p.product_name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400?text=Style+Of+Life'">
                             ${imgCount > 1 ? `<div class="image-badge"><i class="fas fa-images"></i> ${imgCount}</div>` : ''}
                         </div>
@@ -390,7 +420,7 @@
                 }
                 cont.innerHTML = html;
             } catch(e) { 
-                console.error('Load error:', e);
+                console.error('❌ Load error:', e);
                 cont.innerHTML = '<div class="empty-state">Unable to load collection at this time.</div>'; 
             }
         }
@@ -400,7 +430,10 @@
             const cont = document.getElementById('featuredGrid');
             if (!cont) return;
             try {
-                if (!allProducts.length) await loadUnifiedProducts();
+                // If products not loaded yet, load them first
+                if (!allProducts.length) {
+                    await loadUnifiedProducts();
+                }
                 if (!allProducts.length) { cont.innerHTML = '<div class="empty-state">✨ Coming soon</div>'; return; }
                 const shuffled = shuffleArray([...allProducts]);
                 const picks = shuffled.slice(0, 4);
@@ -411,7 +444,10 @@
                     html += `<div class="featured-card" onclick='openUnifiedProductModal(${JSON.stringify(p)})'><img class="featured-media" src="${img}" alt="${escapeHtml(p.product_name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200?text=Style'"><div class="featured-info"><div class="featured-name">${escapeHtml(p.product_name)}</div><div class="featured-price">₹${total.toLocaleString()}</div></div></div>`;
                 }
                 cont.innerHTML = html;
-            } catch(e) { cont.innerHTML = '<div class="empty-state">Error loading</div>'; }
+            } catch(e) { 
+                console.error('Featured error:', e);
+                cont.innerHTML = '<div class="empty-state">Error loading</div>'; 
+            }
         }
         
         // Stories from unified collection
@@ -419,7 +455,9 @@
             const cont = document.getElementById('storiesContainer');
             if (!cont) return;
             try {
-                if (!allProducts.length) await loadUnifiedProducts();
+                if (!allProducts.length) {
+                    await loadUnifiedProducts();
+                }
                 if (!allProducts.length) { cont.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; return; }
                 const shuffled = shuffleArray([...allProducts]);
                 const stories = shuffled.slice(0, 15);
@@ -435,7 +473,10 @@
                     html += `<div class="story-toggle" onclick='openUnifiedProductModal(${JSON.stringify(p)})'><div class="story-ring">${isVideo ? `<video class="story-thumbnail" src="${thumb}" muted loop playsinline autoplay onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"></video>` : `<img class="story-thumbnail" src="${thumb}" loading="lazy" onerror="this.src='https://via.placeholder.com/70'">`}${badge}</div></div>`;
                 }
                 cont.innerHTML = html;
-            } catch(e) { cont.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; }
+            } catch(e) { 
+                console.error('Stories error:', e);
+                cont.innerHTML = '<div class="loading"><div class="spinner"></div></div>'; 
+            }
         }
         
         // Universal modal for any product (handles both main and vendor product structures)
@@ -505,8 +546,11 @@
             
             const stockStat = (product.stock !== undefined && product.stock <= 0) ? 'Out of Stock' : ((product.stock !== undefined && product.stock < 10) ? `Only ${product.stock} left!` : 'In Stock');
             const stockColor = (product.stock !== undefined && product.stock <= 0) ? '#dc3545' : ((product.stock !== undefined && product.stock < 10) ? '#ff9800' : '#28a745');
-            document.getElementById('modalStock').innerHTML = `<i class="fas ${(product.stock !== undefined && product.stock <= 0) ? 'fa-times-circle' : ((product.stock !== undefined && product.stock < 10) ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> ${stockStat}`;
-            document.getElementById('modalStock').style.color = stockColor;
+            const stockElement = document.getElementById('modalStock');
+            if (stockElement) {
+                stockElement.innerHTML = `<i class="fas ${(product.stock !== undefined && product.stock <= 0) ? 'fa-times-circle' : ((product.stock !== undefined && product.stock < 10) ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> ${stockStat}`;
+                stockElement.style.color = stockColor;
+            }
             
             const imgUrl = getProductImage(product);
             document.getElementById('modalBuyBtn').onclick = () => buyNow(product.id, product.product_name, product.price, product.sku, imgUrl, gstPercent);
