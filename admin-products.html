@@ -44,7 +44,7 @@
         input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; }
         input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
         
-        /* NEW: Image Upload Styles */
+        /* Image Upload Styles */
         .image-upload-area {
             border: 2px dashed var(--gray-300);
             border-radius: 12px;
@@ -265,7 +265,7 @@
             
             <div class="form-group"><label>Description</label><textarea id="description" rows="2" placeholder="Product description..."></textarea></div>
             
-            <!-- NEW: Image Upload Section -->
+            <!-- Image Upload Section -->
             <div class="diamond-section">
                 <div class="diamond-title"><i class="fas fa-image"></i> Upload Product Images (JPEG, PNG, GIF, WebP, SVG)</div>
                 <div class="image-upload-area" id="imageUploadArea">
@@ -281,7 +281,7 @@
                 </p>
             </div>
             
-            <!-- Images Section (URLs as fallback) -->
+            <!-- Images Section (URLs) -->
             <div class="diamond-section" style="margin-top: 15px;">
                 <div class="diamond-title"><i class="fas fa-link"></i> Image URLs (Alternative)</div>
                 <div class="form-group"><label>Images URL 1 (Main Image)</label><input type="url" id="images_url_1" placeholder="https://images.unsplash.com/..."></div>
@@ -519,26 +519,41 @@
             });
         }
         
-        function getImagesArray() {
-            const urls = [...uploadedImageUrls];
+        // Get images array from both uploaded and URL inputs
+        function getImagesData() {
+            // Start with uploaded images
+            let image1 = uploadedImageUrls[0] || null;
+            let image2 = uploadedImageUrls[1] || null;
+            let image3 = uploadedImageUrls[2] || null;
+            
+            // Override with URL inputs if they have values (URL inputs take priority for specific positions)
             const url1 = document.getElementById('images_url_1').value.trim();
             const url2 = document.getElementById('images_url_2').value.trim();
             const url3 = document.getElementById('images_url_3').value.trim();
-            const video = document.getElementById('video_url').value.trim();
-            if (url1 && !urls.includes(url1)) urls.push(url1);
-            if (url2 && !urls.includes(url2)) urls.push(url2);
-            if (url3 && !urls.includes(url3)) urls.push(url3);
-            if (video && !urls.includes(video)) urls.push(video);
-            return urls;
+            
+            if (url1) image1 = url1;
+            if (url2) image2 = url2;
+            if (url3) image3 = url3;
+            
+            return { image1, image2, image3 };
         }
         
         function updateMediaPreview() {
             const container = document.getElementById('mediaPreview');
-            const media = getImagesArray();
+            const { image1, image2, image3 } = getImagesData();
+            const video = document.getElementById('video_url').value.trim();
+            
+            const media = [];
+            if (image1) media.push(image1);
+            if (image2) media.push(image2);
+            if (image3) media.push(image3);
+            if (video) media.push(video);
+            
             if (media.length === 0) {
                 container.innerHTML = '';
                 return;
             }
+            
             let html = '';
             media.forEach((url, index) => {
                 const isVideo = url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com');
@@ -551,16 +566,26 @@
         }
         
         window.removeMedia = function(index) {
-            const allImages = getImagesArray();
-            if (index < uploadedImageUrls.length) {
-                uploadedImageUrls.splice(index, 1);
-                updateImagePreview(uploadedImageUrls);
-            } else {
-                const urlIndex = index - uploadedImageUrls.length;
-                if (urlIndex === 0) document.getElementById('images_url_1').value = '';
-                if (urlIndex === 1) document.getElementById('images_url_2').value = '';
-                if (urlIndex === 2) document.getElementById('images_url_3').value = '';
-                if (urlIndex === 3) document.getElementById('video_url').value = '';
+            const { image1, image2, image3 } = getImagesData();
+            const video = document.getElementById('video_url').value.trim();
+            const mediaList = [];
+            if (image1) mediaList.push({ type: 'image1', val: image1 });
+            if (image2) mediaList.push({ type: 'image2', val: image2 });
+            if (image3) mediaList.push({ type: 'image3', val: image3 });
+            if (video) mediaList.push({ type: 'video', val: video });
+            
+            if (mediaList[index]) {
+                const item = mediaList[index];
+                if (item.type === 'image1') document.getElementById('images_url_1').value = '';
+                if (item.type === 'image2') document.getElementById('images_url_2').value = '';
+                if (item.type === 'image3') document.getElementById('images_url_3').value = '';
+                if (item.type === 'video') document.getElementById('video_url').value = '';
+                
+                // Also check if it was an uploaded image
+                if (index < uploadedImageUrls.length) {
+                    uploadedImageUrls.splice(index, 1);
+                    updateImagePreview(uploadedImageUrls);
+                }
             }
             updateMediaPreview();
         };
@@ -579,7 +604,7 @@
         
         window.saveProduct = async function() {
             const productId = document.getElementById('productId').value;
-            const images = getImagesArray();
+            const { image1, image2, image3 } = getImagesData();
             
             const productData = {
                 sku: document.getElementById('sku').value.trim(),
@@ -595,10 +620,9 @@
                 diamond_cut: document.getElementById('diamond_cut').value || null,
                 diamond_polish: document.getElementById('diamond_polish').value || null,
                 diamond_symmetry: document.getElementById('diamond_symmetry').value || null,
-                images: images,
-                images_url_1: images[0] || null,
-                images_url_2: images[1] || null,
-                images_url_3: images[2] || null,
+                images_url_1: image1,
+                images_url_2: image2,
+                images_url_3: image3,
                 video_url: document.getElementById('video_url').value.trim() || null
             };
             
@@ -695,7 +719,17 @@
                 document.getElementById('images_url_3').value = data.images_url_3 || '';
                 document.getElementById('video_url').value = data.video_url || '';
                 
-                uploadedImageUrls = data.images || [];
+                // Try to extract uploaded images from URLs if they match storage pattern
+                uploadedImageUrls = [];
+                if (data.images_url_1 && data.images_url_1.includes('supabase.co/storage/v1/object/public/product-images/')) {
+                    uploadedImageUrls.push(data.images_url_1);
+                }
+                if (data.images_url_2 && data.images_url_2.includes('supabase.co/storage/v1/object/public/product-images/')) {
+                    uploadedImageUrls.push(data.images_url_2);
+                }
+                if (data.images_url_3 && data.images_url_3.includes('supabase.co/storage/v1/object/public/product-images/')) {
+                    uploadedImageUrls.push(data.images_url_3);
+                }
                 updateImagePreview(uploadedImageUrls);
                 updateMediaPreview();
                 
@@ -722,7 +756,7 @@
                 }
                 let html = '';
                 for (const p of data) {
-                    const firstImage = p.images?.[0] || p.images_url_1 || p.images_url_2 || p.video_url || 'https://via.placeholder.com/300x250?text=No+Image';
+                    const firstImage = p.images_url_1 || p.images_url_2 || p.video_url || 'https://via.placeholder.com/300x250?text=No+Image';
                     const isVideo = firstImage && (firstImage.match(/\.(mp4|webm|mov|avi)$/i) || firstImage.includes('youtube.com') || firstImage.includes('vimeo.com'));
                     const stockClass = p.stock <= 0 ? 'out-of-stock' : (p.stock < 10 ? 'low-stock' : 'in-stock');
                     const stockText = p.stock <= 0 ? 'Out of Stock' : (p.stock < 10 ? `Low Stock (${p.stock})` : `In Stock (${p.stock})`);
