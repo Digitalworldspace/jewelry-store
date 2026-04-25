@@ -335,6 +335,39 @@
             height: 100%;
             object-fit: cover;
         }
+        .gallery-d360 {
+            width: 100%;
+            height: 100%;
+            background: #1a1a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            cursor: pointer;
+            position: relative;
+        }
+        .gallery-d360 .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+        .gallery-d360 .play-overlay i {
+            font-size: 48px;
+            color: var(--gold);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .gallery-d360 iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
         .gallery-dots {
             position: absolute;
             bottom: 12px;
@@ -587,24 +620,48 @@
         
         window.buyNow = async (id, name, price, sku, img, gst) => { await addToCart(id, name, price, sku, img, gst); setTimeout(() => navigateTo('checkout'), 600); };
         
-        // ========== VIDEO AUTO-PLAY ON SCROLL FUNCTION ==========
-        function checkAndPlayVideo(galleryId) {
+        // ========== VIDEO/D360 AUTO-PLAY ON SCROLL FUNCTION ==========
+        function checkAndPlayMedia(galleryId) {
             const gallery = document.getElementById(galleryId);
             if (!gallery) return;
             
             const scrollPos = gallery.scrollLeft;
             const itemWidth = gallery.clientWidth;
             const activeIndex = Math.round(scrollPos / itemWidth);
+            const items = gallery.querySelectorAll('.gallery-item');
             const videos = gallery.querySelectorAll('video');
+            const d360Divs = gallery.querySelectorAll('.gallery-d360');
             
+            // Handle regular videos
             videos.forEach((video, idx) => {
-                // Pause all videos first
                 video.pause();
-                // If this is the active slide and video exists, play it
-                if (idx === activeIndex && video.src) {
-                    video.play().catch(e => console.log('Autoplay prevented:', e));
-                }
             });
+            
+            // Check if active slide has video or D360
+            const activeItem = items[activeIndex];
+            if (activeItem) {
+                const video = activeItem.querySelector('video');
+                const d360Div = activeItem.querySelector('.gallery-d360');
+                
+                if (video && video.src) {
+                    video.play().catch(e => console.log('Autoplay prevented:', e));
+                } else if (d360Div && !d360Div.querySelector('iframe')) {
+                    // Auto-load D360 iframe when visible
+                    const d360Url = d360Div.getAttribute('data-d360-url');
+                    if (d360Url && !d360Div.querySelector('iframe')) {
+                        const iframe = document.createElement('iframe');
+                        iframe.src = d360Url;
+                        iframe.style.width = '100%';
+                        iframe.style.height = '100%';
+                        iframe.style.border = 'none';
+                        iframe.allow = 'autoplay; fullscreen';
+                        // Remove play overlay if exists
+                        const overlay = d360Div.querySelector('.play-overlay');
+                        if (overlay) overlay.remove();
+                        d360Div.appendChild(iframe);
+                    }
+                }
+            }
         }
         
         // ========== SWIPE CART FUNCTIONALITY ==========
@@ -678,7 +735,6 @@
             if (progress) progress.style.width = '0%';
         }
         
-        // Setup swipe down to close
         function setupSwipeDownToClose() {
             const overlay = document.getElementById('swipeCartOverlay');
             const handle = document.getElementById('swipeHandle');
@@ -747,7 +803,7 @@
             return media;
         }
         
-        // Create gallery HTML for a product with video
+        // Create gallery HTML for a product with video and D360 support
         function createGalleryHTML(product, media, uniqueId) {
             if (!media.length) {
                 const defaultImg = product.image1_url || product.image2_url || product.image3_url || product.images_url_1 || 'https://via.placeholder.com/400';
@@ -763,10 +819,17 @@
                 const m = media[i];
                 if (m.type === 'video') {
                     galleryItems += `<div class="gallery-item">
-                                        <video id="video-${uniqueId}-${i}" class="gallery-video" src="${m.url}" poster="${media[0]?.url || ''}" preload="metadata" muted playsinline loop webkit-playsinline playsinline></video>
+                                        <video id="video-${uniqueId}-${i}" class="gallery-video" src="${m.url}" poster="${media[0]?.url || ''}" preload="metadata" muted playsinline loop webkit-playsinline></video>
                                     </div>`;
                 } else if (m.type === 'd360') {
-                    galleryItems += `<div class="gallery-item"><div class="gallery-360" onclick="event.stopPropagation(); openD360Viewer('${m.url}')"><i class="fas fa-cube" style="font-size: 40px;"></i><p style="margin-top: 10px;">360° View</p></div></div>`;
+                    galleryItems += `<div class="gallery-item">
+                                        <div class="gallery-d360" data-d360-url="${m.url}" id="d360-${uniqueId}-${i}">
+                                            <div class="play-overlay">
+                                                <i class="fas fa-cube"></i>
+                                                <span style="margin-left:10px;">360° View</span>
+                                            </div>
+                                        </div>
+                                    </div>`;
                 } else {
                     galleryItems += `<div class="gallery-item"><img class="gallery-image" src="${m.url}" alt="${escapeHtml(product.product_name)}" loading="lazy" onclick="event.stopPropagation(); openImageModal('${m.url}')" onerror="this.src='https://via.placeholder.com/400'"></div>`;
                 }
@@ -794,9 +857,8 @@
             if (gallery) {
                 const scrollAmount = gallery.clientWidth;
                 gallery.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
-                // Check and play video after scrolling
                 setTimeout(() => {
-                    checkAndPlayVideo(galleryId);
+                    checkAndPlayMedia(galleryId);
                 }, 100);
             }
         };
@@ -815,8 +877,7 @@
                     dots.forEach((dot, idx) => {
                         dot.classList.toggle('active', idx === activeIndex);
                     });
-                    // Auto-play video when scrolling
-                    checkAndPlayVideo(galleryId);
+                    checkAndPlayMedia(galleryId);
                 });
                 
                 dots.forEach((dot, idx) => {
@@ -824,14 +885,13 @@
                         e.stopPropagation();
                         gallery.scrollTo({ left: idx * gallery.clientWidth, behavior: 'smooth' });
                         setTimeout(() => {
-                            checkAndPlayVideo(galleryId);
+                            checkAndPlayMedia(galleryId);
                         }, 100);
                     });
                 });
                 
-                // Initial video check for first slide
                 setTimeout(() => {
-                    checkAndPlayVideo(galleryId);
+                    checkAndPlayMedia(galleryId);
                 }, 500);
             }, 50);
         }
@@ -852,7 +912,7 @@
             const modalHtml = `
                 <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:3000;display:flex;justify-content:center;align-items:center;" onclick="this.remove()">
                     <div style="background:white;border-radius:20px;width:90%;height:80%;padding:20px;" onclick="event.stopPropagation()">
-                        <iframe src="${url}" style="width:100%;height:100%;border:none;border-radius:12px;" allowfullscreen></iframe>
+                        <iframe src="${url}" style="width:100%;height:100%;border:none;border-radius:12px;" allow="autoplay; fullscreen" allowfullscreen></iframe>
                         <button style="position:absolute;top:30px;right:30px;background:black;color:white;border:none;width:40px;height:40px;border-radius:50%;cursor:pointer;" onclick="this.closest('div').remove()">×</button>
                     </div>
                 </div>
@@ -1035,7 +1095,7 @@
                 for (let idx = 0; idx < displayProducts.length; idx++) {
                     const p = displayProducts[idx];
                     const media = getProductMedia(p);
-                    if (media.some(m => m.type === 'video') || media.length > 1) {
+                    if (media.some(m => m.type === 'video' || m.type === 'd360') || media.length > 1) {
                         setupGalleryListeners(`product-gallery-${p.id}-${idx}`, media.length);
                     }
                 }
@@ -1052,19 +1112,24 @@
                 galleryHtml = `<div style="position:relative; width:100%; overflow-x:auto; display:flex; scroll-snap-type:x mandatory; border-radius:16px; margin-bottom:15px; background:#f5f5f5;" id="modalGallery">
                                 ${media.map((m, idx) => {
                                     if (m.type === 'video') {
-                                        const videoId = `modal-video-${Date.now()}-${idx}`;
                                         return `<div style="min-width:100%; scroll-snap-align:start; position:relative;">
-                                                    <video id="${videoId}" src="${m.url}" style="width:100%; border-radius:16px; max-height:300px;" poster="${media[0]?.url || ''}" preload="metadata" muted playsinline loop webkit-playsinline playsinline></video>
+                                                    <video src="${m.url}" style="width:100%; border-radius:16px; max-height:300px;" poster="${media[0]?.url || ''}" preload="metadata" muted playsinline loop webkit-playsinline></video>
                                                 </div>`;
                                     }
-                                    if (m.type === 'd360') return `<div style="min-width:100%; scroll-snap-align:start;"><div style="background:#1a1a2a; height:300px; display:flex; align-items:center; justify-content:center; border-radius:16px; cursor:pointer;" onclick="openD360Viewer('${m.url}')"><i class="fas fa-cube" style="font-size:48px; color:var(--gold);"></i><p style="margin-left:10px;">360° Interactive View</p></div></div>`;
+                                    if (m.type === 'd360') {
+                                        return `<div style="min-width:100%; scroll-snap-align:start;">
+                                                    <div style="background:#1a1a2a; height:300px; display:flex; align-items:center; justify-content:center; border-radius:16px; cursor:pointer; flex-direction:column;" onclick="openD360Viewer('${m.url}')">
+                                                        <i class="fas fa-cube" style="font-size:48px; color:var(--gold);"></i>
+                                                        <p style="margin-top:10px; color:white;">Click for 360° View</p>
+                                                    </div>
+                                                </div>`;
+                                    }
                                     return `<div style="min-width:100%; scroll-snap-align:start;"><img src="${m.url}" style="width:100%; border-radius:16px; cursor:pointer;" onclick="openImageModal('${m.url}')"></div>`;
                                 }).join('')}
                             </div>`;
                 if (media.length > 1) {
                     galleryHtml += `<div style="text-align:center; margin-top:8px;"><span style="font-size:12px; color:var(--gray);"><i class="fas fa-arrow-left"></i> Swipe to see more <i class="fas fa-arrow-right"></i></span></div>`;
                 }
-                // Add modal video autoplay on scroll
                 galleryHtml += `<script>
                     setTimeout(() => {
                         const modalGallery = document.getElementById('modalGallery');
@@ -1082,7 +1147,6 @@
                                     }
                                 });
                             });
-                            // Play first video if exists
                             const firstVideo = modalGallery.querySelector('video');
                             if (firstVideo) firstVideo.play().catch(e => {});
                         }
