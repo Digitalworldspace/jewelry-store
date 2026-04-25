@@ -701,8 +701,8 @@
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading orders...</p></div>';
             const { data, error } = await supabase.from('vendor_orders').select('*').eq('vendor_id', currentCompanyId).order('created_at', { ascending: false });
             if (error || !data?.length) { container.innerHTML = '<div class="loading">📭 No orders yet for your products</div>'; return; }
-            let html = '<table class="orders-table"><thead><tr><th>Order ID</th><th>Product</th><th>Quantity</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
-            data.forEach(o => { html += `<tr><td><strong>${o.order_id}</strong></td><td>${escapeHtml(o.product_name)}</td><td>${o.quantity}</td><td>₹${o.total_amount.toLocaleString()}</td><td><span style="background:rgba(0,212,255,0.2); padding:2px 8px; border-radius:20px;">${o.order_status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`; });
+            let html = '<table class="orders-table"><thead><tr><th>Order ID</th><th>Product</th><th>Quantity</th><th>Amount</th><th>Status</th><th>Date</th><tr></thead><tbody>';
+            data.forEach(o => { html += `<tr><td><strong>${o.order_id}</strong></td><td>${escapeHtml(o.product_name)}</td</td><td>${o.quantity}</td</td><td>₹${o.total_amount.toLocaleString()}</td<td><span style="background:rgba(0,212,255,0.2); padding:2px 8px; border-radius:20px;">${o.order_status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td</tr>`; });
             html += '</tbody></table>';
             container.innerHTML = html;
         }
@@ -788,13 +788,82 @@
             showToast('Profile updated successfully!');
         };
         
+        // ============================================
+        // UPDATED SAMPLE EXCEL DOWNLOAD - MATCHING DATABASE COLUMNS
+        // ============================================
         window.downloadSampleExcel = function() {
-            const sampleData = [{ 'SKU': 'RING-001', 'Product Name': 'Diamond Solitaire Ring', 'Category': 'Rings', 'Price (₹)': 29999, 'GST (%)': 18, 'Stock': 10, 'Description': 'Beautiful diamond ring', 'Image URL 1': 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400', 'Image URL 2': '', 'Image URL 3': '', 'Video URL': '', 'Carat': 1.00, 'Diamond Color': 'D', 'Diamond Clarity': 'VS1', 'Diamond Cut': 'Excellent', 'Diamond Polish': 'Excellent', 'Diamond Symmetry': 'Excellent' }];
+            const sampleData = [{
+                'SKU': 'RING-001',
+                'Product Name': 'Diamond Solitaire Ring',
+                'Category': 'Rings',
+                'Price (₹)': 29999,
+                'GST (%)': 18,
+                'Stock': 10,
+                'Description': 'Beautiful diamond solitaire ring with platinum setting',
+                'Image URL 1': 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400',
+                'Image URL 2': 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=400',
+                'Image URL 3': '',
+                'Video URL': '',
+                'Carat': 1.00,
+                'Diamond Color': 'D',
+                'Diamond Clarity': 'VS1',
+                'Diamond Cut': 'Excellent',
+                'Diamond Polish': 'Excellent',
+                'Diamond Symmetry': 'Excellent'
+            },
+            {
+                'SKU': 'NECK-001',
+                'Product Name': 'Pearl Gold Necklace',
+                'Category': 'Necklaces',
+                'Price (₹)': 45999,
+                'GST (%)': 18,
+                'Stock': 25,
+                'Description': 'Elegant pearl necklace with 18k gold chain',
+                'Image URL 1': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400',
+                'Image URL 2': '',
+                'Image URL 3': '',
+                'Video URL': '',
+                'Carat': '',
+                'Diamond Color': '',
+                'Diamond Clarity': '',
+                'Diamond Cut': '',
+                'Diamond Polish': '',
+                'Diamond Symmetry': ''
+            },
+            {
+                'SKU': 'EAR-001',
+                'Product Name': 'Diamond Stud Earrings',
+                'Category': 'Earrings',
+                'Price (₹)': 18999,
+                'GST (%)': 18,
+                'Stock': 50,
+                'Description': 'Classic diamond stud earrings',
+                'Image URL 1': 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400',
+                'Image URL 2': '',
+                'Image URL 3': '',
+                'Video URL': '',
+                'Carat': 0.50,
+                'Diamond Color': 'G',
+                'Diamond Clarity': 'SI1',
+                'Diamond Cut': 'Very Good',
+                'Diamond Polish': 'Very Good',
+                'Diamond Symmetry': 'Good'
+            }];
+            
             const ws = XLSX.utils.json_to_sheet(sampleData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Sample Products');
-            XLSX.writeFile(wb, `vendor_sample_products.xlsx`);
-            showToast('Sample Excel downloaded!');
+            
+            // Set column widths for better readability
+            ws['!cols'] = [
+                {wch:12}, {wch:25}, {wch:15}, {wch:12}, {wch:10}, 
+                {wch:8}, {wch:40}, {wch:50}, {wch:50}, {wch:50}, 
+                {wch:50}, {wch:10}, {wch:15}, {wch:15}, {wch:15}, 
+                {wch:15}, {wch:15}
+            ];
+            
+            XLSX.writeFile(wb, `vendor_sample_products_${new Date().toISOString().slice(0,19)}.xlsx`);
+            showToast('✅ Sample Excel downloaded!');
         };
         
         window.logout = function() {
@@ -913,4 +982,4 @@
         loadVendorData();
     </script>
 </body>
-    </html>
+</html>
