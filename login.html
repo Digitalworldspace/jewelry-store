@@ -3,922 +3,835 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Vendor Portal - Style Of Life | Deep Sea Experience</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Login - Style Of Life</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #0a1a2a;
-            color: #ffffff;
-            min-height: 100vh;
-            overflow-x: hidden;
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --primary-light: #f5e6c6;
+            --white: #ffffff;
+            --white-light: #f8f9fa;
+            --gray-100: #f1f3f5;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --dark: #1a1a1a;
+            --darker: #0a0a0a;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --purple: #8b5cf6;
+            --cyan: #06b6d4;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
         }
         
-        /* Real Underwater Video Background */
-        .underwater-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0d0d0d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
             overflow: hidden;
         }
         
-        .bg-video {
+        /* Animated Background Orbs */
+        .orb {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            transform: translate(-50%, -50%);
-            object-fit: cover;
-            filter: brightness(0.5) contrast(1.2);
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s ease-in-out infinite;
         }
         
-        .ocean-overlay {
+        .orb-1 { width: 400px; height: 400px; background: var(--primary); top: -150px; right: -150px; animation-delay: 0s; }
+        .orb-2 { width: 300px; height: 300px; background: var(--purple); bottom: -100px; left: -100px; animation-delay: 5s; }
+        .orb-3 { width: 250px; height: 250px; background: var(--cyan); top: 50%; left: 20%; animation-delay: 10s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        
+        /* Login Container */
+        .login-container {
+            max-width: 480px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Brand Logo */
+        .brand {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .gemini-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .gemini-star {
+            width: 50px;
+            height: 50px;
+            animation: starPulse 2s ease-in-out infinite;
+        }
+        
+        .gemini-star svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 10px rgba(212,175,55,0.5));
+        }
+        
+        @keyframes starPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.9; }
+        }
+        
+        .gemini-text {
+            font-size: 32px;
+            font-weight: 800;
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(135deg, #D4AF37, #F5E6B3, #D4AF37);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        
+        .gemini-sub {
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        
+        /* Login Card */
+        .login-card {
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 32px;
+            padding: 45px 40px;
+            box-shadow: var(--shadow-xl);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(212,175,55,0.2);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        
+        .login-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 8px;
+        }
+        
+        .login-header p {
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 13px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-wrapper i {
             position: absolute;
+            left: 16px;
+            color: var(--gray-500);
+            font-size: 16px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 16px 16px 16px 48px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 20px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: var(--white);
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(212,175,55,0.1);
+        }
+        
+        /* Login Button */
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--darker);
+            border: none;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(212,175,55,0.3);
+        }
+        
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Error Message */
+        .error-message {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.2);
+            color: var(--danger);
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 13px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-message {
+            background: rgba(16,185,129,0.1);
+            border: 1px solid rgba(16,185,129,0.2);
+            color: var(--success);
+        }
+        
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(0,0,0,0.2);
+            border-top-color: var(--darker);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Footer Links */
+        .footer-links {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-dark);
+        }
+        
+        /* Register Modal */
+        .modal {
+            display: none;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(0,40,60,0.7), rgba(0,20,40,0.85));
-            pointer-events: none;
-            z-index: 1;
-        }
-        
-        /* Floating Marine Life Videos */
-        .marine-creature {
-            position: fixed;
-            z-index: 2;
-            pointer-events: none;
-            filter: drop-shadow(0 5px 20px rgba(0,0,0,0.3));
-        }
-        
-        .shark-video { bottom: 10%; right: -300px; width: 350px; animation: swimShark 35s ease-in-out infinite; }
-        .whale-video { top: 20%; left: -400px; width: 450px; animation: swimWhale 45s ease-in-out infinite; }
-        .octopus-video { bottom: 15%; left: 5%; width: 180px; animation: floatOctopus 20s ease-in-out infinite; }
-        .stingray-video { top: 60%; right: 5%; width: 200px; animation: glideStingray 25s ease-in-out infinite; }
-        
-        @keyframes swimShark {
-            0% { transform: translateX(0) translateY(0px); right: -300px; }
-            30% { transform: translateX(0) translateY(-20px); }
-            70% { transform: translateX(0) translateY(15px); }
-            100% { transform: translateX(-1800px) translateY(0px); right: 100%; }
-        }
-        @keyframes swimWhale {
-            0% { transform: translateX(0) translateY(0px); left: -400px; }
-            30% { transform: translateX(0) translateY(-30px); }
-            70% { transform: translateX(0) translateY(20px); }
-            100% { transform: translateX(2000px) translateY(0px); left: 100%; }
-        }
-        @keyframes floatOctopus { 0%,100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-25px) rotate(5deg); } }
-        @keyframes glideStingray { 0%,100% { transform: translateX(0px) translateY(0px); } 50% { transform: translateX(-30px) translateY(-15px); } }
-        
-        /* Bubbles */
-        .bubble {
-            position: fixed;
-            background: radial-gradient(circle, rgba(100,200,255,0.3), rgba(50,150,200,0.1));
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 2;
-            animation: bubbleRise 8s ease-in-out infinite;
-        }
-        @keyframes bubbleRise {
-            0% { transform: translateY(0) scale(1); opacity: 0.6; }
-            100% { transform: translateY(-100vh) scale(1.3); opacity: 0; }
-        }
-        
-        /* Main UI */
-        .vendor-header, .vendor-sidebar, .vendor-main, .stat-card, .chart-card, .form-card, .product-card { position: relative; z-index: 10; }
-        
-        .vendor-header {
-            background: rgba(10, 30, 50, 0.85);
-            backdrop-filter: blur(20px);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 2px solid rgba(0, 200, 255, 0.4);
         }
         
-        .logo {
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #00d4ff, #0099cc, #00d4ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .logo span { background: linear-gradient(135deg, #00d4ff, #0099cc); color: #0a2a3a; padding: 4px 12px; border-radius: 30px; font-size: 12px; margin-left: 8px; }
-        
-        .company-name-display {
-            background: rgba(0, 212, 255, 0.2);
-            padding: 8px 20px;
-            border-radius: 40px;
-            font-weight: 600;
-            color: #00d4ff;
-        }
-        .company-name-display i { margin-right: 8px; }
-        
-        .logout-btn {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.5);
-            color: #ff6b6b;
-            padding: 8px 20px;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .vendor-sidebar {
-            width: 280px;
-            background: rgba(10, 30, 50, 0.7);
-            backdrop-filter: blur(15px);
-            border-right: 1px solid rgba(0, 212, 255, 0.2);
-            padding: 30px 20px;
-            height: calc(100vh - 70px);
-            position: sticky;
-            top: 70px;
+        .modal-content {
+            background: white;
+            border-radius: 32px;
+            max-width: 500px;
+            width: 90%;
+            padding: 35px;
+            max-height: 85vh;
             overflow-y: auto;
         }
         
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 18px;
-            color: rgba(255, 255, 255, 0.8);
-            border-radius: 12px;
-            margin-bottom: 8px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .nav-item:hover, .nav-item.active {
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.05));
-            color: #00f5ff;
-            transform: translateX(5px);
-            border-left: 3px solid #00d4ff;
-        }
-        .nav-item i { width: 24px; }
-        .nav-badge { margin-left: auto; background: linear-gradient(135deg, #00d4ff, #0099cc); color: #0a2a3a; padding: 2px 10px; border-radius: 30px; font-size: 11px; font-weight: 700; }
-        
-        .vendor-layout { display: flex; min-height: calc(100vh - 70px); }
-        .vendor-main { flex: 1; padding: 30px; overflow-x: auto; }
-        
-        .page-title {
-            font-size: 32px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #00d4ff, #7fffd4);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 8px;
-        }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 22px;
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            transition: all 0.3s;
-        }
-        .stat-card:hover { transform: translateY(-5px); border-color: #00d4ff; box-shadow: 0 8px 20px rgba(0,212,255,0.15); }
-        .stat-icon { font-size: 36px; color: #00d4ff; margin-bottom: 12px; }
-        .stat-value { font-size: 36px; font-weight: 800; color: #00d4ff; }
-        .stat-label { font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-top: 5px; }
-        
-        .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px; }
-        .chart-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid rgba(0, 212, 255, 0.2);
-        }
-        .chart-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; color: #00d4ff; }
-        canvas { max-height: 250px; }
-        
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
-        .product-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            transition: all 0.3s;
-        }
-        .product-card:hover { transform: translateY(-5px); border-color: #00d4ff; }
-        .product-image { width: 100%; height: 180px; object-fit: cover; background: rgba(0,0,0,0.3); }
-        .product-info { padding: 15px; }
-        .product-name { font-size: 16px; font-weight: 600; }
-        .product-price { font-size: 18px; font-weight: 700; color: #00d4ff; }
-        .product-status { display: inline-block; padding: 2px 12px; border-radius: 30px; font-size: 10px; margin-top: 8px; }
-        .status-pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
-        .status-approved { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-        .card-actions { display: flex; gap: 10px; margin-top: 12px; }
-        .card-actions button { flex: 1; padding: 8px; border: none; border-radius: 30px; cursor: pointer; font-size: 12px; transition: all 0.3s; }
-        .btn-edit { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-        .btn-delete { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-        
-        .form-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 25px;
-            border: 1px solid rgba(0, 212, 255, 0.2);
-        }
-        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 13px; color: rgba(255, 255, 255, 0.7); }
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 12px;
-            font-size: 14px;
-            color: white;
-        }
-        .form-group input:focus { border-color: #00d4ff; outline: none; }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #00d4ff, #0099cc);
-            color: #0a2a3a;
-            padding: 12px 28px;
-            border: none;
-            border-radius: 40px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: all 0.3s;
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3); }
-        
-        .orders-table { width: 100%; border-collapse: collapse; background: rgba(255, 255, 255, 0.05); border-radius: 16px; overflow: hidden; }
-        .orders-table th, .orders-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-        .orders-table th { background: rgba(0, 0, 0, 0.3); color: #00d4ff; }
-        
-        .company-stats {
-            background: rgba(0, 212, 255, 0.1);
-            border-radius: 16px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
+        .modal-header {
             display: flex;
             justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 15px;
-            border: 1px solid rgba(0, 212, 255, 0.3);
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-200);
         }
-        .company-stat-item { text-align: center; }
-        .company-stat-label { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; }
-        .company-stat-value { font-size: 20px; font-weight: 700; color: #00d4ff; }
         
-        /* Bulk Upload Styles */
-        .bulk-area {
-            text-align: center;
-            padding: 50px;
-            border: 2px dashed rgba(0, 212, 255, 0.4);
-            border-radius: 20px;
+        .modal-header h2 {
+            font-size: 24px;
+            color: var(--primary);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
             cursor: pointer;
-            transition: all 0.3s;
+            color: var(--gray-500);
+            transition: color 0.3s;
         }
-        .bulk-area:hover { border-color: #00d4ff; background: rgba(0,212,255,0.05); }
-        .progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 20px; display: none; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #00d4ff, #7fffd4); width: 0%; transition: width 0.3s; }
-        .batch-status { font-size: 12px; margin-top: 10px; text-align: center; color: rgba(255,255,255,0.6); }
-        .format-hint {
-            background: rgba(0,0,0,0.3);
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 20px;
-            font-size: 12px;
-            border-left: 3px solid #00d4ff;
+        
+        .close-modal:hover {
+            color: var(--danger);
         }
-        .format-hint code { background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px; font-family: monospace; }
         
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: linear-gradient(135deg, #00d4ff, #0099cc);
-            color: #0a2a3a;
-            padding: 12px 24px;
-            border-radius: 40px;
-            z-index: 1000;
-            font-weight: 700;
-            animation: slideIn 0.3s;
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
-        .toast-error { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
-        .loading { text-align: center; padding: 60px; color: rgba(255,255,255,0.6); }
-        .spinner { width: 40px; height: 40px; border: 3px solid rgba(0,212,255,0.2); border-top-color: #00d4ff; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 16px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            resize: vertical;
+        }
         
-        @media (max-width: 768px) {
-            .vendor-layout { flex-direction: column; }
-            .vendor-sidebar { width: 100%; padding: 15px; overflow-x: auto; display: flex; gap: 10px; height: auto; }
-            .nav-item { white-space: nowrap; }
-            .form-grid { grid-template-columns: 1fr; }
-            .charts-grid { grid-template-columns: 1fr; }
-            .marine-creature { transform: scale(0.5); }
-            .company-name-display { font-size: 12px; padding: 5px 12px; }
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-card { padding: 30px 25px; }
+            .gemini-text { font-size: 24px; }
+            .gemini-star { width: 40px; height: 40px; }
+            .form-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <!-- ========================================== -->
-    <!-- VENDOR AUTHENTICATION CHECK - MUST BE FIRST -->
-    <!-- ========================================== -->
-    <script>
-        (function checkVendorAuth() {
-            try {
-                const isVendorLoggedIn = sessionStorage.getItem('vendorLoggedIn') === 'true';
-                const userRole = sessionStorage.getItem('userRole');
-                const userEmail = sessionStorage.getItem('userEmail');
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    
+    <div class="login-container">
+        <!-- Brand Logo -->
+        <div class="brand">
+            <div class="gemini-logo">
+                <div class="gemini-star">
+                    <svg viewBox="0 0 24 24" width="100%" height="100%">
+                        <defs>
+                            <linearGradient id="geminiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4285F4;stop-opacity:1" />
+                                <stop offset="33%" style="stop-color:#EA4335;stop-opacity:1" />
+                                <stop offset="66%" style="stop-color:#FBBC05;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#34A853;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <path class="star-outline" d="M12 2L15 9H22L16 14L19 21L12 16.5L5 21L8 14L2 9H9L12 2Z" fill="white" stroke="url(#geminiGradient)" stroke-width="2" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="gemini-text">STYLE OF LIFE</div>
+                    <div class="gemini-sub">LUXURY JEWELRY</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Login Card -->
+        <div class="login-card">
+            <div class="login-header">
+                <h2>Welcome Back</h2>
+                <p>Login to your account</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" placeholder="Enter your email" autocomplete="email" required>
+                    </div>
+                </div>
                 
-                console.log('🔐 Vendor Auth Check - loggedIn:', isVendorLoggedIn, 'role:', userRole, 'email:', userEmail);
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required>
+                    </div>
+                </div>
                 
-                // If not logged in as vendor, redirect to login page
-                if (!isVendorLoggedIn || userRole !== 'vendor' || !userEmail) {
-                    console.log('❌ Vendor not authenticated, redirecting to login...');
-                    sessionStorage.removeItem('vendorLoggedIn');
-                    sessionStorage.removeItem('adminLoggedIn');
-                    sessionStorage.removeItem('userRole');
-                    sessionStorage.removeItem('userEmail');
-                    sessionStorage.removeItem('userName');
-                    window.location.href = 'login.html';
-                    return;
-                }
-                
-                console.log('✅ Vendor authenticated successfully');
-            } catch (error) {
-                console.error('Auth check error:', error);
-                window.location.href = 'login.html';
-            }
-        })();
-    </script>
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <i class="fas fa-arrow-right"></i> Sign In
+                </button>
+            </form>
+            
+            <div id="errorMessage" class="error-message"></div>
+            
+            <div class="footer-links">
+                <a id="showRegisterBtn">Create an account</a>
+                <span class="divider" style="margin: 0 10px; color: var(--gray-300);">|</span>
+                <a href="#" onclick="forgotPassword()">Forgot password?</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Registration Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-store"></i> Vendor Registration</h2>
+                <button class="close-modal" onclick="closeRegisterModal()">&times;</button>
+            </div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Business Name *</label>
+                    <input type="text" id="regBusinessName" required placeholder="Your business/company name">
+                </div>
+                <div class="form-group">
+                    <label>Owner Name *</label>
+                    <input type="text" id="regOwnerName" required placeholder="Full name">
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="regEmail" required placeholder="your@email.com">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input type="password" id="regPassword" required placeholder="Min 6 characters">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password *</label>
+                        <input type="password" id="regConfirmPassword" required placeholder="Confirm password">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="regPhone" maxlength="10" placeholder="10-digit mobile">
+                    </div>
+                    <div class="form-group">
+                        <label>GST Number</label>
+                        <input type="text" id="regGst" placeholder="GSTIN (optional)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea id="regAddress" rows="2" placeholder="Business address (optional)"></textarea>
+                </div>
+                <button type="submit" class="login-btn" style="width:100%; margin-top:10px;">
+                    <i class="fas fa-user-plus"></i> Register as Vendor
+                </button>
+                <div id="registerError" class="error-message" style="margin-top: 15px;"></div>
+            </form>
+        </div>
+    </div>
 
-    <!-- Real Underwater Video Background -->
-    <div class="underwater-bg">
-        <video class="bg-video" autoplay muted loop playsinline>
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-underwater-ocean-scene-with-seaweed-and-fish-4080-large.mp4" type="video/mp4">
-        </video>
-        <div class="ocean-overlay"></div>
-    </div>
-    
-    <!-- Real Marine Life Videos -->
-    <video class="marine-creature shark-video" autoplay muted loop playsinline>
-        <source src="https://cdn.pixabay.com/video/2022/03/29/113795-693997588_large.mp4" type="video/mp4">
-    </video>
-    <video class="marine-creature whale-video" autoplay muted loop playsinline>
-        <source src="https://cdn.pixabay.com/video/2021/10/13/92812-623435664_large.mp4" type="video/mp4">
-    </video>
-    <video class="marine-creature octopus-video" autoplay muted loop playsinline>
-        <source src="https://cdn.pixabay.com/video/2022/09/01/129852-744537218_large.mp4" type="video/mp4">
-    </video>
-    <video class="marine-creature stingray-video" autoplay muted loop playsinline>
-        <source src="https://cdn.pixabay.com/video/2021/05/02/72371-542160546_large.mp4" type="video/mp4">
-    </video>
-    
-    <!-- Bubbles -->
-    <div class="bubble" style="bottom: 5%; left: 15%; width: 8px; height: 8px; animation-duration: 6s;"></div>
-    <div class="bubble" style="bottom: 10%; left: 35%; width: 12px; height: 12px; animation-duration: 8s;"></div>
-    <div class="bubble" style="bottom: 15%; left: 55%; width: 6px; height: 6px; animation-duration: 5s;"></div>
-    <div class="bubble" style="bottom: 20%; left: 80%; width: 10px; height: 10px; animation-duration: 7s;"></div>
-    <div class="bubble" style="bottom: 30%; left: 25%; width: 14px; height: 14px; animation-duration: 9s;"></div>
-    <div class="bubble" style="bottom: 50%; left: 70%; width: 5px; height: 5px; animation-duration: 4s;"></div>
-    <div class="bubble" style="bottom: 65%; left: 45%; width: 9px; height: 9px; animation-duration: 7.5s;"></div>
-    
-    <div class="vendor-header">
-        <div class="logo">🌊 STYLE OF LIFE <span>DEEP SEA VENDOR</span></div>
-        <div class="company-name-display" id="headerCompanyName">
-            <i class="fas fa-building"></i> <span id="headerCompanyNameText">Loading...</span>
-        </div>
-        <div class="vendor-info">
-            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Surface</button>
-        </div>
-    </div>
-    
-    <div class="vendor-layout">
-        <div class="vendor-sidebar">
-            <div class="nav-item active" data-page="dashboard"><i class="fas fa-chart-line"></i> Dashboard</div>
-            <div class="nav-item" data-page="products"><i class="fas fa-box"></i> My Products <span class="nav-badge" id="productCount">0</span></div>
-            <div class="nav-item" data-page="add-product"><i class="fas fa-plus-circle"></i> Add Product</div>
-            <div class="nav-item" data-page="bulk-upload"><i class="fas fa-file-upload"></i> Bulk Upload</div>
-            <div class="nav-item" data-page="orders"><i class="fas fa-shopping-cart"></i> My Orders <span class="nav-badge" id="orderCount">0</span></div>
-            <div class="nav-item" data-page="profile"><i class="fas fa-user-circle"></i> Profile</div>
-        </div>
-        
-        <div class="vendor-main">
-            <div id="dashboardPage">
-                <div class="page-header">
-                    <div class="page-title">🐙 Company Dashboard</div>
-                    <div style="color: rgba(255,255,255,0.6);" id="currentCompanyName"></div>
-                </div>
-                <div id="companyStatsContainer" class="company-stats"></div>
-                <div class="stats-grid" id="statsGrid"></div>
-                <div class="charts-grid">
-                    <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-line"></i> Diamond Carat Analysis</div><canvas id="caratChart"></canvas></div>
-                    <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-pie"></i> Diamond Color Distribution</div><canvas id="colorChart"></canvas></div>
-                    <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-bar"></i> Diamond Clarity</div><canvas id="clarityChart"></canvas></div>
-                    <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-line"></i> Monthly Sales Trend</div><canvas id="salesChart"></canvas></div>
-                </div>
-            </div>
-            
-            <div id="productsPage" style="display: none;">
-                <div class="page-header">
-                    <div class="page-title">📦 My Ocean Treasures</div>
-                    <div style="color: rgba(255,255,255,0.6);" id="productsCompanyName"></div>
-                </div>
-                <div class="products-grid" id="productsGrid"><div class="loading"><div class="spinner"></div><p>Loading treasures...</p></div></div>
-            </div>
-            
-            <div id="addProductPage" style="display: none;">
-                <div class="page-header">
-                    <div class="page-title">➕ Add New Ocean Treasure</div>
-                    <div style="color: rgba(255,255,255,0.6);" id="addProductCompanyName"></div>
-                </div>
-                <div class="form-card">
-                    <input type="hidden" id="editProductId">
-                    <div class="form-grid">
-                        <div class="form-group"><label>SKU *</label><input type="text" id="sku" placeholder="Unique product code"></div>
-                        <div class="form-group"><label>Product Name *</label><input type="text" id="product_name" placeholder="Product name"></div>
-                        <div class="form-group"><label>Category *</label><input type="text" id="category" placeholder="e.g., Rings, Necklaces, Earrings, Bracelets"></div>
-                        <div class="form-group"><label>Price (₹) *</label><input type="number" id="price" step="0.01"></div>
-                        <div class="form-group"><label>GST (%)</label><input type="number" id="gst" value="18"></div>
-                        <div class="form-group"><label>Stock *</label><input type="number" id="stock"></div>
-                    </div>
-                    <div class="form-group"><label>Description</label><textarea id="description" rows="2" placeholder="Product description..."></textarea></div>
-                    <div class="form-grid">
-                        <div class="form-group"><label>Image URL 1</label><input type="url" id="image1_url" placeholder="https://..."></div>
-                        <div class="form-group"><label>Image URL 2</label><input type="url" id="image2_url" placeholder="https://..."></div>
-                        <div class="form-group"><label>Image URL 3</label><input type="url" id="image3_url" placeholder="https://..."></div>
-                        <div class="form-group"><label>Video URL</label><input type="url" id="video_url" placeholder="https://...mp4 or 360 view link"></div>
-                    </div>
-                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin: 15px 0;">
-                        <h4 style="color: #00d4ff;"><i class="fas fa-gem"></i> Diamond Specifications (Optional - Type any values)</h4>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Carat</label><input type="number" id="carat" step="0.01" placeholder="e.g., 1.00"></div>
-                            <div class="form-group"><label>Diamond Color</label><input type="text" id="diamond_color" placeholder="e.g., D, E, F, G, H, I, J"></div>
-                            <div class="form-group"><label>Diamond Clarity</label><input type="text" id="diamond_clarity" placeholder="e.g., FL, IF, VVS1, VS1, SI1"></div>
-                            <div class="form-group"><label>Diamond Cut</label><input type="text" id="diamond_cut" placeholder="e.g., Excellent, Very Good, Good"></div>
-                            <div class="form-group"><label>Diamond Polish</label><input type="text" id="diamond_polish" placeholder="e.g., Excellent, Very Good"></div>
-                            <div class="form-group"><label>Diamond Symmetry</label><input type="text" id="diamond_symmetry" placeholder="e.g., Excellent, Very Good"></div>
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 15px;">
-                        <button class="btn-primary" onclick="saveProduct()"><i class="fas fa-save"></i> Save Product</button>
-                        <button class="btn-primary" style="background: rgba(255,255,255,0.1);" onclick="cancelProductForm()">Cancel</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="bulkUploadPage" style="display: none;">
-                <div class="page-header">
-                    <div class="page-title">📂 Bulk Upload Products</div>
-                    <div style="color: rgba(255,255,255,0.6);" id="bulkUploadCompanyName"></div>
-                </div>
-                <div class="form-card">
-                    <div class="bulk-area" id="bulkUploadArea">
-                        <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #00d4ff;"></i>
-                        <p style="margin-top: 10px;">Click or drag & drop CSV / Excel file here</p>
-                        <p style="font-size: 12px; color: rgba(255,255,255,0.6);">Supported: .csv, .xlsx, .xls | Handles 1000+ products</p>
-                    </div>
-                    <input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display: none;">
-                    
-                    <div class="progress-bar" id="bulkProgress">
-                        <div class="progress-fill" id="bulkProgressFill"></div>
-                    </div>
-                    <div class="batch-status" id="batchStatus"></div>
-                    <div id="bulkResult"></div>
-                    
-                    <div class="format-hint">
-                        <strong>📋 Excel Format Required - Download Sample Below:</strong><br>
-                        <code>SKU | Product Name | Category | Price (₹) | GST (%) | Stock | Description | Image URL 1 | Image URL 2 | Image URL 3 | Video URL | Carat | Diamond Color | Diamond Clarity | Diamond Cut | Diamond Polish | Diamond Symmetry</code>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: center; margin-top: 20px;">
-                        <button class="btn-primary" onclick="downloadSampleExcel()"><i class="fas fa-download"></i> Download Sample Excel File</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="ordersPage" style="display: none;">
-                <div class="page-header">
-                    <div class="page-title">📦 My Orders</div>
-                    <div style="color: rgba(255,255,255,0.6);" id="ordersCompanyName"></div>
-                </div>
-                <div id="ordersList"><div class="loading"><div class="spinner"></div><p>Loading orders...</p></div></div>
-            </div>
-            
-            <div id="profilePage" style="display: none;">
-                <div class="page-header">
-                    <div class="page-title">👤 My Profile</div>
-                    <div style="color: rgba(255,255,255,0.6);" id="profileCompanyName"></div>
-                </div>
-                <div class="form-card">
-                    <div class="form-grid">
-                        <div class="form-group"><label>Business Name *</label><input type="text" id="business_name" placeholder="Your business/company name"></div>
-                        <div class="form-group"><label>Owner Name</label><input type="text" id="owner_name"></div>
-                        <div class="form-group"><label>Email</label><input type="email" id="vendor_email" readonly style="background: rgba(0,0,0,0.5);"></div>
-                        <div class="form-group"><label>Phone</label><input type="tel" id="phone"></div>
-                        <div class="form-group"><label>GST Number</label><input type="text" id="gst_number"></div>
-                        <div class="form-group"><label>Address</label><textarea id="address" rows="2"></textarea></div>
-                    </div>
-                    <button class="btn-primary" onclick="updateProfile()"><i class="fas fa-save"></i> Update Profile</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
+    <script type="importmap">
+        { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
+    </script>
     
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
-        const SUPABASE_URL = "https://kkvgdagjboxhtuyqlomq.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrdmdkYWdqYm94aHR1eXFsb21xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzgyMTksImV4cCI6MjA5MDA1NDIxOX0.5A4UUcvwAi5UM8K81mmrN3lOTmzUYq70qRouaVqpwDA";
+        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        let currentUser = null;
-        let vendorData = null;
-        let currentCompanyId = null;
-        let caratChart, colorChart, clarityChart, salesChart;
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorDiv = document.getElementById('errorMessage');
         
-        const vendorEmail = sessionStorage.getItem('userEmail');
-        
-        function showToast(msg, isErr = false) {
-            const t = document.createElement('div');
-            t.className = 'toast' + (isErr ? ' toast-error' : '');
-            t.innerHTML = msg;
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 3000);
-        }
-        
-        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
-        
-        function updateAllCompanyNameDisplays() {
-            const companyName = vendorData?.business_name || 'My Company';
-            document.getElementById('headerCompanyNameText').innerText = companyName;
-            document.getElementById('currentCompanyName').innerHTML = `<i class="fas fa-building"></i> Currently viewing: <strong>${companyName}</strong>`;
-            document.getElementById('productsCompanyName').innerHTML = `<i class="fas fa-building"></i> Showing products for: <strong>${companyName}</strong>`;
-            document.getElementById('addProductCompanyName').innerHTML = `<i class="fas fa-building"></i> Adding product for: <strong>${companyName}</strong>`;
-            document.getElementById('bulkUploadCompanyName').innerHTML = `<i class="fas fa-building"></i> Uploading products for: <strong>${companyName}</strong>`;
-            document.getElementById('ordersCompanyName').innerHTML = `<i class="fas fa-building"></i> Showing orders for: <strong>${companyName}</strong>`;
-            document.getElementById('profileCompanyName').innerHTML = `<i class="fas fa-building"></i> Managing profile for: <strong>${companyName}</strong>`;
-        }
-        
-        async function loadVendorData() {
-            if (!vendorEmail) {
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            try {
-                const { data, error } = await supabase
-                    .from('vendors')
-                    .select('*')
-                    .eq('email', vendorEmail)
-                    .maybeSingle();
-                
-                if (error || !data) {
-                    console.error('Vendor not found:', error);
-                    window.location.href = 'login.html';
-                    return;
-                }
-                
-                if (data.status !== 'approved') {
-                    alert('Your account is pending approval. Please wait for admin approval.');
-                    sessionStorage.removeItem('vendorLoggedIn');
-                    sessionStorage.removeItem('userRole');
-                    sessionStorage.removeItem('userEmail');
-                    window.location.href = 'login.html';
-                    return;
-                }
-                
-                vendorData = data;
-                currentCompanyId = data.id;
-                
-                updateAllCompanyNameDisplays();
-                
-                document.getElementById('business_name').value = vendorData?.business_name || '';
-                document.getElementById('owner_name').value = vendorData?.owner_name || '';
-                document.getElementById('vendor_email').value = vendorData?.email || vendorEmail;
-                document.getElementById('phone').value = vendorData?.phone || '';
-                document.getElementById('gst_number').value = vendorData?.gst_number || '';
-                document.getElementById('address').value = vendorData?.address || '';
-                
-                await loadDashboard();
-                await loadProducts();
-                await loadOrders();
-                
-            } catch (err) {
-                console.error('Error loading vendor data:', err);
-                window.location.href = 'login.html';
-            }
-        }
-        
-        async function loadDashboard() {
-            const { data: products } = await supabase.from('vendor_products').select('*').eq('vendor_id', currentCompanyId);
-            const productCount = products?.length || 0;
-            const totalRevenue = products?.reduce((sum, p) => sum + ((p.price || 0) * (p.orders_count || 0)), 0) || 0;
-            const { data: orders } = await supabase.from('vendor_orders').select('*').eq('vendor_id', currentCompanyId);
-            const orderCount = orders?.length || 0;
-            const approvedCount = products?.filter(p => p.status === 'approved').length || 0;
-            const pendingCount = products?.filter(p => p.status === 'pending').length || 0;
-            
-            document.getElementById('companyStatsContainer').innerHTML = `
-                <div class="company-stat-item"><div class="company-stat-label">Company</div><div class="company-stat-value">${vendorData?.business_name || 'N/A'}</div></div>
-                <div class="company-stat-item"><div class="company-stat-label">Owner</div><div class="company-stat-value">${vendorData?.owner_name || 'N/A'}</div></div>
-                <div class="company-stat-item"><div class="company-stat-label">GST</div><div class="company-stat-value">${vendorData?.gst_number || 'N/A'}</div></div>
-                <div class="company-stat-item"><div class="company-stat-label">Approved</div><div class="company-stat-value">${approvedCount}</div></div>
-                <div class="company-stat-item"><div class="company-stat-label">Pending</div><div class="company-stat-value">${pendingCount}</div></div>
-            `;
-            
-            document.getElementById('statsGrid').innerHTML = `
-                <div class="stat-card"><div class="stat-icon"><i class="fas fa-box"></i></div><div class="stat-value">${productCount}</div><div class="stat-label">Total Products</div></div>
-                <div class="stat-card"><div class="stat-icon"><i class="fas fa-shopping-cart"></i></div><div class="stat-value">${orderCount}</div><div class="stat-label">Orders Received</div></div>
-                <div class="stat-card"><div class="stat-icon"><i class="fas fa-rupee-sign"></i></div><div class="stat-value">₹${totalRevenue.toLocaleString()}</div><div class="stat-label">Total Revenue</div></div>
-                <div class="stat-card"><div class="stat-icon"><i class="fas fa-gem"></i></div><div class="stat-value">${products?.filter(p => p.carat).length || 0}</div><div class="stat-label">Diamond Products</div></div>
-            `;
-            document.getElementById('productCount').innerText = productCount;
-            document.getElementById('orderCount').innerText = orderCount;
-            
-            const diamondProducts = products?.filter(p => p.carat) || [];
-            const caratData = diamondProducts.map(p => p.carat).sort((a,b) => a-b);
-            const colorData = {};
-            const clarityData = {};
-            diamondProducts.forEach(p => { if(p.diamond_color) colorData[p.diamond_color] = (colorData[p.diamond_color] || 0) + 1; if(p.diamond_clarity) clarityData[p.diamond_clarity] = (clarityData[p.diamond_clarity] || 0) + 1; });
-            
-            if (caratChart) caratChart.destroy();
-            const caratCtx = document.getElementById('caratChart')?.getContext('2d');
-            if (caratCtx) {
-                caratChart = new Chart(caratCtx, { type: 'bar', data: { labels: diamondProducts.map(p => p.product_name?.slice(0,10)), datasets: [{ label: 'Carat', data: caratData, backgroundColor: '#00d4ff' }] }, options: { responsive: true, plugins: { legend: { labels: { color: '#fff' } } } } });
-            }
-            
-            if (colorChart) colorChart.destroy();
-            const colorCtx = document.getElementById('colorChart')?.getContext('2d');
-            if (colorCtx && Object.keys(colorData).length) {
-                colorChart = new Chart(colorCtx, { type: 'pie', data: { labels: Object.keys(colorData), datasets: [{ data: Object.values(colorData), backgroundColor: ['#00d4ff', '#0099cc', '#7fffd4', '#60a5fa', '#f87171', '#f59e0b', '#10b981'] }] }, options: { plugins: { legend: { labels: { color: '#fff' } } } } });
-            }
-            
-            if (clarityChart) clarityChart.destroy();
-            const clarityCtx = document.getElementById('clarityChart')?.getContext('2d');
-            if (clarityCtx && Object.keys(clarityData).length) {
-                clarityChart = new Chart(clarityCtx, { type: 'bar', data: { labels: Object.keys(clarityData), datasets: [{ label: 'Count', data: Object.values(clarityData), backgroundColor: '#00d4ff' }] }, options: { plugins: { legend: { labels: { color: '#fff' } } } } });
-            }
-            
-            if (salesChart) salesChart.destroy();
-            const salesCtx = document.getElementById('salesChart')?.getContext('2d');
-            if (salesCtx) {
-                salesChart = new Chart(salesCtx, { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Sales (₹)', data: [0,0,0,0,0,0], borderColor: '#00d4ff', backgroundColor: 'rgba(0,212,255,0.1)', fill: true, tension: 0.4 }] }, options: { plugins: { legend: { labels: { color: '#fff' } } } } });
-            }
-        }
-        
-        async function loadProducts() {
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading products...</p></div>';
-            const { data, error } = await supabase.from('vendor_products').select('*').eq('vendor_id', currentCompanyId).order('id', { ascending: false });
-            if (error || !data?.length) { grid.innerHTML = '<div class="loading">✨ No products yet. Add your first product!</div>'; return; }
-            let html = '';
-            for (const p of data) {
-                const img = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/300x180';
-                html += `<div class="product-card"><img class="product-image" src="${img}"><div class="product-info"><div class="product-name">${escapeHtml(p.product_name)}</div><div class="product-price">₹${p.price.toLocaleString()}</div><div class="product-status status-${p.status}">${p.status || 'pending'}</div><div class="card-actions"><button class="btn-edit" onclick="editProduct(${p.id})"><i class="fas fa-edit"></i> Edit</button><button class="btn-delete" onclick="deleteProduct(${p.id})"><i class="fas fa-trash-alt"></i> Delete</button></div></div></div>`;
-            }
-            grid.innerHTML = html;
-        }
-        
-        async function loadOrders() {
-            const container = document.getElementById('ordersList');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading orders...</p></div>';
-            const { data, error } = await supabase.from('vendor_orders').select('*').eq('vendor_id', currentCompanyId).order('created_at', { ascending: false });
-            if (error || !data?.length) { container.innerHTML = '<div class="loading">📭 No orders yet for your products</div>'; return; }
-            let html = '<table class="orders-table"><thead><tr><th>Order ID</th><th>Product</th><th>Quantity</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
-            data.forEach(o => { html += `<tr><td><strong>${o.order_id}</strong></td><td>${escapeHtml(o.product_name)}</td><td>${o.quantity}</td><td>₹${o.total_amount.toLocaleString()}</td><td><span style="background:rgba(0,212,255,0.2); padding:2px 8px; border-radius:20px;">${o.order_status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`; });
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
-        
-        window.saveProduct = async function() {
-            const id = document.getElementById('editProductId').value;
-            const productData = {
-                vendor_id: currentCompanyId,
-                sku: document.getElementById('sku').value.trim(),
-                product_name: document.getElementById('product_name').value.trim(),
-                category: document.getElementById('category').value.trim(),
-                price: parseFloat(document.getElementById('price').value),
-                gst: parseFloat(document.getElementById('gst').value) || 18,
-                stock: parseInt(document.getElementById('stock').value) || 0,
-                description: document.getElementById('description').value,
-                image1_url: document.getElementById('image1_url').value,
-                image2_url: document.getElementById('image2_url').value,
-                image3_url: document.getElementById('image3_url').value,
-                video_url: document.getElementById('video_url').value,
-                carat: document.getElementById('carat').value ? parseFloat(document.getElementById('carat').value) : null,
-                diamond_color: document.getElementById('diamond_color').value || null,
-                diamond_clarity: document.getElementById('diamond_clarity').value || null,
-                diamond_cut: document.getElementById('diamond_cut').value || null,
-                diamond_polish: document.getElementById('diamond_polish').value || null,
-                diamond_symmetry: document.getElementById('diamond_symmetry').value || null,
-                status: 'pending',
-                updated_at: new Date()
-            };
-            if (!productData.sku || !productData.product_name || !productData.category || isNaN(productData.price)) { showToast('Fill required fields', true); return; }
-            if (id) {
-                await supabase.from('vendor_products').update(productData).eq('id', id);
-                showToast('Product updated!');
-            } else {
-                await supabase.from('vendor_products').insert([productData]);
-                showToast('Product added! Waiting for admin approval.');
-            }
-            cancelProductForm();
-            await loadProducts();
-            await loadDashboard();
-        };
-        
-        window.editProduct = async function(id) {
-            const { data } = await supabase.from('vendor_products').select('*').eq('id', id).single();
-            document.getElementById('editProductId').value = data.id;
-            document.getElementById('sku').value = data.sku;
-            document.getElementById('product_name').value = data.product_name;
-            document.getElementById('category').value = data.category || '';
-            document.getElementById('price').value = data.price;
-            document.getElementById('gst').value = data.gst;
-            document.getElementById('stock').value = data.stock;
-            document.getElementById('description').value = data.description || '';
-            document.getElementById('image1_url').value = data.image1_url || '';
-            document.getElementById('image2_url').value = data.image2_url || '';
-            document.getElementById('image3_url').value = data.image3_url || '';
-            document.getElementById('video_url').value = data.video_url || '';
-            document.getElementById('carat').value = data.carat || '';
-            document.getElementById('diamond_color').value = data.diamond_color || '';
-            document.getElementById('diamond_clarity').value = data.diamond_clarity || '';
-            document.getElementById('diamond_cut').value = data.diamond_cut || '';
-            document.getElementById('diamond_polish').value = data.diamond_polish || '';
-            document.getElementById('diamond_symmetry').value = data.diamond_symmetry || '';
-            document.querySelector('.nav-item[data-page="add-product"]').click();
-        };
-        
-        window.deleteProduct = async function(id) { if (confirm('Delete this product?')) { await supabase.from('vendor_products').delete().eq('id', id); showToast('Product deleted'); await loadProducts(); await loadDashboard(); } };
-        window.cancelProductForm = function() { document.getElementById('editProductId').value = ''; document.querySelector('.nav-item[data-page="products"]').click(); };
-        
-        window.updateProfile = async function() {
-            const businessName = document.getElementById('business_name').value;
-            if (!businessName) { showToast('Business name is required', true); return; }
-            const updates = {
-                business_name: businessName,
-                owner_name: document.getElementById('owner_name').value,
-                phone: document.getElementById('phone').value,
-                gst_number: document.getElementById('gst_number').value,
-                address: document.getElementById('address').value,
-                updated_at: new Date()
-            };
-            await supabase.from('vendors').update(updates).eq('id', currentCompanyId);
-            vendorData = { ...vendorData, ...updates };
-            updateAllCompanyNameDisplays();
-            await loadDashboard();
-            showToast('Profile updated successfully!');
-        };
-        
-        window.downloadSampleExcel = function() {
-            const sampleData = [{ 'SKU': 'RING-001', 'Product Name': 'Diamond Solitaire Ring', 'Category': 'Rings', 'Price (₹)': 29999, 'GST (%)': 18, 'Stock': 10, 'Description': 'Beautiful diamond ring', 'Image URL 1': 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400', 'Image URL 2': '', 'Image URL 3': '', 'Video URL': '', 'Carat': 1.00, 'Diamond Color': 'D', 'Diamond Clarity': 'VS1', 'Diamond Cut': 'Excellent', 'Diamond Polish': 'Excellent', 'Diamond Symmetry': 'Excellent' }];
-            const ws = XLSX.utils.json_to_sheet(sampleData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Sample Products');
-            XLSX.writeFile(wb, `vendor_sample_products.xlsx`);
-            showToast('Sample Excel downloaded!');
-        };
-        
-        window.logout = function() {
+        // Clear all session storage on page load to prevent stuck sessions
+        function clearAllSessions() {
             sessionStorage.removeItem('vendorLoggedIn');
             sessionStorage.removeItem('adminLoggedIn');
             sessionStorage.removeItem('userRole');
             sessionStorage.removeItem('userEmail');
             sessionStorage.removeItem('userName');
-            supabase.auth.signOut();
-            window.location.href = 'login.html';
-        };
+            console.log('Session storage cleared on login page load');
+        }
         
-        // Navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const page = item.getAttribute('data-page');
-                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                item.classList.add('active');
-                document.getElementById('dashboardPage').style.display = page === 'dashboard' ? 'block' : 'none';
-                document.getElementById('productsPage').style.display = page === 'products' ? 'block' : 'none';
-                document.getElementById('addProductPage').style.display = page === 'add-product' ? 'block' : 'none';
-                document.getElementById('bulkUploadPage').style.display = page === 'bulk-upload' ? 'block' : 'none';
-                document.getElementById('ordersPage').style.display = page === 'orders' ? 'block' : 'none';
-                document.getElementById('profilePage').style.display = page === 'profile' ? 'block' : 'none';
-            });
-        });
+        // Clear sessions when login page loads
+        clearAllSessions();
         
-        // Bulk Upload
-        document.getElementById('bulkUploadArea')?.addEventListener('click', () => document.getElementById('bulkFileInput').click());
-        document.getElementById('bulkFileInput')?.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
+        // ========== LOGIN FUNCTION - Auto detects role ==========
+        async function handleLogin(email, password) {
+            errorDiv.style.display = 'none';
+            errorDiv.classList.remove('success-message');
             
-            const progressBar = document.getElementById('bulkProgress');
-            const progressFill = document.getElementById('bulkProgressFill');
-            const batchStatus = document.getElementById('batchStatus');
-            const resultDiv = document.getElementById('bulkResult');
+            if (!email || !password) {
+                showError('Please enter both email and password');
+                return false;
+            }
             
-            progressBar.style.display = 'block';
-            progressFill.style.width = '5%';
-            batchStatus.innerHTML = 'Reading file...';
-            resultDiv.innerHTML = '';
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<div class="loading-spinner"></div> Signing in...';
             
             try {
-                const data = await file.arrayBuffer();
-                const workbook = XLSX.read(data);
-                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                const totalRows = json.length;
+                // STEP 1: Check if user is ADMIN
+                const { data: adminData, error: adminError } = await supabase
+                    .from('admin_users')
+                    .select('email, role')
+                    .eq('email', email)
+                    .maybeSingle();
                 
-                batchStatus.innerHTML = `Found ${totalRows} products. Processing...`;
-                progressFill.style.width = '10%';
-                
-                let success = 0, errors = 0, duplicateSkips = 0;
-                const errorList = [];
-                
-                const { data: existing } = await supabase.from('vendor_products').select('sku').eq('vendor_id', currentCompanyId);
-                const existingSkus = new Set(existing?.map(p => p.sku) || []);
-                
-                const BATCH_SIZE = 100;
-                const totalBatches = Math.ceil(totalRows / BATCH_SIZE);
-                
-                for (let batchNum = 0; batchNum < totalBatches; batchNum++) {
-                    const start = batchNum * BATCH_SIZE;
-                    const end = Math.min(start + BATCH_SIZE, totalRows);
-                    const batch = json.slice(start, end);
-                    const productsToInsert = [];
+                // STEP 2: If admin found, authenticate as admin
+                if (adminData) {
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
                     
-                    for (const row of batch) {
-                        const sku = row.SKU || row.sku || '';
-                        const product_name = row['Product Name'] || row.product_name || '';
-                        const category = row.Category || row.category || '';
-                        const price = parseFloat(row['Price (₹)'] || row.Price || row.price || 0);
-                        const gst = parseFloat(row['GST (%)'] || row.GST || row.gst || 18);
-                        const stock = parseInt(row.Stock || row.stock || 0);
-                        const description = row.Description || row.description || '';
-                        const image1_url = row['Image URL 1'] || row.image1_url || '';
-                        const image2_url = row['Image URL 2'] || row.image2_url || '';
-                        const image3_url = row['Image URL 3'] || row.image3_url || '';
-                        const video_url = row['Video URL'] || row.video_url || '';
-                        const carat = row.Carat || row.carat ? parseFloat(row.Carat || row.carat) : null;
-                        const diamond_color = row['Diamond Color'] || row.diamond_color || null;
-                        const diamond_clarity = row['Diamond Clarity'] || row.diamond_clarity || null;
-                        const diamond_cut = row['Diamond Cut'] || row.diamond_cut || null;
-                        const diamond_polish = row['Diamond Polish'] || row.diamond_polish || null;
-                        const diamond_symmetry = row['Diamond Symmetry'] || row.diamond_symmetry || null;
+                    if (error) throw new Error('Invalid admin credentials');
+                    
+                    if (data.session) {
+                        // Clear any existing vendor session first
+                        sessionStorage.removeItem('vendorLoggedIn');
                         
-                        if (existingSkus.has(sku)) { duplicateSkips++; errorList.push(`Row ${start + batch.indexOf(row) + 1}: SKU "${sku}" already exists`); continue; }
-                        if (!sku || !product_name || !category || isNaN(price) || price <= 0) { errors++; errorList.push(`Row ${start + batch.indexOf(row) + 1}: Missing required fields`); continue; }
+                        // Set admin session
+                        sessionStorage.setItem('adminLoggedIn', 'true');
+                        sessionStorage.setItem('userRole', 'admin');
+                        sessionStorage.setItem('userEmail', email);
+                        sessionStorage.setItem('userName', 'Admin');
                         
-                        productsToInsert.push({ vendor_id: currentCompanyId, sku, product_name, category, price, gst, stock, description, image1_url, image2_url, image3_url, video_url, carat, diamond_color, diamond_clarity, diamond_cut, diamond_polish, diamond_symmetry, status: 'pending', created_at: new Date(), updated_at: new Date() });
-                        existingSkus.add(sku);
+                        console.log('Admin session set:', {
+                            adminLoggedIn: sessionStorage.getItem('adminLoggedIn'),
+                            userRole: sessionStorage.getItem('userRole'),
+                            userEmail: sessionStorage.getItem('userEmail')
+                        });
+                        
+                        showSuccess('Redirecting to Admin Dashboard...');
+                        setTimeout(() => {
+                            window.location.href = 'admin.html';
+                        }, 500);
+                        return true;
                     }
-                    
-                    if (productsToInsert.length > 0) {
-                        const { error } = await supabase.from('vendor_products').insert(productsToInsert);
-                        if (error) { errors += productsToInsert.length; errorList.push(`Batch ${batchNum + 1}: ${error.message}`); }
-                        else success += productsToInsert.length;
-                    }
-                    
-                    const percent = 10 + ((batchNum + 1) / totalBatches) * 85;
-                    progressFill.style.width = `${percent}%`;
-                    batchStatus.innerHTML = `Batch ${batchNum + 1}/${totalBatches}: ${success} products added`;
-                    await new Promise(r => setTimeout(r, 50));
                 }
                 
-                progressFill.style.width = '100%';
-                batchStatus.innerHTML = `✅ Complete! ${success} products uploaded`;
-                resultDiv.innerHTML = `<div style="background:rgba(0,212,255,0.15); padding:15px; border-radius:12px; margin-top:15px;"><strong>✅ Upload Complete!</strong><br>Success: ${success}<br>Errors: ${errors}<br>Duplicates: ${duplicateSkips}</div>`;
-                if (success > 0) { showToast(`✅ ${success} products uploaded!`); await loadProducts(); await loadDashboard(); }
-                setTimeout(() => { progressBar.style.display = 'none'; }, 5000);
-            } catch (err) { showToast('Error: ' + err.message, true); progressBar.style.display = 'none'; }
-            e.target.value = '';
+                // STEP 3: Check if user is VENDOR
+                const { data: vendorData, error: vendorError } = await supabase
+                    .from('vendors')
+                    .select('id, business_name, status')
+                    .eq('email', email)
+                    .maybeSingle();
+                
+                if (vendorError) throw vendorError;
+                
+                if (!vendorData) {
+                    showError('Account not found. Please register as vendor.');
+                    return false;
+                }
+                
+                // Check vendor status
+                if (vendorData.status === 'rejected') {
+                    showError('Your vendor application has been rejected. Please contact support.');
+                    return false;
+                }
+                
+                if (vendorData.status === 'pending') {
+                    showError('Your vendor application is pending approval. Please wait for admin approval.');
+                    return false;
+                }
+                
+                // Authenticate vendor
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) throw new Error('Invalid vendor credentials');
+                
+                if (data.session) {
+                    // Clear any existing admin session
+                    sessionStorage.removeItem('adminLoggedIn');
+                    
+                    // Set vendor session
+                    sessionStorage.setItem('vendorLoggedIn', 'true');
+                    sessionStorage.setItem('userRole', 'vendor');
+                    sessionStorage.setItem('userEmail', email);
+                    sessionStorage.setItem('userName', vendorData.business_name || 'Vendor');
+                    
+                    console.log('Vendor session set:', {
+                        vendorLoggedIn: sessionStorage.getItem('vendorLoggedIn'),
+                        userRole: sessionStorage.getItem('userRole'),
+                        userEmail: sessionStorage.getItem('userEmail'),
+                        userName: sessionStorage.getItem('userName')
+                    });
+                    
+                    showSuccess('Redirecting to Vendor Portal...');
+                    setTimeout(() => {
+                        window.location.href = 'vendor.html';
+                    }, 500);
+                    return true;
+                }
+                
+                return false;
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showError(error.message || 'Login failed. Please try again.');
+                return false;
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Sign In';
+            }
+        }
+        
+        function showError(message) {
+            errorDiv.style.display = 'block';
+            errorDiv.classList.remove('success-message');
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+            
+            setTimeout(() => {
+                if (errorDiv.style.display === 'block') {
+                    errorDiv.style.opacity = '0';
+                    setTimeout(() => {
+                        errorDiv.style.display = 'none';
+                        errorDiv.style.opacity = '1';
+                    }, 300);
+                }
+            }, 5000);
+        }
+        
+        function showSuccess(message) {
+            errorDiv.style.display = 'block';
+            errorDiv.classList.add('success-message');
+            errorDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+        }
+        
+        // ========== FORM SUBMIT ==========
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            await handleLogin(email, password);
         });
         
-        // Initialize
-        loadVendorData();
+        // Enter key support
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                loginForm.dispatchEvent(new Event('submit'));
+            }
+        });
+        
+        // ========== VENDOR REGISTRATION ==========
+        const registerModal = document.getElementById('registerModal');
+        
+        window.showRegisterModal = () => {
+            registerModal.style.display = 'flex';
+        };
+        
+        window.closeRegisterModal = () => {
+            registerModal.style.display = 'none';
+            document.getElementById('registerForm').reset();
+            document.getElementById('registerError').style.display = 'none';
+        };
+        
+        document.getElementById('showRegisterBtn')?.addEventListener('click', showRegisterModal);
+        
+        document.getElementById('registerForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const businessName = document.getElementById('regBusinessName').value.trim();
+            const ownerName = document.getElementById('regOwnerName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            const phone = document.getElementById('regPhone').value.trim();
+            const gstNumber = document.getElementById('regGst').value.trim();
+            const address = document.getElementById('regAddress').value.trim();
+            const errorDiv = document.getElementById('registerError');
+            
+            errorDiv.style.display = 'none';
+            errorDiv.classList.remove('success-message');
+            
+            // Validation
+            if (!businessName || !ownerName || !email || !password) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please fill all required fields';
+                return;
+            }
+            
+            if (password.length < 6) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Password must be at least 6 characters';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Passwords do not match';
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please enter a valid email address';
+                return;
+            }
+            
+            const registerBtn = document.querySelector('#registerForm .login-btn');
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<div class="loading-spinner"></div> Registering...';
+            
+            try {
+                // Check if vendor already exists
+                const { data: existingVendor } = await supabase
+                    .from('vendors')
+                    .select('email')
+                    .eq('email', email)
+                    .maybeSingle();
+                
+                if (existingVendor) {
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> A vendor with this email already exists. Please login.';
+                    registerBtn.disabled = false;
+                    registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Register as Vendor';
+                    return;
+                }
+                
+                // Check if email is used as admin
+                const { data: existingAdmin } = await supabase
+                    .from('admin_users')
+                    .select('email')
+                    .eq('email', email)
+                    .maybeSingle();
+                
+                if (existingAdmin) {
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> This email is registered as admin. Please use a different email for vendor registration.';
+                    registerBtn.disabled = false;
+                    registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Register as Vendor';
+                    return;
+                }
+                
+                // Create auth user
+                const { data: authData, error: authError } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            business_name: businessName,
+                            owner_name: ownerName,
+                            role: 'vendor'
+                        }
+                    }
+                });
+                
+                if (authError) throw authError;
+                
+                if (authData.user) {
+                    // Create vendor record
+                    const { error: vendorError } = await supabase.from('vendors').insert([{
+                        id: authData.user.id,
+                        business_name: businessName,
+                        owner_name: ownerName,
+                        email: email,
+                        phone: phone || null,
+                        gst_number: gstNumber || null,
+                        address: address || null,
+                        status: 'pending'
+                    }]);
+                    
+                    if (vendorError) throw vendorError;
+                    
+                    // Show success
+                    errorDiv.style.display = 'block';
+                    errorDiv.classList.add('success-message');
+                    errorDiv.innerHTML = '<i class="fas fa-check-circle"></i> Registration successful! Please wait for admin approval. You will be notified once approved.';
+                    
+                    setTimeout(() => {
+                        closeRegisterModal();
+                        errorDiv.style.display = 'none';
+                        errorDiv.classList.remove('success-message');
+                    }, 4000);
+                }
+                
+            } catch (error) {
+                errorDiv.style.display = 'block';
+                errorDiv.classList.remove('success-message');
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Registration failed: ' + error.message;
+                console.error('Registration error:', error);
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Register as Vendor';
+            }
+        });
+        
+        // Phone number validation
+        document.getElementById('regPhone')?.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+        });
+        
+        // Close modal on outside click
+        registerModal?.addEventListener('click', (e) => {
+            if (e.target === registerModal) closeRegisterModal();
+        });
+        
+        // Forgot password
+        window.forgotPassword = () => {
+            alert('Please contact support at styleoflife987@gmail.com to reset your password.');
+        };
     </script>
 </body>
 </html>
