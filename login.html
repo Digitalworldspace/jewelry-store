@@ -239,6 +239,12 @@
             display: none;
         }
         
+        .success-message {
+            background: rgba(16,185,129,0.1);
+            border: 1px solid rgba(16,185,129,0.2);
+            color: var(--success);
+        }
+        
         /* Loading Spinner */
         .loading-spinner {
             display: inline-block;
@@ -273,11 +279,6 @@
         
         .footer-links a:hover {
             color: var(--primary-dark);
-        }
-        
-        .divider {
-            margin: 0 10px;
-            color: var(--gray-300);
         }
         
         /* Register Modal */
@@ -338,25 +339,19 @@
             gap: 15px;
         }
         
-        /* Demo Credentials */
-        .demo-cred {
-            background: linear-gradient(135deg, var(--gray-100), var(--white-light));
-            border-radius: 20px;
-            padding: 15px 20px;
-            margin-top: 25px;
-            text-align: center;
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 16px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            resize: vertical;
         }
         
-        .demo-cred p {
-            font-size: 12px;
-            color: var(--gray-600);
-            margin-bottom: 8px;
-        }
-        
-        .demo-cred strong {
-            color: var(--primary);
-            font-family: monospace;
-            font-size: 13px;
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
         }
         
         /* Responsive */
@@ -430,15 +425,8 @@
             
             <div class="footer-links">
                 <a id="showRegisterBtn">Create an account</a>
-                <span class="divider">|</span>
+                <span class="divider" style="margin: 0 10px; color: var(--gray-300);">|</span>
                 <a href="#" onclick="forgotPassword()">Forgot password?</a>
-            </div>
-            
-            <!-- Demo Credentials -->
-            <div class="demo-cred">
-                <p><i class="fas fa-info-circle"></i> Demo Access</p>
-                <p><strong>Admin:</strong> admin@styleoflife.com / admin123</p>
-                <p><strong>Vendor:</strong> vendor@example.com / vendor123</p>
             </div>
         </div>
     </div>
@@ -514,6 +502,7 @@
         // ========== LOGIN FUNCTION - Auto detects role ==========
         async function handleLogin(email, password) {
             errorDiv.style.display = 'none';
+            errorDiv.classList.remove('success-message');
             
             if (!email || !password) {
                 showError('Please enter both email and password');
@@ -564,7 +553,7 @@
                 if (vendorError) throw vendorError;
                 
                 if (!vendorData) {
-                    showError('Account not found. Please register as vendor or use admin login.');
+                    showError('Account not found. Please register as vendor.');
                     return false;
                 }
                 
@@ -614,10 +603,8 @@
         
         function showError(message) {
             errorDiv.style.display = 'block';
+            errorDiv.classList.remove('success-message');
             errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
-            errorDiv.style.background = 'rgba(239,68,68,0.1)';
-            errorDiv.style.color = '#ef4444';
-            errorDiv.style.borderColor = 'rgba(239,68,68,0.2)';
             
             setTimeout(() => {
                 if (errorDiv.style.display === 'block') {
@@ -632,10 +619,8 @@
         
         function showSuccess(message) {
             errorDiv.style.display = 'block';
+            errorDiv.classList.add('success-message');
             errorDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
-            errorDiv.style.background = 'rgba(16,185,129,0.1)';
-            errorDiv.style.color = '#10b981';
-            errorDiv.style.borderColor = 'rgba(16,185,129,0.2)';
         }
         
         // ========== FORM SUBMIT ==========
@@ -683,6 +668,7 @@
             const errorDiv = document.getElementById('registerError');
             
             errorDiv.style.display = 'none';
+            errorDiv.classList.remove('success-message');
             
             // Validation
             if (!businessName || !ownerName || !email || !password) {
@@ -777,21 +763,19 @@
                     
                     // Show success
                     errorDiv.style.display = 'block';
-                    errorDiv.style.background = 'rgba(16,185,129,0.1)';
-                    errorDiv.style.color = '#10b981';
-                    errorDiv.style.borderColor = 'rgba(16,185,129,0.2)';
+                    errorDiv.classList.add('success-message');
                     errorDiv.innerHTML = '<i class="fas fa-check-circle"></i> Registration successful! Please wait for admin approval. You will be notified once approved.';
                     
                     setTimeout(() => {
                         closeRegisterModal();
                         errorDiv.style.display = 'none';
+                        errorDiv.classList.remove('success-message');
                     }, 4000);
                 }
                 
             } catch (error) {
                 errorDiv.style.display = 'block';
-                errorDiv.style.background = 'rgba(239,68,68,0.1)';
-                errorDiv.style.color = '#ef4444';
+                errorDiv.classList.remove('success-message');
                 errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Registration failed: ' + error.message;
                 console.error('Registration error:', error);
             } finally {
