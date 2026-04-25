@@ -31,6 +31,8 @@
             --warning: #f59e0b;
             --info: #3b82f6;
             --purple: #8b5cf6;
+            --cyan: #06b6d4;
+            --pink: #ec4899;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
@@ -61,9 +63,14 @@
         .logout-btn { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger); padding: 8px 20px; border-radius: 40px; cursor: pointer; font-weight: 500; }
         .logout-btn:hover { background: var(--danger); color: white; }
         
-        .admin-container { max-width: 1400px; margin: 30px auto; padding: 0 25px; }
+        .admin-container { max-width: 1600px; margin: 30px auto; padding: 0 25px; }
         .page-header { margin-bottom: 25px; }
         .page-title { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, var(--purple), #6d28d9); -webkit-background-clip: text; background-clip: text; color: transparent; display: inline-flex; align-items: center; gap: 12px; }
+        
+        /* View Toggle */
+        .view-toggle { display: flex; gap: 10px; margin-left: 20px; }
+        .view-btn { background: var(--gray-200); border: none; padding: 6px 15px; border-radius: 30px; cursor: pointer; font-size: 12px; transition: all 0.3s; }
+        .view-btn.active { background: var(--purple); color: white; }
         
         /* Stats Row */
         .stats-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 30px; }
@@ -94,74 +101,92 @@
         .toolbar { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; background: white; padding: 15px 20px; border-radius: 20px; border: 1px solid var(--gray-200); }
         .search-box { flex: 1; min-width: 200px; display: flex; align-items: center; gap: 10px; background: var(--gray-100); padding: 8px 15px; border-radius: 40px; }
         .search-box input { flex: 1; border: none; background: transparent; padding: 8px 0; font-size: 14px; outline: none; }
-        .filter-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .filter-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         .filter-select { padding: 8px 16px; border: 1px solid var(--gray-200); border-radius: 40px; background: white; font-size: 13px; cursor: pointer; }
-        .select-all-checkbox { margin-left: 10px; display: flex; align-items: center; gap: 8px; }
+        .select-all-checkbox { display: flex; align-items: center; gap: 8px; margin-left: 10px; }
         .btn-primary { background: linear-gradient(135deg, var(--purple), #6d28d9); border: none; padding: 8px 20px; border-radius: 40px; font-weight: 600; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(139,92,246,0.3); }
         .btn-secondary { background: var(--gray-200); border: none; padding: 8px 20px; border-radius: 40px; font-weight: 500; cursor: pointer; }
         .btn-danger { background: rgba(239,68,68,0.15); color: var(--danger); border: none; padding: 8px 20px; border-radius: 40px; font-weight: 500; cursor: pointer; }
-        .btn-warning { background: rgba(245,158,11,0.15); color: var(--warning); border: none; padding: 8px 20px; border-radius: 40px; font-weight: 500; cursor: pointer; }
         
-        /* Product Grid */
+        /* ========== LIST VIEW STYLES ========== */
+        .list-view-container { background: white; border-radius: 20px; border: 1px solid var(--gray-200); overflow: hidden; }
+        .list-view-table { width: 100%; border-collapse: collapse; }
+        .list-view-table th { background: var(--gray-100); padding: 14px 12px; text-align: left; font-size: 12px; font-weight: 600; color: var(--gray-600); border-bottom: 1px solid var(--gray-200); }
+        .list-view-table td { padding: 12px; border-bottom: 1px solid var(--gray-200); vertical-align: middle; font-size: 13px; }
+        .list-view-table tr:hover { background: rgba(139,92,246,0.03); }
+        .list-view-table tr.selected { background: rgba(139,92,246,0.08); }
+        
+        .list-thumbnail { width: 50px; height: 50px; object-fit: cover; border-radius: 10px; cursor: pointer; }
+        .media-icons { display: flex; gap: 5px; margin-top: 5px; }
+        .media-icon { font-size: 11px; padding: 2px 6px; border-radius: 20px; }
+        .media-d360 { background: rgba(6,182,212,0.15); color: var(--cyan); }
+        .media-video { background: rgba(236,72,153,0.15); color: var(--pink); }
+        .media-img { background: rgba(139,92,246,0.15); color: var(--purple); }
+        
+        .status-badge-sm { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+        .status-approved-sm { background: rgba(16,185,129,0.15); color: #10b981; }
+        .status-pending-sm { background: rgba(245,158,11,0.15); color: #f59e0b; }
+        .status-rejected-sm { background: rgba(239,68,68,0.15); color: #ef4444; }
+        
+        .action-icons { display: flex; gap: 8px; }
+        .action-icon-btn { background: none; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 14px; }
+        .action-icon-btn.approve { color: var(--success); }
+        .action-icon-btn.approve:hover { background: rgba(16,185,129,0.15); }
+        .action-icon-btn.reject { color: var(--danger); }
+        .action-icon-btn.reject:hover { background: rgba(239,68,68,0.15); }
+        .action-icon-btn.edit { color: var(--info); }
+        .action-icon-btn.edit:hover { background: rgba(59,130,246,0.15); }
+        .action-icon-btn.delete { color: var(--danger); }
+        .action-icon-btn.delete:hover { background: rgba(239,68,68,0.15); }
+        .action-icon-btn.view360 { color: var(--cyan); }
+        .action-icon-btn.view360:hover { background: rgba(6,182,212,0.15); }
+        
+        /* ========== GRID VIEW STYLES ========== */
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; margin-top: 20px; }
         .product-card { background: white; border-radius: 24px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; box-shadow: var(--shadow-sm); position: relative; }
         .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--purple); }
         .product-card.selected { border: 2px solid var(--purple); background: rgba(139,92,246,0.02); }
-        
-        .product-select-checkbox {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            z-index: 10;
-            width: 22px;
-            height: 22px;
-            cursor: pointer;
-            accent-color: var(--purple);
-        }
-        
+        .product-select-checkbox { position: absolute; top: 15px; left: 15px; z-index: 10; width: 22px; height: 22px; cursor: pointer; accent-color: var(--purple); }
         .product-image { width: 100%; height: 200px; object-fit: cover; background: var(--gray-100); cursor: pointer; }
         .product-badge { position: absolute; top: 12px; right: 12px; background: linear-gradient(135deg, var(--purple), #6d28d9); padding: 4px 12px; border-radius: 30px; font-size: 10px; font-weight: 600; color: white; z-index: 2; }
         .product-info { padding: 18px; }
         .product-name { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
         .product-sku { font-size: 11px; color: var(--gray-500); margin-bottom: 8px; }
-        .product-price { font-size: 22px; font-weight: 700; color: var(--purple); margin: 10px 0; }
-        .product-stock { font-size: 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 5px; }
-        .stock-high { color: var(--success); }
-        .stock-low { color: var(--warning); }
-        .stock-out { color: var(--danger); }
         .vendor-id { font-size: 10px; color: var(--gray-500); margin-bottom: 8px; font-family: monospace; }
-        
-        /* Diamond Specs */
+        .product-price { font-size: 22px; font-weight: 700; color: var(--purple); margin: 10px 0; }
         .diamond-specs { background: var(--gray-100); border-radius: 12px; padding: 8px; margin: 8px 0; display: flex; flex-wrap: wrap; gap: 6px; font-size: 10px; }
         .diamond-spec { background: white; padding: 2px 8px; border-radius: 20px; }
-        
-        /* Status Badges */
         .status-badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; margin-top: 8px; }
         .status-approved { background: rgba(16, 185, 129, 0.15); color: #10b981; }
         .status-pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
         .status-rejected { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-        
         .card-actions { display: flex; gap: 8px; margin-top: 15px; border-top: 1px solid var(--gray-200); padding-top: 15px; flex-wrap: wrap; }
-        .edit-btn, .delete-btn, .approve-btn, .reject-btn { flex: 1; padding: 8px; border-radius: 40px; border: none; font-weight: 500; font-size: 12px; cursor: pointer; transition: all 0.2s; text-align: center; }
-        .edit-btn { background: var(--info); color: white; }
-        .approve-btn { background: var(--success); color: white; }
-        .reject-btn { background: var(--danger); color: white; }
-        .delete-btn { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
-        .delete-btn:hover { background: var(--danger); color: white; }
+        .action-btn { flex: 1; padding: 8px; border-radius: 40px; border: none; font-weight: 500; font-size: 12px; cursor: pointer; transition: all 0.2s; text-align: center; }
+        .action-btn.approve { background: var(--success); color: white; }
+        .action-btn.reject { background: var(--danger); color: white; }
+        .action-btn.edit { background: var(--info); color: white; }
+        .action-btn.delete { background: rgba(239,68,68,0.1); color: var(--danger); }
         
         /* Modals */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
-        .modal-content { background: white; border-radius: 28px; max-width: 600px; width: 90%; max-height: 85vh; overflow-y: auto; padding: 25px; }
+        .modal-content { background: white; border-radius: 28px; max-width: 800px; width: 90%; max-height: 85vh; overflow-y: auto; padding: 25px; }
         .modal-content h3 { color: var(--purple); margin-bottom: 20px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--gray-200); padding-bottom: 15px; }
+        .close-modal { background: none; border: none; font-size: 28px; cursor: pointer; color: var(--gray-500); }
+        
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 600; color: var(--gray-600); }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--gray-200); border-radius: 12px; font-size: 14px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .modal-buttons { display: flex; gap: 12px; margin-top: 20px; }
+        .media-preview { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+        .media-preview-item { width: 80px; height: 80px; border-radius: 12px; overflow: hidden; background: var(--gray-100); border: 1px solid var(--gray-200); }
+        .media-preview-item img, .media-preview-item video { width: 100%; height: 100%; object-fit: cover; }
         
-        .empty-state { text-align: center; padding: 80px; background: white; border-radius: 24px; border: 1px solid var(--gray-200); }
+        .d360-viewer { width: 100%; height: 500px; border: none; border-radius: 16px; }
+        
+        .empty-state { text-align: center; padding: 80px; background: white; border-radius: 24px; }
         .loading { text-align: center; padding: 60px; }
         .spinner { width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -170,20 +195,26 @@
         .toast-error { background: var(--danger); }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
-        .media-preview { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-        .media-preview-item { width: 70px; height: 70px; border-radius: 8px; overflow: hidden; background: var(--gray-100); border: 1px solid var(--gray-200); }
-        .media-preview-item img, .media-preview-item video { width: 100%; height: 100%; object-fit: cover; }
-        
         footer { background: var(--darker); color: white; text-align: center; padding: 25px; margin-top: 50px; }
+        
+        @media (max-width: 1024px) {
+            .list-view-table { font-size: 12px; }
+            .list-view-table th, .list-view-table td { padding: 8px; }
+            .action-icons { gap: 4px; }
+        }
         
         @media (max-width: 768px) {
             .admin-header { flex-direction: column; text-align: center; }
             .stats-row { grid-template-columns: repeat(3, 1fr); }
-            .product-grid { grid-template-columns: 1fr; }
             .toolbar { flex-direction: column; }
-            .form-row { grid-template-columns: 1fr; }
-            .bulk-actions-bar { flex-direction: column; text-align: center; }
+            .list-view-table { display: none; }
+            .mobile-list-card { display: block; }
+            .product-grid { grid-template-columns: 1fr; }
         }
+        
+        .mobile-list-card { display: none; background: white; border-radius: 16px; padding: 15px; margin-bottom: 12px; border: 1px solid var(--gray-200); }
+        .mobile-list-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-200); }
+        .mobile-list-row:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
@@ -201,8 +232,14 @@
 
     <div class="admin-container">
         <div class="page-header">
-            <div class="page-title"><i class="fas fa-store"></i> Vendor Product Management</div>
-            <p style="color: var(--gray-600); margin-top: 5px;">Manage products submitted by vendors | Bulk Approve/Reject/Delete | Advanced Filtering</p>
+            <div class="page-title">
+                <i class="fas fa-store"></i> Vendor Product Management
+                <div class="view-toggle">
+                    <button class="view-btn active" onclick="setView('grid')"><i class="fas fa-th"></i> Grid</button>
+                    <button class="view-btn" onclick="setView('list')"><i class="fas fa-list"></i> List</button>
+                </div>
+            </div>
+            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | D360 Image/Video Support | Bulk Actions</p>
         </div>
 
         <!-- Stats -->
@@ -211,7 +248,7 @@
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-number" id="approvedCount">0</div><div class="stat-label">Approved</div></div>
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-number" id="pendingCount">0</div><div class="stat-label">Pending</div></div>
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-times-circle"></i></div><div class="stat-number" id="rejectedCount">0</div><div class="stat-label">Rejected</div></div>
-            <div class="stat-card"><div class="stat-icon"><i class="fas fa-gem"></i></div><div class="stat-number" id="diamondCount">0</div><div class="stat-label">With Diamond</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-cube"></i></div><div class="stat-number" id="d360Count">0</div><div class="stat-label">D360 Products</div></div>
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-rupee-sign"></i></div><div class="stat-number" id="totalValue">₹0</div><div class="stat-label">Total Value</div></div>
         </div>
 
@@ -221,7 +258,6 @@
             <div class="bulk-buttons">
                 <button class="btn-primary" onclick="bulkApprove()"><i class="fas fa-check-circle"></i> Bulk Approve</button>
                 <button class="btn-danger" onclick="bulkReject()"><i class="fas fa-times-circle"></i> Bulk Reject</button>
-                <button class="btn-warning" onclick="bulkDelete()"><i class="fas fa-trash-alt"></i> Bulk Delete</button>
                 <button class="btn-secondary" onclick="clearSelection()"><i class="fas fa-times"></i> Clear</button>
             </div>
         </div>
@@ -236,10 +272,11 @@
                     <option value="approved">Approved</option>
                     <option value="rejected">Rejected</option>
                 </select>
-                <select id="diamondFilter" class="filter-select">
-                    <option value="all">All Products</option>
-                    <option value="has_diamond">Has Diamond</option>
-                    <option value="no_diamond">No Diamond</option>
+                <select id="mediaFilter" class="filter-select">
+                    <option value="all">All Media</option>
+                    <option value="d360">D360 Products</option>
+                    <option value="video">Has Video</option>
+                    <option value="image_only">Images Only</option>
                 </select>
                 <label class="select-all-checkbox"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"> Select All</label>
                 <button class="btn-primary" onclick="refreshVendorProducts()"><i class="fas fa-sync-alt"></i> Refresh</button>
@@ -247,7 +284,11 @@
             </div>
         </div>
 
-        <div id="productsGrid" class="product-grid"><div class="loading"><div class="spinner"></div><p>Loading vendor products...</p></div></div>
+        <!-- Grid View -->
+        <div id="gridView" class="product-grid"><div class="loading"><div class="spinner"></div><p>Loading vendor products...</p></div></div>
+
+        <!-- List View -->
+        <div id="listView" class="list-view-container" style="display: none;"><div class="loading"><div class="spinner"></div><p>Loading vendor products...</p></div></div>
     </div>
 
     <!-- Edit Product Modal -->
@@ -272,7 +313,7 @@
             </div>
             <div class="form-row">
                 <div class="form-group"><label>Image URL 3</label><input type="url" id="editImage3"></div>
-                <div class="form-group"><label>Video URL</label><input type="url" id="editVideo"></div>
+                <div class="form-group"><label>Video/D360 URL</label><input type="url" id="editVideo" placeholder="https://d360.tech/view.html?d=... or video.mp4"></div>
             </div>
             <div class="form-row">
                 <div class="form-group"><label>Carat</label><input type="number" id="editCarat" step="0.01"></div>
@@ -290,6 +331,17 @@
         </div>
     </div>
 
+    <!-- D360/Video Viewer Modal -->
+    <div id="viewerModal" class="modal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-cube"></i> Media Viewer</h3>
+                <button class="close-modal" onclick="closeViewerModal()">&times;</button>
+            </div>
+            <div id="viewerContent"></div>
+        </div>
+    </div>
+
     <!-- Delete Confirmation Modal -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
@@ -302,11 +354,11 @@
         </div>
     </div>
 
-    <!-- Bulk Action Confirmation Modal -->
+    <!-- Bulk Confirm Modal -->
     <div id="bulkConfirmModal" class="modal">
         <div class="modal-content">
-            <h3 id="bulkConfirmTitle" style="color: var(--warning);"><i class="fas fa-exclamation-triangle"></i> Confirm Bulk Action</h3>
-            <p id="bulkConfirmMessage">Are you sure you want to perform this action on selected products?</p>
+            <h3 id="bulkConfirmTitle"><i class="fas fa-exclamation-triangle"></i> Confirm Bulk Action</h3>
+            <p id="bulkConfirmMessage"></p>
             <div style="display: flex; gap: 12px; margin-top: 25px;">
                 <button class="btn-primary" id="bulkConfirmYes">Yes, Proceed</button>
                 <button class="btn-secondary" onclick="closeBulkConfirmModal()">Cancel</button>
@@ -314,7 +366,7 @@
         </div>
     </div>
 
-    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management System with Bulk Actions</p></footer>
+    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management System with D360 Support</p></footer>
 
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     <script type="module">
@@ -325,8 +377,21 @@
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let vendorProducts = [];
         let selectedProducts = new Set();
+        let currentView = 'grid';
         let pendingBulkAction = null;
         let pendingDelete = null;
+        
+        // Helper Functions
+        function isD360Image(url) { return url && (url.includes('d360.tech/imaged/') || url.includes('/imaged/')); }
+        function isD360Video(url) { return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); }
+        function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com')); }
+        function getMediaType(url) {
+            if (!url) return null;
+            if (isD360Video(url)) return 'd360_video';
+            if (isD360Image(url)) return 'd360_image';
+            if (isVideoUrl(url)) return 'video';
+            return 'image';
+        }
         
         function showToast(msg, isErr = false) {
             const t = document.createElement('div');
@@ -339,8 +404,6 @@
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
         
         async function loadVendorProducts() {
-            const container = document.getElementById('productsGrid');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading vendor products...</p></div>';
             try {
                 const { data, error } = await supabase.from('vendor_products').select('*').order('id', { ascending: false });
                 if (error) throw error;
@@ -348,7 +411,8 @@
                 updateStats();
                 applyFilters();
             } catch (err) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Error: ${err.message}</p></div>`;
+                document.getElementById('gridView').innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Error: ${err.message}</p></div>`;
+                document.getElementById('listView').innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Error: ${err.message}</p></div>`;
             }
         }
         
@@ -357,21 +421,21 @@
             const approved = vendorProducts.filter(p => p.status === 'approved').length;
             const pending = vendorProducts.filter(p => p.status === 'pending').length;
             const rejected = vendorProducts.filter(p => p.status === 'rejected').length;
-            const diamond = vendorProducts.filter(p => p.carat).length;
+            const d360 = vendorProducts.filter(p => isD360Video(p.video_url) || isD360Image(p.image1_url) || isD360Image(p.image2_url)).length;
             const totalValue = vendorProducts.reduce((sum, p) => sum + (p.price || 0), 0);
             
             document.getElementById('totalVendor').innerText = total;
             document.getElementById('approvedCount').innerText = approved;
             document.getElementById('pendingCount').innerText = pending;
             document.getElementById('rejectedCount').innerText = rejected;
-            document.getElementById('diamondCount').innerText = diamond;
+            document.getElementById('d360Count').innerText = d360;
             document.getElementById('totalValue').innerHTML = `₹${(totalValue / 100000).toFixed(1)}L`;
         }
         
         function getFilteredProducts() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const statusFilter = document.getElementById('statusFilter').value;
-            const diamondFilter = document.getElementById('diamondFilter').value;
+            const mediaFilter = document.getElementById('mediaFilter').value;
             
             let filtered = [...vendorProducts];
             if (searchTerm) {
@@ -384,23 +448,30 @@
             if (statusFilter !== 'all') {
                 filtered = filtered.filter(p => p.status === statusFilter);
             }
-            if (diamondFilter === 'has_diamond') {
-                filtered = filtered.filter(p => p.carat);
-            } else if (diamondFilter === 'no_diamond') {
-                filtered = filtered.filter(p => !p.carat);
+            if (mediaFilter === 'd360') {
+                filtered = filtered.filter(p => isD360Video(p.video_url) || isD360Image(p.image1_url) || isD360Image(p.image2_url));
+            } else if (mediaFilter === 'video') {
+                filtered = filtered.filter(p => isVideoUrl(p.video_url));
+            } else if (mediaFilter === 'image_only') {
+                filtered = filtered.filter(p => (p.image1_url || p.image2_url || p.image3_url) && !isVideoUrl(p.video_url));
             }
             return filtered;
         }
         
         function applyFilters() {
             const filtered = getFilteredProducts();
-            renderProductsGrid(filtered);
+            if (currentView === 'grid') {
+                renderGridView(filtered);
+            } else {
+                renderListView(filtered);
+            }
             updateSelectAllCheckbox();
             updateBulkActionsBar();
         }
         
-        function renderProductsGrid(products) {
-            const container = document.getElementById('productsGrid');
+        // ========== GRID VIEW ==========
+        function renderGridView(products) {
+            const container = document.getElementById('gridView');
             if (!products.length) {
                 container.innerHTML = '<div class="empty-state"><i class="fas fa-store-slash"></i><p>No vendor products found.</p></div>';
                 return;
@@ -408,47 +479,35 @@
             
             let html = '';
             for (const p of products) {
-                const imgUrl = p.image1_url || p.image2_url || p.image3_url || p.video_url || 'https://via.placeholder.com/400x200?text=No+Image';
-                const stockClass = (p.stock || 0) <= 0 ? 'stock-out' : ((p.stock || 0) < 10 ? 'stock-low' : 'stock-high');
-                const stockText = (p.stock || 0) <= 0 ? 'Out of Stock' : ((p.stock || 0) < 10 ? `Low Stock (${p.stock})` : `In Stock (${p.stock})`);
+                const imgUrl = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/400x200?text=No+Image';
                 const isSelected = selectedProducts.has(p.id);
+                const hasD360 = isD360Video(p.video_url) || isD360Image(p.image1_url) || isD360Image(p.image2_url);
+                const hasVideo = isVideoUrl(p.video_url);
                 
-                let statusClass = 'status-pending';
-                let statusLabel = p.status || 'pending';
-                if (statusLabel === 'approved') statusClass = 'status-approved';
-                if (statusLabel === 'rejected') statusClass = 'status-rejected';
+                let mediaBadge = '';
+                if (hasD360) mediaBadge = '<span class="media-icon media-d360"><i class="fas fa-cube"></i> 360°</span>';
+                else if (hasVideo) mediaBadge = '<span class="media-icon media-video"><i class="fas fa-video"></i> Video</span>';
                 
-                // Diamond specs display
-                let diamondHtml = '';
-                if (p.carat || p.diamond_color || p.diamond_clarity) {
-                    diamondHtml = `<div class="diamond-specs">
-                        ${p.carat ? `<span class="diamond-spec"><i class="fas fa-gem"></i> ${p.carat}ct</span>` : ''}
-                        ${p.diamond_color ? `<span class="diamond-spec">🎨 ${p.diamond_color}</span>` : ''}
-                        ${p.diamond_clarity ? `<span class="diamond-spec">🔍 ${p.diamond_clarity}</span>` : ''}
-                        ${p.diamond_cut ? `<span class="diamond-spec">✂️ ${p.diamond_cut}</span>` : ''}
-                    </div>`;
-                }
+                let statusClass = p.status === 'approved' ? 'status-approved' : (p.status === 'rejected' ? 'status-rejected' : 'status-pending');
                 
                 html += `
                     <div class="product-card ${isSelected ? 'selected' : ''}">
                         <input type="checkbox" class="product-select-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProduct(${p.id}, this.checked)">
                         <div style="position: relative;">
                             <span class="product-badge"><i class="fas fa-store"></i> Vendor</span>
-                            <img class="product-image" src="${imgUrl}" alt="${escapeHtml(p.product_name)}" onerror="this.src='https://via.placeholder.com/400x200'">
+                            <img class="product-image" src="${imgUrl}" alt="${escapeHtml(p.product_name)}" onerror="this.src='https://via.placeholder.com/400x200'" onclick="openMediaViewer(${p.id})">
                         </div>
                         <div class="product-info">
-                            <div class="product-name">${escapeHtml(p.product_name)}</div>
+                            <div class="product-name">${escapeHtml(p.product_name)} ${mediaBadge}</div>
                             <div class="product-sku">${p.sku || 'N/A'} | ${p.category || 'Jewelry'}</div>
-                            <div class="vendor-id"><i class="fas fa-id-card"></i> Vendor ID: ${p.vendor_id?.slice(0, 12)}...</div>
+                            <div class="vendor-id"><i class="fas fa-id-card"></i> Vendor: ${p.vendor_id?.slice(0, 12)}...</div>
                             <div class="product-price">₹${(p.price || 0).toLocaleString()} <span style="font-size:12px;">+ ${p.gst || 18}% GST</span></div>
-                            ${diamondHtml}
-                            <div class="product-stock ${stockClass}"><i class="fas ${(p.stock || 0) <= 0 ? 'fa-times-circle' : ((p.stock || 0) < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> ${stockText}</div>
-                            <div class="status-badge ${statusClass}"><i class="fas ${statusLabel === 'approved' ? 'fa-check-circle' : (statusLabel === 'rejected' ? 'fa-times-circle' : 'fa-clock')}"></i> ${statusLabel.toUpperCase()}</div>
+                            <div class="status-badge ${statusClass}">${(p.status || 'pending').toUpperCase()}</div>
                             <div class="card-actions">
-                                <button class="edit-btn" onclick="openEditModal(${p.id})"><i class="fas fa-edit"></i> Edit</button>
-                                ${p.status !== 'approved' ? `<button class="approve-btn" onclick="approveVendorProduct(${p.id})"><i class="fas fa-check"></i> Approve</button>` : ''}
-                                ${p.status !== 'rejected' ? `<button class="reject-btn" onclick="rejectVendorProduct(${p.id})"><i class="fas fa-times"></i> Reject</button>` : ''}
-                                <button class="delete-btn" onclick="deleteVendorProduct(${p.id})"><i class="fas fa-trash-alt"></i> Delete</button>
+                                <button class="action-btn edit" onclick="openEditModal(${p.id})"><i class="fas fa-edit"></i> Edit</button>
+                                ${p.status !== 'approved' ? `<button class="action-btn approve" onclick="approveProduct(${p.id})"><i class="fas fa-check"></i> Approve</button>` : ''}
+                                ${p.status !== 'rejected' ? `<button class="action-btn reject" onclick="rejectProduct(${p.id})"><i class="fas fa-times"></i> Reject</button>` : ''}
+                                <button class="action-btn delete" onclick="deleteProduct(${p.id})"><i class="fas fa-trash-alt"></i> Del</button>
                             </div>
                         </div>
                     </div>
@@ -457,40 +516,124 @@
             container.innerHTML = html;
         }
         
+        // ========== LIST VIEW ==========
+        function renderListView(products) {
+            const container = document.getElementById('listView');
+            if (!products.length) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-store-slash"></i><p>No vendor products found.</p></div>';
+                return;
+            }
+            
+            let tableHtml = `
+                <table class="list-view-table">
+                    <thead>
+                        <tr>
+                            <th style="width:40px"><input type="checkbox" id="listSelectAll" onchange="toggleSelectAllList()"></th>
+                            <th style="width:70px">Image</th>
+                            <th>Product</th>
+                            <th>SKU/Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Media</th>
+                            <th>Status</th>
+                            <th style="width:150px">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            let mobileHtml = '';
+            
+            for (const p of products) {
+                const imgUrl = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/50x50?text=No';
+                const isSelected = selectedProducts.has(p.id);
+                const hasD360 = isD360Video(p.video_url) || isD360Image(p.image1_url) || isD360Image(p.image2_url);
+                const hasVideo = isVideoUrl(p.video_url);
+                const statusClass = p.status === 'approved' ? 'status-approved-sm' : (p.status === 'rejected' ? 'status-rejected-sm' : 'status-pending-sm');
+                
+                let mediaIcons = '';
+                if (hasD360) mediaIcons += '<span class="media-icon media-d360"><i class="fas fa-cube"></i> 360°</span> ';
+                if (hasVideo) mediaIcons += '<span class="media-icon media-video"><i class="fas fa-video"></i> Video</span> ';
+                if (!hasD360 && !hasVideo && (p.image1_url || p.image2_url)) mediaIcons += '<span class="media-icon media-img"><i class="fas fa-image"></i> Image</span> ';
+                
+                tableHtml += `
+                    <tr class="${isSelected ? 'selected' : ''}">
+                        <td><input type="checkbox" class="list-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProductList(${p.id}, this.checked)"></td>
+                        <td><img class="list-thumbnail" src="${imgUrl}" onclick="openMediaViewer(${p.id})" onerror="this.src='https://via.placeholder.com/50x50'"></td>
+                        <td><strong>${escapeHtml(p.product_name)}</strong><br><span style="font-size:10px;color:var(--gray-500);">ID: ${p.id}</span></td>
+                        <td>${p.sku || 'N/A'}<br><span style="font-size:10px;">${p.category || 'Jewelry'}</span></td>
+                        <td>₹${(p.price || 0).toLocaleString()}<br><span style="font-size:10px;">+${p.gst || 18}% GST</span></td>
+                        <td>${p.stock || 0}</td>
+                        <td>${mediaIcons}</td>
+                        <td><span class="status-badge-sm ${statusClass}">${(p.status || 'pending').toUpperCase()}</span></td>
+                        <td class="action-icons">
+                            ${hasD360 ? `<button class="action-icon-btn view360" onclick="openD360Viewer('${escapeHtml(p.video_url || p.image1_url)}')" title="360° View"><i class="fas fa-cube"></i></button>` : ''}
+                            <button class="action-icon-btn edit" onclick="openEditModal(${p.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                            ${p.status !== 'approved' ? `<button class="action-icon-btn approve" onclick="approveProduct(${p.id})" title="Approve"><i class="fas fa-check"></i></button>` : ''}
+                            ${p.status !== 'rejected' ? `<button class="action-icon-btn reject" onclick="rejectProduct(${p.id})" title="Reject"><i class="fas fa-times"></i></button>` : ''}
+                            <button class="action-icon-btn delete" onclick="deleteProduct(${p.id})" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                        </td>
+                    </tr>
+                `;
+                
+                // Mobile card view
+                mobileHtml += `
+                    <div class="mobile-list-card">
+                        <div class="mobile-list-row"><strong>${escapeHtml(p.product_name)}</strong></div>
+                        <div class="mobile-list-row"><span>SKU:</span> <span>${p.sku}</span></div>
+                        <div class="mobile-list-row"><span>Price:</span> <span>₹${(p.price || 0).toLocaleString()}</span></div>
+                        <div class="mobile-list-row"><span>Status:</span> <span class="status-badge-sm ${statusClass}">${p.status || 'pending'}</span></div>
+                        <div class="mobile-list-row"><span>Actions:</span> <span class="action-icons">${hasD360 ? `<button class="action-icon-btn view360" onclick="openD360Viewer('${escapeHtml(p.video_url || p.image1_url)}')"><i class="fas fa-cube"></i></button>` : ''}<button class="action-icon-btn edit" onclick="openEditModal(${p.id})"><i class="fas fa-edit"></i></button><button class="action-icon-btn approve" onclick="approveProduct(${p.id})"><i class="fas fa-check"></i></button><button class="action-icon-btn reject" onclick="rejectProduct(${p.id})"><i class="fas fa-times"></i></button></span></div>
+                    </div>
+                `;
+            }
+            
+            tableHtml += '</tbody></table>' + `<div class="mobile-list-container">${mobileHtml}</div>`;
+            container.innerHTML = tableHtml;
+        }
+        
         // Selection Functions
         window.toggleSelectProduct = function(id, checked) {
-            if (checked) {
-                selectedProducts.add(id);
-            } else {
-                selectedProducts.delete(id);
-            }
+            if (checked) selectedProducts.add(id);
+            else selectedProducts.delete(id);
             updateBulkActionsBar();
             updateSelectAllCheckbox();
-            // Update the card selected class
-            const filtered = getFilteredProducts();
-            renderProductsGrid(filtered);
+            applyFilters();
         };
         
+        window.toggleSelectProductList = toggleSelectProduct;
+        
         window.toggleSelectAll = function() {
-            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
             const filtered = getFilteredProducts();
-            
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
             if (selectAllCheckbox.checked) {
                 filtered.forEach(p => selectedProducts.add(p.id));
             } else {
                 filtered.forEach(p => selectedProducts.delete(p.id));
             }
             updateBulkActionsBar();
-            renderProductsGrid(filtered);
+            applyFilters();
+        };
+        
+        window.toggleSelectAllList = function() {
+            const listSelectAll = document.getElementById('listSelectAll');
+            const filtered = getFilteredProducts();
+            if (listSelectAll && listSelectAll.checked) {
+                filtered.forEach(p => selectedProducts.add(p.id));
+            } else if (listSelectAll) {
+                filtered.forEach(p => selectedProducts.delete(p.id));
+            }
+            updateBulkActionsBar();
+            applyFilters();
         };
         
         function updateSelectAllCheckbox() {
             const filtered = getFilteredProducts();
             const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-            if (selectAllCheckbox) {
-                const allSelected = filtered.length > 0 && filtered.every(p => selectedProducts.has(p.id));
-                selectAllCheckbox.checked = allSelected;
-            }
+            const listSelectAll = document.getElementById('listSelectAll');
+            const allSelected = filtered.length > 0 && filtered.every(p => selectedProducts.has(p.id));
+            if (selectAllCheckbox) selectAllCheckbox.checked = allSelected;
+            if (listSelectAll) listSelectAll.checked = allSelected;
         }
         
         function updateBulkActionsBar() {
@@ -509,6 +652,77 @@
             showToast('Selection cleared');
         };
         
+        // View Toggle
+        window.setView = function(view) {
+            currentView = view;
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            if (view === 'grid') {
+                document.querySelector('.view-btn:first-child').classList.add('active');
+                document.getElementById('gridView').style.display = 'grid';
+                document.getElementById('listView').style.display = 'none';
+            } else {
+                document.querySelector('.view-btn:last-child').classList.add('active');
+                document.getElementById('gridView').style.display = 'none';
+                document.getElementById('listView').style.display = 'block';
+            }
+            applyFilters();
+        };
+        
+        // Media Viewer
+        window.openMediaViewer = async function(id) {
+            const product = vendorProducts.find(p => p.id === id);
+            if (!product) return;
+            
+            const mediaUrls = [product.image1_url, product.image2_url, product.image3_url, product.video_url].filter(u => u && u.trim());
+            const viewerContent = document.getElementById('viewerContent');
+            
+            if (mediaUrls.length === 0) {
+                viewerContent.innerHTML = '<p>No media available</p>';
+            } else if (mediaUrls.length === 1) {
+                const url = mediaUrls[0];
+                if (isD360Video(url)) {
+                    viewerContent.innerHTML = `<iframe class="d360-viewer" src="${url}" allowfullscreen></iframe>`;
+                } else if (isVideoUrl(url)) {
+                    viewerContent.innerHTML = `<video controls autoplay style="width:100%; max-height:500px;"><source src="${url}" type="video/mp4"></video>`;
+                } else {
+                    viewerContent.innerHTML = `<img src="${url}" style="width:100%; border-radius:16px;">`;
+                }
+            } else {
+                let galleryHtml = '<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:15px;">';
+                for (const url of mediaUrls) {
+                    if (isD360Video(url)) {
+                        galleryHtml += `<div><iframe src="${url}" style="width:100%; height:250px; border:none; border-radius:12px;"></iframe></div>`;
+                    } else if (isVideoUrl(url)) {
+                        galleryHtml += `<div><video controls style="width:100%; height:250px; object-fit:cover; border-radius:12px;"><source src="${url}"></video></div>`;
+                    } else {
+                        galleryHtml += `<div><img src="${url}" style="width:100%; height:250px; object-fit:cover; border-radius:12px; cursor:pointer;" onclick="window.open('${url}','_blank')"></div>`;
+                    }
+                }
+                galleryHtml += '</div>';
+                viewerContent.innerHTML = galleryHtml;
+            }
+            
+            document.getElementById('viewerModal').classList.add('active');
+        };
+        
+        window.openD360Viewer = function(url) {
+            if (!url) return;
+            const viewerContent = document.getElementById('viewerContent');
+            if (isD360Video(url)) {
+                viewerContent.innerHTML = `<iframe class="d360-viewer" src="${url}" allowfullscreen></iframe>`;
+            } else if (isVideoUrl(url)) {
+                viewerContent.innerHTML = `<video controls autoplay style="width:100%; max-height:500px;"><source src="${url}" type="video/mp4"></video>`;
+            } else {
+                viewerContent.innerHTML = `<img src="${url}" style="width:100%; border-radius:16px;">`;
+            }
+            document.getElementById('viewerModal').classList.add('active');
+        };
+        
+        window.closeViewerModal = function() {
+            document.getElementById('viewerModal').classList.remove('active');
+            document.getElementById('viewerContent').innerHTML = '';
+        };
+        
         // Bulk Actions
         function showBulkConfirm(title, message, action) {
             pendingBulkAction = action;
@@ -524,29 +738,12 @@
         
         window.bulkApprove = function() {
             if (selectedProducts.size === 0) { showToast('No products selected', true); return; }
-            showBulkConfirm(
-                '<i class="fas fa-check-circle"></i> Bulk Approve',
-                `Are you sure you want to APPROVE ${selectedProducts.size} product(s)? They will appear on the shop page.`,
-                'approve'
-            );
+            showBulkConfirm('<i class="fas fa-check-circle"></i> Bulk Approve', `Approve ${selectedProducts.size} product(s)? They will appear on the shop page.`, 'approve');
         };
         
         window.bulkReject = function() {
             if (selectedProducts.size === 0) { showToast('No products selected', true); return; }
-            showBulkConfirm(
-                '<i class="fas fa-times-circle"></i> Bulk Reject',
-                `Are you sure you want to REJECT ${selectedProducts.size} product(s)? They will NOT appear on the shop page.`,
-                'reject'
-            );
-        };
-        
-        window.bulkDelete = function() {
-            if (selectedProducts.size === 0) { showToast('No products selected', true); return; }
-            showBulkConfirm(
-                '<i class="fas fa-trash-alt"></i> Bulk Delete',
-                `Are you sure you want to DELETE ${selectedProducts.size} product(s)? This action CANNOT be undone!`,
-                'delete'
-            );
+            showBulkConfirm('<i class="fas fa-times-circle"></i> Bulk Reject', `Reject ${selectedProducts.size} product(s)? They will NOT appear on the shop page.`, 'reject');
         };
         
         async function executeBulkAction() {
@@ -554,26 +751,17 @@
             const ids = Array.from(selectedProducts);
             let success = 0;
             
-            if (action === 'approve') {
-                for (const id of ids) {
+            for (const id of ids) {
+                if (action === 'approve') {
                     const { error } = await supabase.from('vendor_products').update({ status: 'approved', updated_at: new Date() }).eq('id', id);
                     if (!error) success++;
-                }
-                showToast(`✅ ${success} products approved successfully!`);
-            } else if (action === 'reject') {
-                for (const id of ids) {
+                } else if (action === 'reject') {
                     const { error } = await supabase.from('vendor_products').update({ status: 'rejected', updated_at: new Date() }).eq('id', id);
                     if (!error) success++;
                 }
-                showToast(`❌ ${success} products rejected.`);
-            } else if (action === 'delete') {
-                for (const id of ids) {
-                    const { error } = await supabase.from('vendor_products').delete().eq('id', id);
-                    if (!error) success++;
-                }
-                showToast(`🗑️ ${success} products deleted.`);
             }
             
+            showToast(action === 'approve' ? `✅ ${success} products approved` : `❌ ${success} products rejected`);
             selectedProducts.clear();
             closeBulkConfirmModal();
             await loadVendorProducts();
@@ -582,32 +770,45 @@
         document.getElementById('bulkConfirmYes').onclick = executeBulkAction;
         
         // Single Product Actions
-        window.approveVendorProduct = async function(id) {
-            if (!confirm('Approve this product? It will appear on the shop page.')) return;
-            try {
-                await supabase.from('vendor_products').update({ status: 'approved', updated_at: new Date() }).eq('id', id);
-                showToast('✅ Product approved!');
-                await loadVendorProducts();
-            } catch (err) {
-                showToast('Approval failed: ' + err.message, true);
-            }
+        window.approveProduct = async function(id) {
+            if (!confirm('Approve this product?')) return;
+            await supabase.from('vendor_products').update({ status: 'approved', updated_at: new Date() }).eq('id', id);
+            showToast('✅ Product approved');
+            await loadVendorProducts();
         };
         
-        window.rejectVendorProduct = async function(id) {
-            if (!confirm('Reject this product? It will NOT appear on the shop page.')) return;
-            try {
-                await supabase.from('vendor_products').update({ status: 'rejected', updated_at: new Date() }).eq('id', id);
-                showToast('❌ Product rejected.');
-                await loadVendorProducts();
-            } catch (err) {
-                showToast('Rejection failed: ' + err.message, true);
-            }
+        window.rejectProduct = async function(id) {
+            if (!confirm('Reject this product?')) return;
+            await supabase.from('vendor_products').update({ status: 'rejected', updated_at: new Date() }).eq('id', id);
+            showToast('❌ Product rejected');
+            await loadVendorProducts();
         };
         
-        // Edit Modal Functions
+        window.deleteProduct = function(id) {
+            pendingDelete = id;
+            const product = vendorProducts.find(p => p.id === id);
+            document.getElementById('modalMessage').innerHTML = `Delete "${escapeHtml(product?.product_name || 'this product')}"? This cannot be undone.`;
+            document.getElementById('confirmModal').classList.add('active');
+        };
+        
+        window.confirmDelete = async function() {
+            if (!pendingDelete) return;
+            await supabase.from('vendor_products').delete().eq('id', pendingDelete);
+            showToast('✅ Product deleted');
+            await loadVendorProducts();
+            closeConfirmModal();
+            pendingDelete = null;
+        };
+        
+        window.closeConfirmModal = function() {
+            document.getElementById('confirmModal').classList.remove('active');
+            pendingDelete = null;
+        };
+        
+        // Edit Functions
         window.openEditModal = async function(id) {
-            const { data, error } = await supabase.from('vendor_products').select('*').eq('id', id).single();
-            if (error) { showToast('Error loading product', true); return; }
+            const { data } = await supabase.from('vendor_products').select('*').eq('id', id).single();
+            if (!data) return;
             
             document.getElementById('editId').value = data.id;
             document.getElementById('editProductName').value = data.product_name || '';
@@ -641,16 +842,12 @@
             if (!urls.length) { container.innerHTML = ''; return; }
             let html = '';
             urls.forEach(url => {
-                const isVideo = url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com');
-                html += `<div class="media-preview-item">${isVideo ? `<video src="${url}" style="width:100%;height:100%;object-fit:cover;"></video>` : `<img src="${url}" onerror="this.src='https://via.placeholder.com/70'">`}</div>`;
+                const isVideo = isVideoUrl(url);
+                const isD360 = isD360Video(url);
+                html += `<div class="media-preview-item">${isD360 ? `<iframe src="${url}" style="width:100%;height:100%;border:none;"></iframe>` : (isVideo ? `<video src="${url}" style="width:100%;height:100%;object-fit:cover;"></video>` : `<img src="${url}" onerror="this.src='https://via.placeholder.com/80'">`)}</div>`;
             });
             container.innerHTML = html;
         }
-        
-        document.getElementById('editImage1')?.addEventListener('input', updateEditMediaPreview);
-        document.getElementById('editImage2')?.addEventListener('input', updateEditMediaPreview);
-        document.getElementById('editImage3')?.addEventListener('input', updateEditMediaPreview);
-        document.getElementById('editVideo')?.addEventListener('input', updateEditMediaPreview);
         
         window.saveEditProduct = async function() {
             const id = document.getElementById('editId').value;
@@ -666,7 +863,7 @@
                 image2_url: document.getElementById('editImage2').value,
                 image3_url: document.getElementById('editImage3').value,
                 video_url: document.getElementById('editVideo').value,
-                carat: document.getElementById('editCarat').value ? parseFloat(document.getElementById('editCarat').value) : null,
+                carat: document.getElementById('editCarat').value || null,
                 diamond_color: document.getElementById('editDiamondColor').value || null,
                 diamond_clarity: document.getElementById('editDiamondClarity').value || null,
                 diamond_cut: document.getElementById('editDiamondCut').value || null,
@@ -678,65 +875,27 @@
                 return;
             }
             
-            try {
-                await supabase.from('vendor_products').update(updates).eq('id', id);
-                showToast('✅ Product updated successfully');
-                closeEditModal();
-                await loadVendorProducts();
-            } catch (err) {
-                showToast('Update failed: ' + err.message, true);
-            }
+            await supabase.from('vendor_products').update(updates).eq('id', id);
+            showToast('✅ Product updated');
+            closeEditModal();
+            await loadVendorProducts();
         };
         
         window.closeEditModal = function() {
             document.getElementById('editModal').classList.remove('active');
         };
         
-        // Delete Functions
-        window.deleteVendorProduct = function(id) {
-            const product = vendorProducts.find(p => p.id === id);
-            pendingDelete = id;
-            document.getElementById('modalMessage').innerHTML = `Delete "${escapeHtml(product?.product_name || 'this product')}"? This action cannot be undone.`;
-            document.getElementById('confirmModal').classList.add('active');
-        };
-        
-        window.confirmDelete = async function() {
-            if (!pendingDelete) return;
-            try {
-                await supabase.from('vendor_products').delete().eq('id', pendingDelete);
-                showToast('✅ Vendor product deleted');
-                await loadVendorProducts();
-            } catch (err) {
-                showToast('Delete failed: ' + err.message, true);
-            }
-            closeConfirmModal();
-            pendingDelete = null;
-        };
-        
-        window.closeConfirmModal = function() {
-            document.getElementById('confirmModal').classList.remove('active');
-            pendingDelete = null;
-        };
-        
+        // Other Functions
         window.refreshVendorProducts = function() { loadVendorProducts(); showToast('Refreshing...'); };
         
         window.exportVendorCSV = function() {
             const exportData = vendorProducts.map(p => ({
-                'ID': p.id,
-                'SKU': p.sku,
-                'Product Name': p.product_name,
-                'Category': p.category,
-                'Price': p.price,
-                'GST %': p.gst,
-                'Stock': p.stock,
-                'Status': p.status,
-                'Vendor ID': p.vendor_id,
-                'Description': p.description,
-                'Carat': p.carat || '',
-                'Diamond Color': p.diamond_color || '',
-                'Diamond Clarity': p.diamond_clarity || '',
-                'Diamond Cut': p.diamond_cut || '',
-                'Created': new Date(p.created_at).toLocaleDateString()
+                'ID': p.id, 'SKU': p.sku, 'Product Name': p.product_name, 'Category': p.category,
+                'Price': p.price, 'GST %': p.gst, 'Stock': p.stock, 'Status': p.status,
+                'Vendor ID': p.vendor_id, 'Carat': p.carat || '', 'Diamond Color': p.diamond_color || '',
+                'Diamond Clarity': p.diamond_clarity || '', 'Diamond Cut': p.diamond_cut || '',
+                'Has D360': isD360Video(p.video_url) || isD360Image(p.image1_url) ? 'Yes' : 'No',
+                'Has Video': isVideoUrl(p.video_url) ? 'Yes' : 'No'
             }));
             const ws = XLSX.utils.json_to_sheet(exportData);
             const wb = XLSX.utils.book_new();
@@ -747,11 +906,19 @@
         
         document.getElementById('searchInput').addEventListener('input', () => applyFilters());
         document.getElementById('statusFilter').addEventListener('change', () => applyFilters());
-        document.getElementById('diamondFilter').addEventListener('change', () => applyFilters());
+        document.getElementById('mediaFilter').addEventListener('change', () => applyFilters());
         
         window.logout = function() {
             sessionStorage.removeItem('adminLoggedIn');
             window.location.href = 'login.html';
+        };
+        
+        // Event Listeners for modals
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('viewerModal')) closeViewerModal();
+            if (event.target === document.getElementById('editModal')) closeEditModal();
+            if (event.target === document.getElementById('confirmModal')) closeConfirmModal();
+            if (event.target === document.getElementById('bulkConfirmModal')) closeBulkConfirmModal();
         };
         
         loadVendorProducts();
