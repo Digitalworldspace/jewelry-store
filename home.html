@@ -303,14 +303,20 @@
         }
         .hero-btn:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(212,175,55,0.3); }
         
-        /* Featured Section */
+        /* Featured Section - 4 Products */
         .featured-section, .products-section { padding: 50px 15px 40px; }
         .section-header { text-align: center; margin-bottom: 35px; }
         .section-title { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; }
         .section-title::before, .section-title::after { content: '✦'; color: var(--gold); margin: 0 15px; }
         .section-subtitle { font-size: 14px; color: var(--gray); margin-top: 8px; }
         
-        .featured-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
         .products-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
         
         .featured-card, .product-card {
@@ -322,6 +328,17 @@
             cursor: pointer;
         }
         .featured-card:hover, .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); border-color: var(--gold); }
+        
+        .featured-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        .featured-card:hover .featured-image { transform: scale(1.05); }
+        .featured-info { padding: 15px; text-align: center; }
+        .featured-name { font-size: 16px; font-weight: 600; margin-bottom: 5px; }
+        .featured-price { font-size: 18px; font-weight: 700; color: var(--gold); }
         
         .product-image-container { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #f5f5f5; }
         .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
@@ -382,14 +399,21 @@
         
         @media (min-width: 768px) {
             .hero-title { font-size: 64px; }
-            .featured-grid { grid-template-columns: repeat(4, 1fr); max-width: 1200px; margin: 0 auto; }
+            .featured-grid { grid-template-columns: repeat(4, 1fr); max-width: 1000px; margin: 0 auto; }
             .products-grid { grid-template-columns: repeat(2, 1fr); max-width: 1200px; margin: 0 auto; }
             .features-grid { grid-template-columns: repeat(4, 1fr); }
             .story-ring { width: 85px; height: 85px; }
             .story-name { font-size: 12px; max-width: 85px; }
             .stories-container { gap: 20px; }
+            .featured-image { height: 200px; }
         }
         @media (min-width: 1024px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 640px) {
+            .featured-grid { gap: 12px; }
+            .featured-image { height: 140px; }
+            .featured-name { font-size: 13px; }
+            .featured-price { font-size: 14px; }
+        }
         @media (max-width: 480px) {
             .story-ring { width: 65px; height: 65px; }
             .story-name { font-size: 9px; max-width: 65px; }
@@ -433,9 +457,26 @@
         </div>
     </div>
     
-    <div class="featured-section"><div class="section-header"><h2 class="section-title">Editor's Pick</h2><div class="section-subtitle">Curated just for you</div></div><div class="featured-grid" id="featuredGrid"><div class="loading"><div class="spinner"></div></div></div></div>
+    <!-- Editor's Pick - 4 Products -->
+    <div class="featured-section">
+        <div class="section-header">
+            <h2 class="section-title">Editor's Pick</h2>
+            <div class="section-subtitle">Curated just for you</div>
+        </div>
+        <div class="featured-grid" id="featuredGrid">
+            <div class="loading"><div class="spinner"></div></div>
+        </div>
+    </div>
     
-    <div class="products-section"><div class="section-header"><h2 class="section-title">Our Collection</h2><div class="section-subtitle">Discover timeless masterpieces from our store and partner artisans</div></div><div class="products-grid" id="productsGrid"><div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div></div></div>
+    <div class="products-section">
+        <div class="section-header">
+            <h2 class="section-title">Our Collection</h2>
+            <div class="section-subtitle">Discover timeless masterpieces from our store and partner artisans</div>
+        </div>
+        <div class="products-grid" id="productsGrid">
+            <div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div>
+        </div>
+    </div>
     
     <div class="features-section"><div class="features-grid"><div class="feature-item"><div class="feature-icon"><i class="fas fa-gem"></i></div><div class="feature-title">Premium Quality</div><div class="feature-desc">Certified diamonds and finest metals</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-truck"></i></div><div class="feature-title">Free Shipping</div><div class="feature-desc">On orders above ₹3000</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><div class="feature-title">Secure Payments</div><div class="feature-desc">100% secure transactions</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-headset"></i></div><div class="feature-title">24/7 Support</div><div class="feature-desc">Dedicated customer care</div></div></div></div>
     
@@ -647,6 +688,55 @@
             }
         }
         
+        // ========== LOAD FEATURED (4 PRODUCTS FOR EDITOR'S PICK) ==========
+        async function loadFeatured() {
+            const container = document.getElementById('featuredGrid');
+            try {
+                // Fetch 2 from main and 2 from vendor for variety (total 4)
+                const [mainRes, vendorRes] = await Promise.all([
+                    supabase.from('products').select('*').limit(2),
+                    supabase.from('vendor_products').select('*').eq('status', 'approved').limit(2)
+                ]);
+                
+                const mainProducts = mainRes.data || [];
+                const vendorProducts = vendorRes.data || [];
+                
+                // Combine exactly 4 products (2+2)
+                let picks = [...mainProducts, ...vendorProducts];
+                
+                // If not enough, get more from whichever has more
+                if (picks.length < 4) {
+                    const extraMain = await supabase.from('products').select('*').limit(4 - picks.length);
+                    picks = [...picks, ...(extraMain.data || [])];
+                }
+                
+                // Shuffle the 4 picks
+                for (let i = picks.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [picks[i], picks[j]] = [picks[j], picks[i]];
+                }
+                
+                let html = '';
+                for (const p of picks.slice(0, 4)) {
+                    const img = p.image1_url || p.image2_url || p.image3_url || p.video_url || p.images_url_1 || 'https://via.placeholder.com/300x200';
+                    const { total } = calculateGST(p.price || 0, p.gst || 18);
+                    html += `
+                        <div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'>
+                            <img class="featured-image" src="${img}" alt="${escapeHtml(p.product_name || p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200'">
+                            <div class="featured-info">
+                                <div class="featured-name">${escapeHtml(p.product_name || p.name)}</div>
+                                <div class="featured-price">₹${total.toLocaleString()}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+            } catch(e) { 
+                console.error(e);
+                container.innerHTML = '<div class="empty-state">Unable to load featured products</div>';
+            }
+        }
+        
         // LOAD BOTH MAIN + APPROVED VENDOR PRODUCTS
         async function loadAllProducts() {
             const container = document.getElementById('productsGrid');
@@ -702,24 +792,6 @@
                 }
                 container.innerHTML = html;
             } catch(e) { console.error(e); container.innerHTML = '<div class="empty-state">Unable to load collection</div>'; }
-        }
-        
-        async function loadFeatured() {
-            const container = document.getElementById('featuredGrid');
-            try {
-                const [mainRes, vendorRes] = await Promise.all([
-                    supabase.from('products').select('*').limit(2),
-                    supabase.from('vendor_products').select('*').eq('status', 'approved').limit(2)
-                ]);
-                const picks = [...(mainRes.data || []), ...(vendorRes.data || [])].slice(0, 4);
-                let html = '';
-                for (const p of picks) {
-                    const img = p.images_url_1 || p.image1_url || 'https://via.placeholder.com/300x200';
-                    const { total } = calculateGST(p.price || 0, p.gst || 18);
-                    html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'><img class="featured-image" style="width:100%;height:160px;object-fit:cover;" src="${img}"><div class="featured-info" style="padding:12px;text-align:center;"><div class="featured-name">${escapeHtml(p.product_name || p.name)}</div><div class="featured-price">₹${total.toLocaleString()}</div></div></div>`;
-                }
-                container.innerHTML = html;
-            } catch(e) { console.error(e); }
         }
         
         window.openProductModal = function(product) {
