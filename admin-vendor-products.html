@@ -73,7 +73,7 @@
         .view-btn.active { background: var(--purple); color: white; }
         
         /* Stats Row */
-        .stats-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 30px; }
+        .stats-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; margin-bottom: 30px; }
         .stat-card { background: white; border-radius: 20px; padding: 15px; border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm); transition: all 0.3s; }
         .stat-card:hover { transform: translateY(-3px); border-color: var(--purple); }
         .stat-icon { font-size: 24px; color: var(--purple); margin-bottom: 8px; }
@@ -119,7 +119,7 @@
         
         .list-thumbnail { width: 50px; height: 50px; object-fit: cover; border-radius: 10px; cursor: pointer; }
         .media-icons { display: flex; gap: 5px; margin-top: 5px; }
-        .media-icon { font-size: 11px; padding: 2px 6px; border-radius: 20px; }
+        .media-icon { font-size: 11px; padding: 2px 6px; border-radius: 20px; display: inline-flex; align-items: center; gap: 3px; }
         .media-d360 { background: rgba(6,182,212,0.15); color: var(--cyan); }
         .media-video { background: rgba(236,72,153,0.15); color: var(--pink); }
         .media-img { background: rgba(139,92,246,0.15); color: var(--purple); }
@@ -129,7 +129,7 @@
         .status-pending-sm { background: rgba(245,158,11,0.15); color: #f59e0b; }
         .status-rejected-sm { background: rgba(239,68,68,0.15); color: #ef4444; }
         
-        .action-icons { display: flex; gap: 8px; }
+        .action-icons { display: flex; gap: 8px; flex-wrap: wrap; }
         .action-icon-btn { background: none; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 14px; }
         .action-icon-btn.approve { color: var(--success); }
         .action-icon-btn.approve:hover { background: rgba(16,185,129,0.15); }
@@ -143,7 +143,7 @@
         .action-icon-btn.view360:hover { background: rgba(6,182,212,0.15); }
         
         /* ========== GRID VIEW STYLES ========== */
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; margin-top: 20px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 25px; margin-top: 20px; }
         .product-card { background: white; border-radius: 24px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; box-shadow: var(--shadow-sm); position: relative; }
         .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--purple); }
         .product-card.selected { border: 2px solid var(--purple); background: rgba(139,92,246,0.02); }
@@ -152,8 +152,8 @@
         .product-badge { position: absolute; top: 12px; right: 12px; background: linear-gradient(135deg, var(--purple), #6d28d9); padding: 4px 12px; border-radius: 30px; font-size: 10px; font-weight: 600; color: white; z-index: 2; }
         .product-info { padding: 18px; }
         .product-name { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
-        .product-sku { font-size: 11px; color: var(--gray-500); margin-bottom: 8px; }
-        .vendor-id { font-size: 10px; color: var(--gray-500); margin-bottom: 8px; font-family: monospace; }
+        .product-sku { font-size: 11px; color: var(--gray-500); margin-bottom: 5px; }
+        .vendor-name { font-size: 11px; color: var(--purple); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; font-weight: 500; }
         .product-price { font-size: 22px; font-weight: 700; color: var(--purple); margin: 10px 0; }
         .diamond-specs { background: var(--gray-100); border-radius: 12px; padding: 8px; margin: 8px 0; display: flex; flex-wrap: wrap; gap: 6px; font-size: 10px; }
         .diamond-spec { background: white; padding: 2px 8px; border-radius: 20px; }
@@ -167,6 +167,7 @@
         .action-btn.reject { background: var(--danger); color: white; }
         .action-btn.edit { background: var(--info); color: white; }
         .action-btn.delete { background: rgba(239,68,68,0.1); color: var(--danger); }
+        .action-btn.delete:hover { background: var(--danger); color: white; }
         
         /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; }
@@ -198,14 +199,14 @@
         footer { background: var(--darker); color: white; text-align: center; padding: 25px; margin-top: 50px; }
         
         @media (max-width: 1024px) {
+            .stats-row { grid-template-columns: repeat(4, 1fr); }
             .list-view-table { font-size: 12px; }
             .list-view-table th, .list-view-table td { padding: 8px; }
-            .action-icons { gap: 4px; }
         }
         
         @media (max-width: 768px) {
             .admin-header { flex-direction: column; text-align: center; }
-            .stats-row { grid-template-columns: repeat(3, 1fr); }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
             .toolbar { flex-direction: column; }
             .list-view-table { display: none; }
             .mobile-list-card { display: block; }
@@ -239,7 +240,7 @@
                     <button class="view-btn" onclick="setView('list')"><i class="fas fa-list"></i> List</button>
                 </div>
             </div>
-            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | D360 Image/Video Support | Bulk Actions</p>
+            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Bulk Approve/Reject/Delete | D360 Support | Company Names</p>
         </div>
 
         <!-- Stats -->
@@ -249,6 +250,7 @@
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-number" id="pendingCount">0</div><div class="stat-label">Pending</div></div>
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-times-circle"></i></div><div class="stat-number" id="rejectedCount">0</div><div class="stat-label">Rejected</div></div>
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-cube"></i></div><div class="stat-number" id="d360Count">0</div><div class="stat-label">D360 Products</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-building"></i></div><div class="stat-number" id="companyCount">0</div><div class="stat-label">Companies</div></div>
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-rupee-sign"></i></div><div class="stat-number" id="totalValue">₹0</div><div class="stat-label">Total Value</div></div>
         </div>
 
@@ -258,13 +260,14 @@
             <div class="bulk-buttons">
                 <button class="btn-primary" onclick="bulkApprove()"><i class="fas fa-check-circle"></i> Bulk Approve</button>
                 <button class="btn-danger" onclick="bulkReject()"><i class="fas fa-times-circle"></i> Bulk Reject</button>
+                <button class="btn-danger" onclick="bulkDelete()" style="background: rgba(239,68,68,0.2); color: #ef4444;"><i class="fas fa-trash-alt"></i> Bulk Delete</button>
                 <button class="btn-secondary" onclick="clearSelection()"><i class="fas fa-times"></i> Clear</button>
             </div>
         </div>
 
         <!-- Toolbar -->
         <div class="toolbar">
-            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Search by name, SKU, vendor ID..."></div>
+            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Search by name, SKU, vendor, company..."></div>
             <div class="filter-group">
                 <select id="statusFilter" class="filter-select">
                     <option value="all">All Status</option>
@@ -366,7 +369,7 @@
         </div>
     </div>
 
-    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management System with D360 Support</p></footer>
+    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management with Bulk Actions & Company Names</p></footer>
 
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     <script type="module">
@@ -376,6 +379,7 @@
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let vendorProducts = [];
+        let vendorCompanies = new Map(); // Store company names by vendor_id
         let selectedProducts = new Set();
         let currentView = 'grid';
         let pendingBulkAction = null;
@@ -385,13 +389,6 @@
         function isD360Image(url) { return url && (url.includes('d360.tech/imaged/') || url.includes('/imaged/')); }
         function isD360Video(url) { return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); }
         function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com')); }
-        function getMediaType(url) {
-            if (!url) return null;
-            if (isD360Video(url)) return 'd360_video';
-            if (isD360Image(url)) return 'd360_image';
-            if (isVideoUrl(url)) return 'video';
-            return 'image';
-        }
         
         function showToast(msg, isErr = false) {
             const t = document.createElement('div');
@@ -403,8 +400,26 @@
         
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
         
+        // Load company names from vendors table
+        async function loadCompanyNames() {
+            try {
+                const { data, error } = await supabase.from('vendors').select('id, business_name');
+                if (!error && data) {
+                    vendorCompanies.clear();
+                    data.forEach(v => vendorCompanies.set(v.id, v.business_name || 'Unknown Company'));
+                }
+            } catch (err) {
+                console.error('Error loading companies:', err);
+            }
+        }
+        
+        function getCompanyName(vendorId) {
+            return vendorCompanies.get(vendorId) || `Vendor ${vendorId?.slice(0, 8)}...`;
+        }
+        
         async function loadVendorProducts() {
             try {
+                await loadCompanyNames();
                 const { data, error } = await supabase.from('vendor_products').select('*').order('id', { ascending: false });
                 if (error) throw error;
                 vendorProducts = data || [];
@@ -422,6 +437,7 @@
             const pending = vendorProducts.filter(p => p.status === 'pending').length;
             const rejected = vendorProducts.filter(p => p.status === 'rejected').length;
             const d360 = vendorProducts.filter(p => isD360Video(p.video_url) || isD360Image(p.image1_url) || isD360Image(p.image2_url)).length;
+            const uniqueCompanies = new Set(vendorProducts.map(p => p.vendor_id)).size;
             const totalValue = vendorProducts.reduce((sum, p) => sum + (p.price || 0), 0);
             
             document.getElementById('totalVendor').innerText = total;
@@ -429,6 +445,7 @@
             document.getElementById('pendingCount').innerText = pending;
             document.getElementById('rejectedCount').innerText = rejected;
             document.getElementById('d360Count').innerText = d360;
+            document.getElementById('companyCount').innerText = uniqueCompanies;
             document.getElementById('totalValue').innerHTML = `₹${(totalValue / 100000).toFixed(1)}L`;
         }
         
@@ -442,7 +459,8 @@
                 filtered = filtered.filter(p => 
                     (p.product_name || '').toLowerCase().includes(searchTerm) ||
                     (p.sku || '').toLowerCase().includes(searchTerm) ||
-                    (p.vendor_id || '').toLowerCase().includes(searchTerm)
+                    (p.vendor_id || '').toLowerCase().includes(searchTerm) ||
+                    getCompanyName(p.vendor_id).toLowerCase().includes(searchTerm)
                 );
             }
             if (statusFilter !== 'all') {
@@ -483,6 +501,7 @@
                 const isSelected = selectedProducts.has(p.id);
                 const hasD360 = isD360Video(p.video_url) || isD360Image(p.image1_url) || isD360Image(p.image2_url);
                 const hasVideo = isVideoUrl(p.video_url);
+                const companyName = getCompanyName(p.vendor_id);
                 
                 let mediaBadge = '';
                 if (hasD360) mediaBadge = '<span class="media-icon media-d360"><i class="fas fa-cube"></i> 360°</span>';
@@ -500,14 +519,15 @@
                         <div class="product-info">
                             <div class="product-name">${escapeHtml(p.product_name)} ${mediaBadge}</div>
                             <div class="product-sku">${p.sku || 'N/A'} | ${p.category || 'Jewelry'}</div>
-                            <div class="vendor-id"><i class="fas fa-id-card"></i> Vendor: ${p.vendor_id?.slice(0, 12)}...</div>
+                            <div class="vendor-name"><i class="fas fa-building"></i> ${escapeHtml(companyName)}</div>
                             <div class="product-price">₹${(p.price || 0).toLocaleString()} <span style="font-size:12px;">+ ${p.gst || 18}% GST</span></div>
+                            ${p.carat ? `<div class="diamond-specs"><span class="diamond-spec"><i class="fas fa-gem"></i> ${p.carat}ct</span>${p.diamond_color ? `<span class="diamond-spec">🎨 ${p.diamond_color}</span>` : ''}${p.diamond_clarity ? `<span class="diamond-spec">🔍 ${p.diamond_clarity}</span>` : ''}</div>` : ''}
                             <div class="status-badge ${statusClass}">${(p.status || 'pending').toUpperCase()}</div>
                             <div class="card-actions">
                                 <button class="action-btn edit" onclick="openEditModal(${p.id})"><i class="fas fa-edit"></i> Edit</button>
                                 ${p.status !== 'approved' ? `<button class="action-btn approve" onclick="approveProduct(${p.id})"><i class="fas fa-check"></i> Approve</button>` : ''}
                                 ${p.status !== 'rejected' ? `<button class="action-btn reject" onclick="rejectProduct(${p.id})"><i class="fas fa-times"></i> Reject</button>` : ''}
-                                <button class="action-btn delete" onclick="deleteProduct(${p.id})"><i class="fas fa-trash-alt"></i> Del</button>
+                                <button class="action-btn delete" onclick="deleteProduct(${p.id})"><i class="fas fa-trash-alt"></i> Delete</button>
                             </div>
                         </div>
                     </div>
@@ -531,12 +551,13 @@
                             <th style="width:40px"><input type="checkbox" id="listSelectAll" onchange="toggleSelectAllList()"></th>
                             <th style="width:70px">Image</th>
                             <th>Product</th>
+                            <th>Company/Vendor</th>
                             <th>SKU/Category</th>
                             <th>Price</th>
                             <th>Stock</th>
                             <th>Media</th>
                             <th>Status</th>
-                            <th style="width:150px">Actions</th>
+                            <th style="width:180px">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -549,6 +570,7 @@
                 const isSelected = selectedProducts.has(p.id);
                 const hasD360 = isD360Video(p.video_url) || isD360Image(p.image1_url) || isD360Image(p.image2_url);
                 const hasVideo = isVideoUrl(p.video_url);
+                const companyName = getCompanyName(p.vendor_id);
                 const statusClass = p.status === 'approved' ? 'status-approved-sm' : (p.status === 'rejected' ? 'status-rejected-sm' : 'status-pending-sm');
                 
                 let mediaIcons = '';
@@ -561,6 +583,7 @@
                         <td><input type="checkbox" class="list-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProductList(${p.id}, this.checked)"></td>
                         <td><img class="list-thumbnail" src="${imgUrl}" onclick="openMediaViewer(${p.id})" onerror="this.src='https://via.placeholder.com/50x50'"></td>
                         <td><strong>${escapeHtml(p.product_name)}</strong><br><span style="font-size:10px;color:var(--gray-500);">ID: ${p.id}</span></td>
+                        <td><i class="fas fa-building" style="color:var(--purple);"></i> ${escapeHtml(companyName)}<br><span style="font-size:10px;">ID: ${p.vendor_id?.slice(0, 12)}...</span></td>
                         <td>${p.sku || 'N/A'}<br><span style="font-size:10px;">${p.category || 'Jewelry'}</span></td>
                         <td>₹${(p.price || 0).toLocaleString()}<br><span style="font-size:10px;">+${p.gst || 18}% GST</span></td>
                         <td>${p.stock || 0}</td>
@@ -572,7 +595,7 @@
                             ${p.status !== 'approved' ? `<button class="action-icon-btn approve" onclick="approveProduct(${p.id})" title="Approve"><i class="fas fa-check"></i></button>` : ''}
                             ${p.status !== 'rejected' ? `<button class="action-icon-btn reject" onclick="rejectProduct(${p.id})" title="Reject"><i class="fas fa-times"></i></button>` : ''}
                             <button class="action-icon-btn delete" onclick="deleteProduct(${p.id})" title="Delete"><i class="fas fa-trash-alt"></i></button>
-                        </td>
+                         </td>
                     </tr>
                 `;
                 
@@ -580,6 +603,7 @@
                 mobileHtml += `
                     <div class="mobile-list-card">
                         <div class="mobile-list-row"><strong>${escapeHtml(p.product_name)}</strong></div>
+                        <div class="mobile-list-row"><span>Company:</span> <span>${escapeHtml(companyName)}</span></div>
                         <div class="mobile-list-row"><span>SKU:</span> <span>${p.sku}</span></div>
                         <div class="mobile-list-row"><span>Price:</span> <span>₹${(p.price || 0).toLocaleString()}</span></div>
                         <div class="mobile-list-row"><span>Status:</span> <span class="status-badge-sm ${statusClass}">${p.status || 'pending'}</span></div>
@@ -601,7 +625,7 @@
             applyFilters();
         };
         
-        window.toggleSelectProductList = toggleSelectProduct;
+        window.toggleSelectProductList = window.toggleSelectProduct;
         
         window.toggleSelectAll = function() {
             const filtered = getFilteredProducts();
@@ -615,17 +639,7 @@
             applyFilters();
         };
         
-        window.toggleSelectAllList = function() {
-            const listSelectAll = document.getElementById('listSelectAll');
-            const filtered = getFilteredProducts();
-            if (listSelectAll && listSelectAll.checked) {
-                filtered.forEach(p => selectedProducts.add(p.id));
-            } else if (listSelectAll) {
-                filtered.forEach(p => selectedProducts.delete(p.id));
-            }
-            updateBulkActionsBar();
-            applyFilters();
-        };
+        window.toggleSelectAllList = window.toggleSelectAll;
         
         function updateSelectAllCheckbox() {
             const filtered = getFilteredProducts();
@@ -738,30 +752,49 @@
         
         window.bulkApprove = function() {
             if (selectedProducts.size === 0) { showToast('No products selected', true); return; }
-            showBulkConfirm('<i class="fas fa-check-circle"></i> Bulk Approve', `Approve ${selectedProducts.size} product(s)? They will appear on the shop page.`, 'approve');
+            showBulkConfirm('<i class="fas fa-check-circle"></i> Bulk Approve', `Are you sure you want to APPROVE ${selectedProducts.size} product(s)? They will appear on the shop page.`, 'approve');
         };
         
         window.bulkReject = function() {
             if (selectedProducts.size === 0) { showToast('No products selected', true); return; }
-            showBulkConfirm('<i class="fas fa-times-circle"></i> Bulk Reject', `Reject ${selectedProducts.size} product(s)? They will NOT appear on the shop page.`, 'reject');
+            showBulkConfirm('<i class="fas fa-times-circle"></i> Bulk Reject', `Are you sure you want to REJECT ${selectedProducts.size} product(s)? They will NOT appear on the shop page.`, 'reject');
+        };
+        
+        window.bulkDelete = function() {
+            if (selectedProducts.size === 0) { showToast('No products selected', true); return; }
+            showBulkConfirm('<i class="fas fa-trash-alt"></i> Bulk Delete', `⚠️ WARNING: You are about to DELETE ${selectedProducts.size} product(s). This action CANNOT be undone! Are you sure?`, 'delete');
         };
         
         async function executeBulkAction() {
             const action = pendingBulkAction;
             const ids = Array.from(selectedProducts);
             let success = 0;
+            let failed = 0;
             
             for (const id of ids) {
-                if (action === 'approve') {
-                    const { error } = await supabase.from('vendor_products').update({ status: 'approved', updated_at: new Date() }).eq('id', id);
-                    if (!error) success++;
-                } else if (action === 'reject') {
-                    const { error } = await supabase.from('vendor_products').update({ status: 'rejected', updated_at: new Date() }).eq('id', id);
-                    if (!error) success++;
+                try {
+                    if (action === 'approve') {
+                        const { error } = await supabase.from('vendor_products').update({ status: 'approved', updated_at: new Date() }).eq('id', id);
+                        if (!error) success++;
+                        else failed++;
+                    } else if (action === 'reject') {
+                        const { error } = await supabase.from('vendor_products').update({ status: 'rejected', updated_at: new Date() }).eq('id', id);
+                        if (!error) success++;
+                        else failed++;
+                    } else if (action === 'delete') {
+                        const { error } = await supabase.from('vendor_products').delete().eq('id', id);
+                        if (!error) success++;
+                        else failed++;
+                    }
+                } catch (err) {
+                    failed++;
                 }
             }
             
-            showToast(action === 'approve' ? `✅ ${success} products approved` : `❌ ${success} products rejected`);
+            if (action === 'approve') showToast(`✅ ${success} products approved, ${failed} failed`);
+            else if (action === 'reject') showToast(`❌ ${success} products rejected, ${failed} failed`);
+            else showToast(`🗑️ ${success} products deleted, ${failed} failed`);
+            
             selectedProducts.clear();
             closeBulkConfirmModal();
             await loadVendorProducts();
@@ -787,7 +820,7 @@
         window.deleteProduct = function(id) {
             pendingDelete = id;
             const product = vendorProducts.find(p => p.id === id);
-            document.getElementById('modalMessage').innerHTML = `Delete "${escapeHtml(product?.product_name || 'this product')}"? This cannot be undone.`;
+            document.getElementById('modalMessage').innerHTML = `⚠️ Delete "${escapeHtml(product?.product_name || 'this product')}"? This action CANNOT be undone!`;
             document.getElementById('confirmModal').classList.add('active');
         };
         
@@ -890,12 +923,23 @@
         
         window.exportVendorCSV = function() {
             const exportData = vendorProducts.map(p => ({
-                'ID': p.id, 'SKU': p.sku, 'Product Name': p.product_name, 'Category': p.category,
-                'Price': p.price, 'GST %': p.gst, 'Stock': p.stock, 'Status': p.status,
-                'Vendor ID': p.vendor_id, 'Carat': p.carat || '', 'Diamond Color': p.diamond_color || '',
-                'Diamond Clarity': p.diamond_clarity || '', 'Diamond Cut': p.diamond_cut || '',
+                'ID': p.id,
+                'Product Name': p.product_name,
+                'Company Name': getCompanyName(p.vendor_id),
+                'SKU': p.sku,
+                'Category': p.category,
+                'Price': p.price,
+                'GST %': p.gst,
+                'Stock': p.stock,
+                'Status': p.status,
+                'Vendor ID': p.vendor_id,
+                'Carat': p.carat || '',
+                'Diamond Color': p.diamond_color || '',
+                'Diamond Clarity': p.diamond_clarity || '',
+                'Diamond Cut': p.diamond_cut || '',
                 'Has D360': isD360Video(p.video_url) || isD360Image(p.image1_url) ? 'Yes' : 'No',
-                'Has Video': isVideoUrl(p.video_url) ? 'Yes' : 'No'
+                'Has Video': isVideoUrl(p.video_url) ? 'Yes' : 'No',
+                'Created Date': new Date(p.created_at).toLocaleDateString()
             }));
             const ws = XLSX.utils.json_to_sheet(exportData);
             const wb = XLSX.utils.book_new();
