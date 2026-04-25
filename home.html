@@ -204,7 +204,7 @@
         }
         .hero-btn:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(212,175,55,0.3); }
         
-        /* Featured Section */
+        /* Featured Section - Small Cards (4 products) */
         .featured-section, .products-section { padding: 50px 15px 40px; }
         .section-header { text-align: center; margin-bottom: 35px; }
         .section-title { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; }
@@ -217,6 +217,42 @@
             gap: 20px;
             max-width: 1000px;
             margin: 0 auto;
+        }
+        
+        .featured-card {
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+        .featured-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); border-color: var(--gold); }
+        
+        .featured-image {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        .featured-card:hover .featured-image { transform: scale(1.05); }
+        
+        .featured-info {
+            padding: 12px;
+            text-align: center;
+        }
+        .featured-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .featured-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gold);
         }
         
         /* Product Gallery Styles */
@@ -363,7 +399,10 @@
         
         @media (min-width: 768px) {
             .hero-title { font-size: 64px; }
-            .featured-grid { grid-template-columns: repeat(4, 1fr); max-width: 1000px; }
+            .featured-grid { grid-template-columns: repeat(4, 1fr); max-width: 1000px; gap: 20px; }
+            .featured-image { height: 180px; }
+            .featured-name { font-size: 15px; }
+            .featured-price { font-size: 17px; }
             .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; max-width: 1200px; margin: 0 auto; }
             .features-grid { grid-template-columns: repeat(4, 1fr); }
             .story-ring { width: 85px; height: 85px; }
@@ -373,7 +412,9 @@
         @media (min-width: 1024px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 640px) {
             .featured-grid { gap: 12px; }
-            .featured-image { height: 140px; }
+            .featured-image { height: 120px; }
+            .featured-name { font-size: 12px; }
+            .featured-price { font-size: 14px; }
         }
         @media (max-width: 480px) {
             .story-ring { width: 65px; height: 65px; }
@@ -409,6 +450,7 @@
         </div>
     </div>
     
+    <!-- Editor's Pick - 4 products (small cards) -->
     <div class="featured-section">
         <div class="section-header">
             <h2 class="section-title">Editor's Pick</h2>
@@ -643,6 +685,7 @@
                                 <div class="story-ring"><img class="story-thumbnail" src="${thumb}" alt="${escapeHtml(p.product_name || p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/85'"></div>
                                 <div class="story-name">${escapeHtml(shortName)}${(p.product_name || p.name || '').length > 15 ? '...' : ''}</div>
                             </div>`;
+                    usedProductIds.add(p.id);
                 }
                 container.innerHTML = html;
                 
@@ -683,11 +726,14 @@
                 
                 let html = '';
                 for (const p of picks) {
-                    const img = p.image1_url || p.image2_url || p.image3_url || p.video_url || p.images_url_1 || 'https://via.placeholder.com/300x200';
+                    const img = p.image1_url || p.image2_url || p.image3_url || p.video_url || p.images_url_1 || 'https://via.placeholder.com/300x180';
                     const { total } = calculateGST(p.price || 0, p.gst || 18);
                     html += `<div class="featured-card" onclick='openProductModal(${JSON.stringify(p)})'>
-                                <img class="featured-image" src="${img}" alt="${escapeHtml(p.product_name || p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200'">
-                                <div class="featured-info"><div class="featured-name">${escapeHtml(p.product_name || p.name)}</div><div class="featured-price">₹${total.toLocaleString()}</div></div>
+                                <img class="featured-image" src="${img}" alt="${escapeHtml(p.product_name || p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180'">
+                                <div class="featured-info">
+                                    <div class="featured-name">${escapeHtml(p.product_name || p.name)}</div>
+                                    <div class="featured-price">₹${total.toLocaleString()}</div>
+                                </div>
                             </div>`;
                 }
                 container.innerHTML = html;
