@@ -44,6 +44,75 @@
         input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; }
         input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
         
+        /* NEW: Image Upload Styles */
+        .image-upload-area {
+            border: 2px dashed var(--gray-300);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--gray-100);
+            margin-bottom: 15px;
+        }
+        .image-upload-area:hover, .image-upload-area.drag-over {
+            border-color: var(--primary);
+            background: rgba(212,175,55,0.05);
+        }
+        .image-upload-area i { font-size: 40px; color: var(--primary); margin-bottom: 10px; }
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        .image-preview-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--gray-200);
+            background: var(--gray-100);
+        }
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .image-preview-item .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        .image-preview-item .remove-image:hover { background: var(--danger); }
+        .upload-progress {
+            height: 4px;
+            background: var(--gray-200);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 10px;
+            display: none;
+        }
+        .upload-progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
         .bulk-upload-section { background: var(--gray-100); border-radius: 12px; padding: 20px; margin-bottom: 20px; display: none; }
         .bulk-upload-area { border: 2px dashed var(--gray-300); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; }
         .bulk-upload-area:hover { border-color: var(--primary); background: rgba(212,175,55,0.05); }
@@ -132,6 +201,7 @@
             ✨ Product Management 
             <span class="live-badge"><i class="fas fa-database"></i> Supabase Connected</span>
             <span class="admin-badge"><i class="fas fa-bolt"></i> Batch Processing</span>
+            <span class="admin-badge" style="background: var(--info);"><i class="fas fa-upload"></i> Image Upload</span>
         </h1>
         
         <div class="status-bar" id="statusBar">
@@ -179,7 +249,7 @@
             <div id="bulkResult"></div>
         </div>
         
-        <!-- Add/Edit Product Form -->
+        <!-- Add/Edit Product Form with Image Upload -->
         <div id="productForm" class="form-card">
             <h2 style="margin-bottom: 20px; color: var(--primary);" id="formTitle">Add New Product</h2>
             <input type="hidden" id="productId">
@@ -194,6 +264,33 @@
             </div>
             
             <div class="form-group"><label>Description</label><textarea id="description" rows="2" placeholder="Product description..."></textarea></div>
+            
+            <!-- NEW: Image Upload Section -->
+            <div class="diamond-section">
+                <div class="diamond-title"><i class="fas fa-image"></i> Upload Product Images (JPEG, PNG, GIF, WebP, SVG)</div>
+                <div class="image-upload-area" id="imageUploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Click or drag & drop images here</p>
+                    <p style="font-size: 11px; color: var(--gray-600);">Supported formats: JPEG, PNG, GIF, WebP, SVG (Max 5MB each)</p>
+                    <input type="file" id="imageFileInput" multiple accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" style="display: none;">
+                </div>
+                <div class="upload-progress" id="imageUploadProgress"><div class="upload-progress-bar" id="imageUploadProgressFill"></div></div>
+                <div id="imagePreviewContainer" class="image-preview-container"></div>
+                <p style="font-size: 11px; margin-top: 10px; color: var(--gray-600);">
+                    <i class="fas fa-info-circle"></i> Uploaded images will be stored in Supabase Storage. You can also use image URLs below.
+                </p>
+            </div>
+            
+            <!-- Images Section (URLs as fallback) -->
+            <div class="diamond-section" style="margin-top: 15px;">
+                <div class="diamond-title"><i class="fas fa-link"></i> Image URLs (Alternative)</div>
+                <div class="form-group"><label>Images URL 1 (Main Image)</label><input type="url" id="images_url_1" placeholder="https://images.unsplash.com/..."></div>
+                <div class="form-group"><label>Images URL 2</label><input type="url" id="images_url_2" placeholder="https://images.unsplash.com/..."></div>
+                <div class="form-group"><label>Images URL 3</label><input type="url" id="images_url_3" placeholder="https://images.unsplash.com/..."></div>
+                <div class="form-group"><label>Video URL</label><input type="url" id="video_url" placeholder="https://cdn.pixabay.com/video/...mp4"></div>
+            </div>
+            
+            <div id="mediaPreview" class="media-preview"></div>
             
             <!-- Diamond Specifications Section -->
             <div class="diamond-section">
@@ -254,17 +351,6 @@
                 </div>
             </div>
             
-            <!-- Images Section -->
-            <div class="diamond-section" style="margin-top: 15px;">
-                <div class="diamond-title"><i class="fas fa-image"></i> Product Media</div>
-                <div class="form-group"><label>Images URL 1 (Main Image)</label><input type="url" id="images_url_1" placeholder="https://images.unsplash.com/..."></div>
-                <div class="form-group"><label>Images URL 2</label><input type="url" id="images_url_2" placeholder="https://images.unsplash.com/..."></div>
-                <div class="form-group"><label>Images URL 3</label><input type="url" id="images_url_3" placeholder="https://images.unsplash.com/..."></div>
-                <div class="form-group"><label>Video URL</label><input type="url" id="video_url" placeholder="https://cdn.pixabay.com/video/...mp4"></div>
-            </div>
-            
-            <div id="mediaPreview" class="media-preview"></div>
-            
             <div style="display: flex; gap: 15px; margin-top: 25px;">
                 <button class="btn" onclick="saveProduct()">💾 Save to Supabase</button>
                 <button class="btn btn-secondary" onclick="toggleForm()">❌ Cancel</button>
@@ -298,8 +384,12 @@
         if (!sessionStorage.getItem('adminLoggedIn')) window.location.href = 'login.html';
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        
+        // Supabase Storage bucket name (create this bucket in your Supabase Storage)
+        const STORAGE_BUCKET = 'product-images';
         let pendingAction = null;
         let allProductsData = [];
+        let uploadedImageUrls = [];
         
         const BATCH_SIZE = 500;
         
@@ -322,22 +412,129 @@
             return { gstAmount, total };
         }
         
-        function getMediaArray() {
-            const media = [];
-            const img1 = document.getElementById('images_url_1').value.trim();
-            const img2 = document.getElementById('images_url_2').value.trim();
-            const img3 = document.getElementById('images_url_3').value.trim();
+        // ========== IMAGE UPLOAD FUNCTIONS ==========
+        async function uploadImageToSupabase(file) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+            const filePath = `${fileName}`;
+            
+            const { data, error } = await supabase.storage
+                .from(STORAGE_BUCKET)
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+            
+            if (error) throw error;
+            
+            const { data: publicUrlData } = supabase.storage
+                .from(STORAGE_BUCKET)
+                .getPublicUrl(filePath);
+            
+            return publicUrlData.publicUrl;
+        }
+        
+        async function uploadMultipleImages(files) {
+            const progressBar = document.getElementById('imageUploadProgress');
+            const progressFill = document.getElementById('imageUploadProgressFill');
+            progressBar.style.display = 'block';
+            
+            let uploaded = [];
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const percent = ((i + 1) / files.length) * 100;
+                progressFill.style.width = `${percent}%`;
+                
+                try {
+                    const url = await uploadImageToSupabase(file);
+                    uploaded.push(url);
+                    showToast(`Uploaded: ${file.name}`);
+                } catch (err) {
+                    console.error('Upload failed:', err);
+                    showToast(`Failed to upload ${file.name}`, true);
+                }
+            }
+            
+            progressBar.style.display = 'none';
+            progressFill.style.width = '0%';
+            return uploaded;
+        }
+        
+        function updateImagePreview(urls) {
+            const container = document.getElementById('imagePreviewContainer');
+            if (!urls.length) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            urls.forEach((url, index) => {
+                html += `
+                    <div class="image-preview-item">
+                        <img src="${url}" alt="Preview">
+                        <button class="remove-image" onclick="removeUploadedImage(${index})">×</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+        
+        window.removeUploadedImage = function(index) {
+            uploadedImageUrls.splice(index, 1);
+            updateImagePreview(uploadedImageUrls);
+        };
+        
+        // Setup image upload handlers
+        const imageUploadArea = document.getElementById('imageUploadArea');
+        const imageFileInput = document.getElementById('imageFileInput');
+        
+        if (imageUploadArea) {
+            imageUploadArea.addEventListener('click', () => imageFileInput.click());
+            imageUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                imageUploadArea.classList.add('drag-over');
+            });
+            imageUploadArea.addEventListener('dragleave', () => {
+                imageUploadArea.classList.remove('drag-over');
+            });
+            imageUploadArea.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                imageUploadArea.classList.remove('drag-over');
+                const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+                if (files.length) {
+                    const newUrls = await uploadMultipleImages(files);
+                    uploadedImageUrls.push(...newUrls);
+                    updateImagePreview(uploadedImageUrls);
+                }
+            });
+            
+            imageFileInput.addEventListener('change', async (e) => {
+                const files = Array.from(e.target.files);
+                if (files.length) {
+                    const newUrls = await uploadMultipleImages(files);
+                    uploadedImageUrls.push(...newUrls);
+                    updateImagePreview(uploadedImageUrls);
+                }
+                imageFileInput.value = '';
+            });
+        }
+        
+        function getImagesArray() {
+            const urls = [...uploadedImageUrls];
+            const url1 = document.getElementById('images_url_1').value.trim();
+            const url2 = document.getElementById('images_url_2').value.trim();
+            const url3 = document.getElementById('images_url_3').value.trim();
             const video = document.getElementById('video_url').value.trim();
-            if (img1) media.push(img1);
-            if (img2) media.push(img2);
-            if (img3) media.push(img3);
-            if (video) media.push(video);
-            return media;
+            if (url1 && !urls.includes(url1)) urls.push(url1);
+            if (url2 && !urls.includes(url2)) urls.push(url2);
+            if (url3 && !urls.includes(url3)) urls.push(url3);
+            if (video && !urls.includes(video)) urls.push(video);
+            return urls;
         }
         
         function updateMediaPreview() {
             const container = document.getElementById('mediaPreview');
-            const media = getMediaArray();
+            const media = getImagesArray();
             if (media.length === 0) {
                 container.innerHTML = '';
                 return;
@@ -354,10 +551,17 @@
         }
         
         window.removeMedia = function(index) {
-            if (index === 0) document.getElementById('images_url_1').value = '';
-            if (index === 1) document.getElementById('images_url_2').value = '';
-            if (index === 2) document.getElementById('images_url_3').value = '';
-            if (index === 3) document.getElementById('video_url').value = '';
+            const allImages = getImagesArray();
+            if (index < uploadedImageUrls.length) {
+                uploadedImageUrls.splice(index, 1);
+                updateImagePreview(uploadedImageUrls);
+            } else {
+                const urlIndex = index - uploadedImageUrls.length;
+                if (urlIndex === 0) document.getElementById('images_url_1').value = '';
+                if (urlIndex === 1) document.getElementById('images_url_2').value = '';
+                if (urlIndex === 2) document.getElementById('images_url_3').value = '';
+                if (urlIndex === 3) document.getElementById('video_url').value = '';
+            }
             updateMediaPreview();
         };
         
@@ -375,48 +579,47 @@
         
         window.saveProduct = async function() {
             const productId = document.getElementById('productId').value;
-            const sku = document.getElementById('sku').value.trim();
-            const product_name = document.getElementById('product_name').value.trim();
-            const category = document.getElementById('category').value.trim();
-            const price = parseFloat(document.getElementById('price').value);
-            const gst = parseFloat(document.getElementById('gst').value) || 18;
-            const stock = parseInt(document.getElementById('stock').value);
-            const description = document.getElementById('description').value.trim();
-            const carat = document.getElementById('carat').value ? parseFloat(document.getElementById('carat').value) : null;
-            const diamond_color = document.getElementById('diamond_color').value || null;
-            const diamond_clarity = document.getElementById('diamond_clarity').value || null;
-            const diamond_cut = document.getElementById('diamond_cut').value || null;
-            const diamond_polish = document.getElementById('diamond_polish').value || null;
-            const diamond_symmetry = document.getElementById('diamond_symmetry').value || null;
-            const images_url_1 = document.getElementById('images_url_1').value.trim() || null;
-            const images_url_2 = document.getElementById('images_url_2').value.trim() || null;
-            const images_url_3 = document.getElementById('images_url_3').value.trim() || null;
-            const video_url = document.getElementById('video_url').value.trim() || null;
+            const images = getImagesArray();
             
-            if (!sku || !product_name || !category || isNaN(price) || isNaN(stock)) {
+            const productData = {
+                sku: document.getElementById('sku').value.trim(),
+                product_name: document.getElementById('product_name').value.trim(),
+                category: document.getElementById('category').value.trim(),
+                price: parseFloat(document.getElementById('price').value),
+                gst: parseFloat(document.getElementById('gst').value) || 18,
+                stock: parseInt(document.getElementById('stock').value),
+                description: document.getElementById('description').value.trim(),
+                carat: document.getElementById('carat').value ? parseFloat(document.getElementById('carat').value) : null,
+                diamond_color: document.getElementById('diamond_color').value || null,
+                diamond_clarity: document.getElementById('diamond_clarity').value || null,
+                diamond_cut: document.getElementById('diamond_cut').value || null,
+                diamond_polish: document.getElementById('diamond_polish').value || null,
+                diamond_symmetry: document.getElementById('diamond_symmetry').value || null,
+                images: images,
+                images_url_1: images[0] || null,
+                images_url_2: images[1] || null,
+                images_url_3: images[2] || null,
+                video_url: document.getElementById('video_url').value.trim() || null
+            };
+            
+            if (!productData.sku || !productData.product_name || !productData.category || isNaN(productData.price) || isNaN(productData.stock)) {
                 showToast('Please fill all required fields (SKU, Product Name, Category, Price, Stock)', true);
                 return;
             }
-            if (price <= 0) { showToast('Price must be greater than 0', true); return; }
-            
-            const productData = { 
-                sku, product_name, category, price, gst, stock, description,
-                carat, diamond_color, diamond_clarity, diamond_cut, diamond_polish, diamond_symmetry,
-                images_url_1, images_url_2, images_url_3, video_url
-            };
+            if (productData.price <= 0) { showToast('Price must be greater than 0', true); return; }
             
             try {
                 let result;
                 if (productId) {
                     result = await supabase.from('products').update(productData).eq('id', parseInt(productId));
                     if (result.error) throw result.error;
-                    showToast(`✅ Product "${product_name}" updated in Supabase!`);
+                    showToast(`✅ Product "${productData.product_name}" updated in Supabase!`);
                 } else {
-                    const { data: existing } = await supabase.from('products').select('id').eq('sku', sku).maybeSingle();
-                    if (existing) { showToast(`SKU "${sku}" already exists!`, true); return; }
+                    const { data: existing } = await supabase.from('products').select('id').eq('sku', productData.sku).maybeSingle();
+                    if (existing) { showToast(`SKU "${productData.sku}" already exists!`, true); return; }
                     result = await supabase.from('products').insert([productData]);
                     if (result.error) throw result.error;
-                    showToast(`✅ Product "${product_name}" added to Supabase!`);
+                    showToast(`✅ Product "${productData.product_name}" added to Supabase!`);
                 }
                 toggleForm();
                 loadProducts();
@@ -446,6 +649,8 @@
             document.getElementById('images_url_2').value = '';
             document.getElementById('images_url_3').value = '';
             document.getElementById('video_url').value = '';
+            uploadedImageUrls = [];
+            updateImagePreview([]);
             updateMediaPreview();
             document.getElementById('formTitle').textContent = 'Add New Product';
         }
@@ -489,7 +694,11 @@
                 document.getElementById('images_url_2').value = data.images_url_2 || '';
                 document.getElementById('images_url_3').value = data.images_url_3 || '';
                 document.getElementById('video_url').value = data.video_url || '';
+                
+                uploadedImageUrls = data.images || [];
+                updateImagePreview(uploadedImageUrls);
                 updateMediaPreview();
+                
                 document.getElementById('formTitle').textContent = 'Edit Product';
                 document.getElementById('productForm').style.display = 'block';
                 document.getElementById('bulkUploadSection').style.display = 'none';
@@ -513,7 +722,7 @@
                 }
                 let html = '';
                 for (const p of data) {
-                    const firstImage = p.images_url_1 || p.images_url_2 || p.video_url || 'https://via.placeholder.com/300x250?text=No+Image';
+                    const firstImage = p.images?.[0] || p.images_url_1 || p.images_url_2 || p.video_url || 'https://via.placeholder.com/300x250?text=No+Image';
                     const isVideo = firstImage && (firstImage.match(/\.(mp4|webm|mov|avi)$/i) || firstImage.includes('youtube.com') || firstImage.includes('vimeo.com'));
                     const stockClass = p.stock <= 0 ? 'out-of-stock' : (p.stock < 10 ? 'low-stock' : 'in-stock');
                     const stockText = p.stock <= 0 ? 'Out of Stock' : (p.stock < 10 ? `Low Stock (${p.stock})` : `In Stock (${p.stock})`);
