@@ -97,6 +97,35 @@
         .bulk-count { font-weight: 700; color: var(--purple); font-size: 18px; }
         .bulk-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
         
+        /* Bulk Progress Bar */
+        .bulk-progress-container {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--gray-200);
+            display: none;
+        }
+        .bulk-progress-container.active { display: block; }
+        .bulk-progress-bar {
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .bulk-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--purple), #6d28d9);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .bulk-progress-text {
+            font-size: 13px;
+            color: var(--gray-600);
+            text-align: center;
+        }
+        
         /* Toolbar */
         .toolbar { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; background: white; padding: 15px 20px; border-radius: 20px; border: 1px solid var(--gray-200); }
         .search-box { flex: 1; min-width: 200px; display: flex; align-items: center; gap: 10px; background: var(--gray-100); padding: 8px 15px; border-radius: 40px; }
@@ -240,7 +269,7 @@
                     <button class="view-btn" onclick="setView('list')"><i class="fas fa-list"></i> List</button>
                 </div>
             </div>
-            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Bulk Approve/Reject/Delete | D360 Support | Company Names</p>
+            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Fast Bulk Actions | D360 Support | Company Names</p>
         </div>
 
         <!-- Stats -->
@@ -252,6 +281,15 @@
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-cube"></i></div><div class="stat-number" id="d360Count">0</div><div class="stat-label">D360 Products</div></div>
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-building"></i></div><div class="stat-number" id="companyCount">0</div><div class="stat-label">Companies</div></div>
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-rupee-sign"></i></div><div class="stat-number" id="totalValue">₹0</div><div class="stat-label">Total Value</div></div>
+        </div>
+
+        <!-- Bulk Progress Bar -->
+        <div id="bulkProgressContainer" class="bulk-progress-container">
+            <div class="bulk-progress-text" id="bulkProgressText">Processing bulk action...</div>
+            <div class="bulk-progress-bar">
+                <div class="bulk-progress-fill" id="bulkProgressFill"></div>
+            </div>
+            <div class="bulk-progress-text" id="bulkProgressCount">0 / 0 completed</div>
         </div>
 
         <!-- Bulk Actions Bar -->
@@ -369,7 +407,7 @@
         </div>
     </div>
 
-    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management with Bulk Actions & Company Names</p></footer>
+    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management with Fast Bulk Actions</p></footer>
 
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     <script type="module">
@@ -379,7 +417,7 @@
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let vendorProducts = [];
-        let vendorCompanies = new Map(); // Store company names by vendor_id
+        let vendorCompanies = new Map();
         let selectedProducts = new Set();
         let currentView = 'grid';
         let pendingBulkAction = null;
@@ -400,7 +438,6 @@
         
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
         
-        // Load company names from vendors table
         async function loadCompanyNames() {
             try {
                 const { data, error } = await supabase.from('vendors').select('id, business_name');
@@ -599,7 +636,6 @@
                     </tr>
                 `;
                 
-                // Mobile card view
                 mobileHtml += `
                     <div class="mobile-list-card">
                         <div class="mobile-list-row"><strong>${escapeHtml(p.product_name)}</strong></div>
@@ -612,7 +648,7 @@
                 `;
             }
             
-            tableHtml += '</tbody></table>' + `<div class="mobile-list-container">${mobileHtml}</div>`;
+            tableHtml += '</tbody><table>' + `<div class="mobile-list-container">${mobileHtml}</div>`;
             container.innerHTML = tableHtml;
         }
         
@@ -737,7 +773,35 @@
             document.getElementById('viewerContent').innerHTML = '';
         };
         
-        // Bulk Actions
+        // ========== FAST BULK ACTIONS WITH PROGRESS ==========
+        function showBulkProgress(total, action) {
+            const container = document.getElementById('bulkProgressContainer');
+            const progressFill = document.getElementById('bulkProgressFill');
+            const progressText = document.getElementById('bulkProgressText');
+            const progressCount = document.getElementById('bulkProgressCount');
+            
+            container.classList.add('active');
+            progressFill.style.width = '0%';
+            progressText.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${action} products...`;
+            progressCount.innerHTML = `0 / ${total} completed`;
+        }
+        
+        function updateBulkProgress(current, total) {
+            const progressFill = document.getElementById('bulkProgressFill');
+            const progressCount = document.getElementById('bulkProgressCount');
+            const percent = (current / total) * 100;
+            progressFill.style.width = `${percent}%`;
+            progressCount.innerHTML = `${current} / ${total} completed`;
+        }
+        
+        function hideBulkProgress() {
+            const container = document.getElementById('bulkProgressContainer');
+            setTimeout(() => {
+                container.classList.remove('active');
+                document.getElementById('bulkProgressFill').style.width = '0%';
+            }, 1500);
+        }
+        
         function showBulkConfirm(title, message, action) {
             pendingBulkAction = action;
             document.getElementById('bulkConfirmTitle').innerHTML = title;
@@ -768,35 +832,56 @@
         async function executeBulkAction() {
             const action = pendingBulkAction;
             const ids = Array.from(selectedProducts);
+            const total = ids.length;
+            
+            closeBulkConfirmModal();
+            showBulkProgress(total, action === 'approve' ? 'Approving' : (action === 'reject' ? 'Rejecting' : 'Deleting'));
+            
             let success = 0;
             let failed = 0;
+            const BATCH_SIZE = 50; // Process 50 items at once for better performance
             
-            for (const id of ids) {
+            for (let i = 0; i < ids.length; i += BATCH_SIZE) {
+                const batch = ids.slice(i, i + BATCH_SIZE);
+                
                 try {
                     if (action === 'approve') {
-                        const { error } = await supabase.from('vendor_products').update({ status: 'approved', updated_at: new Date() }).eq('id', id);
-                        if (!error) success++;
-                        else failed++;
+                        const { error } = await supabase
+                            .from('vendor_products')
+                            .update({ status: 'approved', updated_at: new Date() })
+                            .in('id', batch);
+                        if (!error) success += batch.length;
+                        else failed += batch.length;
                     } else if (action === 'reject') {
-                        const { error } = await supabase.from('vendor_products').update({ status: 'rejected', updated_at: new Date() }).eq('id', id);
-                        if (!error) success++;
-                        else failed++;
+                        const { error } = await supabase
+                            .from('vendor_products')
+                            .update({ status: 'rejected', updated_at: new Date() })
+                            .in('id', batch);
+                        if (!error) success += batch.length;
+                        else failed += batch.length;
                     } else if (action === 'delete') {
-                        const { error } = await supabase.from('vendor_products').delete().eq('id', id);
-                        if (!error) success++;
-                        else failed++;
+                        const { error } = await supabase
+                            .from('vendor_products')
+                            .delete()
+                            .in('id', batch);
+                        if (!error) success += batch.length;
+                        else failed += batch.length;
                     }
                 } catch (err) {
-                    failed++;
+                    failed += batch.length;
                 }
+                
+                updateBulkProgress(Math.min(i + BATCH_SIZE, total), total);
+                await new Promise(r => setTimeout(r, 50)); // Small delay to avoid rate limiting
             }
+            
+            hideBulkProgress();
             
             if (action === 'approve') showToast(`✅ ${success} products approved, ${failed} failed`);
             else if (action === 'reject') showToast(`❌ ${success} products rejected, ${failed} failed`);
             else showToast(`🗑️ ${success} products deleted, ${failed} failed`);
             
             selectedProducts.clear();
-            closeBulkConfirmModal();
             await loadVendorProducts();
         }
         
@@ -918,7 +1003,6 @@
             document.getElementById('editModal').classList.remove('active');
         };
         
-        // Other Functions
         window.refreshVendorProducts = function() { loadVendorProducts(); showToast('Refreshing...'); };
         
         window.exportVendorCSV = function() {
@@ -957,7 +1041,6 @@
             window.location.href = 'login.html';
         };
         
-        // Event Listeners for modals
         window.onclick = function(event) {
             if (event.target === document.getElementById('viewerModal')) closeViewerModal();
             if (event.target === document.getElementById('editModal')) closeEditModal();
