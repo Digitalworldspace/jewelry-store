@@ -503,7 +503,7 @@
                     <div id="bulkResult"></div>
                     
                     <div class="format-hint">
-                        <strong>📋 Excel Format Required - Download Sample Below:</strong><br>
+                        <strong>📋 Excel Format Required - Download Sample Below (Use exact lowercase column names):</strong><br>
                         <code>sku | product_name | category | price | gst | stock | description | image1_url | image2_url | image3_url | video_url | carat | diamond_color | diamond_clarity | diamond_cut | diamond_polish | diamond_symmetry</code>
                     </div>
                     
@@ -702,7 +702,7 @@
             const { data, error } = await supabase.from('vendor_orders').select('*').eq('vendor_id', currentCompanyId).order('created_at', { ascending: false });
             if (error || !data?.length) { container.innerHTML = '<div class="loading">📭 No orders yet for your products</div>'; return; }
             let html = '<table class="orders-table"><thead><tr><th>Order ID</th><th>Product</th><th>Quantity</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
-            data.forEach(o => { html += `<tr><td><strong>${o.order_id}</strong></td><td>${escapeHtml(o.product_name)}</td>\n<td>${o.quantity}</td>\n<td>₹${o.total_amount.toLocaleString()}</td>\n<td><span style="background:rgba(0,212,255,0.2); padding:2px 8px; border-radius:20px;">${o.order_status || 'Pending'}</span></td>\n<td>${new Date(o.created_at).toLocaleDateString()}</td>\n</tr>`; });
+            data.forEach(o => { html += `<tr><td><strong>${o.order_id}</strong></td><td>${escapeHtml(o.product_name)}</td><td>${o.quantity}</td><td>₹${o.total_amount.toLocaleString()}</td><td><span style="background:rgba(0,212,255,0.2); padding:2px 8px; border-radius:20px;">${o.order_status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`; });
             html += '</tbody></table>';
             container.innerHTML = html;
         }
@@ -789,7 +789,7 @@
         };
         
         // ============================================
-        // SAMPLE EXCEL DOWNLOAD - MATCHING DATABASE COLUMNS
+        // SAMPLE EXCEL DOWNLOAD - CORRECT LOWERCASE COLUMN NAMES
         // ============================================
         window.downloadSampleExcel = function() {
             const sampleData = [{
@@ -810,13 +810,50 @@
                 'diamond_cut': 'Excellent',
                 'diamond_polish': 'Excellent',
                 'diamond_symmetry': 'Excellent'
-            ];
+            },
+            {
+                'sku': 'NECK-001',
+                'product_name': 'Pearl Gold Necklace',
+                'category': 'Necklaces',
+                'price': 45999,
+                'gst': 18,
+                'stock': 25,
+                'description': 'Elegant pearl necklace with 18k gold chain',
+                'image1_url': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400',
+                'image2_url': '',
+                'image3_url': '',
+                'video_url': '',
+                'carat': '',
+                'diamond_color': '',
+                'diamond_clarity': '',
+                'diamond_cut': '',
+                'diamond_polish': '',
+                'diamond_symmetry': ''
+            },
+            {
+                'sku': 'EAR-001',
+                'product_name': 'Diamond Stud Earrings',
+                'category': 'Earrings',
+                'price': 18999,
+                'gst': 18,
+                'stock': 50,
+                'description': 'Classic diamond stud earrings',
+                'image1_url': 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400',
+                'image2_url': '',
+                'image3_url': '',
+                'video_url': '',
+                'carat': 0.50,
+                'diamond_color': 'G',
+                'diamond_clarity': 'SI1',
+                'diamond_cut': 'Very Good',
+                'diamond_polish': 'Very Good',
+                'diamond_symmetry': 'Good'
+            }];
             
             const ws = XLSX.utils.json_to_sheet(sampleData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Sample Products');
             
-            // Set column widths for better readability
             ws['!cols'] = [
                 {wch:12}, {wch:25}, {wch:15}, {wch:12}, {wch:10}, 
                 {wch:8}, {wch:40}, {wch:50}, {wch:50}, {wch:50}, 
@@ -853,7 +890,9 @@
             });
         });
         
-        // Bulk Upload
+        // ============================================
+        // CORRECTED BULK UPLOAD - MATCHES DATABASE COLUMNS
+        // ============================================
         document.getElementById('bulkUploadArea')?.addEventListener('click', () => document.getElementById('bulkFileInput').click());
         document.getElementById('bulkFileInput')?.addEventListener('change', async (e) => {
             const file = e.target.files[0];
@@ -894,35 +933,70 @@
                     const productsToInsert = [];
                     
                     for (const row of batch) {
-                        const sku = row.SKU || row.sku || '';
-                        const product_name = row['Product Name'] || row.product_name || '';
-                        const category = row.Category || row.category || '';
-                        const price = parseFloat(row['Price (₹)'] || row.Price || row.price || 0);
-                        const gst = parseFloat(row['GST (%)'] || row.GST || row.gst || 18);
-                        const stock = parseInt(row.Stock || row.stock || 0);
-                        const description = row.Description || row.description || '';
-                        const image1_url = row['Image URL 1'] || row.image1_url || '';
-                        const image2_url = row['Image URL 2'] || row.image2_url || '';
-                        const image3_url = row['Image URL 3'] || row.image3_url || '';
-                        const video_url = row['Video URL'] || row.video_url || '';
-                        const carat = row.Carat || row.carat ? parseFloat(row.Carat || row.carat) : null;
-                        const diamond_color = row['Diamond Color'] || row.diamond_color || null;
-                        const diamond_clarity = row['Diamond Clarity'] || row.diamond_clarity || null;
-                        const diamond_cut = row['Diamond Cut'] || row.diamond_cut || null;
-                        const diamond_polish = row['Diamond Polish'] || row.diamond_polish || null;
-                        const diamond_symmetry = row['Diamond Symmetry'] || row.diamond_symmetry || null;
+                        // Use lowercase column names to match sample format
+                        const sku = row.sku || row.SKU || '';
+                        const product_name = row.product_name || row['Product Name'] || '';
+                        const category = row.category || row.Category || '';
+                        const price = parseFloat(row.price || row.Price || row['Price (₹)'] || 0);
+                        const gst = parseFloat(row.gst || row.GST || row['GST (%)'] || 18);
+                        const stock = parseInt(row.stock || row.Stock || 0);
+                        const description = row.description || row.Description || '';
+                        const image1_url = row.image1_url || row['Image URL 1'] || '';
+                        const image2_url = row.image2_url || row['Image URL 2'] || '';
+                        const image3_url = row.image3_url || row['Image URL 3'] || '';
+                        const video_url = row.video_url || row['Video URL'] || '';
+                        const carat = (row.carat || row.Carat) ? parseFloat(row.carat || row.Carat) : null;
+                        const diamond_color = row.diamond_color || row['Diamond Color'] || null;
+                        const diamond_clarity = row.diamond_clarity || row['Diamond Clarity'] || null;
+                        const diamond_cut = row.diamond_cut || row['Diamond Cut'] || null;
+                        const diamond_polish = row.diamond_polish || row['Diamond Polish'] || null;
+                        const diamond_symmetry = row.diamond_symmetry || row['Diamond Symmetry'] || null;
                         
-                        if (existingSkus.has(sku)) { duplicateSkips++; errorList.push(`Row ${start + batch.indexOf(row) + 1}: SKU "${sku}" already exists`); continue; }
-                        if (!sku || !product_name || !category || isNaN(price) || price <= 0) { errors++; errorList.push(`Row ${start + batch.indexOf(row) + 1}: Missing required fields`); continue; }
+                        if (existingSkus.has(sku)) { 
+                            duplicateSkips++; 
+                            errorList.push(`Row ${start + batch.indexOf(row) + 1}: SKU "${sku}" already exists`); 
+                            continue; 
+                        }
+                        if (!sku || !product_name || !category || isNaN(price) || price <= 0) { 
+                            errors++; 
+                            errorList.push(`Row ${start + batch.indexOf(row) + 1}: Missing required fields (sku, product_name, category, price)`); 
+                            continue; 
+                        }
                         
-                        productsToInsert.push({ vendor_id: currentCompanyId, sku, product_name, category, price, gst, stock, description, image1_url, image2_url, image3_url, video_url, carat, diamond_color, diamond_clarity, diamond_cut, diamond_polish, diamond_symmetry, status: 'pending', created_at: new Date(), updated_at: new Date() });
+                        productsToInsert.push({ 
+                            vendor_id: currentCompanyId, 
+                            sku: sku.toString(),
+                            product_name: product_name.toString(),
+                            category: category.toString(),
+                            price: price,
+                            gst: gst,
+                            stock: stock,
+                            description: description || '',
+                            image1_url: image1_url || '',
+                            image2_url: image2_url || '',
+                            image3_url: image3_url || '',
+                            video_url: video_url || '',
+                            carat: carat,
+                            diamond_color: diamond_color,
+                            diamond_clarity: diamond_clarity,
+                            diamond_cut: diamond_cut,
+                            diamond_polish: diamond_polish,
+                            diamond_symmetry: diamond_symmetry,
+                            status: 'pending',
+                            created_at: new Date(),
+                            updated_at: new Date()
+                        });
                         existingSkus.add(sku);
                     }
                     
                     if (productsToInsert.length > 0) {
                         const { error } = await supabase.from('vendor_products').insert(productsToInsert);
-                        if (error) { errors += productsToInsert.length; errorList.push(`Batch ${batchNum + 1}: ${error.message}`); }
-                        else success += productsToInsert.length;
+                        if (error) { 
+                            errors += productsToInsert.length; 
+                            errorList.push(`Batch ${batchNum + 1}: ${error.message}`); 
+                        } else {
+                            success += productsToInsert.length;
+                        }
                     }
                     
                     const percent = 10 + ((batchNum + 1) / totalBatches) * 85;
@@ -933,10 +1007,25 @@
                 
                 progressFill.style.width = '100%';
                 batchStatus.innerHTML = `✅ Complete! ${success} products uploaded`;
-                resultDiv.innerHTML = `<div style="background:rgba(0,212,255,0.15); padding:15px; border-radius:12px; margin-top:15px;"><strong>✅ Upload Complete!</strong><br>Success: ${success}<br>Errors: ${errors}<br>Duplicates: ${duplicateSkips}</div>`;
-                if (success > 0) { showToast(`✅ ${success} products uploaded!`); await loadProducts(); await loadDashboard(); }
+                resultDiv.innerHTML = `<div style="background:rgba(0,212,255,0.15); padding:20px; border-radius:16px; margin-top:20px;">
+                    <strong>✅ Upload Complete!</strong><br>
+                    Success: ${success}<br>
+                    Errors: ${errors}<br>
+                    Duplicates Skipped: ${duplicateSkips}<br>
+                    Total Rows Processed: ${totalRows}
+                    ${errorList.length > 0 ? `<details style="margin-top:10px;"><summary>View Errors (${errorList.length})</summary><div style="font-size:11px; margin-top:8px;">${errorList.slice(0,10).join('<br>')}${errorList.length > 10 ? '<br>... and more' : ''}</div></details>` : ''}
+                </div>`;
+                if (success > 0) { 
+                    showToast(`✅ ${success} products uploaded!`); 
+                    await loadProducts(); 
+                    await loadDashboard(); 
+                }
                 setTimeout(() => { progressBar.style.display = 'none'; }, 5000);
-            } catch (err) { showToast('Error: ' + err.message, true); progressBar.style.display = 'none'; }
+            } catch (err) { 
+                showToast('Error: ' + err.message, true); 
+                progressBar.style.display = 'none';
+                resultDiv.innerHTML = `<div style="background:rgba(239,68,68,0.2); padding:15px; border-radius:12px; margin-top:15px;"><strong>❌ Error:</strong> ${err.message}</div>`;
+            }
             e.target.value = '';
         });
         
