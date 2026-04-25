@@ -701,8 +701,8 @@
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading orders...</p></div>';
             const { data, error } = await supabase.from('vendor_orders').select('*').eq('vendor_id', currentCompanyId).order('created_at', { ascending: false });
             if (error || !data?.length) { container.innerHTML = '<div class="loading">📭 No orders yet for your products</div>'; return; }
-            let html = '<table class="orders-table"><thead><tr><th>Order ID</th><th>Product</th><th>Quantity</th><th>Amount</th><th>Status</th><th>Date</th><tr></thead><tbody>';
-            data.forEach(o => { html += `<tr><td><strong>${o.order_id}</strong></td><td>${escapeHtml(o.product_name)}</td</td><td>${o.quantity}</td</td><td>₹${o.total_amount.toLocaleString()}</td<td><span style="background:rgba(0,212,255,0.2); padding:2px 8px; border-radius:20px;">${o.order_status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td</tr>`; });
+            let html = '<table class="orders-table"><thead><tr><th>Order ID</th><th>Product</th><th>Quantity</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
+            data.forEach(o => { html += `<tr><td><strong>${o.order_id}</strong></td><td>${escapeHtml(o.product_name)}</td>\n<td>${o.quantity}</td>\n<td>₹${o.total_amount.toLocaleString()}</td>\n<td><span style="background:rgba(0,212,255,0.2); padding:2px 8px; border-radius:20px;">${o.order_status || 'Pending'}</span></td>\n<td>${new Date(o.created_at).toLocaleDateString()}</td>\n</tr>`; });
             html += '</tbody></table>';
             container.innerHTML = html;
         }
@@ -789,7 +789,7 @@
         };
         
         // ============================================
-        // UPDATED SAMPLE EXCEL DOWNLOAD - MATCHING DATABASE COLUMNS
+        // SAMPLE EXCEL DOWNLOAD - MATCHING DATABASE COLUMNS
         // ============================================
         window.downloadSampleExcel = function() {
             const sampleData = [{
