@@ -3,167 +3,400 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Admin Login - Style Of Life</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Login - Style Of Life | Admin & Vendor Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #d4af37;
+            --primary-dark: #b8962e;
+            --primary-light: #f5e6c6;
+            --white: #ffffff;
+            --white-light: #f8f9fa;
+            --gray-100: #f1f3f5;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --dark: #1a1a1a;
+            --darker: #0a0a0a;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --purple: #8b5cf6;
+            --cyan: #06b6d4;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
         }
+        
         .login-container {
-            max-width: 420px;
+            max-width: 450px;
             width: 100%;
         }
-        .logo {
+        
+        /* Role Selector Tabs */
+        .role-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 60px;
+            padding: 6px;
+        }
+        
+        .role-tab {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 50px;
             text-align: center;
-            margin-bottom: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: rgba(255,255,255,0.7);
         }
-        .logo h1 {
-            font-size: 32px;
-            font-weight: 700;
-            color: #d4af37;
+        
+        .role-tab i { font-size: 18px; }
+        
+        .role-tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--darker);
+            box-shadow: 0 5px 15px rgba(212,175,55,0.3);
         }
-        .logo p {
-            color: #888;
-            font-size: 14px;
-            margin-top: 5px;
-        }
+        
+        .role-tab.admin.active { background: linear-gradient(135deg, var(--purple), #6d28d9); color: white; }
+        .role-tab.vendor.active { background: linear-gradient(135deg, var(--cyan), #0891b2); color: white; }
+        
+        /* Login Cards */
         .login-card {
-            background: white;
-            border-radius: 24px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 32px;
             padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            transition: all 0.3s ease;
         }
-        .login-header {
+        
+        .logo {
             text-align: center;
             margin-bottom: 30px;
         }
-        .login-header i {
-            font-size: 48px;
-            color: #d4af37;
-            margin-bottom: 15px;
+        
+        .logo h1 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
-        .login-header h2 {
-            font-size: 24px;
-            font-weight: 600;
-            color: #1a1a1a;
-        }
-        .login-header p {
+        
+        .logo p {
+            color: var(--gray-600);
             font-size: 13px;
-            color: #666;
             margin-top: 5px;
         }
+        
         .form-group {
             margin-bottom: 20px;
         }
+        
         .form-group label {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
-            color: #333;
+            color: var(--gray-700);
             font-size: 13px;
         }
+        
         .form-group input {
             width: 100%;
             padding: 14px 16px;
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
             font-size: 14px;
             transition: all 0.3s;
         }
+        
         .form-group input:focus {
             outline: none;
-            border-color: #d4af37;
+            border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(212,175,55,0.1);
         }
+        
         .login-btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #d4af37, #b8962e);
-            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--darker);
             border: none;
-            border-radius: 12px;
+            border-radius: 40px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
             margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
+        
+        .login-btn.admin-btn {
+            background: linear-gradient(135deg, var(--purple), #6d28d9);
+            color: white;
+        }
+        
+        .login-btn.vendor-btn {
+            background: linear-gradient(135deg, var(--cyan), #0891b2);
+            color: white;
+        }
+        
         .login-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(212,175,55,0.3);
+            box-shadow: 0 5px 20px rgba(212,175,55,0.3);
         }
-        .error-message {
-            background: #fee2e2;
-            color: #dc2626;
-            padding: 12px;
-            border-radius: 10px;
+        
+        .login-btn.admin-btn:hover { box-shadow: 0 5px 20px rgba(139,92,246,0.3); }
+        .login-btn.vendor-btn:hover { box-shadow: 0 5px 20px rgba(6,182,212,0.3); }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-200);
             font-size: 13px;
+            color: var(--gray-600);
+        }
+        
+        .register-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .error-message {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.2);
+            color: var(--danger);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 12px;
             margin-top: 15px;
             text-align: center;
+            display: none;
         }
+        
         .info-text {
             text-align: center;
             margin-top: 20px;
-            font-size: 12px;
-            color: #888;
+            font-size: 11px;
+            color: var(--gray-500);
         }
-        .info-text a {
-            color: #d4af37;
-            text-decoration: none;
+        
+        .demo-credentials {
+            background: var(--gray-100);
+            border-radius: 16px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 11px;
+        }
+        
+        .demo-credentials h4 {
+            font-size: 12px;
+            margin-bottom: 10px;
+            color: var(--gray-700);
+        }
+        
+        .demo-credentials p {
+            color: var(--gray-600);
+            margin-bottom: 5px;
+            font-family: monospace;
+        }
+        
+        @media (max-width: 768px) {
+            .login-card { padding: 30px 25px; }
+            .role-tab { padding: 10px 15px; font-size: 14px; }
         }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <div class="logo">
-            <h1>STYLE OF LIFE</h1>
-            <p>ADMIN PORTAL</p>
+        <div class="role-tabs" id="roleTabs">
+            <div class="role-tab admin active" data-role="admin">
+                <i class="fas fa-crown"></i> Admin
+            </div>
+            <div class="role-tab vendor" data-role="vendor">
+                <i class="fas fa-store"></i> Vendor
+            </div>
         </div>
-        <div class="login-card">
-            <div class="login-header">
-                <i class="fas fa-crown"></i>
-                <h2>Admin Login</h2>
-                <p>Enter your credentials to access the admin panel</p>
+        
+        <div class="login-card" id="loginCard">
+            <!-- Admin Login Form -->
+            <div id="adminForm">
+                <div class="logo">
+                    <h1>STYLE OF LIFE</h1>
+                    <p>Admin Portal</p>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Admin Email</label>
+                    <input type="email" id="adminEmail" placeholder="admin@styleoflife.com" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="adminPassword" placeholder="Enter password" autocomplete="current-password">
+                </div>
+                <button class="login-btn admin-btn" onclick="adminLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Login as Admin
+                </button>
+                <div id="adminError" class="error-message"></div>
             </div>
-            <div class="form-group">
-                <label><i class="fas fa-envelope"></i> Email Address</label>
-                <input type="email" id="email" placeholder="admin@styleoflife.com" autocomplete="email">
+            
+            <!-- Vendor Login Form -->
+            <div id="vendorForm" style="display: none;">
+                <div class="logo">
+                    <h1>STYLE OF LIFE</h1>
+                    <p>Vendor Portal</p>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Vendor Email</label>
+                    <input type="email" id="vendorEmail" placeholder="vendor@example.com" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="vendorPassword" placeholder="Enter password" autocomplete="current-password">
+                </div>
+                <button class="login-btn vendor-btn" onclick="vendorLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Login as Vendor
+                </button>
+                <div class="register-link">
+                    <p>New vendor? <a id="showRegisterBtn">Register your business</a></p>
+                </div>
+                <div id="vendorError" class="error-message"></div>
             </div>
-            <div class="form-group">
-                <label><i class="fas fa-lock"></i> Password</label>
-                <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password">
-            </div>
-            <button class="login-btn" onclick="login()">
-                <i class="fas fa-sign-in-alt"></i> Login
-            </button>
-            <div id="errorMessage" class="error-message" style="display: none;"></div>
+            
             <div class="info-text">
-                <i class="fas fa-shield-alt"></i> Secure admin access only
+                <i class="fas fa-shield-alt"></i> Secure role-based access
             </div>
+            
+            <!-- Demo Credentials -->
+            <div class="demo-credentials">
+                <h4><i class="fas fa-info-circle"></i> Demo Credentials</h4>
+                <p><strong>Admin:</strong> admin@styleoflife.com / admin123</p>
+                <p><strong>Vendor:</strong> vendor@example.com / vendor123</p>
+                <p style="font-size: 10px; margin-top: 8px;">* Register as vendor if you don't have an account</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Vendor Registration Modal -->
+    <div id="registerModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 2000; justify-content: center; align-items: center;">
+        <div style="background: white; border-radius: 28px; max-width: 500px; width: 90%; padding: 30px; max-height: 85vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: var(--cyan);"><i class="fas fa-store"></i> Vendor Registration</h2>
+                <button onclick="closeRegisterModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Business Name *</label>
+                    <input type="text" id="regBusinessName" required placeholder="Your business/company name">
+                </div>
+                <div class="form-group">
+                    <label>Owner Name *</label>
+                    <input type="text" id="regOwnerName" required placeholder="Full name">
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="regEmail" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="password" id="regPassword" required placeholder="Create password (min 6 characters)">
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password *</label>
+                    <input type="password" id="regConfirmPassword" required placeholder="Confirm password">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="regPhone" maxlength="10" placeholder="10-digit mobile number">
+                </div>
+                <div class="form-group">
+                    <label>GST Number (Optional)</label>
+                    <input type="text" id="regGst" placeholder="GSTIN">
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea id="regAddress" rows="2" placeholder="Business address"></textarea>
+                </div>
+                <button type="submit" class="login-btn vendor-btn" style="width:100%;">
+                    <i class="fas fa-user-plus"></i> Register as Vendor
+                </button>
+                <div id="registerError" class="error-message" style="margin-top: 15px;"></div>
+            </form>
         </div>
     </div>
 
     <script type="importmap">
         { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
     </script>
+    
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        let currentRole = 'admin';
         
-        window.login = async () => {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('errorMessage');
+        // Role switching
+        const roleTabs = document.querySelectorAll('.role-tab');
+        const adminForm = document.getElementById('adminForm');
+        const vendorForm = document.getElementById('vendorForm');
+        
+        roleTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const role = tab.dataset.role;
+                currentRole = role;
+                
+                roleTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                if (role === 'admin') {
+                    adminForm.style.display = 'block';
+                    vendorForm.style.display = 'none';
+                } else {
+                    adminForm.style.display = 'none';
+                    vendorForm.style.display = 'block';
+                }
+            });
+        });
+        
+        // ========== ADMIN LOGIN ==========
+        window.adminLogin = async () => {
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
+            const errorDiv = document.getElementById('adminError');
             
             if (!email || !password) {
                 errorDiv.style.display = 'block';
@@ -174,60 +407,280 @@
             errorDiv.style.display = 'none';
             
             try {
+                // First check if admin exists in admin_users table
+                const { data: adminData, error: adminError } = await supabase
+                    .from('admin_users')
+                    .select('*')
+                    .eq('email', email)
+                    .maybeSingle();
+                
+                if (adminError) throw adminError;
+                
+                // If admin found in admin_users, authenticate
+                if (adminData) {
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+                    
+                    if (error) {
+                        if (error.message.includes('Invalid login credentials')) {
+                            errorDiv.style.display = 'block';
+                            errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Invalid admin credentials';
+                        } else {
+                            errorDiv.style.display = 'block';
+                            errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + error.message;
+                        }
+                        return;
+                    }
+                    
+                    if (data.session) {
+                        sessionStorage.setItem('adminLoggedIn', 'true');
+                        sessionStorage.setItem('userRole', 'admin');
+                        sessionStorage.setItem('userEmail', email);
+                        window.location.href = 'admin.html';
+                    }
+                } else {
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Admin account not found. Please use valid admin email.';
+                }
+                
+            } catch (error) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Login failed. Please try again.';
+                console.error('Admin login error:', error);
+            }
+        };
+        
+        // ========== VENDOR LOGIN ==========
+        window.vendorLogin = async () => {
+            const email = document.getElementById('vendorEmail').value.trim();
+            const password = document.getElementById('vendorPassword').value;
+            const errorDiv = document.getElementById('vendorError');
+            
+            if (!email || !password) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please enter both email and password';
+                return;
+            }
+            
+            errorDiv.style.display = 'none';
+            
+            try {
+                // First check if vendor exists in vendors table
+                const { data: vendorData, error: vendorError } = await supabase
+                    .from('vendors')
+                    .select('id, email, status')
+                    .eq('email', email)
+                    .maybeSingle();
+                
+                if (vendorError) throw vendorError;
+                
+                if (!vendorData) {
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Vendor account not found. Please register first.';
+                    return;
+                }
+                
+                if (vendorData.status === 'rejected') {
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Your vendor application has been rejected. Please contact support.';
+                    return;
+                }
+                
+                if (vendorData.status === 'pending') {
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = '<i class="fas fa-clock"></i> Your vendor application is pending approval. Please wait for admin approval.';
+                    return;
+                }
+                
+                // Authenticate with Supabase
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
                 
                 if (error) {
-                    errorDiv.style.display = 'block';
-                    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + error.message;
+                    if (error.message.includes('Invalid login credentials')) {
+                        errorDiv.style.display = 'block';
+                        errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Invalid vendor credentials';
+                    } else {
+                        errorDiv.style.display = 'block';
+                        errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + error.message;
+                    }
                     return;
                 }
                 
                 if (data.session) {
-                    sessionStorage.setItem('adminLoggedIn', 'true');
-                    sessionStorage.setItem('adminEmail', email);
-                    window.location.href = 'admin-products.html';
+                    sessionStorage.setItem('vendorLoggedIn', 'true');
+                    sessionStorage.setItem('userRole', 'vendor');
+                    sessionStorage.setItem('userEmail', email);
+                    window.location.href = 'vendor.html';
                 }
                 
             } catch (error) {
                 errorDiv.style.display = 'block';
                 errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Login failed. Please try again.';
+                console.error('Vendor login error:', error);
             }
         };
         
-        // Enter key to login
-        document.getElementById('password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                login();
-            }
-        });
-    </script>
-</body>
-</html>    <script>
-        function login() {
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const errorDiv = document.getElementById('errorMessage');
+        // ========== VENDOR REGISTRATION ==========
+        const registerModal = document.getElementById('registerModal');
+        
+        window.showRegisterModal = () => {
+            registerModal.style.display = 'flex';
+        };
+        
+        window.closeRegisterModal = () => {
+            registerModal.style.display = 'none';
+            document.getElementById('registerForm').reset();
+        };
+        
+        document.getElementById('showRegisterBtn')?.addEventListener('click', showRegisterModal);
+        
+        document.getElementById('registerForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
             
-            if (username === 'admin' && password === '1234') {
-                sessionStorage.setItem('adminLoggedIn', 'true');
-                window.location.href = 'admin.html';
-            } else {
+            const businessName = document.getElementById('regBusinessName').value.trim();
+            const ownerName = document.getElementById('regOwnerName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            const phone = document.getElementById('regPhone').value.trim();
+            const gstNumber = document.getElementById('regGst').value.trim();
+            const address = document.getElementById('regAddress').value.trim();
+            const errorDiv = document.getElementById('registerError');
+            
+            errorDiv.style.display = 'none';
+            
+            // Validation
+            if (!businessName || !ownerName || !email || !password) {
                 errorDiv.style.display = 'block';
-                errorDiv.textContent = '❌ Invalid username or password. Please try again.';
-                document.getElementById('password').value = '';
-                setTimeout(() => { errorDiv.style.display = 'none'; }, 3000);
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please fill all required fields';
+                return;
             }
-        }
-        
-        document.getElementById('password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') login();
+            
+            if (password.length < 6) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Password must be at least 6 characters';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Passwords do not match';
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please enter a valid email address';
+                return;
+            }
+            
+            const registerBtn = document.querySelector('#registerForm .login-btn');
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+            
+            try {
+                // Check if vendor already exists
+                const { data: existingVendor } = await supabase
+                    .from('vendors')
+                    .select('email')
+                    .eq('email', email)
+                    .maybeSingle();
+                
+                if (existingVendor) {
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> A vendor with this email already exists. Please login.';
+                    registerBtn.disabled = false;
+                    registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Register as Vendor';
+                    return;
+                }
+                
+                // Create auth user
+                const { data: authData, error: authError } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            business_name: businessName,
+                            owner_name: ownerName,
+                            role: 'vendor'
+                        }
+                    }
+                });
+                
+                if (authError) throw authError;
+                
+                if (authData.user) {
+                    // Create vendor record
+                    const { error: vendorError } = await supabase.from('vendors').insert([{
+                        id: authData.user.id,
+                        business_name: businessName,
+                        owner_name: ownerName,
+                        email: email,
+                        phone: phone || null,
+                        gst_number: gstNumber || null,
+                        address: address || null,
+                        status: 'pending'
+                    }]);
+                    
+                    if (vendorError) throw vendorError;
+                    
+                    // Show success message
+                    errorDiv.style.display = 'block';
+                    errorDiv.style.background = 'rgba(16,185,129,0.1)';
+                    errorDiv.style.color = '#10b981';
+                    errorDiv.style.borderColor = 'rgba(16,185,129,0.2)';
+                    errorDiv.innerHTML = '<i class="fas fa-check-circle"></i> Registration successful! Please wait for admin approval. You will be notified once approved.';
+                    
+                    setTimeout(() => {
+                        closeRegisterModal();
+                        errorDiv.style.display = 'none';
+                        errorDiv.style.background = '';
+                        errorDiv.style.color = '';
+                    }, 4000);
+                }
+                
+            } catch (error) {
+                errorDiv.style.display = 'block';
+                errorDiv.style.background = 'rgba(239,68,68,0.1)';
+                errorDiv.style.color = '#ef4444';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Registration failed: ' + error.message;
+                console.error('Registration error:', error);
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Register as Vendor';
+            }
         });
         
+        // Enter key to login
+        document.getElementById('adminPassword')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') adminLogin();
+        });
+        
+        document.getElementById('vendorPassword')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') vendorLogin();
+        });
+        
+        // Phone number validation
+        document.getElementById('regPhone')?.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+        });
+        
+        // Close modal on outside click
+        registerModal?.addEventListener('click', (e) => {
+            if (e.target === registerModal) closeRegisterModal();
+        });
+        
+        // Check if already logged in
         if (sessionStorage.getItem('adminLoggedIn') === 'true') {
             window.location.href = 'admin.html';
+        } else if (sessionStorage.getItem('vendorLoggedIn') === 'true') {
+            window.location.href = 'vendor.html';
         }
     </script>
 </body>
