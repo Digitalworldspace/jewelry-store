@@ -57,10 +57,50 @@
         .section-subtitle { font-size: 14px; color: var(--gray); margin-top: 8px; }
         
         .featured-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .products-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
         
-        .featured-card, .product-card { background: var(--white); border-radius: 20px; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); transition: all 0.4s ease; cursor: pointer; }
-        .featured-card:hover, .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); border-color: var(--gold); }
+        /* ========== NEW: IMAGE SLIDER / CAROUSEL STYLES ========== */
+        .products-slider {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            padding: 0 0 30px 0;
+        }
+        .slider-container {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            padding: 10px 20px;
+            scrollbar-width: thin;
+        }
+        .slider-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        .slider-container::-webkit-scrollbar-track {
+            background: var(--gray-200);
+            border-radius: 10px;
+        }
+        .slider-container::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 10px;
+        }
+        .product-card {
+            flex: 0 0 280px;
+            scroll-snap-align: start;
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--gold);
+        }
         
         .product-image-container { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #f5f5f5; }
         .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
@@ -68,18 +108,67 @@
         
         .vendor-badge { position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, var(--purple), #6d28d9); color: white; font-size: 10px; padding: 4px 10px; border-radius: 20px; z-index: 5; display: flex; align-items: center; gap: 4px; }
         .main-badge { position: absolute; top: 10px; left: 10px; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); font-size: 10px; padding: 4px 10px; border-radius: 20px; z-index: 5; display: flex; align-items: center; gap: 4px; }
+        .media-count-badge { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; font-size: 10px; padding: 4px 8px; border-radius: 20px; z-index: 5; display: flex; align-items: center; gap: 4px; }
         
         .product-info { padding: 15px; }
         .product-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
         .product-sku { font-size: 11px; color: var(--gray-light); margin-bottom: 8px; }
         .product-desc { font-size: 13px; color: var(--gray); line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .product-price { font-size: 22px; font-weight: 700; color: var(--gold); margin-bottom: 4px; }
+        .product-price small { font-size: 11px; color: var(--gray); font-weight: normal; }
         
         .product-buttons-icon { display: flex; gap: 12px; margin-top: 12px; }
         .btn-icon-buy, .btn-icon-cart { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; border: none; font-size: 18px; }
         .btn-icon-buy { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); }
         .btn-icon-cart { background: var(--white); border: 1.5px solid var(--gold); color: var(--gold); }
         .btn-icon-buy:hover, .btn-icon-cart:hover { transform: translateY(-3px) scale(1.05); }
+        
+        /* Slider Navigation Buttons */
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            z-index: 10;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .slider-nav:hover {
+            background: var(--gold);
+            color: var(--black);
+            transform: translateY(-50%) scale(1.1);
+        }
+        .slider-nav-left { left: 5px; }
+        .slider-nav-right { right: 5px; }
+        
+        /* Slider Indicator Dots */
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        .slider-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gray-light);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .slider-dot.active {
+            width: 24px;
+            border-radius: 4px;
+            background: var(--gold);
+        }
         
         .features-section { padding: 60px 20px; background: linear-gradient(135deg, var(--black) 0%, #1a1a1a 100%); color: white; }
         .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; max-width: 1000px; margin: 0 auto; text-align: center; }
@@ -109,10 +198,17 @@
         @media (min-width: 768px) {
             .hero-title { font-size: 64px; }
             .featured-grid { grid-template-columns: repeat(4, 1fr); max-width: 1200px; margin: 0 auto; }
-            .products-grid { grid-template-columns: repeat(2, 1fr); max-width: 1200px; margin: 0 auto; }
+            .product-card { flex: 0 0 300px; }
             .features-grid { grid-template-columns: repeat(4, 1fr); }
+            .slider-nav-left { left: 15px; }
+            .slider-nav-right { right: 15px; }
         }
-        @media (min-width: 1024px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 1024px) { 
+            .product-card { flex: 0 0 320px; }
+        }
+        @media (max-width: 480px) {
+            .product-card { flex: 0 0 260px; }
+        }
     </style>
 </head>
 <body>
@@ -139,7 +235,26 @@
     
     <div class="featured-section"><div class="section-header"><h2 class="section-title">Editor's Pick</h2><div class="section-subtitle">Curated just for you</div></div><div class="featured-grid" id="featuredGrid"><div class="loading"><div class="spinner"></div></div></div></div>
     
-    <div class="products-section"><div class="section-header"><h2 class="section-title">Our Collection</h2><div class="section-subtitle">Discover timeless masterpieces from our store and partner artisans</div></div><div class="products-grid" id="productsGrid"><div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div></div></div>
+    <div class="products-section">
+        <div class="section-header">
+            <h2 class="section-title">Our Collection</h2>
+            <div class="section-subtitle">Discover timeless masterpieces from our store and partner artisans</div>
+        </div>
+        
+        <!-- Image Slider / Carousel -->
+        <div class="products-slider" id="productsSlider">
+            <div class="slider-container" id="sliderContainer">
+                <div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div>
+            </div>
+            <div class="slider-nav slider-nav-left" id="sliderNavLeft" style="display: none;">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="slider-nav slider-nav-right" id="sliderNavRight" style="display: none;">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="slider-dots" id="sliderDots"></div>
+        </div>
+    </div>
     
     <div class="features-section"><div class="features-grid"><div class="feature-item"><div class="feature-icon"><i class="fas fa-gem"></i></div><div class="feature-title">Premium Quality</div><div class="feature-desc">Certified diamonds and finest metals</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-truck"></i></div><div class="feature-title">Free Shipping</div><div class="feature-desc">On orders above ₹3000</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><div class="feature-title">Secure Payments</div><div class="feature-desc">100% secure transactions</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-headset"></i></div><div class="feature-title">24/7 Support</div><div class="feature-desc">Dedicated customer care</div></div></div></div>
     
@@ -156,6 +271,9 @@
         if (!sessionId) { sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); localStorage.setItem('sessionId', sessionId); }
         
         let currentCart = [];
+        let allProductsList = [];
+        let currentSlideIndex = 0;
+        let slideInterval;
         
         function calculateGST(price, gstPercent) { const gst = (price * gstPercent) / 100; return { gstAmount: gst, total: price + gst }; }
         function navigateTo(page) { window.location.href = page + '.html'; }
@@ -182,12 +300,158 @@
         
         window.buyNow = async (id, name, price, sku, img, gst) => { await addToCart(id, name, price, sku, img, gst); setTimeout(() => navigateTo('checkout'), 600); };
         
+        // Function to count media (images + videos)
+        function getMediaCount(product) {
+            let count = 0;
+            if (product.images_url_1 || product.image1_url) count++;
+            if (product.images_url_2 || product.image2_url) count++;
+            if (product.images_url_3 || product.image3_url) count++;
+            if (product.video_url) count++;
+            return count;
+        }
+        
+        // Render slider with products
+        function renderSlider(products) {
+            const container = document.getElementById('sliderContainer');
+            const leftNav = document.getElementById('sliderNavLeft');
+            const rightNav = document.getElementById('sliderNavRight');
+            const dotsContainer = document.getElementById('sliderDots');
+            
+            if (!products.length) {
+                container.innerHTML = '<div class="empty-state">✨ Our collection is being curated. Check back soon!</div>';
+                leftNav.style.display = 'none';
+                rightNav.style.display = 'none';
+                dotsContainer.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            for (let i = 0; i < products.length; i++) {
+                const p = products[i];
+                const img = p.images_url_1 || p.image1_url || p.images_url_2 || p.image2_url || p.images_url_3 || p.image3_url || p.video_url || 'https://via.placeholder.com/400x400?text=Style';
+                const gstPercent = p.gst || 18;
+                const { total } = calculateGST(p.price || 0, gstPercent);
+                const badge = p.source === 'vendor' 
+                    ? '<div class="vendor-badge"><i class="fas fa-store"></i> Artisan</div>' 
+                    : '<div class="main-badge"><i class="fas fa-crown"></i> Style Of Life</div>';
+                const mediaCount = getMediaCount(p);
+                const mediaBadge = mediaCount > 1 ? `<div class="media-count-badge"><i class="fas fa-images"></i> ${mediaCount}</div>` : '';
+                
+                html += `
+                    <div class="product-card" data-slide-index="${i}" onclick='openProductModal(${JSON.stringify(p)})'>
+                        <div class="product-image-container">
+                            ${badge}
+                            ${mediaBadge}
+                            <img class="product-image" src="${img}" alt="${escapeHtml(p.product_name || p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/400'">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">${escapeHtml(p.product_name || p.name)}</div>
+                            <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
+                            <div class="product-desc">${escapeHtml((p.description || '').substring(0, 80))}${(p.description || '').length > 80 ? '...' : ''}</div>
+                            <div class="product-price">₹${total.toLocaleString()} <small>Incl. GST</small></div>
+                            <div class="product-buttons-icon" onclick="event.stopPropagation()">
+                                <button class="btn-icon-buy" onclick="event.stopPropagation(); buyNow('${p.id}', '${escapeHtml(p.product_name || p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}', ${gstPercent})"><i class="fas fa-bolt"></i></button>
+                                <button class="btn-icon-cart" onclick="event.stopPropagation(); addToCart('${p.id}', '${escapeHtml(p.product_name || p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}', ${gstPercent})"><i class="fas fa-shopping-cart"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+            
+            // Show/hide navigation based on scroll availability
+            if (products.length > 3) {
+                leftNav.style.display = 'flex';
+                rightNav.style.display = 'flex';
+                setupSliderDots(products.length);
+                setupSliderScroll();
+                startAutoSlide();
+            } else {
+                leftNav.style.display = 'none';
+                rightNav.style.display = 'none';
+                dotsContainer.innerHTML = '';
+            }
+        }
+        
+        function setupSliderDots(productCount) {
+            const dotsContainer = document.getElementById('sliderDots');
+            let dotsHtml = '';
+            for (let i = 0; i < Math.ceil(productCount / 2); i++) {
+                dotsHtml += `<div class="slider-dot ${i === 0 ? 'active' : ''}" data-dot-index="${i}"></div>`;
+            }
+            dotsContainer.innerHTML = dotsHtml;
+            
+            // Add click events to dots
+            document.querySelectorAll('.slider-dot').forEach(dot => {
+                dot.addEventListener('click', () => {
+                    const index = parseInt(dot.dataset.dotIndex);
+                    scrollToSlide(index);
+                });
+            });
+        }
+        
+        function setupSliderScroll() {
+            const container = document.getElementById('sliderContainer');
+            const leftNav = document.getElementById('sliderNavLeft');
+            const rightNav = document.getElementById('sliderNavRight');
+            const dots = document.querySelectorAll('.slider-dot');
+            
+            // Scroll left
+            leftNav.onclick = () => {
+                container.scrollBy({ left: -320, behavior: 'smooth' });
+                resetAutoSlide();
+            };
+            
+            // Scroll right
+            rightNav.onclick = () => {
+                container.scrollBy({ left: 320, behavior: 'smooth' });
+                resetAutoSlide();
+            };
+            
+            // Update active dot on scroll
+            container.addEventListener('scroll', () => {
+                const scrollPosition = container.scrollLeft;
+                const cardWidth = container.children[0]?.offsetWidth + 20 || 320;
+                const activeIndex = Math.round(scrollPosition / cardWidth);
+                dots.forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === activeIndex);
+                });
+                currentSlideIndex = activeIndex;
+            });
+        }
+        
+        function scrollToSlide(index) {
+            const container = document.getElementById('sliderContainer');
+            const cardWidth = container.children[0]?.offsetWidth + 20 || 320;
+            container.scrollTo({ left: index * cardWidth, behavior: 'smooth' });
+            currentSlideIndex = index;
+            resetAutoSlide();
+        }
+        
+        function startAutoSlide() {
+            if (slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(() => {
+                const container = document.getElementById('sliderContainer');
+                const products = document.querySelectorAll('.product-card');
+                if (products.length === 0) return;
+                const cardWidth = container.children[0]?.offsetWidth + 20 || 320;
+                const maxScroll = container.scrollWidth - container.clientWidth;
+                let newScroll = container.scrollLeft + cardWidth;
+                if (newScroll >= maxScroll) {
+                    newScroll = 0;
+                }
+                container.scrollTo({ left: newScroll, behavior: 'smooth' });
+            }, 5000);
+        }
+        
+        function resetAutoSlide() {
+            if (slideInterval) clearInterval(slideInterval);
+            startAutoSlide();
+        }
+        
         // LOAD BOTH MAIN + APPROVED VENDOR PRODUCTS
         async function loadAllProducts() {
-            const container = document.getElementById('productsGrid');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div>';
             try {
-                // Fetch from BOTH tables
                 const [mainRes, vendorRes] = await Promise.all([
                     supabase.from('products').select('*'),
                     supabase.from('vendor_products').select('*').eq('status', 'approved')
@@ -198,7 +462,6 @@
                 
                 console.log(`✅ Loaded: ${mainProducts.length} main products, ${vendorProducts.length} approved vendor products`);
                 
-                // Mark source and combine
                 const mainMarked = mainProducts.map(p => ({ ...p, source: 'main' }));
                 const vendorMarked = vendorProducts.map(p => ({ ...p, source: 'vendor', product_name: p.product_name, name: p.product_name }));
                 
@@ -209,37 +472,19 @@
                     [allProducts[i], allProducts[j]] = [allProducts[j], allProducts[i]];
                 }
                 
-                if (!allProducts.length) { container.innerHTML = '<div class="empty-state">✨ Our collection is being curated. Check back soon!</div>'; return; }
+                allProductsList = allProducts;
                 
-                const displayProducts = allProducts.slice(0, 12);
-                let html = '';
-                for (const p of displayProducts) {
-                    const img = p.images_url_1 || p.image1_url || p.images_url_2 || p.image2_url || p.images_url_3 || p.image3_url || p.video_url || 'https://via.placeholder.com/400x400?text=Style';
-                    const gstPercent = p.gst || 18;
-                    const { total } = calculateGST(p.price || 0, gstPercent);
-                    const badge = p.source === 'vendor' 
-                        ? '<div class="vendor-badge"><i class="fas fa-store"></i> Artisan</div>' 
-                        : '<div class="main-badge"><i class="fas fa-crown"></i> Style Of Life</div>';
-                    
-                    html += `<div class="product-card" onclick='openProductModal(${JSON.stringify(p)})'>
-                        <div class="product-image-container">
-                            ${badge}
-                            <img class="product-image" src="${img}" alt="${escapeHtml(p.product_name || p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/400'">
-                        </div>
-                        <div class="product-info">
-                            <div class="product-name">${escapeHtml(p.product_name || p.name)}</div>
-                            <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
-                            <div class="product-desc">${escapeHtml((p.description || '').substring(0, 100))}</div>
-                            <div class="product-price">₹${total.toLocaleString()} <small>Incl. GST</small></div>
-                            <div class="product-buttons-icon" onclick="event.stopPropagation()">
-                                <button class="btn-icon-buy" onclick="event.stopPropagation(); buyNow('${p.id}', '${escapeHtml(p.product_name || p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}', ${gstPercent})"><i class="fas fa-bolt"></i></button>
-                                <button class="btn-icon-cart" onclick="event.stopPropagation(); addToCart('${p.id}', '${escapeHtml(p.product_name || p.name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}', ${gstPercent})"><i class="fas fa-shopping-cart"></i></button>
-                            </div>
-                        </div>
-                    </div>`;
+                if (!allProductsList.length) {
+                    document.getElementById('sliderContainer').innerHTML = '<div class="empty-state">✨ Our collection is being curated. Check back soon!</div>';
+                    return;
                 }
-                container.innerHTML = html;
-            } catch(e) { console.error(e); container.innerHTML = '<div class="empty-state">Unable to load collection</div>'; }
+                
+                renderSlider(allProductsList);
+                
+            } catch(e) { 
+                console.error(e); 
+                document.getElementById('sliderContainer').innerHTML = '<div class="empty-state">Unable to load collection</div>';
+            }
         }
         
         async function loadFeatured() {
@@ -280,13 +525,37 @@
         window.openProductModal = function(product) {
             const img = product.images_url_1 || product.image1_url || 'https://via.placeholder.com/400';
             const { total } = calculateGST(product.price || 0, product.gst || 18);
+            const mediaCount = getMediaCount(product);
+            let mediaGallery = '';
+            
+            // Build media gallery for modal
+            const mediaUrls = [];
+            if (product.images_url_1 || product.image1_url) mediaUrls.push(product.images_url_1 || product.image1_url);
+            if (product.images_url_2 || product.image2_url) mediaUrls.push(product.images_url_2 || product.image2_url);
+            if (product.images_url_3 || product.image3_url) mediaUrls.push(product.images_url_3 || product.image3_url);
+            if (product.video_url) mediaUrls.push(product.video_url);
+            
+            if (mediaUrls.length > 1) {
+                let galleryHtml = '<div style="display:flex; overflow-x:auto; gap:10px; margin-bottom:15px; scroll-snap-type:x mandatory;">';
+                for (const url of mediaUrls) {
+                    const isVideo = url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com');
+                    galleryHtml += `<div style="min-width:100%; scroll-snap-align:start;">${isVideo ? `<video src="${url}" style="width:100%; border-radius:16px;" controls></video>` : `<img src="${url}" style="width:100%; border-radius:16px;">`}</div>`;
+                }
+                galleryHtml += '</div><div style="text-align:center; margin-bottom:10px;"><span style="font-size:12px; color:var(--gray);"><i class="fas fa-arrow-left"></i> Swipe to see more <i class="fas fa-arrow-right"></i></span></div>';
+                mediaGallery = galleryHtml;
+            } else {
+                const isVideo = mediaUrls[0] && (mediaUrls[0].match(/\.(mp4|webm|mov|avi)$/i) || mediaUrls[0].includes('youtube.com') || mediaUrls[0].includes('vimeo.com'));
+                mediaGallery = isVideo ? `<video src="${mediaUrls[0]}" style="width:100%; border-radius:16px; margin-bottom:15px;" controls autoplay muted></video>` : `<img src="${img}" style="width:100%; border-radius:16px; margin-bottom:15px;">`;
+            }
+            
             const modalHtml = `
                 <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:2000;display:flex;justify-content:center;align-items:center;" onclick="this.remove()">
-                    <div style="background:white;border-radius:28px;max-width:90%;width:400px;max-height:85vh;overflow-y:auto;padding:20px;" onclick="event.stopPropagation()">
-                        <img src="${img}" style="width:100%;border-radius:16px;margin-bottom:15px;">
+                    <div style="background:white;border-radius:28px;max-width:90%;width:450px;max-height:85vh;overflow-y:auto;padding:20px;" onclick="event.stopPropagation()">
+                        ${mediaGallery}
                         <h2 style="font-size:22px;">${escapeHtml(product.product_name || product.name)}</h2>
                         <div style="color:var(--gold);font-size:28px;font-weight:700;margin:10px 0;">₹${total.toLocaleString()}</div>
-                        <p>${escapeHtml(product.description || 'Exquisite handcrafted piece.')}</p>
+                        <p style="color:var(--gray); margin-bottom:15px;">${escapeHtml(product.description || 'Exquisite handcrafted piece.')}</p>
+                        ${product.carat ? `<div style="background:var(--white-light); padding:10px; border-radius:12px; margin:10px 0;"><strong><i class="fas fa-gem"></i> Diamond:</strong> ${product.carat}ct | ${product.diamond_color || ''} | ${product.diamond_clarity || ''}</div>` : ''}
                         <div style="display:flex;gap:12px;margin-top:20px;">
                             <button class="btn-icon-buy" style="flex:1;border-radius:40px;" onclick="buyNow('${product.id}', '${escapeHtml(product.product_name || product.name).replace(/'/g, "\\'")}', ${product.price}, '${product.sku}', '${img}', ${product.gst || 18}); document.body.lastChild.remove();">Buy Now</button>
                             <button class="btn-icon-cart" style="flex:1;border-radius:40px;" onclick="addToCart('${product.id}', '${escapeHtml(product.product_name || product.name).replace(/'/g, "\\'")}', ${product.price}, '${product.sku}', '${img}', ${product.gst || 18}); document.body.lastChild.remove();">Add to Cart</button>
