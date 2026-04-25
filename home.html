@@ -329,10 +329,13 @@
             width: 100%; 
             height: 100%; 
             object-fit: cover;
-            cursor: pointer;
-            position: relative;
         }
-        .gallery-video-overlay {
+        .gallery-video video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .gallery-video .play-overlay {
             position: absolute;
             top: 0;
             left: 0;
@@ -344,9 +347,13 @@
             justify-content: center;
             cursor: pointer;
             z-index: 5;
+            transition: all 0.3s;
         }
-        .gallery-video-overlay i {
-            font-size: 48px;
+        .gallery-video .play-overlay:hover {
+            background: rgba(0,0,0,0.2);
+        }
+        .gallery-video .play-overlay i {
+            font-size: 60px;
             color: white;
             text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
@@ -613,6 +620,15 @@
         
         window.buyNow = async (id, name, price, sku, img, gst) => { await addToCart(id, name, price, sku, img, gst); setTimeout(() => navigateTo('checkout'), 600); };
         
+        // ========== VIDEO PLAY FUNCTION ==========
+        function playVideo(videoElement) {
+            if (videoElement.paused) {
+                videoElement.play();
+            } else {
+                videoElement.pause();
+            }
+        }
+        
         // ========== SWIPE CART FUNCTIONALITY ==========
         function initSwipeCart() {
             const swipeThumb = document.getElementById('swipeThumb');
@@ -753,7 +769,7 @@
             return media;
         }
         
-        // Create gallery HTML for a product
+        // Create gallery HTML for a product with video play button
         function createGalleryHTML(product, media, uniqueId) {
             if (!media.length) {
                 const defaultImg = product.image1_url || product.image2_url || product.image3_url || product.images_url_1 || 'https://via.placeholder.com/400';
@@ -768,9 +784,9 @@
             for (let i = 0; i < media.length; i++) {
                 const m = media[i];
                 if (m.type === 'video') {
-                    galleryItems += `<div class="gallery-item" style="position:relative;">
-                                        <video class="gallery-video" src="${m.url}" poster="${media[0]?.url || ''}" preload="metadata"></video>
-                                        <div class="gallery-video-overlay" onclick="event.stopPropagation(); openVideoModal('${m.url}')">
+                    galleryItems += `<div class="gallery-item gallery-video" style="position:relative;">
+                                        <video id="video-${uniqueId}-${i}" class="gallery-video" src="${m.url}" poster="${media[0]?.url || ''}" preload="metadata" muted playsinline loop></video>
+                                        <div class="play-overlay" onclick="event.stopPropagation(); toggleVideoPlay('video-${uniqueId}-${i}')">
                                             <i class="fas fa-play-circle"></i>
                                         </div>
                                     </div>`;
@@ -798,11 +814,49 @@
                     </div>`;
         }
         
+        // Toggle video play/pause
+        window.toggleVideoPlay = function(videoId) {
+            const video = document.getElementById(videoId);
+            if (video) {
+                if (video.paused) {
+                    // Pause all other videos first
+                    document.querySelectorAll('video').forEach(v => {
+                        if (v.id !== videoId && !v.paused) v.pause();
+                    });
+                    video.play();
+                    // Change icon to pause
+                    const overlay = video.parentElement.querySelector('.play-overlay i');
+                    if (overlay) {
+                        overlay.classList.remove('fa-play-circle');
+                        overlay.classList.add('fa-pause-circle');
+                    }
+                } else {
+                    video.pause();
+                    const overlay = video.parentElement.querySelector('.play-overlay i');
+                    if (overlay) {
+                        overlay.classList.remove('fa-pause-circle');
+                        overlay.classList.add('fa-play-circle');
+                    }
+                }
+            }
+        };
+        
         window.scrollGallery = function(galleryId, direction) {
             const gallery = document.getElementById(galleryId);
             if (gallery) {
                 const scrollAmount = gallery.clientWidth;
                 gallery.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+                // Pause video when scrolling
+                setTimeout(() => {
+                    document.querySelectorAll('video').forEach(v => {
+                        if (!v.paused) v.pause();
+                        const overlay = v.parentElement?.querySelector('.play-overlay i');
+                        if (overlay && overlay.classList.contains('fa-pause-circle')) {
+                            overlay.classList.remove('fa-pause-circle');
+                            overlay.classList.add('fa-play-circle');
+                        }
+                    });
+                }, 100);
             }
         };
         
@@ -830,19 +884,6 @@
                 });
             }, 50);
         }
-        
-        // Video Modal - Opens and plays video
-        window.openVideoModal = function(videoUrl) {
-            const modalHtml = `
-                <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:3000;display:flex;justify-content:center;align-items:center;" onclick="this.remove()">
-                    <div style="background:black;border-radius:20px;width:90%;max-width:800px;padding:0;" onclick="event.stopPropagation()">
-                        <video controls autoplay style="width:100%;border-radius:20px;max-height:80vh;" src="${videoUrl}"></video>
-                        <button style="position:absolute;top:20px;right:20px;background:white;color:black;border:none;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:20px;" onclick="this.closest('div').remove()">×</button>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-        };
         
         window.openImageModal = function(imageUrl) {
             const modalHtml = `
@@ -1058,13 +1099,16 @@
             let galleryHtml = '';
             if (media.length > 0) {
                 galleryHtml = `<div style="position:relative; width:100%; overflow-x:auto; display:flex; scroll-snap-type:x mandatory; border-radius:16px; margin-bottom:15px;" id="modalGallery">
-                                ${media.map(m => {
-                                    if (m.type === 'video') return `<div style="min-width:100%; scroll-snap-align:start; position:relative;">
-                                                                            <video src="${m.url}" style="width:100%; border-radius:16px; max-height:300px;"></video>
-                                                                            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.6); width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="event.stopPropagation(); openVideoModal('${m.url}')">
-                                                                                <i class="fas fa-play" style="font-size:24px; color:white;"></i>
-                                                                            </div>
-                                                                        </div>`;
+                                ${media.map((m, idx) => {
+                                    if (m.type === 'video') {
+                                        const videoId = `modal-video-${Date.now()}-${idx}`;
+                                        return `<div style="min-width:100%; scroll-snap-align:start; position:relative;">
+                                                    <video id="${videoId}" src="${m.url}" style="width:100%; border-radius:16px; max-height:300px;" poster="${media[0]?.url || ''}" preload="metadata" muted playsinline loop></video>
+                                                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.6); width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="event.stopPropagation(); toggleModalVideoPlay('${videoId}')">
+                                                        <i class="fas fa-play" style="font-size:24px; color:white;"></i>
+                                                    </div>
+                                                </div>`;
+                                    }
                                     if (m.type === 'd360') return `<div style="min-width:100%; scroll-snap-align:start;"><div style="background:#1a1a2a; height:300px; display:flex; align-items:center; justify-content:center; border-radius:16px; cursor:pointer;" onclick="openD360Viewer('${m.url}')"><i class="fas fa-cube" style="font-size:48px; color:var(--gold);"></i><p style="margin-left:10px;">360° Interactive View</p></div></div>`;
                                     return `<div style="min-width:100%; scroll-snap-align:start;"><img src="${m.url}" style="width:100%; border-radius:16px; cursor:pointer;" onclick="openImageModal('${m.url}')"></div>`;
                                 }).join('')}
@@ -1091,6 +1135,20 @@
                                 </div>
                             </div>`;
             document.body.insertAdjacentHTML('beforeend', modalHtml);
+        };
+        
+        window.toggleModalVideoPlay = function(videoId) {
+            const video = document.getElementById(videoId);
+            if (video) {
+                if (video.paused) {
+                    document.querySelectorAll('#modalGallery video').forEach(v => {
+                        if (v.id !== videoId && !v.paused) v.pause();
+                    });
+                    video.play();
+                } else {
+                    video.pause();
+                }
+            }
         };
         
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
