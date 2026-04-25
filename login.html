@@ -364,6 +364,16 @@
     </style>
 </head>
 <body>
+    <!-- Clear old sessions on login page load -->
+    <script>
+        console.log('🔐 Login page loaded - Clearing old sessions');
+        sessionStorage.removeItem('vendorLoggedIn');
+        sessionStorage.removeItem('adminLoggedIn');
+        sessionStorage.removeItem('userRole');
+        sessionStorage.removeItem('userEmail');
+        sessionStorage.removeItem('userName');
+    </script>
+    
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="orb orb-3"></div>
@@ -499,20 +509,7 @@
         const loginBtn = document.getElementById('loginBtn');
         const errorDiv = document.getElementById('errorMessage');
         
-        // Clear all session storage on page load to prevent stuck sessions
-        function clearAllSessions() {
-            sessionStorage.removeItem('vendorLoggedIn');
-            sessionStorage.removeItem('adminLoggedIn');
-            sessionStorage.removeItem('userRole');
-            sessionStorage.removeItem('userEmail');
-            sessionStorage.removeItem('userName');
-            console.log('Session storage cleared on login page load');
-        }
-        
-        // Clear sessions when login page loads
-        clearAllSessions();
-        
-        // ========== LOGIN FUNCTION - Auto detects role ==========
+        // ========== LOGIN FUNCTION - Auto detects Admin or Vendor ==========
         async function handleLogin(email, password) {
             errorDiv.style.display = 'none';
             errorDiv.classList.remove('success-message');
@@ -526,59 +523,66 @@
             loginBtn.innerHTML = '<div class="loading-spinner"></div> Signing in...';
             
             try {
-                // STEP 1: Check if user is ADMIN
+                // STEP 1: Check if user is ADMIN (from admin_users table)
                 const { data: adminData, error: adminError } = await supabase
                     .from('admin_users')
-                    .select('email, role')
+                    .select('email, full_name, role')
                     .eq('email', email)
                     .maybeSingle();
                 
                 // STEP 2: If admin found, authenticate as admin
                 if (adminData) {
+                    console.log('✅ User found in admin_users table');
+                    
                     const { data, error } = await supabase.auth.signInWithPassword({
                         email: email,
                         password: password
                     });
                     
-                    if (error) throw new Error('Invalid admin credentials');
+                    if (error) {
+                        console.error('Admin auth error:', error);
+                        throw new Error('Invalid admin credentials');
+                    }
                     
                     if (data.session) {
-                        // Clear any existing vendor session first
+                        // Clear any vendor session
                         sessionStorage.removeItem('vendorLoggedIn');
                         
                         // Set admin session
                         sessionStorage.setItem('adminLoggedIn', 'true');
                         sessionStorage.setItem('userRole', 'admin');
                         sessionStorage.setItem('userEmail', email);
-                        sessionStorage.setItem('userName', 'Admin');
+                        sessionStorage.setItem('userName', adminData.full_name || 'Admin');
                         
-                        console.log('Admin session set:', {
+                        console.log('✅ Admin session set:', {
                             adminLoggedIn: sessionStorage.getItem('adminLoggedIn'),
                             userRole: sessionStorage.getItem('userRole'),
                             userEmail: sessionStorage.getItem('userEmail')
                         });
                         
-                        showSuccess('Redirecting to Admin Dashboard...');
+                        showSuccess('Welcome Admin! Redirecting to Dashboard...');
                         setTimeout(() => {
                             window.location.href = 'admin.html';
-                        }, 500);
+                        }, 800);
                         return true;
                     }
                 }
                 
-                // STEP 3: Check if user is VENDOR
+                // STEP 3: Check if user is VENDOR (from vendors table)
                 const { data: vendorData, error: vendorError } = await supabase
                     .from('vendors')
-                    .select('id, business_name, status')
+                    .select('id, business_name, owner_name, status')
                     .eq('email', email)
                     .maybeSingle();
                 
                 if (vendorError) throw vendorError;
                 
                 if (!vendorData) {
-                    showError('Account not found. Please register as vendor.');
+                    showError('Account not found. Please register as vendor or use valid credentials.');
                     return false;
                 }
+                
+                console.log('✅ User found in vendors table, status:', vendorData.status);
                 
                 // Check vendor status
                 if (vendorData.status === 'rejected') {
@@ -591,35 +595,44 @@
                     return false;
                 }
                 
+                if (vendorData.status !== 'approved') {
+                    showError('Your account is not approved yet. Please contact admin.');
+                    return false;
+                }
+                
                 // Authenticate vendor
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
                 
-                if (error) throw new Error('Invalid vendor credentials');
+                if (error) {
+                    console.error('Vendor auth error:', error);
+                    throw new Error('Invalid vendor credentials');
+                }
                 
                 if (data.session) {
-                    // Clear any existing admin session
+                    // Clear any admin session
                     sessionStorage.removeItem('adminLoggedIn');
                     
                     // Set vendor session
                     sessionStorage.setItem('vendorLoggedIn', 'true');
                     sessionStorage.setItem('userRole', 'vendor');
                     sessionStorage.setItem('userEmail', email);
-                    sessionStorage.setItem('userName', vendorData.business_name || 'Vendor');
+                    sessionStorage.setItem('userName', vendorData.business_name || vendorData.owner_name || 'Vendor');
+                    sessionStorage.setItem('vendorId', vendorData.id);
                     
-                    console.log('Vendor session set:', {
+                    console.log('✅ Vendor session set:', {
                         vendorLoggedIn: sessionStorage.getItem('vendorLoggedIn'),
                         userRole: sessionStorage.getItem('userRole'),
                         userEmail: sessionStorage.getItem('userEmail'),
-                        userName: sessionStorage.getItem('userName')
+                        vendorId: sessionStorage.getItem('vendorId')
                     });
                     
-                    showSuccess('Redirecting to Vendor Portal...');
+                    showSuccess('Welcome Vendor! Redirecting to Portal...');
                     setTimeout(() => {
                         window.location.href = 'vendor.html';
-                    }, 500);
+                    }, 800);
                     return true;
                 }
                 
@@ -832,6 +845,23 @@
         window.forgotPassword = () => {
             alert('Please contact support at styleoflife987@gmail.com to reset your password.');
         };
+        
+        // Check if already logged in and redirect accordingly
+        (function checkExistingSession() {
+            const isAdminLoggedIn = sessionStorage.getItem('adminLoggedIn') === 'true';
+            const isVendorLoggedIn = sessionStorage.getItem('vendorLoggedIn') === 'true';
+            const userRole = sessionStorage.getItem('userRole');
+            
+            console.log('Checking existing session - admin:', isAdminLoggedIn, 'vendor:', isVendorLoggedIn, 'role:', userRole);
+            
+            if (isAdminLoggedIn && userRole === 'admin') {
+                console.log('Admin already logged in, redirecting to admin.html');
+                window.location.href = 'admin.html';
+            } else if (isVendorLoggedIn && userRole === 'vendor') {
+                console.log('Vendor already logged in, redirecting to vendor.html');
+                window.location.href = 'vendor.html';
+            }
+        })();
     </script>
 </body>
 </html>
