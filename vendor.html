@@ -72,7 +72,7 @@
             object-fit: contain;
         }
         
-        /* REAL SHARK - Bottom left corner, swimming */
+        /* REAL SHARK - Bottom left corner */
         .shark-video { 
             bottom: 20px; 
             left: 20px; 
@@ -86,7 +86,7 @@
             50% { transform: translateY(-10px) rotate(2deg); }
         }
         
-        /* REAL WHALE - Bottom right corner, swimming */
+        /* REAL WHALE - Bottom right corner */
         .whale-video { 
             bottom: 20px; 
             right: 20px; 
@@ -261,218 +261,137 @@
         .chart-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; color: #00d4ff; }
         canvas { max-height: 250px; }
         
-        /* ========== BEAUTIFUL DIAMOND FILTER CARDS (WHALESHARK STYLE) ========== */
+        /* ========== DIAMOND FILTER SECTION ========== */
         .diamond-filter-section {
+            background: rgba(10, 30, 50, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
             margin-bottom: 25px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
         }
         .diamond-filter-title {
             font-size: 18px;
             font-weight: 700;
             color: #00d4ff;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        .diamond-filter-title i {
-            font-size: 24px;
-            animation: gemGlow 2s ease-in-out infinite;
-        }
-        @keyframes gemGlow {
-            0%, 100% { text-shadow: 0 0 5px #00d4ff; }
-            50% { text-shadow: 0 0 15px #00d4ff, 0 0 5px #7fffd4; }
-        }
-        
-        .diamond-filter-cards {
+        .diamond-filter-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            gap: 25px;
         }
         
-        /* Card Style like WHALESHARK / VSBLUEWHALE */
-        .diamond-card {
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 100, 150, 0.2));
-            backdrop-filter: blur(12px);
-            border-radius: 24px;
-            padding: 20px;
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .diamond-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0,212,255,0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-        .diamond-card:hover::before {
-            opacity: 1;
-        }
-        .diamond-card:hover {
-            transform: translateY(-5px);
-            border-color: #00d4ff;
-            box-shadow: 0 10px 30px rgba(0,212,255,0.2);
-        }
-        
-        .diamond-card-header {
+        /* Carat Range - Two Boxes */
+        .carat-input-group {
             display: flex;
+            gap: 15px;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
         }
-        .diamond-card-icon {
-            width: 45px;
-            height: 45px;
-            background: rgba(0, 212, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            color: #00d4ff;
+        .carat-box {
+            flex: 1;
         }
-        .diamond-card-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #00d4ff;
-            letter-spacing: 1px;
-        }
-        .diamond-card-sub {
+        .carat-box label {
+            display: block;
             font-size: 11px;
-            color: rgba(255,255,255,0.5);
-            margin-top: 2px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 5px;
         }
-        
-        /* Range Slider Style */
-        .range-container {
-            margin: 15px 0;
-        }
-        .range-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 12px;
-            color: rgba(255,255,255,0.7);
-        }
-        input[type="range"] {
+        .carat-box input {
             width: 100%;
-            height: 4px;
-            -webkit-appearance: none;
-            background: rgba(0, 212, 255, 0.3);
-            border-radius: 5px;
-            outline: none;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #00d4ff;
-            cursor: pointer;
-            box-shadow: 0 0 10px #00d4ff;
-        }
-        .range-value {
-            text-align: center;
-            margin-top: 10px;
-            font-size: 18px;
-            font-weight: 700;
-            color: #00d4ff;
-        }
-        
-        /* Color Buttons */
-        .color-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        .color-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.3);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .color-btn:hover, .color-btn.active {
-            transform: scale(1.15);
-            border-color: #00d4ff;
-            box-shadow: 0 0 10px #00d4ff;
-        }
-        .color-btn-D { background: linear-gradient(135deg, #ffffff, #e0e8f0); }
-        .color-btn-E { background: linear-gradient(135deg, #f8f8ff, #d8e0e8); }
-        .color-btn-F { background: linear-gradient(135deg, #f0f0ff, #d0d8e0); }
-        .color-btn-G { background: linear-gradient(135deg, #e8e8f0, #c8d0d8); }
-        .color-btn-H { background: linear-gradient(135deg, #e0e0e8, #c0c8d0); }
-        .color-btn-I { background: linear-gradient(135deg, #d8d8e0, #b8c0c8); }
-        .color-btn-J { background: linear-gradient(135deg, #d0d0d8, #b0b8c0); }
-        
-        /* Clarity Buttons */
-        .clarity-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 15px 0;
-        }
-        .clarity-btn {
+            padding: 10px 12px;
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(0, 212, 255, 0.3);
-            padding: 8px 14px;
-            border-radius: 30px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: rgba(255,255,255,0.8);
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
         }
-        .clarity-btn:hover, .clarity-btn.active {
-            background: rgba(0, 212, 255, 0.3);
+        .carat-box input:focus {
+            outline: none;
             border-color: #00d4ff;
+        }
+        .carat-separator {
             color: #00d4ff;
-            transform: translateY(-2px);
+            font-size: 18px;
+            font-weight: bold;
         }
         
-        .filter-actions-diamond {
+        /* Filter Cards */
+        .filter-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            padding: 15px;
+        }
+        .filter-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+        }
+        .filter-card-header i {
+            font-size: 20px;
+            color: #00d4ff;
+        }
+        .filter-card-header h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+        
+        /* Dropdown Styles */
+        .filter-select-dropdown {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .filter-select-dropdown option {
+            background: #0a2a3a;
+            color: white;
+        }
+        
+        /* Filter Actions */
+        .filter-actions {
             display: flex;
             gap: 12px;
             margin-top: 20px;
             padding-top: 15px;
             border-top: 1px solid rgba(0, 212, 255, 0.2);
         }
-        .btn-diamond-filter {
-            flex: 1;
+        .btn-apply-filters {
             background: linear-gradient(135deg, #00d4ff, #0099cc);
             border: none;
-            padding: 12px;
+            padding: 10px 24px;
             border-radius: 40px;
             color: #0a2a3a;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
         }
-        .btn-diamond-reset {
-            flex: 1;
+        .btn-reset-filters {
             background: rgba(239, 68, 68, 0.2);
             border: 1px solid rgba(239, 68, 68, 0.5);
             color: #f87171;
-            padding: 12px;
+            padding: 10px 24px;
             border-radius: 40px;
             cursor: pointer;
         }
         
-        /* Filter Bar */
-        .filter-bar {
+        /* Quick Filter Bar */
+        .quick-filter-bar {
             background: rgba(10, 30, 50, 0.6);
             backdrop-filter: blur(10px);
             border-radius: 16px;
-            padding: 15px 20px;
+            padding: 12px 20px;
             margin-bottom: 25px;
             display: flex;
             flex-wrap: wrap;
@@ -498,20 +417,12 @@
             width: 100%;
             outline: none;
         }
-        .filter-select, .status-select {
+        .quick-select {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(0, 212, 255, 0.3);
             border-radius: 40px;
             padding: 8px 15px;
             color: white;
-            cursor: pointer;
-        }
-        .reset-filters-btn {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid rgba(239, 68, 68, 0.5);
-            color: #f87171;
-            padding: 8px 20px;
-            border-radius: 40px;
             cursor: pointer;
         }
         .filter-stats {
@@ -631,6 +542,36 @@
             color: #f87171;
         }
         
+        /* Form Styles */
+        .form-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 13px; color: rgba(255, 255, 255, 0.7); }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            font-size: 14px;
+            color: white;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #0a2a3a;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        
         .toast {
             position: fixed;
             bottom: 30px;
@@ -639,10 +580,9 @@
             color: #0a2a3a;
             padding: 12px 24px;
             border-radius: 40px;
-            z-index: 1000;
+            z-index: 2000;
             font-weight: 700;
             animation: slideIn 0.3s;
-            z-index: 2000;
         }
         .toast-error { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -654,12 +594,11 @@
         @media (max-width: 768px) {
             .vendor-layout { flex-direction: column; }
             .vendor-sidebar { width: 100%; padding: 15px; overflow-x: auto; display: flex; gap: 10px; height: auto; }
-            .diamond-filter-cards { grid-template-columns: 1fr; }
-            .filter-bar { flex-direction: column; align-items: stretch; }
+            .diamond-filter-grid { grid-template-columns: 1fr; }
+            .quick-filter-bar { flex-direction: column; align-items: stretch; }
             .list-product-card { flex-direction: column; }
             .list-image-container { width: 100%; }
-            .shark-video, .whale-video { transform: scale(0.7); width: 200px; height: 120px; bottom: 5px; }
-            .octopus-video, .stingray-video { transform: scale(0.6); top: 60px; }
+            .shark-video, .whale-video { transform: scale(0.6); width: 180px; height: 100px; bottom: 5px; }
         }
     </style>
 </head>
@@ -672,28 +611,28 @@
         <div class="ocean-overlay"></div>
     </div>
     
-    <!-- REAL SHARK VIDEO - Bottom Left Corner -->
+    <!-- REAL SHARK VIDEO - Bottom Left -->
     <div class="marine-creature shark-video">
         <video autoplay muted loop playsinline>
             <source src="https://cdn.pixabay.com/video/2022/03/29/113795-693997588_large.mp4" type="video/mp4">
         </video>
     </div>
     
-    <!-- REAL WHALE VIDEO - Bottom Right Corner -->
+    <!-- REAL WHALE VIDEO - Bottom Right -->
     <div class="marine-creature whale-video">
         <video autoplay muted loop playsinline>
             <source src="https://cdn.pixabay.com/video/2021/10/13/92812-623435664_large.mp4" type="video/mp4">
         </video>
     </div>
     
-    <!-- REAL OCTOPUS VIDEO - Top Left -->
+    <!-- REAL OCTOPUS - Top Left -->
     <div class="marine-creature octopus-video">
         <video autoplay muted loop playsinline>
             <source src="https://cdn.pixabay.com/video/2022/09/01/129852-744537218_large.mp4" type="video/mp4">
         </video>
     </div>
     
-    <!-- REAL STINGRAY VIDEO - Top Right -->
+    <!-- REAL STINGRAY - Top Right -->
     <div class="marine-creature stingray-video">
         <video autoplay muted loop playsinline>
             <source src="https://cdn.pixabay.com/video/2021/05/02/72371-542160546_large.mp4" type="video/mp4">
@@ -705,17 +644,13 @@
     <div class="bubble" style="bottom: 10%; left: 35%; width: 12px; height: 12px; animation-duration: 8s;"></div>
     <div class="bubble" style="bottom: 15%; left: 55%; width: 6px; height: 6px; animation-duration: 5s;"></div>
     <div class="bubble" style="bottom: 20%; left: 80%; width: 10px; height: 10px; animation-duration: 7s;"></div>
-    <div class="bubble" style="bottom: 30%; left: 25%; width: 14px; height: 14px; animation-duration: 9s;"></div>
-    <div class="bubble" style="bottom: 50%; left: 70%; width: 5px; height: 5px; animation-duration: 4s;"></div>
     
     <div class="vendor-header">
         <div class="logo">🌊 STYLE OF LIFE <span>DEEP SEA VENDOR</span></div>
         <div class="company-name-display" id="headerCompanyName">
             <i class="fas fa-building"></i> <span id="headerCompanyNameText">Loading...</span>
         </div>
-        <div class="vendor-info">
-            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Surface</button>
-        </div>
+        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Surface</button>
     </div>
     
     <div class="vendor-layout">
@@ -745,92 +680,83 @@
                 </div>
             </div>
             
-            <!-- Products Page - with beautiful Diamond Filter Cards -->
+            <!-- Products Page -->
             <div id="productsPage" style="display: none;">
                 <div class="page-header">
                     <div class="page-title">📦 My Ocean Treasures</div>
                     <div style="color: rgba(255,255,255,0.6);" id="productsCompanyName"></div>
                 </div>
                 
-                <!-- BEAUTIFUL DIAMOND FILTER CARDS (WHALESHARK / VSBLUEWHALE STYLE) -->
+                <!-- DIAMOND FILTER SECTION -->
                 <div class="diamond-filter-section">
                     <div class="diamond-filter-title">
                         <i class="fas fa-gem"></i> Diamond Filter
                         <i class="fas fa-gem"></i>
                     </div>
-                    <div class="diamond-filter-cards">
-                        <!-- CARAT CARD -->
-                        <div class="diamond-card">
-                            <div class="diamond-card-header">
-                                <div class="diamond-card-icon"><i class="fas fa-weight-hanging"></i></div>
-                                <div><div class="diamond-card-title">CARAT</div><div class="diamond-card-sub">Select Carat Range</div></div>
+                    <div class="diamond-filter-grid">
+                        <!-- Carat Filter - Two Boxes -->
+                        <div class="filter-card">
+                            <div class="filter-card-header">
+                                <i class="fas fa-weight-hanging"></i>
+                                <h4>Carat Range</h4>
                             </div>
-                            <div class="range-container">
-                                <div class="range-labels"><span>0 ct</span><span>5 ct</span></div>
-                                <input type="range" id="caratRange" min="0" max="5" step="0.1" value="5">
-                                <div class="range-value" id="caratValue">Up to 5.0 ct</div>
+                            <div class="carat-input-group">
+                                <div class="carat-box">
+                                    <label>Min Carat</label>
+                                    <input type="number" id="minCarat" step="0.01" placeholder="0.00" value="0">
+                                </div>
+                                <span class="carat-separator">to</span>
+                                <div class="carat-box">
+                                    <label>Max Carat</label>
+                                    <input type="number" id="maxCarat" step="0.01" placeholder="10.00" value="10">
+                                </div>
                             </div>
                         </div>
                         
-                        <!-- DIAMOND COLOR CARD -->
-                        <div class="diamond-card">
-                            <div class="diamond-card-header">
-                                <div class="diamond-card-icon"><i class="fas fa-palette"></i></div>
-                                <div><div class="diamond-card-title">COLOR</div><div class="diamond-card-sub">Diamond Color Grade</div></div>
+                        <!-- Diamond Color Filter - Dropdown from Data -->
+                        <div class="filter-card">
+                            <div class="filter-card-header">
+                                <i class="fas fa-palette"></i>
+                                <h4>Diamond Color</h4>
                             </div>
-                            <div class="color-buttons" id="colorButtons">
-                                <div class="color-btn color-btn-D" data-color="D" title="Colorless D"></div>
-                                <div class="color-btn color-btn-E" data-color="E" title="Colorless E"></div>
-                                <div class="color-btn color-btn-F" data-color="F" title="Colorless F"></div>
-                                <div class="color-btn color-btn-G" data-color="G" title="Near Colorless G"></div>
-                                <div class="color-btn color-btn-H" data-color="H" title="Near Colorless H"></div>
-                                <div class="color-btn color-btn-I" data-color="I" title="Near Colorless I"></div>
-                                <div class="color-btn color-btn-J" data-color="J" title="Near Colorless J"></div>
-                            </div>
-                            <div style="text-align: center; margin-top: 10px; font-size: 12px;" id="selectedColorText">All Colors</div>
+                            <select id="diamondColorFilter" class="filter-select-dropdown">
+                                <option value="all">All Colors</option>
+                            </select>
                         </div>
                         
-                        <!-- DIAMOND CLARITY CARD -->
-                        <div class="diamond-card">
-                            <div class="diamond-card-header">
-                                <div class="diamond-card-icon"><i class="fas fa-eye"></i></div>
-                                <div><div class="diamond-card-title">CLARITY</div><div class="diamond-card-sub">Diamond Clarity Grade</div></div>
+                        <!-- Diamond Clarity Filter - Dropdown from Data -->
+                        <div class="filter-card">
+                            <div class="filter-card-header">
+                                <i class="fas fa-eye"></i>
+                                <h4>Diamond Clarity</h4>
                             </div>
-                            <div class="clarity-buttons" id="clarityButtons">
-                                <button class="clarity-btn" data-clarity="FL">FL</button>
-                                <button class="clarity-btn" data-clarity="IF">IF</button>
-                                <button class="clarity-btn" data-clarity="VVS1">VVS1</button>
-                                <button class="clarity-btn" data-clarity="VVS2">VVS2</button>
-                                <button class="clarity-btn" data-clarity="VS1">VS1</button>
-                                <button class="clarity-btn" data-clarity="VS2">VS2</button>
-                                <button class="clarity-btn" data-clarity="SI1">SI1</button>
-                                <button class="clarity-btn" data-clarity="SI2">SI2</button>
-                            </div>
-                            <div style="text-align: center; margin-top: 10px; font-size: 12px;" id="selectedClarityText">All Clarity</div>
+                            <select id="diamondClarityFilter" class="filter-select-dropdown">
+                                <option value="all">All Clarity</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="filter-actions-diamond">
-                        <button class="btn-diamond-filter" onclick="applyDiamondFilters()"><i class="fas fa-filter"></i> Apply Diamond Filter</button>
-                        <button class="btn-diamond-reset" onclick="resetDiamondFilters()"><i class="fas fa-undo-alt"></i> Reset Diamond</button>
+                    <div class="filter-actions">
+                        <button class="btn-apply-filters" onclick="applyDiamondFilters()"><i class="fas fa-filter"></i> Apply Diamond Filters</button>
+                        <button class="btn-reset-filters" onclick="resetDiamondFilters()"><i class="fas fa-undo-alt"></i> Reset Diamond Filters</button>
                     </div>
                 </div>
                 
-                <!-- Quick Search Bar -->
-                <div class="filter-bar">
+                <!-- Quick Filter Bar -->
+                <div class="quick-filter-bar">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" id="searchProductInput" placeholder="Search by name or SKU..." onkeyup="applyQuickFilters()">
+                        <input type="text" id="searchInput" placeholder="Search by name or SKU..." onkeyup="applyAllFilters()">
                     </div>
-                    <select id="categoryFilter" class="filter-select" onchange="applyQuickFilters()">
+                    <select id="categoryFilter" class="quick-select" onchange="applyAllFilters()">
                         <option value="all">All Categories</option>
                     </select>
-                    <select id="statusFilter" class="status-select" onchange="applyQuickFilters()">
+                    <select id="statusFilter" class="quick-select" onchange="applyAllFilters()">
                         <option value="all">All Status</option>
                         <option value="pending">Pending</option>
                         <option value="approved">Approved</option>
                         <option value="rejected">Rejected</option>
                     </select>
-                    <button class="reset-filters-btn" onclick="resetAllFilters()"><i class="fas fa-undo-alt"></i> Reset All</button>
+                    <button class="btn-reset-filters" onclick="resetAllFilters()" style="padding: 8px 16px;">Reset All</button>
                     <div class="filter-stats" id="filterStats"></div>
                 </div>
                 
@@ -846,9 +772,9 @@
                 <div class="form-card">
                     <input type="hidden" id="editProductId">
                     <div class="form-grid">
-                        <div class="form-group"><label>SKU *</label><input type="text" id="sku" placeholder="Unique product code"></div>
-                        <div class="form-group"><label>Product Name *</label><input type="text" id="product_name" placeholder="Product name"></div>
-                        <div class="form-group"><label>Category *</label><input type="text" id="category" placeholder="e.g., Rings, Necklaces"></div>
+                        <div class="form-group"><label>SKU *</label><input type="text" id="sku"></div>
+                        <div class="form-group"><label>Product Name *</label><input type="text" id="product_name"></div>
+                        <div class="form-group"><label>Category *</label><input type="text" id="category"></div>
                         <div class="form-group"><label>Price (₹) *</label><input type="number" id="price" step="0.01"></div>
                         <div class="form-group"><label>GST (%)</label><input type="number" id="gst" value="18"></div>
                         <div class="form-group"><label>Stock *</label><input type="number" id="stock"></div>
@@ -864,36 +790,30 @@
                         <h4 style="color: #00d4ff;"><i class="fas fa-gem"></i> Diamond Specifications</h4>
                         <div class="form-grid">
                             <div class="form-group"><label>Carat</label><input type="number" id="carat" step="0.01"></div>
-                            <div class="form-group"><label>Diamond Color</label><input type="text" id="diamond_color" placeholder="D,E,F,G,H,I,J"></div>
-                            <div class="form-group"><label>Diamond Clarity</label><input type="text" id="diamond_clarity" placeholder="FL,IF,VVS1,VS1,SI1"></div>
+                            <div class="form-group"><label>Diamond Color</label><input type="text" id="diamond_color"></div>
+                            <div class="form-group"><label>Diamond Clarity</label><input type="text" id="diamond_clarity"></div>
                             <div class="form-group"><label>Diamond Cut</label><input type="text" id="diamond_cut"></div>
                             <div class="form-group"><label>Diamond Polish</label><input type="text" id="diamond_polish"></div>
                             <div class="form-group"><label>Diamond Symmetry</label><input type="text" id="diamond_symmetry"></div>
                         </div>
                     </div>
-                    <div style="display: flex; gap: 15px;">
-                        <button class="btn-primary" onclick="saveProduct()">💾 Save Product</button>
-                        <button class="btn-primary" style="background: rgba(255,255,255,0.1);" onclick="cancelProductForm()">Cancel</button>
-                    </div>
+                    <button class="btn-primary" onclick="saveProduct()">💾 Save Product</button>
+                    <button class="btn-primary" style="background: rgba(255,255,255,0.1); margin-left: 10px;" onclick="cancelProductForm()">Cancel</button>
                 </div>
             </div>
             
             <!-- Bulk Upload Page -->
             <div id="bulkUploadPage" style="display: none;">
-                <div class="page-header">
-                    <div class="page-title">📂 Bulk Upload Products</div>
-                    <div style="color: rgba(255,255,255,0.6);" id="bulkUploadCompanyName"></div>
-                </div>
+                <div class="page-header"><div class="page-title">📂 Bulk Upload Products</div><div id="bulkUploadCompanyName"></div></div>
                 <div class="form-card">
-                    <div class="bulk-area" id="bulkUploadArea">
-                        <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #00d4ff;"></i>
-                        <p style="margin-top: 10px;">Click or drag & drop CSV / Excel file here</p>
+                    <div class="bulk-area" id="bulkUploadArea" style="text-align:center;padding:50px;border:2px dashed rgba(0,212,255,0.4);border-radius:20px;cursor:pointer;">
+                        <i class="fas fa-cloud-upload-alt" style="font-size:48px;color:#00d4ff;"></i>
+                        <p>Click or drag & drop CSV / Excel file</p>
                     </div>
-                    <input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display: none;">
-                    <div class="progress-bar" id="bulkProgress"><div class="progress-fill" id="bulkProgressFill"></div></div>
-                    <div class="batch-status" id="batchStatus"></div>
+                    <input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display:none;">
+                    <div class="progress-bar" style="height:6px;background:rgba(255,255,255,0.1);border-radius:3px;margin-top:20px;display:none;"><div class="progress-fill" style="height:100%;background:#00d4ff;width:0%;"></div></div>
                     <div id="bulkResult"></div>
-                    <button class="btn-primary" onclick="downloadSampleExcel()" style="margin-top: 15px;">📥 Download Sample Excel</button>
+                    <button class="btn-primary" onclick="downloadSampleExcel()" style="margin-top:15px;">📥 Download Sample Excel</button>
                 </div>
             </div>
             
@@ -934,9 +854,8 @@
         let currentCompanyId = null;
         let allProducts = [];
         let categoriesSet = new Set();
-        
-        // Diamond filter state
-        let diamondFilters = { maxCarat: 5, selectedColors: [], selectedClarities: [] };
+        let availableColors = new Set();
+        let availableClarities = new Set();
         
         const vendorEmail = sessionStorage.getItem('userEmail');
         
@@ -979,7 +898,6 @@
                 await loadDashboard();
                 await loadProducts();
                 await loadOrders();
-                setupDiamondFilters();
             } catch (err) { showToast('Error loading data', true); }
         }
         
@@ -1010,50 +928,102 @@
         async function loadProducts() {
             const { data, error } = await supabase.from('vendor_products').select('*').eq('vendor_id', currentCompanyId).order('id', { ascending: false });
             allProducts = data || [];
+            
+            // Extract unique values for filters
             categoriesSet.clear();
-            allProducts.forEach(p => { if(p.category) categoriesSet.add(p.category); });
+            availableColors.clear();
+            availableClarities.clear();
+            
+            allProducts.forEach(p => {
+                if(p.category) categoriesSet.add(p.category);
+                if(p.diamond_color && p.diamond_color.trim()) availableColors.add(p.diamond_color);
+                if(p.diamond_clarity && p.diamond_clarity.trim()) availableClarities.add(p.diamond_clarity);
+            });
+            
+            // Populate Category Filter
             const categorySelect = document.getElementById('categoryFilter');
             categorySelect.innerHTML = '<option value="all">All Categories</option>';
-            Array.from(categoriesSet).sort().forEach(cat => { categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`; });
+            Array.from(categoriesSet).sort().forEach(cat => {
+                categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+            });
+            
+            // Populate Color Filter Dropdown from actual data
+            const colorSelect = document.getElementById('diamondColorFilter');
+            colorSelect.innerHTML = '<option value="all">All Colors</option>';
+            Array.from(availableColors).sort().forEach(color => {
+                colorSelect.innerHTML += `<option value="${color}">${color}</option>`;
+            });
+            
+            // Populate Clarity Filter Dropdown from actual data
+            const claritySelect = document.getElementById('diamondClarityFilter');
+            claritySelect.innerHTML = '<option value="all">All Clarity</option>';
+            Array.from(availableClarities).sort().forEach(clarity => {
+                claritySelect.innerHTML += `<option value="${clarity}">${clarity}</option>`;
+            });
+            
             applyAllFilters();
         }
         
-        function setupDiamondFilters() {
-            const caratSlider = document.getElementById('caratRange');
-            const caratValue = document.getElementById('caratValue');
-            caratSlider.addEventListener('input', function() {
-                caratValue.innerText = `Up to ${this.value} ct`;
-                diamondFilters.maxCarat = parseFloat(this.value);
-            });
-            
-            document.querySelectorAll('.color-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const color = this.dataset.color;
-                    if (diamondFilters.selectedColors.includes(color)) {
-                        diamondFilters.selectedColors = diamondFilters.selectedColors.filter(c => c !== color);
-                        this.classList.remove('active');
-                    } else {
-                        diamondFilters.selectedColors.push(color);
-                        this.classList.add('active');
-                    }
-                    document.getElementById('selectedColorText').innerHTML = diamondFilters.selectedColors.length ? `Selected: ${diamondFilters.selectedColors.join(', ')}` : 'All Colors';
-                });
-            });
-            
-            document.querySelectorAll('.clarity-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const clarity = this.dataset.clarity;
-                    if (diamondFilters.selectedClarities.includes(clarity)) {
-                        diamondFilters.selectedClarities = diamondFilters.selectedClarities.filter(c => c !== clarity);
-                        this.classList.remove('active');
-                    } else {
-                        diamondFilters.selectedClarities.push(clarity);
-                        this.classList.add('active');
-                    }
-                    document.getElementById('selectedClarityText').innerHTML = diamondFilters.selectedClarities.length ? `Selected: ${diamondFilters.selectedClarities.join(', ')}` : 'All Clarity';
-                });
-            });
+        async function loadOrders() {
+            const container = document.getElementById('ordersList');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading orders...</p></div>';
+            const { data, error } = await supabase.from('vendor_orders').select('*').eq('vendor_id', currentCompanyId).order('created_at', { ascending: false });
+            if (error || !data?.length) { container.innerHTML = '<div class="loading">📭 No orders yet</div>'; return; }
+            let html = '<table style="width:100%;border-collapse:collapse;background:rgba(255,255,255,0.05);border-radius:16px;overflow:hidden;"><thead><tr style="background:rgba(0,0,0,0.3);"><th style="padding:12px;text-align:left;">Order ID</th><th>Product</th><th>Qty</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
+            data.forEach(o => { html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:12px;"><strong>${o.order_id}</strong></td><td>${escapeHtml(o.product_name)}</td><td>${o.quantity}</td><td>₹${o.total_amount}</td><td>${o.order_status || 'Pending'}</td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`; });
+            html += '</tbody></table>';
+            container.innerHTML = html;
         }
+        
+        // Apply ALL Filters (Carat + Color + Clarity + Search + Category + Status)
+        window.applyAllFilters = function() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const minCarat = parseFloat(document.getElementById('minCarat').value) || 0;
+            const maxCarat = parseFloat(document.getElementById('maxCarat').value) || 100;
+            const selectedColor = document.getElementById('diamondColorFilter').value;
+            const selectedClarity = document.getElementById('diamondClarityFilter').value;
+            
+            let filtered = [...allProducts];
+            
+            // Search filter
+            if (searchTerm) {
+                filtered = filtered.filter(p => 
+                    p.product_name?.toLowerCase().includes(searchTerm) || 
+                    p.sku?.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Category filter
+            if (category !== 'all') {
+                filtered = filtered.filter(p => p.category === category);
+            }
+            
+            // Status filter
+            if (status !== 'all') {
+                filtered = filtered.filter(p => p.status === status);
+            }
+            
+            // Carat Range filter (Min and Max boxes)
+            filtered = filtered.filter(p => {
+                const carat = p.carat || 0;
+                return carat >= minCarat && carat <= maxCarat;
+            });
+            
+            // Diamond Color filter (from dropdown)
+            if (selectedColor !== 'all') {
+                filtered = filtered.filter(p => p.diamond_color === selectedColor);
+            }
+            
+            // Diamond Clarity filter (from dropdown)
+            if (selectedClarity !== 'all') {
+                filtered = filtered.filter(p => p.diamond_clarity === selectedClarity);
+            }
+            
+            document.getElementById('filterStats').innerHTML = `📊 ${filtered.length} of ${allProducts.length} products`;
+            renderProductList(filtered);
+        };
         
         window.applyDiamondFilters = function() {
             applyAllFilters();
@@ -1061,48 +1031,25 @@
         };
         
         window.resetDiamondFilters = function() {
-            diamondFilters = { maxCarat: 5, selectedColors: [], selectedClarities: [] };
-            document.getElementById('caratRange').value = 5;
-            document.getElementById('caratValue').innerText = 'Up to 5.0 ct';
-            document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.clarity-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('selectedColorText').innerHTML = 'All Colors';
-            document.getElementById('selectedClarityText').innerHTML = 'All Clarity';
+            document.getElementById('minCarat').value = 0;
+            document.getElementById('maxCarat').value = 10;
+            document.getElementById('diamondColorFilter').value = 'all';
+            document.getElementById('diamondClarityFilter').value = 'all';
             applyAllFilters();
             showToast('✅ Diamond filters reset');
         };
         
-        window.applyQuickFilters = function() { applyAllFilters(); };
-        
         window.resetAllFilters = function() {
-            document.getElementById('searchProductInput').value = '';
+            document.getElementById('searchInput').value = '';
             document.getElementById('categoryFilter').value = 'all';
             document.getElementById('statusFilter').value = 'all';
-            resetDiamondFilters();
+            document.getElementById('minCarat').value = 0;
+            document.getElementById('maxCarat').value = 10;
+            document.getElementById('diamondColorFilter').value = 'all';
+            document.getElementById('diamondClarityFilter').value = 'all';
+            applyAllFilters();
+            showToast('✅ All filters reset');
         };
-        
-        function applyAllFilters() {
-            const searchTerm = document.getElementById('searchProductInput').value.toLowerCase();
-            const category = document.getElementById('categoryFilter').value;
-            const status = document.getElementById('statusFilter').value;
-            
-            let filtered = [...allProducts];
-            if (searchTerm) filtered = filtered.filter(p => p.product_name?.toLowerCase().includes(searchTerm) || p.sku?.toLowerCase().includes(searchTerm));
-            if (category !== 'all') filtered = filtered.filter(p => p.category === category);
-            if (status !== 'all') filtered = filtered.filter(p => p.status === status);
-            
-            // Diamond filters
-            filtered = filtered.filter(p => (p.carat || 0) <= diamondFilters.maxCarat);
-            if (diamondFilters.selectedColors.length > 0) {
-                filtered = filtered.filter(p => diamondFilters.selectedColors.includes(p.diamond_color));
-            }
-            if (diamondFilters.selectedClarities.length > 0) {
-                filtered = filtered.filter(p => diamondFilters.selectedClarities.includes(p.diamond_clarity));
-            }
-            
-            document.getElementById('filterStats').innerHTML = `📊 ${filtered.length} of ${allProducts.length} products`;
-            renderProductList(filtered);
-        }
         
         function renderProductList(products) {
             const container = document.getElementById('productsListContainer');
@@ -1142,21 +1089,11 @@
             container.innerHTML = html;
         }
         
-        async function loadOrders() {
-            const container = document.getElementById('ordersList');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading orders...</p></div>';
-            const { data, error } = await supabase.from('vendor_orders').select('*').eq('vendor_id', currentCompanyId).order('created_at', { ascending: false });
-            if (error || !data?.length) { container.innerHTML = '<div class="loading">📭 No orders yet</div>'; return; }
-            let html = '<table class="orders-table"><thead><tr><th>Order ID</th><th>Product</th><th>Qty</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
-            data.forEach(o => { html += `<tr><td><strong>${o.order_id}</strong></td><td>${escapeHtml(o.product_name)}</td><td>${o.quantity}</td><td>₹${o.total_amount}</td><td>${o.order_status || 'Pending'}</td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`; });
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
-        
         window.saveProduct = async function() {
             const id = document.getElementById('editProductId').value;
             const productData = {
-                vendor_id: currentCompanyId, sku: document.getElementById('sku').value.trim(),
+                vendor_id: currentCompanyId,
+                sku: document.getElementById('sku').value.trim(),
                 product_name: document.getElementById('product_name').value.trim(),
                 category: document.getElementById('category').value.trim(),
                 price: parseFloat(document.getElementById('price').value),
@@ -1173,7 +1110,8 @@
                 diamond_cut: document.getElementById('diamond_cut').value || null,
                 diamond_polish: document.getElementById('diamond_polish').value || null,
                 diamond_symmetry: document.getElementById('diamond_symmetry').value || null,
-                status: 'pending', updated_at: new Date()
+                status: 'pending',
+                updated_at: new Date()
             };
             if (!productData.sku || !productData.product_name || !productData.category || isNaN(productData.price)) { showToast('Fill required fields', true); return; }
             if (id) { await supabase.from('vendor_products').update(productData).eq('id', id); showToast('Product updated!'); }
@@ -1206,21 +1144,60 @@
             document.querySelector('.nav-item[data-page="add-product"]').click();
         };
         
-        window.deleteProduct = async function(id) { if (confirm('Delete?')) { await supabase.from('vendor_products').delete().eq('id', id); showToast('Deleted'); await loadProducts(); await loadDashboard(); } };
+        window.deleteProduct = async function(id) { if (confirm('Delete this product?')) { await supabase.from('vendor_products').delete().eq('id', id); showToast('Product deleted'); await loadProducts(); await loadDashboard(); } };
         window.cancelProductForm = function() { document.getElementById('editProductId').value = ''; document.querySelector('.nav-item[data-page="products"]').click(); };
         
         window.updateProfile = async function() {
-            await supabase.from('vendors').update({ business_name: document.getElementById('business_name').value, owner_name: document.getElementById('owner_name').value, phone: document.getElementById('phone').value, gst_number: document.getElementById('gst_number').value, address: document.getElementById('address').value }).eq('id', currentCompanyId);
+            await supabase.from('vendors').update({
+                business_name: document.getElementById('business_name').value,
+                owner_name: document.getElementById('owner_name').value,
+                phone: document.getElementById('phone').value,
+                gst_number: document.getElementById('gst_number').value,
+                address: document.getElementById('address').value
+            }).eq('id', currentCompanyId);
             showToast('Profile updated');
         };
         
         window.downloadSampleExcel = function() {
-            const ws = XLSX.utils.json_to_sheet([{ sku: 'RING-001', product_name: 'Diamond Ring', category: 'Rings', price: 29999, gst: 18, stock: 10, carat: 1.0, diamond_color: 'D', diamond_clarity: 'VS1' }]);
-            XLSX.writeFile(XLSX.utils.book_new(), 'sample.xlsx');
+            const ws = XLSX.utils.json_to_sheet([{
+                sku: 'RING-001', product_name: 'Diamond Ring', category: 'Rings',
+                price: 29999, gst: 18, stock: 10, carat: 1.0, diamond_color: 'D', diamond_clarity: 'VS1'
+            }]);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Sample');
+            XLSX.writeFile(wb, 'vendor_sample.xlsx');
+            showToast('Sample Excel downloaded');
         };
         
         window.logout = function() { sessionStorage.clear(); supabase.auth.signOut(); window.location.href = 'login.html'; };
         
+        // Bulk Upload
+        document.getElementById('bulkUploadArea')?.addEventListener('click', () => document.getElementById('bulkFileInput').click());
+        document.getElementById('bulkFileInput')?.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const data = await file.arrayBuffer();
+            const workbook = XLSX.read(data);
+            const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+            let success = 0;
+            for (const row of json) {
+                const product = {
+                    vendor_id: currentCompanyId,
+                    sku: row.sku || '', product_name: row.product_name || '', category: row.category || '',
+                    price: parseFloat(row.price) || 0, gst: parseFloat(row.gst) || 18, stock: parseInt(row.stock) || 0,
+                    carat: row.carat ? parseFloat(row.carat) : null, diamond_color: row.diamond_color || null,
+                    diamond_clarity: row.diamond_clarity || null, status: 'pending'
+                };
+                if (product.sku && product.product_name && product.category && product.price) {
+                    await supabase.from('vendor_products').insert([product]);
+                    success++;
+                }
+            }
+            showToast(`✅ ${success} products uploaded`);
+            await loadProducts();
+        });
+        
+        // Navigation
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', () => {
                 const page = item.getAttribute('data-page');
