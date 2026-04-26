@@ -67,7 +67,7 @@
         .page-header { margin-bottom: 25px; }
         .page-title { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, var(--purple), #6d28d9); -webkit-background-clip: text; background-clip: text; color: transparent; display: inline-flex; align-items: center; gap: 12px; }
         
-        /* View Toggle */
+        /* View Toggle - List View by Default */
         .view-toggle { display: flex; gap: 10px; margin-left: 20px; }
         .view-btn { background: var(--gray-200); border: none; padding: 6px 15px; border-radius: 30px; cursor: pointer; font-size: 12px; transition: all 0.3s; }
         .view-btn.active { background: var(--purple); color: white; }
@@ -79,6 +79,63 @@
         .stat-icon { font-size: 24px; color: var(--purple); margin-bottom: 8px; }
         .stat-number { font-size: 28px; font-weight: 800; }
         .stat-label { font-size: 11px; color: var(--gray-500); text-transform: uppercase; }
+        
+        /* Company Analytics Section */
+        .analytics-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid var(--gray-200);
+        }
+        .analytics-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--purple);
+        }
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .analytics-card {
+            background: var(--gray-100);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+        }
+        .analytics-number {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--purple);
+        }
+        .analytics-label {
+            font-size: 10px;
+            color: var(--gray-500);
+        }
+        .company-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .company-tag {
+            background: var(--gray-100);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .company-tag strong { color: var(--purple); }
         
         /* Bulk Actions Bar */
         .bulk-actions-bar {
@@ -96,6 +153,18 @@
         .bulk-actions-bar.active { display: flex; }
         .bulk-count { font-weight: 700; color: var(--purple); font-size: 18px; }
         .bulk-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        
+        /* Live Selection Info */
+        .selection-info {
+            font-size: 12px;
+            color: var(--purple);
+            background: rgba(139,92,246,0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
         
         /* Bulk Progress Bar */
         .bulk-progress-container {
@@ -120,11 +189,6 @@
             width: 0%;
             transition: width 0.3s ease;
         }
-        .bulk-progress-text {
-            font-size: 13px;
-            color: var(--gray-600);
-            text-align: center;
-        }
         
         /* Toolbar */
         .toolbar { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; background: white; padding: 15px 20px; border-radius: 20px; border: 1px solid var(--gray-200); }
@@ -136,27 +200,30 @@
         .btn-primary { background: linear-gradient(135deg, var(--purple), #6d28d9); border: none; padding: 8px 20px; border-radius: 40px; font-weight: 600; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(139,92,246,0.3); }
         .btn-secondary { background: var(--gray-200); border: none; padding: 8px 20px; border-radius: 40px; font-weight: 500; cursor: pointer; }
-        .btn-danger { background: rgba(239,68,68,0.15); color: var(--danger); border: none; padding: 8px 20px; border-radius: 40px; font-weight: 500; cursor: pointer; }
         
-        /* ========== LIST VIEW STYLES ========== */
-        .list-view-container { background: white; border-radius: 20px; border: 1px solid var(--gray-200); overflow: hidden; }
-        .list-view-table { width: 100%; border-collapse: collapse; }
-        .list-view-table th { background: var(--gray-100); padding: 14px 12px; text-align: left; font-size: 12px; font-weight: 600; color: var(--gray-600); border-bottom: 1px solid var(--gray-200); }
+        /* ========== LIST VIEW STYLES (DEFAULT) ========== */
+        .list-view-container { background: white; border-radius: 20px; border: 1px solid var(--gray-200); overflow-x: auto; }
+        .list-view-table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+        .list-view-table th { background: var(--gray-100); padding: 14px 12px; text-align: left; font-size: 12px; font-weight: 600; color: var(--gray-600); border-bottom: 1px solid var(--gray-200); position: sticky; top: 0; }
         .list-view-table td { padding: 12px; border-bottom: 1px solid var(--gray-200); vertical-align: middle; font-size: 13px; }
         .list-view-table tr:hover { background: rgba(139,92,246,0.03); }
         .list-view-table tr.selected { background: rgba(139,92,246,0.08); }
         
         .list-thumbnail { width: 50px; height: 50px; object-fit: cover; border-radius: 10px; cursor: pointer; }
-        .media-icons { display: flex; gap: 5px; margin-top: 5px; }
-        .media-icon { font-size: 11px; padding: 2px 6px; border-radius: 20px; display: inline-flex; align-items: center; gap: 3px; }
-        .media-d360 { background: rgba(6,182,212,0.15); color: var(--cyan); }
-        .media-video { background: rgba(236,72,153,0.15); color: var(--pink); }
-        .media-img { background: rgba(139,92,246,0.15); color: var(--purple); }
-        
         .status-badge-sm { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; }
         .status-approved-sm { background: rgba(16,185,129,0.15); color: #10b981; }
         .status-pending-sm { background: rgba(245,158,11,0.15); color: #f59e0b; }
         .status-rejected-sm { background: rgba(239,68,68,0.15); color: #ef4444; }
+        
+        .diamond-badge-sm {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+            background: var(--gray-100);
+            margin: 2px;
+        }
         
         .action-icons { display: flex; gap: 8px; flex-wrap: wrap; }
         .action-icon-btn { background: none; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 14px; }
@@ -168,53 +235,36 @@
         .action-icon-btn.edit:hover { background: rgba(59,130,246,0.15); }
         .action-icon-btn.delete { color: var(--danger); }
         .action-icon-btn.delete:hover { background: rgba(239,68,68,0.15); }
-        .action-icon-btn.view360 { color: var(--cyan); }
-        .action-icon-btn.view360:hover { background: rgba(6,182,212,0.15); }
         
         /* ========== GRID VIEW STYLES ========== */
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 25px; margin-top: 20px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 25px; margin-top: 20px; display: none; }
         .product-card { background: white; border-radius: 24px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; box-shadow: var(--shadow-sm); position: relative; }
         .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--purple); }
         .product-card.selected { border: 2px solid var(--purple); background: rgba(139,92,246,0.02); }
         .product-select-checkbox { position: absolute; top: 15px; left: 15px; z-index: 10; width: 22px; height: 22px; cursor: pointer; accent-color: var(--purple); }
         .product-image { width: 100%; height: 200px; object-fit: cover; background: var(--gray-100); cursor: pointer; }
-        .product-badge { position: absolute; top: 12px; right: 12px; background: linear-gradient(135deg, var(--purple), #6d28d9); padding: 4px 12px; border-radius: 30px; font-size: 10px; font-weight: 600; color: white; z-index: 2; }
         .product-info { padding: 18px; }
         .product-name { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
-        .product-sku { font-size: 11px; color: var(--gray-500); margin-bottom: 5px; }
-        .vendor-name { font-size: 11px; color: var(--purple); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; font-weight: 500; }
         .product-price { font-size: 22px; font-weight: 700; color: var(--purple); margin: 10px 0; }
         .diamond-specs { background: var(--gray-100); border-radius: 12px; padding: 8px; margin: 8px 0; display: flex; flex-wrap: wrap; gap: 6px; font-size: 10px; }
-        .diamond-spec { background: white; padding: 2px 8px; border-radius: 20px; }
         .status-badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; margin-top: 8px; }
-        .status-approved { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-        .status-pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-        .status-rejected { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
         .card-actions { display: flex; gap: 8px; margin-top: 15px; border-top: 1px solid var(--gray-200); padding-top: 15px; flex-wrap: wrap; }
         .action-btn { flex: 1; padding: 8px; border-radius: 40px; border: none; font-weight: 500; font-size: 12px; cursor: pointer; transition: all 0.2s; text-align: center; }
         .action-btn.approve { background: var(--success); color: white; }
         .action-btn.reject { background: var(--danger); color: white; }
         .action-btn.edit { background: var(--info); color: white; }
         .action-btn.delete { background: rgba(239,68,68,0.1); color: var(--danger); }
-        .action-btn.delete:hover { background: var(--danger); color: white; }
         
         /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
         .modal-content { background: white; border-radius: 28px; max-width: 800px; width: 90%; max-height: 85vh; overflow-y: auto; padding: 25px; }
-        .modal-content h3 { color: var(--purple); margin-bottom: 20px; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--gray-200); padding-bottom: 15px; }
-        .close-modal { background: none; border: none; font-size: 28px; cursor: pointer; color: var(--gray-500); }
+        .close-modal { background: none; border: none; font-size: 28px; cursor: pointer; }
         
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 600; color: var(--gray-600); }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--gray-200); border-radius: 12px; font-size: 14px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--gray-200); border-radius: 12px; font-size: 14px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .media-preview { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-        .media-preview-item { width: 80px; height: 80px; border-radius: 12px; overflow: hidden; background: var(--gray-100); border: 1px solid var(--gray-200); }
-        .media-preview-item img, .media-preview-item video { width: 100%; height: 100%; object-fit: cover; }
-        
-        .d360-viewer { width: 100%; height: 500px; border: none; border-radius: 16px; }
         
         .empty-state { text-align: center; padding: 80px; background: white; border-radius: 24px; }
         .loading { text-align: center; padding: 60px; }
@@ -230,21 +280,14 @@
         @media (max-width: 1024px) {
             .stats-row { grid-template-columns: repeat(4, 1fr); }
             .list-view-table { font-size: 12px; }
-            .list-view-table th, .list-view-table td { padding: 8px; }
         }
-        
         @media (max-width: 768px) {
             .admin-header { flex-direction: column; text-align: center; }
             .stats-row { grid-template-columns: repeat(2, 1fr); }
             .toolbar { flex-direction: column; }
             .list-view-table { display: none; }
-            .mobile-list-card { display: block; }
             .product-grid { grid-template-columns: 1fr; }
         }
-        
-        .mobile-list-card { display: none; background: white; border-radius: 16px; padding: 15px; margin-bottom: 12px; border: 1px solid var(--gray-200); }
-        .mobile-list-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-200); }
-        .mobile-list-row:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
@@ -265,11 +308,11 @@
             <div class="page-title">
                 <i class="fas fa-store"></i> Vendor Product Management
                 <div class="view-toggle">
-                    <button class="view-btn active" onclick="setView('grid')"><i class="fas fa-th"></i> Grid</button>
-                    <button class="view-btn" onclick="setView('list')"><i class="fas fa-list"></i> List</button>
+                    <button class="view-btn" onclick="setView('list')"><i class="fas fa-list"></i> List View</button>
+                    <button class="view-btn" onclick="setView('grid')"><i class="fas fa-th"></i> Grid View</button>
                 </div>
             </div>
-            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Fast Bulk Actions | D360 Support | Company Names</p>
+            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Bulk Approve/Reject/Delete | Company-wise Analytics | Diamond Specifications</p>
         </div>
 
         <!-- Stats -->
@@ -281,6 +324,13 @@
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-cube"></i></div><div class="stat-number" id="d360Count">0</div><div class="stat-label">D360 Products</div></div>
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-building"></i></div><div class="stat-number" id="companyCount">0</div><div class="stat-label">Companies</div></div>
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-rupee-sign"></i></div><div class="stat-number" id="totalValue">₹0</div><div class="stat-label">Total Value</div></div>
+        </div>
+
+        <!-- Company-wise Analytics Section -->
+        <div class="analytics-section">
+            <div class="analytics-title"><i class="fas fa-chart-pie"></i> Company-wise Analytics</div>
+            <div class="analytics-grid" id="analyticsGrid"></div>
+            <div id="companyList" class="company-list"></div>
         </div>
 
         <!-- Bulk Progress Bar -->
@@ -313,26 +363,39 @@
                     <option value="approved">Approved</option>
                     <option value="rejected">Rejected</option>
                 </select>
+                <select id="diamondColorFilter" class="filter-select">
+                    <option value="all">All Diamond Colors</option>
+                </select>
+                <select id="diamondClarityFilter" class="filter-select">
+                    <option value="all">All Diamond Clarities</option>
+                </select>
+                <select id="caratFilter" class="filter-select">
+                    <option value="all">All Carat</option>
+                    <option value="0-0.5">0 - 0.5 ct</option>
+                    <option value="0.5-1">0.5 - 1 ct</option>
+                    <option value="1-2">1 - 2 ct</option>
+                    <option value="2+">2+ ct</option>
+                </select>
                 <select id="mediaFilter" class="filter-select">
                     <option value="all">All Media</option>
                     <option value="d360">D360 Products</option>
                     <option value="video">Has Video</option>
-                    <option value="image_only">Images Only</option>
                 </select>
                 <label class="select-all-checkbox"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"> Select All</label>
+                <span id="liveSelectionInfo" class="selection-info"></span>
                 <button class="btn-primary" onclick="refreshVendorProducts()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 <button class="btn-secondary" onclick="exportVendorCSV()"><i class="fas fa-file-excel"></i> Export CSV</button>
             </div>
         </div>
 
+        <!-- List View (Default) -->
+        <div id="listView" class="list-view-container"><div class="loading"><div class="spinner"></div><p>Loading vendor products...</p></div></div>
+
         <!-- Grid View -->
         <div id="gridView" class="product-grid"><div class="loading"><div class="spinner"></div><p>Loading vendor products...</p></div></div>
-
-        <!-- List View -->
-        <div id="listView" class="list-view-container" style="display: none;"><div class="loading"><div class="spinner"></div><p>Loading vendor products...</p></div></div>
     </div>
 
-    <!-- Edit Product Modal -->
+    <!-- Edit Modal -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <h3><i class="fas fa-edit"></i> Edit Vendor Product</h3>
@@ -354,7 +417,7 @@
             </div>
             <div class="form-row">
                 <div class="form-group"><label>Image URL 3</label><input type="url" id="editImage3"></div>
-                <div class="form-group"><label>Video/D360 URL</label><input type="url" id="editVideo" placeholder="https://d360.tech/view.html?d=... or video.mp4"></div>
+                <div class="form-group"><label>Video URL</label><input type="url" id="editVideo"></div>
             </div>
             <div class="form-row">
                 <div class="form-group"><label>Carat</label><input type="number" id="editCarat" step="0.01"></div>
@@ -364,26 +427,14 @@
                 <div class="form-group"><label>Diamond Clarity</label><input type="text" id="editDiamondClarity"></div>
                 <div class="form-group"><label>Diamond Cut</label><input type="text" id="editDiamondCut"></div>
             </div>
-            <div id="editMediaPreview" class="media-preview"></div>
-            <div class="modal-buttons">
+            <div class="modal-buttons" style="display: flex; gap: 12px; margin-top: 20px;">
                 <button class="btn-primary" onclick="saveEditProduct()">Save Changes</button>
                 <button class="btn-secondary" onclick="closeEditModal()">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- D360/Video Viewer Modal -->
-    <div id="viewerModal" class="modal">
-        <div class="modal-content" style="max-width: 1000px;">
-            <div class="modal-header">
-                <h3><i class="fas fa-cube"></i> Media Viewer</h3>
-                <button class="close-modal" onclick="closeViewerModal()">&times;</button>
-            </div>
-            <div id="viewerContent"></div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
+    <!-- Delete Modal -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
             <h3 style="color: var(--danger);"><i class="fas fa-trash-alt"></i> Confirm Deletion</h3>
@@ -407,7 +458,7 @@
         </div>
     </div>
 
-    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management with Fast Bulk Actions</p></footer>
+    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management with Company-wise Analytics</p></footer>
 
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     <script type="module">
@@ -419,14 +470,12 @@
         let vendorProducts = [];
         let vendorCompanies = new Map();
         let selectedProducts = new Set();
-        let currentView = 'grid';
+        let currentView = 'list';
         let pendingBulkAction = null;
         let pendingDelete = null;
         
-        // Helper Functions
-        function isD360Image(url) { return url && (url.includes('d360.tech/imaged/') || url.includes('/imaged/')); }
-        function isD360Video(url) { return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); }
         function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com')); }
+        function isD360Url(url) { return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); }
         
         function showToast(msg, isErr = false) {
             const t = document.createElement('div');
@@ -445,9 +494,7 @@
                     vendorCompanies.clear();
                     data.forEach(v => vendorCompanies.set(v.id, v.business_name || 'Unknown Company'));
                 }
-            } catch (err) {
-                console.error('Error loading companies:', err);
-            }
+            } catch (err) { console.error('Error loading companies:', err); }
         }
         
         function getCompanyName(vendorId) {
@@ -461,10 +508,12 @@
                 if (error) throw error;
                 vendorProducts = data || [];
                 updateStats();
+                updateCompanyAnalytics();
+                populateFilterOptions();
                 applyFilters();
             } catch (err) {
-                document.getElementById('gridView').innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Error: ${err.message}</p></div>`;
                 document.getElementById('listView').innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Error: ${err.message}</p></div>`;
+                document.getElementById('gridView').innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Error: ${err.message}</p></div>`;
             }
         }
         
@@ -473,7 +522,7 @@
             const approved = vendorProducts.filter(p => p.status === 'approved').length;
             const pending = vendorProducts.filter(p => p.status === 'pending').length;
             const rejected = vendorProducts.filter(p => p.status === 'rejected').length;
-            const d360 = vendorProducts.filter(p => isD360Video(p.video_url) || isD360Image(p.image1_url) || isD360Image(p.image2_url)).length;
+            const d360 = vendorProducts.filter(p => isD360Url(p.video_url)).length;
             const uniqueCompanies = new Set(vendorProducts.map(p => p.vendor_id)).size;
             const totalValue = vendorProducts.reduce((sum, p) => sum + (p.price || 0), 0);
             
@@ -486,31 +535,110 @@
             document.getElementById('totalValue').innerHTML = `₹${(totalValue / 100000).toFixed(1)}L`;
         }
         
+        function updateCompanyAnalytics() {
+            const companyMap = new Map();
+            vendorProducts.forEach(p => {
+                const companyName = getCompanyName(p.vendor_id);
+                if (!companyMap.has(companyName)) {
+                    companyMap.set(companyName, { total: 0, approved: 0, pending: 0, rejected: 0, totalValue: 0 });
+                }
+                const stats = companyMap.get(companyName);
+                stats.total++;
+                stats.totalValue += p.price || 0;
+                if (p.status === 'approved') stats.approved++;
+                else if (p.status === 'pending') stats.pending++;
+                else if (p.status === 'rejected') stats.rejected++;
+            });
+            
+            const sortedCompanies = Array.from(companyMap.entries()).sort((a, b) => b[1].total - a[1].total);
+            const top5 = sortedCompanies.slice(0, 5);
+            
+            document.getElementById('analyticsGrid').innerHTML = top5.map(([name, stats]) => `
+                <div class="analytics-card">
+                    <div class="analytics-number">${stats.total}</div>
+                    <div class="analytics-label">${name.length > 20 ? name.substring(0, 20) + '...' : name}</div>
+                    <div style="font-size: 10px; margin-top: 5px;">✅ ${stats.approved} | ⏳ ${stats.pending} | ❌ ${stats.rejected}</div>
+                    <div style="font-size: 10px;">₹${(stats.totalValue / 1000).toFixed(0)}K</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('companyList').innerHTML = sortedCompanies.map(([name, stats]) => `
+                <div class="company-tag">
+                    <i class="fas fa-building"></i> <strong>${escapeHtml(name)}</strong>
+                    <span style="color: var(--success);">${stats.approved}</span>/
+                    <span style="color: var(--warning);">${stats.pending}</span>/
+                    <span style="color: var(--danger);">${stats.rejected}</span>
+                </div>
+            `).join('');
+        }
+        
+        function populateFilterOptions() {
+            const colors = new Set();
+            const clarities = new Set();
+            vendorProducts.forEach(p => {
+                if (p.diamond_color) colors.add(p.diamond_color);
+                if (p.diamond_clarity) clarities.add(p.diamond_clarity);
+            });
+            
+            const colorSelect = document.getElementById('diamondColorFilter');
+            const claritySelect = document.getElementById('diamondClarityFilter');
+            
+            colorSelect.innerHTML = '<option value="all">All Diamond Colors</option>' + 
+                Array.from(colors).sort().map(c => `<option value="${c}">${c}</option>`).join('');
+            
+            claritySelect.innerHTML = '<option value="all">All Diamond Clarities</option>' + 
+                Array.from(clarities).sort().map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+        
         function getFilteredProducts() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const statusFilter = document.getElementById('statusFilter').value;
+            const colorFilter = document.getElementById('diamondColorFilter').value;
+            const clarityFilter = document.getElementById('diamondClarityFilter').value;
+            const caratFilter = document.getElementById('caratFilter').value;
             const mediaFilter = document.getElementById('mediaFilter').value;
             
             let filtered = [...vendorProducts];
+            
             if (searchTerm) {
                 filtered = filtered.filter(p => 
                     (p.product_name || '').toLowerCase().includes(searchTerm) ||
                     (p.sku || '').toLowerCase().includes(searchTerm) ||
-                    (p.vendor_id || '').toLowerCase().includes(searchTerm) ||
                     getCompanyName(p.vendor_id).toLowerCase().includes(searchTerm)
                 );
             }
-            if (statusFilter !== 'all') {
-                filtered = filtered.filter(p => p.status === statusFilter);
+            if (statusFilter !== 'all') filtered = filtered.filter(p => p.status === statusFilter);
+            if (colorFilter !== 'all') filtered = filtered.filter(p => p.diamond_color === colorFilter);
+            if (clarityFilter !== 'all') filtered = filtered.filter(p => p.diamond_clarity === clarityFilter);
+            
+            if (caratFilter !== 'all') {
+                filtered = filtered.filter(p => {
+                    const carat = p.carat || 0;
+                    if (caratFilter === '0-0.5') return carat > 0 && carat <= 0.5;
+                    if (caratFilter === '0.5-1') return carat > 0.5 && carat <= 1;
+                    if (caratFilter === '1-2') return carat > 1 && carat <= 2;
+                    if (caratFilter === '2+') return carat > 2;
+                    return true;
+                });
             }
-            if (mediaFilter === 'd360') {
-                filtered = filtered.filter(p => isD360Video(p.video_url) || isD360Image(p.image1_url) || isD360Image(p.image2_url));
-            } else if (mediaFilter === 'video') {
-                filtered = filtered.filter(p => isVideoUrl(p.video_url));
-            } else if (mediaFilter === 'image_only') {
-                filtered = filtered.filter(p => (p.image1_url || p.image2_url || p.image3_url) && !isVideoUrl(p.video_url));
-            }
+            
+            if (mediaFilter === 'd360') filtered = filtered.filter(p => isD360Url(p.video_url));
+            else if (mediaFilter === 'video') filtered = filtered.filter(p => isVideoUrl(p.video_url));
+            
             return filtered;
+        }
+        
+        function updateLiveSelectionInfo() {
+            const total = getFilteredProducts().length;
+            const selected = selectedProducts.size;
+            const infoSpan = document.getElementById('liveSelectionInfo');
+            if (selected > 0) {
+                infoSpan.innerHTML = `<i class="fas fa-check-circle"></i> ${selected} selected / ${total} total`;
+                infoSpan.style.display = 'inline-flex';
+            } else {
+                infoSpan.innerHTML = '';
+                infoSpan.style.display = 'none';
+            }
         }
         
         function applyFilters() {
@@ -522,6 +650,78 @@
             }
             updateSelectAllCheckbox();
             updateBulkActionsBar();
+            updateLiveSelectionInfo();
+        }
+        
+        // ========== LIST VIEW (DEFAULT) ==========
+        function renderListView(products) {
+            const container = document.getElementById('listView');
+            if (!products.length) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-store-slash"></i><p>No vendor products found.</p></div>';
+                return;
+            }
+            
+            let tableHtml = `
+                <table class="list-view-table">
+                    <thead>
+                        <tr>
+                            <th style="width:40px"><input type="checkbox" id="listSelectAll" onchange="toggleSelectAllList()"></th>
+                            <th style="width:60px">Image</th>
+                            <th>Product</th>
+                            <th>Company</th>
+                            <th>SKU/Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Carat</th>
+                            <th>Diamond Color</th>
+                            <th>Diamond Clarity</th>
+                            <th>Media</th>
+                            <th>Status</th>
+                            <th style="width:140px">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            for (const p of products) {
+                const imgUrl = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/50x50?text=No';
+                const isSelected = selectedProducts.has(p.id);
+                const companyName = getCompanyName(p.vendor_id);
+                const statusClass = p.status === 'approved' ? 'status-approved-sm' : (p.status === 'rejected' ? 'status-rejected-sm' : 'status-pending-sm');
+                const hasD360 = isD360Url(p.video_url);
+                const hasVideo = isVideoUrl(p.video_url);
+                
+                let mediaIcon = '';
+                if (hasD360) mediaIcon = '<span class="diamond-badge-sm"><i class="fas fa-cube"></i> 360°</span>';
+                else if (hasVideo) mediaIcon = '<span class="diamond-badge-sm"><i class="fas fa-video"></i> Video</span>';
+                else if (p.image1_url || p.image2_url) mediaIcon = '<span class="diamond-badge-sm"><i class="fas fa-image"></i> Img</span>';
+                
+                tableHtml += `
+                    <tr class="${isSelected ? 'selected' : ''}">
+                        <td><input type="checkbox" class="list-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProductList(${p.id}, this.checked)"></td>
+                        <td><img class="list-thumbnail" src="${imgUrl}" onerror="this.src='https://via.placeholder.com/50x50'"></td>
+                        <td><strong>${escapeHtml(p.product_name)}</strong><br><span style="font-size:10px;color:var(--gray-500);">ID: ${p.id}</span></td>
+                        <td><i class="fas fa-building" style="color:var(--purple);"></i> ${escapeHtml(companyName)}</span></td>
+                        <td>${p.sku || 'N/A'}<br><span style="font-size:10px;">${p.category || '-'}</span></td>
+                        <td>₹${(p.price || 0).toLocaleString()}<br><span style="font-size:10px;">+${p.gst || 18}%</span></td>
+                        <td>${p.stock || 0}</td>
+                        <td>${p.carat ? p.carat + 'ct' : '-'}</td>
+                        <td>${p.diamond_color || '-'}</td>
+                        <td>${p.diamond_clarity || '-'}</td>
+                        <td>${mediaIcon}</td>
+                        <td><span class="status-badge-sm ${statusClass}">${(p.status || 'pending').toUpperCase()}</span></td>
+                        <td class="action-icons">
+                            ${hasD360 ? `<button class="action-icon-btn view360" onclick="openD360Viewer('${escapeHtml(p.video_url)}')" title="360° View"><i class="fas fa-cube"></i></button>` : ''}
+                            <button class="action-icon-btn edit" onclick="openEditModal(${p.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                            ${p.status !== 'approved' ? `<button class="action-icon-btn approve" onclick="approveProduct(${p.id})" title="Approve"><i class="fas fa-check"></i></button>` : ''}
+                            ${p.status !== 'rejected' ? `<button class="action-icon-btn reject" onclick="rejectProduct(${p.id})" title="Reject"><i class="fas fa-times"></i></button>` : ''}
+                            <button class="action-icon-btn delete" onclick="deleteProduct(${p.id})" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                          </td>
+                    </tr>
+                `;
+            }
+            tableHtml += '</tbody><table>';
+            container.innerHTML = tableHtml;
         }
         
         // ========== GRID VIEW ==========
@@ -536,29 +736,26 @@
             for (const p of products) {
                 const imgUrl = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/400x200?text=No+Image';
                 const isSelected = selectedProducts.has(p.id);
-                const hasD360 = isD360Video(p.video_url) || isD360Image(p.image1_url) || isD360Image(p.image2_url);
-                const hasVideo = isVideoUrl(p.video_url);
                 const companyName = getCompanyName(p.vendor_id);
-                
-                let mediaBadge = '';
-                if (hasD360) mediaBadge = '<span class="media-icon media-d360"><i class="fas fa-cube"></i> 360°</span>';
-                else if (hasVideo) mediaBadge = '<span class="media-icon media-video"><i class="fas fa-video"></i> Video</span>';
-                
-                let statusClass = p.status === 'approved' ? 'status-approved' : (p.status === 'rejected' ? 'status-rejected' : 'status-pending');
+                const statusClass = p.status === 'approved' ? 'status-approved' : (p.status === 'rejected' ? 'status-rejected' : 'status-pending');
                 
                 html += `
                     <div class="product-card ${isSelected ? 'selected' : ''}">
                         <input type="checkbox" class="product-select-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProduct(${p.id}, this.checked)">
                         <div style="position: relative;">
                             <span class="product-badge"><i class="fas fa-store"></i> Vendor</span>
-                            <img class="product-image" src="${imgUrl}" alt="${escapeHtml(p.product_name)}" onerror="this.src='https://via.placeholder.com/400x200'" onclick="openMediaViewer(${p.id})">
+                            <img class="product-image" src="${imgUrl}" alt="${escapeHtml(p.product_name)}" onerror="this.src='https://via.placeholder.com/400x200'">
                         </div>
                         <div class="product-info">
-                            <div class="product-name">${escapeHtml(p.product_name)} ${mediaBadge}</div>
+                            <div class="product-name">${escapeHtml(p.product_name)}</div>
                             <div class="product-sku">${p.sku || 'N/A'} | ${p.category || 'Jewelry'}</div>
                             <div class="vendor-name"><i class="fas fa-building"></i> ${escapeHtml(companyName)}</div>
-                            <div class="product-price">₹${(p.price || 0).toLocaleString()} <span style="font-size:12px;">+ ${p.gst || 18}% GST</span></div>
-                            ${p.carat ? `<div class="diamond-specs"><span class="diamond-spec"><i class="fas fa-gem"></i> ${p.carat}ct</span>${p.diamond_color ? `<span class="diamond-spec">🎨 ${p.diamond_color}</span>` : ''}${p.diamond_clarity ? `<span class="diamond-spec">🔍 ${p.diamond_clarity}</span>` : ''}</div>` : ''}
+                            <div class="product-price">₹${(p.price || 0).toLocaleString()} + ${p.gst || 18}% GST</div>
+                            ${p.carat || p.diamond_color || p.diamond_clarity ? `<div class="diamond-specs">
+                                ${p.carat ? `<span class="diamond-spec"><i class="fas fa-gem"></i> ${p.carat}ct</span>` : ''}
+                                ${p.diamond_color ? `<span class="diamond-spec">🎨 ${p.diamond_color}</span>` : ''}
+                                ${p.diamond_clarity ? `<span class="diamond-spec">🔍 ${p.diamond_clarity}</span>` : ''}
+                            </div>` : ''}
                             <div class="status-badge ${statusClass}">${(p.status || 'pending').toUpperCase()}</div>
                             <div class="card-actions">
                                 <button class="action-btn edit" onclick="openEditModal(${p.id})"><i class="fas fa-edit"></i> Edit</button>
@@ -573,110 +770,7 @@
             container.innerHTML = html;
         }
         
-        // ========== LIST VIEW ==========
-        function renderListView(products) {
-            const container = document.getElementById('listView');
-            if (!products.length) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-store-slash"></i><p>No vendor products found.</p></div>';
-                return;
-            }
-            
-            let tableHtml = `
-                <table class="list-view-table">
-                    <thead>
-                        <tr>
-                            <th style="width:40px"><input type="checkbox" id="listSelectAll" onchange="toggleSelectAllList()"></th>
-                            <th style="width:70px">Image</th>
-                            <th>Product</th>
-                            <th>Company/Vendor</th>
-                            <th>SKU/Category</th>
-                            <th>Price</th>
-                            <th>Stock</th>
-                            <th>Media</th>
-                            <th>Status</th>
-                            <th style="width:180px">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            let mobileHtml = '';
-            
-            for (const p of products) {
-                const imgUrl = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/50x50?text=No';
-                const isSelected = selectedProducts.has(p.id);
-                const hasD360 = isD360Video(p.video_url) || isD360Image(p.image1_url) || isD360Image(p.image2_url);
-                const hasVideo = isVideoUrl(p.video_url);
-                const companyName = getCompanyName(p.vendor_id);
-                const statusClass = p.status === 'approved' ? 'status-approved-sm' : (p.status === 'rejected' ? 'status-rejected-sm' : 'status-pending-sm');
-                
-                let mediaIcons = '';
-                if (hasD360) mediaIcons += '<span class="media-icon media-d360"><i class="fas fa-cube"></i> 360°</span> ';
-                if (hasVideo) mediaIcons += '<span class="media-icon media-video"><i class="fas fa-video"></i> Video</span> ';
-                if (!hasD360 && !hasVideo && (p.image1_url || p.image2_url)) mediaIcons += '<span class="media-icon media-img"><i class="fas fa-image"></i> Image</span> ';
-                
-                tableHtml += `
-                    <tr class="${isSelected ? 'selected' : ''}">
-                        <td><input type="checkbox" class="list-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProductList(${p.id}, this.checked)"></td>
-                        <td><img class="list-thumbnail" src="${imgUrl}" onclick="openMediaViewer(${p.id})" onerror="this.src='https://via.placeholder.com/50x50'"></td>
-                        <td><strong>${escapeHtml(p.product_name)}</strong><br><span style="font-size:10px;color:var(--gray-500);">ID: ${p.id}</span></td>
-                        <td><i class="fas fa-building" style="color:var(--purple);"></i> ${escapeHtml(companyName)}<br><span style="font-size:10px;">ID: ${p.vendor_id?.slice(0, 12)}...</span></td>
-                        <td>${p.sku || 'N/A'}<br><span style="font-size:10px;">${p.category || 'Jewelry'}</span></td>
-                        <td>₹${(p.price || 0).toLocaleString()}<br><span style="font-size:10px;">+${p.gst || 18}% GST</span></td>
-                        <td>${p.stock || 0}</td>
-                        <td>${mediaIcons}</td>
-                        <td><span class="status-badge-sm ${statusClass}">${(p.status || 'pending').toUpperCase()}</span></td>
-                        <td class="action-icons">
-                            ${hasD360 ? `<button class="action-icon-btn view360" onclick="openD360Viewer('${escapeHtml(p.video_url || p.image1_url)}')" title="360° View"><i class="fas fa-cube"></i></button>` : ''}
-                            <button class="action-icon-btn edit" onclick="openEditModal(${p.id})" title="Edit"><i class="fas fa-edit"></i></button>
-                            ${p.status !== 'approved' ? `<button class="action-icon-btn approve" onclick="approveProduct(${p.id})" title="Approve"><i class="fas fa-check"></i></button>` : ''}
-                            ${p.status !== 'rejected' ? `<button class="action-icon-btn reject" onclick="rejectProduct(${p.id})" title="Reject"><i class="fas fa-times"></i></button>` : ''}
-                            <button class="action-icon-btn delete" onclick="deleteProduct(${p.id})" title="Delete"><i class="fas fa-trash-alt"></i></button>
-                         </td>
-                    </tr>
-                `;
-                
-                mobileHtml += `
-                    <div class="mobile-list-card">
-                        <div class="mobile-list-row"><strong>${escapeHtml(p.product_name)}</strong></div>
-                        <div class="mobile-list-row"><span>Company:</span> <span>${escapeHtml(companyName)}</span></div>
-                        <div class="mobile-list-row"><span>SKU:</span> <span>${p.sku}</span></div>
-                        <div class="mobile-list-row"><span>Price:</span> <span>₹${(p.price || 0).toLocaleString()}</span></div>
-                        <div class="mobile-list-row"><span>Status:</span> <span class="status-badge-sm ${statusClass}">${p.status || 'pending'}</span></div>
-                        <div class="mobile-list-row"><span>Actions:</span> <span class="action-icons">${hasD360 ? `<button class="action-icon-btn view360" onclick="openD360Viewer('${escapeHtml(p.video_url || p.image1_url)}')"><i class="fas fa-cube"></i></button>` : ''}<button class="action-icon-btn edit" onclick="openEditModal(${p.id})"><i class="fas fa-edit"></i></button><button class="action-icon-btn approve" onclick="approveProduct(${p.id})"><i class="fas fa-check"></i></button><button class="action-icon-btn reject" onclick="rejectProduct(${p.id})"><i class="fas fa-times"></i></button></span></div>
-                    </div>
-                `;
-            }
-            
-            tableHtml += '</tbody><table>' + `<div class="mobile-list-container">${mobileHtml}</div>`;
-            container.innerHTML = tableHtml;
-        }
-        
         // Selection Functions
-        window.toggleSelectProduct = function(id, checked) {
-            if (checked) selectedProducts.add(id);
-            else selectedProducts.delete(id);
-            updateBulkActionsBar();
-            updateSelectAllCheckbox();
-            applyFilters();
-        };
-        
-        window.toggleSelectProductList = window.toggleSelectProduct;
-        
-        window.toggleSelectAll = function() {
-            const filtered = getFilteredProducts();
-            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-            if (selectAllCheckbox.checked) {
-                filtered.forEach(p => selectedProducts.add(p.id));
-            } else {
-                filtered.forEach(p => selectedProducts.delete(p.id));
-            }
-            updateBulkActionsBar();
-            applyFilters();
-        };
-        
-        window.toggleSelectAllList = window.toggleSelectAll;
-        
         function updateSelectAllCheckbox() {
             const filtered = getFilteredProducts();
             const selectAllCheckbox = document.getElementById('selectAllCheckbox');
@@ -694,10 +788,37 @@
             else bar.classList.remove('active');
         }
         
+        window.toggleSelectProduct = function(id, checked) {
+            if (checked) selectedProducts.add(id);
+            else selectedProducts.delete(id);
+            updateBulkActionsBar();
+            updateSelectAllCheckbox();
+            updateLiveSelectionInfo();
+            applyFilters();
+        };
+        
+        window.toggleSelectProductList = window.toggleSelectProduct;
+        
+        window.toggleSelectAll = function() {
+            const filtered = getFilteredProducts();
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            if (selectAllCheckbox.checked) {
+                filtered.forEach(p => selectedProducts.add(p.id));
+            } else {
+                filtered.forEach(p => selectedProducts.delete(p.id));
+            }
+            updateBulkActionsBar();
+            updateLiveSelectionInfo();
+            applyFilters();
+        };
+        
+        window.toggleSelectAllList = window.toggleSelectAll;
+        
         window.clearSelection = function() {
             selectedProducts.clear();
             updateBulkActionsBar();
             updateSelectAllCheckbox();
+            updateLiveSelectionInfo();
             applyFilters();
             showToast('Selection cleared');
         };
@@ -706,74 +827,32 @@
         window.setView = function(view) {
             currentView = view;
             document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-            if (view === 'grid') {
+            if (view === 'list') {
                 document.querySelector('.view-btn:first-child').classList.add('active');
-                document.getElementById('gridView').style.display = 'grid';
-                document.getElementById('listView').style.display = 'none';
+                document.getElementById('listView').style.display = 'block';
+                document.getElementById('gridView').style.display = 'none';
             } else {
                 document.querySelector('.view-btn:last-child').classList.add('active');
-                document.getElementById('gridView').style.display = 'none';
-                document.getElementById('listView').style.display = 'block';
+                document.getElementById('listView').style.display = 'none';
+                document.getElementById('gridView').style.display = 'grid';
             }
             applyFilters();
         };
         
-        // Media Viewer
-        window.openMediaViewer = async function(id) {
-            const product = vendorProducts.find(p => p.id === id);
-            if (!product) return;
-            
-            const mediaUrls = [product.image1_url, product.image2_url, product.image3_url, product.video_url].filter(u => u && u.trim());
-            const viewerContent = document.getElementById('viewerContent');
-            
-            if (mediaUrls.length === 0) {
-                viewerContent.innerHTML = '<p>No media available</p>';
-            } else if (mediaUrls.length === 1) {
-                const url = mediaUrls[0];
-                if (isD360Video(url)) {
-                    viewerContent.innerHTML = `<iframe class="d360-viewer" src="${url}" allowfullscreen></iframe>`;
-                } else if (isVideoUrl(url)) {
-                    viewerContent.innerHTML = `<video controls autoplay style="width:100%; max-height:500px;"><source src="${url}" type="video/mp4"></video>`;
-                } else {
-                    viewerContent.innerHTML = `<img src="${url}" style="width:100%; border-radius:16px;">`;
-                }
-            } else {
-                let galleryHtml = '<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:15px;">';
-                for (const url of mediaUrls) {
-                    if (isD360Video(url)) {
-                        galleryHtml += `<div><iframe src="${url}" style="width:100%; height:250px; border:none; border-radius:12px;"></iframe></div>`;
-                    } else if (isVideoUrl(url)) {
-                        galleryHtml += `<div><video controls style="width:100%; height:250px; object-fit:cover; border-radius:12px;"><source src="${url}"></video></div>`;
-                    } else {
-                        galleryHtml += `<div><img src="${url}" style="width:100%; height:250px; object-fit:cover; border-radius:12px; cursor:pointer;" onclick="window.open('${url}','_blank')"></div>`;
-                    }
-                }
-                galleryHtml += '</div>';
-                viewerContent.innerHTML = galleryHtml;
-            }
-            
-            document.getElementById('viewerModal').classList.add('active');
-        };
-        
         window.openD360Viewer = function(url) {
             if (!url) return;
-            const viewerContent = document.getElementById('viewerContent');
-            if (isD360Video(url)) {
-                viewerContent.innerHTML = `<iframe class="d360-viewer" src="${url}" allowfullscreen></iframe>`;
-            } else if (isVideoUrl(url)) {
-                viewerContent.innerHTML = `<video controls autoplay style="width:100%; max-height:500px;"><source src="${url}" type="video/mp4"></video>`;
-            } else {
-                viewerContent.innerHTML = `<img src="${url}" style="width:100%; border-radius:16px;">`;
-            }
-            document.getElementById('viewerModal').classList.add('active');
+            const modalHtml = `
+                <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:3000;display:flex;justify-content:center;align-items:center;" onclick="this.remove()">
+                    <div style="background:white;border-radius:20px;width:90%;height:80%;padding:20px;" onclick="event.stopPropagation()">
+                        <iframe src="${url}" style="width:100%;height:100%;border:none;border-radius:12px;" allowfullscreen></iframe>
+                        <button style="position:absolute;top:20px;right:20px;background:black;color:white;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;" onclick="this.closest('div').remove()">×</button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
         };
         
-        window.closeViewerModal = function() {
-            document.getElementById('viewerModal').classList.remove('active');
-            document.getElementById('viewerContent').innerHTML = '';
-        };
-        
-        // ========== FAST BULK ACTIONS WITH PROGRESS ==========
+        // Bulk Actions
         function showBulkProgress(total, action) {
             const container = document.getElementById('bulkProgressContainer');
             const progressFill = document.getElementById('bulkProgressFill');
@@ -816,17 +895,17 @@
         
         window.bulkApprove = function() {
             if (selectedProducts.size === 0) { showToast('No products selected', true); return; }
-            showBulkConfirm('<i class="fas fa-check-circle"></i> Bulk Approve', `Are you sure you want to APPROVE ${selectedProducts.size} product(s)? They will appear on the shop page.`, 'approve');
+            showBulkConfirm('<i class="fas fa-check-circle"></i> Bulk Approve', `Approve ${selectedProducts.size} product(s)?`, 'approve');
         };
         
         window.bulkReject = function() {
             if (selectedProducts.size === 0) { showToast('No products selected', true); return; }
-            showBulkConfirm('<i class="fas fa-times-circle"></i> Bulk Reject', `Are you sure you want to REJECT ${selectedProducts.size} product(s)? They will NOT appear on the shop page.`, 'reject');
+            showBulkConfirm('<i class="fas fa-times-circle"></i> Bulk Reject', `Reject ${selectedProducts.size} product(s)?`, 'reject');
         };
         
         window.bulkDelete = function() {
             if (selectedProducts.size === 0) { showToast('No products selected', true); return; }
-            showBulkConfirm('<i class="fas fa-trash-alt"></i> Bulk Delete', `⚠️ WARNING: You are about to DELETE ${selectedProducts.size} product(s). This action CANNOT be undone! Are you sure?`, 'delete');
+            showBulkConfirm('<i class="fas fa-trash-alt"></i> Bulk Delete', `⚠️ DELETE ${selectedProducts.size} product(s)? This cannot be undone!`, 'delete');
         };
         
         async function executeBulkAction() {
@@ -838,48 +917,30 @@
             showBulkProgress(total, action === 'approve' ? 'Approving' : (action === 'reject' ? 'Rejecting' : 'Deleting'));
             
             let success = 0;
-            let failed = 0;
-            const BATCH_SIZE = 50; // Process 50 items at once for better performance
+            const BATCH_SIZE = 50;
             
             for (let i = 0; i < ids.length; i += BATCH_SIZE) {
                 const batch = ids.slice(i, i + BATCH_SIZE);
                 
                 try {
                     if (action === 'approve') {
-                        const { error } = await supabase
-                            .from('vendor_products')
-                            .update({ status: 'approved', updated_at: new Date() })
-                            .in('id', batch);
+                        const { error } = await supabase.from('vendor_products').update({ status: 'approved', updated_at: new Date() }).in('id', batch);
                         if (!error) success += batch.length;
-                        else failed += batch.length;
                     } else if (action === 'reject') {
-                        const { error } = await supabase
-                            .from('vendor_products')
-                            .update({ status: 'rejected', updated_at: new Date() })
-                            .in('id', batch);
+                        const { error } = await supabase.from('vendor_products').update({ status: 'rejected', updated_at: new Date() }).in('id', batch);
                         if (!error) success += batch.length;
-                        else failed += batch.length;
                     } else if (action === 'delete') {
-                        const { error } = await supabase
-                            .from('vendor_products')
-                            .delete()
-                            .in('id', batch);
+                        const { error } = await supabase.from('vendor_products').delete().in('id', batch);
                         if (!error) success += batch.length;
-                        else failed += batch.length;
                     }
-                } catch (err) {
-                    failed += batch.length;
-                }
+                } catch (err) { console.error(err); }
                 
                 updateBulkProgress(Math.min(i + BATCH_SIZE, total), total);
-                await new Promise(r => setTimeout(r, 50)); // Small delay to avoid rate limiting
+                await new Promise(r => setTimeout(r, 50));
             }
             
             hideBulkProgress();
-            
-            if (action === 'approve') showToast(`✅ ${success} products approved, ${failed} failed`);
-            else if (action === 'reject') showToast(`❌ ${success} products rejected, ${failed} failed`);
-            else showToast(`🗑️ ${success} products deleted, ${failed} failed`);
+            showToast(action === 'approve' ? `✅ ${success} products approved` : (action === 'reject' ? `❌ ${success} products rejected` : `🗑️ ${success} products deleted`));
             
             selectedProducts.clear();
             await loadVendorProducts();
@@ -905,7 +966,7 @@
         window.deleteProduct = function(id) {
             pendingDelete = id;
             const product = vendorProducts.find(p => p.id === id);
-            document.getElementById('modalMessage').innerHTML = `⚠️ Delete "${escapeHtml(product?.product_name || 'this product')}"? This action CANNOT be undone!`;
+            document.getElementById('modalMessage').innerHTML = `⚠️ Delete "${escapeHtml(product?.product_name || 'this product')}"? This cannot be undone!`;
             document.getElementById('confirmModal').classList.add('active');
         };
         
@@ -945,27 +1006,8 @@
             document.getElementById('editDiamondClarity').value = data.diamond_clarity || '';
             document.getElementById('editDiamondCut').value = data.diamond_cut || '';
             
-            updateEditMediaPreview();
             document.getElementById('editModal').classList.add('active');
         };
-        
-        function updateEditMediaPreview() {
-            const urls = [
-                document.getElementById('editImage1').value,
-                document.getElementById('editImage2').value,
-                document.getElementById('editImage3').value,
-                document.getElementById('editVideo').value
-            ].filter(u => u && u.trim());
-            const container = document.getElementById('editMediaPreview');
-            if (!urls.length) { container.innerHTML = ''; return; }
-            let html = '';
-            urls.forEach(url => {
-                const isVideo = isVideoUrl(url);
-                const isD360 = isD360Video(url);
-                html += `<div class="media-preview-item">${isD360 ? `<iframe src="${url}" style="width:100%;height:100%;border:none;"></iframe>` : (isVideo ? `<video src="${url}" style="width:100%;height:100%;object-fit:cover;"></video>` : `<img src="${url}" onerror="this.src='https://via.placeholder.com/80'">`)}</div>`;
-            });
-            container.innerHTML = html;
-        }
         
         window.saveEditProduct = async function() {
             const id = document.getElementById('editId').value;
@@ -1016,14 +1058,12 @@
                 'GST %': p.gst,
                 'Stock': p.stock,
                 'Status': p.status,
-                'Vendor ID': p.vendor_id,
                 'Carat': p.carat || '',
                 'Diamond Color': p.diamond_color || '',
                 'Diamond Clarity': p.diamond_clarity || '',
                 'Diamond Cut': p.diamond_cut || '',
-                'Has D360': isD360Video(p.video_url) || isD360Image(p.image1_url) ? 'Yes' : 'No',
-                'Has Video': isVideoUrl(p.video_url) ? 'Yes' : 'No',
-                'Created Date': new Date(p.created_at).toLocaleDateString()
+                'Has D360': isD360Url(p.video_url) ? 'Yes' : 'No',
+                'Has Video': isVideoUrl(p.video_url) ? 'Yes' : 'No'
             }));
             const ws = XLSX.utils.json_to_sheet(exportData);
             const wb = XLSX.utils.book_new();
@@ -1034,6 +1074,9 @@
         
         document.getElementById('searchInput').addEventListener('input', () => applyFilters());
         document.getElementById('statusFilter').addEventListener('change', () => applyFilters());
+        document.getElementById('diamondColorFilter').addEventListener('change', () => applyFilters());
+        document.getElementById('diamondClarityFilter').addEventListener('change', () => applyFilters());
+        document.getElementById('caratFilter').addEventListener('change', () => applyFilters());
         document.getElementById('mediaFilter').addEventListener('change', () => applyFilters());
         
         window.logout = function() {
@@ -1042,10 +1085,9 @@
         };
         
         window.onclick = function(event) {
-            if (event.target === document.getElementById('viewerModal')) closeViewerModal();
-            if (event.target === document.getElementById('editModal')) closeEditModal();
             if (event.target === document.getElementById('confirmModal')) closeConfirmModal();
             if (event.target === document.getElementById('bulkConfirmModal')) closeBulkConfirmModal();
+            if (event.target === document.getElementById('editModal')) closeEditModal();
         };
         
         loadVendorProducts();
