@@ -39,7 +39,6 @@
         .shop-header h1 span { color: var(--gold); }
         .shop-header p { color: rgba(255,255,255,0.8); max-width: 600px; margin: 0 auto; }
         
-        /* View Toggle Buttons */
         .view-toggle {
             display: flex;
             gap: 10px;
@@ -105,7 +104,6 @@
         .products-count { color: var(--gray); font-size: 14px; }
         .sort-select { padding: 8px 15px; border: 1px solid var(--gray-200); border-radius: 8px; background: white; cursor: pointer; }
         
-        /* ========== GRID VIEW STYLES ========== */
         .products-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -115,7 +113,6 @@
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         }
         
-        /* ========== LIST VIEW STYLES (Image Left, Details Right) ========== */
         .products-list {
             display: flex;
             flex-direction: column;
@@ -258,7 +255,6 @@
             margin-bottom: 8px;
         }
         
-        /* Product Card (Grid View) */
         .product-card {
             background: var(--white);
             border-radius: 20px;
@@ -306,22 +302,6 @@
             padding: 4px 10px;
             border-radius: 20px;
             z-index: 5;
-        }
-        /* D360 Badge */
-        .d360-badge {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(5px);
-            color: var(--gold);
-            font-size: 10px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            z-index: 5;
-            display: flex;
-            align-items: center;
-            gap: 4px;
         }
         .product-info {
             padding: 18px;
@@ -393,7 +373,201 @@
             color: var(--gold);
         }
         
-        /* Floating Cart & Swipe Cart */
+        /* Gallery Swipe Styles */
+        .product-gallery-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+        .product-gallery {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            height: 100%;
+            width: 100%;
+            cursor: grab;
+        }
+        .product-gallery:active {
+            cursor: grabbing;
+        }
+        .product-gallery::-webkit-scrollbar {
+            display: none;
+        }
+        .gallery-item {
+            min-width: 100%;
+            width: 100%;
+            height: 100%;
+            scroll-snap-align: start;
+            position: relative;
+        }
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        .gallery-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .gallery-video video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .gallery-d360 {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2a, #0a0a1a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .gallery-d360 i {
+            font-size: 48px;
+            color: var(--gold);
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        .gallery-d360 span {
+            font-size: 14px;
+            color: var(--gold);
+            font-weight: 600;
+        }
+        .gallery-d360 p {
+            font-size: 11px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 5px;
+        }
+        .gallery-dots {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            z-index: 10;
+        }
+        .gallery-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .gallery-dot.active {
+            width: 20px;
+            border-radius: 3px;
+            background: var(--gold);
+        }
+        .gallery-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            z-index: 10;
+            transition: all 0.3s;
+        }
+        .gallery-arrow:hover {
+            background: var(--gold);
+            color: black;
+        }
+        .gallery-arrow-left {
+            left: 8px;
+        }
+        .gallery-arrow-right {
+            right: 8px;
+        }
+        
+        /* D360 Modal */
+        .d360-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .d360-modal-content {
+            background: linear-gradient(135deg, #1a1a2a, #0a0a1a);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 900px;
+            height: 80%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(212,175,55,0.3);
+        }
+        .d360-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.5);
+            border-bottom: 1px solid rgba(212,175,55,0.2);
+        }
+        .d360-modal-header h3 {
+            color: var(--gold);
+            font-size: 18px;
+        }
+        .d360-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .d360-close:hover {
+            color: var(--gold);
+        }
+        .d360-iframe-container {
+            flex: 1;
+            position: relative;
+        }
+        .d360-iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .d360-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
         .floating-cart {
             position: fixed;
             bottom: 80px;
@@ -456,87 +630,6 @@
         .swipe-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.7); font-size: 13px; white-space: nowrap; pointer-events: none; }
         .action-card { background: rgba(255,255,255,0.08); border-radius: 50px; padding: 10px 20px; text-align: center; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; }
         
-        /* D360 Modal Styles */
-        .d360-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 3000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-        .d360-modal-content {
-            background: linear-gradient(135deg, #1a1a2a, #0a0a1a);
-            border-radius: 24px;
-            width: 90%;
-            max-width: 900px;
-            height: 80%;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border: 1px solid rgba(212,175,55,0.3);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-        .d360-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background: rgba(0,0,0,0.5);
-            border-bottom: 1px solid rgba(212,175,55,0.2);
-        }
-        .d360-modal-header h3 {
-            color: var(--gold);
-            font-size: 18px;
-        }
-        .d360-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 28px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .d360-close:hover {
-            color: var(--gold);
-            transform: scale(1.1);
-        }
-        .d360-iframe-container {
-            flex: 1;
-            position: relative;
-            background: #000;
-        }
-        .d360-iframe-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .d360-loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-        .d360-loading .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(212,175,55,0.2);
-            border-top-color: var(--gold);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 15px;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -545,7 +638,7 @@
             background: rgba(255,255,255,0.95);
             backdrop-filter: blur(20px);
             display: flex;
-            justify-content: space-around;
+            justify-content: around;
             padding: 10px 20px 20px;
             border-top: 1px solid rgba(0,0,0,0.05);
             z-index: 100;
@@ -641,7 +734,6 @@
     
     <div class="floating-filter" id="floatingFilterBtn"><i class="fas fa-sliders-h"></i><span class="filter-badge" id="filterBadge"></span></div>
     
-    <!-- Swipe Cart Overlay -->
     <div id="swipeCartOverlay" class="swipe-cart-overlay">
         <div class="swipe-handle" id="swipeHandle"></div>
         <div class="swipe-title"><i class="fas fa-shopping-bag" style="color: var(--gold);"></i> Your Cart</div>
@@ -713,7 +805,6 @@
         let currentCart = [];
         let currentView = 'list';
         
-        // Swipe Cart Variables
         let isSwipeDragging = false;
         let swipeStartX = 0;
         let swipeCurrentTranslate = 0;
@@ -722,15 +813,8 @@
         let isSwipingDown = false;
         
         let selectedFilters = { 
-            sources: [], 
-            categories: [], 
-            minPrice: '', 
-            maxPrice: '',
-            minCarat: '',
-            maxCarat: '',
-            diamondColor: '',
-            diamondClarity: '',
-            diamondCut: ''
+            sources: [], categories: [], minPrice: '', maxPrice: '',
+            minCarat: '', maxCarat: '', diamondColor: '', diamondClarity: '', diamondCut: ''
         };
         let availableCategories = [];
         let availableDiamondColors = [];
@@ -743,31 +827,24 @@
         
         function showToast(msg, isErr = false) { const t = document.createElement('div'); t.className = 'toast' + (isErr ? ' toast-error' : ''); t.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
         
-        // ========== D360 DETECTION FUNCTION ==========
+        function isVideoUrl(url) {
+            if (!url) return false;
+            return url.match(/\.(mp4|webm|mov|avi|m3u8)$/i) || url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com');
+        }
+        
         function isD360Url(url) {
             if (!url) return false;
             return url.includes('d360.tech/view.html') || 
                    url.includes('/view.html?d=') ||
                    url.includes('3dviewer') ||
                    url.includes('360view') ||
-                   (url.includes('.html') && url.includes('360'));
+                   (url.includes('.html') && (url.includes('360') || url.includes('3d')));
         }
         
-        function isVideoUrl(url) {
-            if (!url) return false;
-            return url.match(/\.(mp4|webm|mov|avi|m3u8)$/i) || 
-                   url.includes('youtube.com') || 
-                   url.includes('youtu.be') || 
-                   url.includes('vimeo.com');
-        }
-        
-        // ========== D360 MODAL FUNCTION ==========
-        window.openD360Viewer = function(url, productName) {
-            // Remove any existing modal
+        function openD360Viewer(url, productName) {
             const existingModal = document.querySelector('.d360-modal');
             if (existingModal) existingModal.remove();
             
-            // Create modal
             const modal = document.createElement('div');
             modal.className = 'd360-modal';
             modal.innerHTML = `
@@ -777,7 +854,7 @@
                         <button class="d360-close" onclick="this.closest('.d360-modal').remove()">&times;</button>
                     </div>
                     <div class="d360-iframe-container">
-                        <div class="d360-loading">
+                        <div class="d360-loading" id="d360Loading">
                             <div class="spinner"></div>
                             <p>Loading 3D experience...</p>
                         </div>
@@ -787,30 +864,29 @@
             `;
             
             document.body.appendChild(modal);
-            
-            // Remove loading when iframe loads
             const iframe = modal.querySelector('iframe');
-            const loadingDiv = modal.querySelector('.d360-loading');
+            const loadingDiv = modal.querySelector('#d360Loading');
             
             iframe.onload = function() {
-                loadingDiv.style.display = 'none';
+                if (loadingDiv) loadingDiv.style.display = 'none';
             };
             
-            // Close on escape key
-            const closeModal = () => modal.remove();
+            setTimeout(() => {
+                if (loadingDiv) loadingDiv.style.display = 'none';
+            }, 5000);
+            
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && document.querySelector('.d360-modal')) {
-                    closeModal();
+                    modal.remove();
                 }
             });
             
-            // Close on backdrop click
             modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal();
+                if (e.target === modal) modal.remove();
             });
-        };
+        }
         
-        window.openImageModal = function(imageUrl) {
+        function openImageModal(imageUrl) {
             const modalHtml = `<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:3000;display:flex;justify-content:center;align-items:center;" onclick="this.remove()">
                 <div style="background:white;border-radius:20px;max-width:90%;max-height:90%;padding:10px;" onclick="event.stopPropagation()">
                     <img src="${imageUrl}" style="max-width:100%;max-height:80vh;border-radius:16px;">
@@ -818,7 +894,7 @@
                 </div>
             </div>`;
             document.body.insertAdjacentHTML('beforeend', modalHtml);
-        };
+        }
         
         // ========== CART FUNCTIONS ==========
         async function updateCartCount() {
@@ -1009,6 +1085,151 @@
             }
         };
         
+        // ========== GET PRODUCT MEDIA (INCLUDING D360 AS A SLIDE) ==========
+        function getProductMedia(product) {
+            const media = [];
+            
+            // Add images
+            if (product.image1_url && product.image1_url.trim()) media.push({ url: product.image1_url, type: 'image' });
+            if (product.image2_url && product.image2_url.trim()) media.push({ url: product.image2_url, type: 'image' });
+            if (product.image3_url && product.image3_url.trim()) media.push({ url: product.image3_url, type: 'image' });
+            if (product.images_url_1 && product.images_url_1.trim()) media.push({ url: product.images_url_1, type: 'image' });
+            if (product.images_url_2 && product.images_url_2.trim()) media.push({ url: product.images_url_2, type: 'image' });
+            if (product.images_url_3 && product.images_url_3.trim()) media.push({ url: product.images_url_3, type: 'image' });
+            
+            // Add video if it's a regular video (not D360)
+            if (product.video_url && product.video_url.trim()) {
+                if (isVideoUrl(product.video_url)) {
+                    media.push({ url: product.video_url, type: 'video' });
+                } else if (isD360Url(product.video_url)) {
+                    media.push({ url: product.video_url, type: 'd360' });
+                }
+            }
+            
+            return media;
+        }
+        
+        // ========== CREATE GALLERY HTML (WITH D360 AS A SLIDE) ==========
+        function createGalleryHTML(product, media, uniqueId) {
+            if (!media.length) {
+                const defaultImg = product.image1_url || product.image2_url || product.image3_url || product.images_url_1 || 'https://via.placeholder.com/400';
+                return `<div class="product-gallery-container">
+                            <div class="product-gallery" id="gallery-${uniqueId}">
+                                <div class="gallery-item" data-type="image" data-url="${defaultImg}">
+                                    <img class="gallery-image" src="${defaultImg}" alt="${escapeHtml(product.product_name)}" loading="lazy" onclick="event.stopPropagation(); openImageModal('${defaultImg}')" onerror="this.src='https://via.placeholder.com/400'">
+                                </div>
+                            </div>
+                        </div>`;
+            }
+            
+            let galleryItems = '';
+            for (let i = 0; i < media.length; i++) {
+                const m = media[i];
+                if (m.type === 'video') {
+                    galleryItems += `<div class="gallery-item" data-type="video" data-url="${m.url}">
+                                        <video class="gallery-video" id="video-${uniqueId}-${i}" src="${m.url}" poster="${media[0]?.url || ''}" preload="metadata" muted playsinline loop webkit-playsinline></video>
+                                    </div>`;
+                } else if (m.type === 'd360') {
+                    galleryItems += `<div class="gallery-item" data-type="d360" data-url="${m.url}">
+                                        <div class="gallery-d360" onclick="event.stopPropagation(); openD360Viewer('${m.url}', '${escapeHtml(product.product_name)}')">
+                                            <i class="fas fa-cube"></i>
+                                            <span>360° View</span>
+                                            <p>Click to explore in 3D</p>
+                                        </div>
+                                    </div>`;
+                } else {
+                    galleryItems += `<div class="gallery-item" data-type="image" data-url="${m.url}">
+                                        <img class="gallery-image" src="${m.url}" alt="${escapeHtml(product.product_name)}" loading="lazy" onclick="event.stopPropagation(); openImageModal('${m.url}')" onerror="this.src='https://via.placeholder.com/400'">
+                                    </div>`;
+                }
+            }
+            
+            let dotsHtml = '';
+            if (media.length > 1) {
+                for (let i = 0; i < media.length; i++) {
+                    dotsHtml += `<div class="gallery-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>`;
+                }
+            }
+            
+            return `<div class="product-gallery-container">
+                        <div class="product-gallery" id="gallery-${uniqueId}">
+                            ${galleryItems}
+                        </div>
+                        ${media.length > 1 ? `
+                        <div class="gallery-dots">${dotsHtml}</div>
+                        <div class="gallery-arrow gallery-arrow-left" onclick="event.stopPropagation(); scrollGallery('gallery-${uniqueId}', -1)"><i class="fas fa-chevron-left"></i></div>
+                        <div class="gallery-arrow gallery-arrow-right" onclick="event.stopPropagation(); scrollGallery('gallery-${uniqueId}', 1)"><i class="fas fa-chevron-right"></i></div>
+                        ` : ''}
+                    </div>`;
+        }
+        
+        window.scrollGallery = function(galleryId, direction) {
+            const gallery = document.getElementById(galleryId);
+            if (gallery) {
+                const scrollAmount = gallery.clientWidth;
+                gallery.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+                setTimeout(() => {
+                    checkAndPlayMedia(galleryId);
+                }, 100);
+            }
+        };
+        
+        function checkAndPlayMedia(galleryId) {
+            const gallery = document.getElementById(galleryId);
+            if (!gallery) return;
+            
+            const scrollPos = gallery.scrollLeft;
+            const itemWidth = gallery.clientWidth;
+            const activeIndex = Math.round(scrollPos / itemWidth);
+            const items = gallery.querySelectorAll('.gallery-item');
+            const videos = gallery.querySelectorAll('video');
+            
+            videos.forEach(video => { video.pause(); });
+            
+            const activeItem = items[activeIndex];
+            if (activeItem) {
+                const video = activeItem.querySelector('video');
+                if (video && video.src) {
+                    video.play().catch(e => console.log('Autoplay prevented:', e));
+                }
+            }
+        }
+        
+        function setupGalleryListeners(galleryId, mediaLength) {
+            if (mediaLength <= 1) return;
+            setTimeout(() => {
+                const gallery = document.getElementById(galleryId);
+                if (!gallery) return;
+                const container = gallery.closest('.product-gallery-container');
+                const dots = container?.querySelectorAll('.gallery-dot');
+                
+                gallery.addEventListener('scroll', () => {
+                    const scrollPos = gallery.scrollLeft;
+                    const itemWidth = gallery.clientWidth;
+                    const activeIndex = Math.round(scrollPos / itemWidth);
+                    if (dots) {
+                        dots.forEach((dot, idx) => {
+                            dot.classList.toggle('active', idx === activeIndex);
+                        });
+                    }
+                    checkAndPlayMedia(galleryId);
+                });
+                
+                if (dots) {
+                    dots.forEach((dot, idx) => {
+                        dot.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            gallery.scrollTo({ left: idx * gallery.clientWidth, behavior: 'smooth' });
+                        });
+                    });
+                }
+                
+                setTimeout(() => {
+                    checkAndPlayMedia(galleryId);
+                }, 500);
+            }, 100);
+        }
+        
         // ========== FILTER FUNCTIONS ==========
         function extractFilterOptions(products) {
             const categories = new Set();
@@ -1039,7 +1260,6 @@
                 ]);
                 
                 const mainProducts = mainRes.data || [];
-                // For vendor products - show all approved products (no approval status needed now)
                 const vendorProducts = vendorRes.data || [];
                 
                 console.log(`✅ Shop loaded: ${mainProducts.length} main products, ${vendorProducts.length} vendor products`);
@@ -1309,7 +1529,7 @@
             applyFilters();
         };
         
-        // ========== LIST VIEW RENDER (with D360 support) ==========
+        // ========== LIST VIEW RENDER ==========
         function renderListView(products) {
             const container = document.getElementById('productsContainer');
             if (!products.length) {
@@ -1318,8 +1538,10 @@
             }
             
             let html = '';
-            for (const p of products) {
-                const img = p.images_url_1 || p.image1_url || p.images_url_2 || p.image2_url || p.images_url_3 || p.image3_url || p.video_url || 'https://via.placeholder.com/200x200?text=Style';
+            for (let idx = 0; idx < products.length; idx++) {
+                const p = products[idx];
+                const media = getProductMedia(p);
+                const galleryHtml = createGalleryHTML(p, media, `${p.id}-${idx}`);
                 const gstPercent = p.gst || 18;
                 const { total } = calculateGST(p.price || 0, gstPercent);
                 const badge = p.source === 'vendor' 
@@ -1327,37 +1549,33 @@
                     : '<div class="main-badge-list"><i class="fas fa-crown"></i> Style Of Life</div>';
                 
                 const hasDiamond = p.carat || p.diamond_color || p.diamond_clarity;
-                const hasD360 = isD360Url(p.video_url);
-                const d360Badge = hasD360 ? '<span class="d360-badge" style="position:relative; display:inline-block; margin-left:8px; background:rgba(0,0,0,0.6);"><i class="fas fa-cube"></i> 360°</span>' : '';
                 
                 html += `
                     <div class="list-product-card">
-                        <div class="list-image-container" onclick='openProductModal(${JSON.stringify(p)})'>
+                        <div class="list-image-container">
                             ${badge}
-                            <img class="list-product-image" src="${img}" alt="${escapeHtml(p.product_name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/200x200?text=Style'">
+                            ${galleryHtml}
                         </div>
                         <div class="list-product-info">
                             <div>
-                                <div class="list-product-name">${escapeHtml(p.product_name)} ${d360Badge}</div>
+                                <div class="list-product-name">${escapeHtml(p.product_name)}</div>
                                 <div class="list-product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
                                 ${hasDiamond ? `
                                 <div class="list-diamond-details">
                                     ${p.carat ? `<div class="list-diamond-item"><strong>Carat:</strong> ${p.carat}ct</div>` : ''}
                                     ${p.diamond_color ? `<div class="list-diamond-item"><strong>Color:</strong> ${p.diamond_color}</div>` : ''}
                                     ${p.diamond_clarity ? `<div class="list-diamond-item"><strong>Clarity:</strong> ${p.diamond_clarity}</div>` : ''}
-                                    ${p.diamond_cut ? `<div class="list-diamond-item"><strong>Cut:</strong> ${p.diamond_cut}</div>` : ''}
                                 </div>
                                 ` : ''}
-                                <div class="list-product-desc">${escapeHtml((p.description || '').substring(0, 120))}${(p.description || '').length > 120 ? '...' : ''}</div>
+                                <div class="list-product-desc">${escapeHtml((p.description || '').substring(0, 120))}</div>
                             </div>
                             <div>
                                 <div class="list-price-section">
                                     <div class="list-product-price">₹${total.toLocaleString()} <small>Incl. GST</small></div>
-                                    ${hasD360 ? `<button class="list-btn-buy" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);" onclick="event.stopPropagation(); openD360Viewer('${p.video_url}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}')"><i class="fas fa-cube"></i> 360° View</button>` : ''}
                                 </div>
                                 <div class="list-buttons" onclick="event.stopPropagation()">
-                                    <button class="list-btn-buy" onclick="event.stopPropagation(); buyNow('${p.id}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}', ${gstPercent})"><i class="fas fa-bolt"></i> Buy Now</button>
-                                    <button class="list-btn-cart" onclick="event.stopPropagation(); addToCart('${p.id}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}', ${gstPercent})"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                                    <button class="list-btn-buy" onclick="event.stopPropagation(); buyNow('${p.id}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${media[0]?.url || ''}', ${gstPercent})"><i class="fas fa-bolt"></i> Buy Now</button>
+                                    <button class="list-btn-cart" onclick="event.stopPropagation(); addToCart('${p.id}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${media[0]?.url || ''}', ${gstPercent})"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
                                 </div>
                             </div>
                         </div>
@@ -1365,9 +1583,18 @@
                 `;
             }
             container.innerHTML = html;
+            
+            // Setup gallery listeners
+            for (let idx = 0; idx < products.length; idx++) {
+                const p = products[idx];
+                const media = getProductMedia(p);
+                if (media.length > 1) {
+                    setupGalleryListeners(`gallery-${p.id}-${idx}`, media.length);
+                }
+            }
         }
         
-        // ========== GRID VIEW RENDER (with D360 support) ==========
+        // ========== GRID VIEW RENDER ==========
         function renderGridView(products) {
             const container = document.getElementById('productsContainer');
             if (!products.length) {
@@ -1376,8 +1603,10 @@
             }
             
             let html = '<div class="products-grid grid-view">';
-            for (const p of products) {
-                const img = p.images_url_1 || p.image1_url || p.images_url_2 || p.image2_url || p.images_url_3 || p.image3_url || p.video_url || 'https://via.placeholder.com/400x400?text=Style';
+            for (let idx = 0; idx < products.length; idx++) {
+                const p = products[idx];
+                const media = getProductMedia(p);
+                const galleryHtml = createGalleryHTML(p, media, `${p.id}-${idx}`);
                 const gstPercent = p.gst || 18;
                 const { total } = calculateGST(p.price || 0, gstPercent);
                 const badge = p.source === 'vendor' 
@@ -1385,9 +1614,6 @@
                     : '<div class="main-badge"><i class="fas fa-crown"></i> Style Of Life</div>';
                 
                 const hasDiamond = p.carat || p.diamond_color || p.diamond_clarity;
-                const hasD360 = isD360Url(p.video_url);
-                const d360Badge = hasD360 ? '<div class="d360-badge"><i class="fas fa-cube"></i> 360° View</div>' : '';
-                
                 let diamondHtml = '';
                 if (hasDiamond) {
                     diamondHtml = `<div class="diamond-details">
@@ -1398,10 +1624,9 @@
                 }
                 
                 html += `<div class="product-card">
-                    <div class="product-image-container" onclick='openProductModal(${JSON.stringify(p)})'>
+                    <div class="product-image-container">
                         ${badge}
-                        ${d360Badge}
-                        <img class="product-image" src="${img}" alt="${escapeHtml(p.product_name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/400'">
+                        ${galleryHtml}
                     </div>
                     <div class="product-info">
                         <div class="product-name">${escapeHtml(p.product_name)}</div>
@@ -1410,67 +1635,24 @@
                         <div class="product-desc">${escapeHtml((p.description || '').substring(0, 80))}</div>
                         <div class="product-price">₹${total.toLocaleString()} <small>Incl. GST</small></div>
                         <div class="product-buttons-icon" onclick="event.stopPropagation()">
-                            ${hasD360 ? `<button class="btn-icon-buy" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);" onclick="event.stopPropagation(); openD360Viewer('${p.video_url}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}')"><i class="fas fa-cube"></i></button>` : ''}
-                            <button class="btn-icon-buy" onclick="event.stopPropagation(); buyNow('${p.id}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}', ${gstPercent})"><i class="fas fa-bolt"></i></button>
-                            <button class="btn-icon-cart" onclick="event.stopPropagation(); addToCart('${p.id}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}', ${gstPercent})"><i class="fas fa-shopping-cart"></i></button>
+                            <button class="btn-icon-buy" onclick="event.stopPropagation(); buyNow('${p.id}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${media[0]?.url || ''}', ${gstPercent})"><i class="fas fa-bolt"></i></button>
+                            <button class="btn-icon-cart" onclick="event.stopPropagation(); addToCart('${p.id}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${media[0]?.url || ''}', ${gstPercent})"><i class="fas fa-shopping-cart"></i></button>
                         </div>
                     </div>
                 </div>`;
             }
             html += '</div>';
             container.innerHTML = html;
-        }
-        
-        window.openProductModal = function(product) {
-            const img = product.images_url_1 || product.image1_url || 'https://via.placeholder.com/400';
-            const { total } = calculateGST(product.price || 0, product.gst || 18);
-            const hasD360 = isD360Url(product.video_url);
             
-            // Get all media for the product
-            const media = [];
-            if (product.image1_url) media.push({ url: product.image1_url, type: 'image' });
-            if (product.image2_url) media.push({ url: product.image2_url, type: 'image' });
-            if (product.image3_url) media.push({ url: product.image3_url, type: 'image' });
-            if (product.images_url_1) media.push({ url: product.images_url_1, type: 'image' });
-            if (product.images_url_2) media.push({ url: product.images_url_2, type: 'image' });
-            if (product.images_url_3) media.push({ url: product.images_url_3, type: 'image' });
-            if (product.video_url && !isD360Url(product.video_url) && isVideoUrl(product.video_url)) {
-                media.push({ url: product.video_url, type: 'video' });
-            }
-            
-            let galleryHtml = '';
-            if (media.length > 0) {
-                galleryHtml = `<div style="position:relative; width:100%; overflow-x:auto; display:flex; scroll-snap-type:x mandatory; border-radius:16px; margin-bottom:15px; background:#f5f5f5;" id="modalGallery">
-                                ${media.map(m => {
-                                    if (m.type === 'video') {
-                                        return `<div style="min-width:100%; scroll-snap-align:start;"><video src="${m.url}" style="width:100%; border-radius:16px; max-height:300px;" controls preload="metadata" poster="${img}"></video></div>`;
-                                    }
-                                    return `<div style="min-width:100%; scroll-snap-align:start;"><img src="${m.url}" style="width:100%; border-radius:16px; cursor:pointer;" onclick="openImageModal('${m.url}')"></div>`;
-                                }).join('')}
-                            </div>`;
+            // Setup gallery listeners
+            for (let idx = 0; idx < products.length; idx++) {
+                const p = products[idx];
+                const media = getProductMedia(p);
                 if (media.length > 1) {
-                    galleryHtml += `<div style="text-align:center; margin-top:8px;"><span style="font-size:12px; color:var(--gray);"><i class="fas fa-arrow-left"></i> Swipe to see more <i class="fas fa-arrow-right"></i></span></div>`;
+                    setupGalleryListeners(`gallery-${p.id}-${idx}`, media.length);
                 }
-            } else {
-                galleryHtml = `<img src="${img}" style="width:100%; border-radius:16px; margin-bottom:15px; cursor:pointer;" onclick="openImageModal('${img}')">`;
             }
-            
-            const modalHtml = `<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:2000;display:flex;justify-content:center;align-items:center;" onclick="this.remove()">
-                                <div style="background:white;border-radius:28px;max-width:90%;width:450px;max-height:85vh;overflow-y:auto;padding:20px;" onclick="event.stopPropagation()">
-                                    ${galleryHtml}
-                                    <h2 style="font-size:22px;">${escapeHtml(product.product_name)}</h2>
-                                    <div style="color:var(--gold);font-size:28px;font-weight:700;margin:10px 0;">₹${total.toLocaleString()}</div>
-                                    <p style="color:var(--gray); margin-bottom:15px;">${escapeHtml(product.description || 'Exquisite handcrafted piece.')}</p>
-                                    ${product.carat ? `<div style="background:var(--white-light); padding:10px; border-radius:12px; margin:10px 0;"><strong><i class="fas fa-gem"></i> Diamond:</strong> ${product.carat}ct | ${product.diamond_color || ''} | ${product.diamond_clarity || ''}</div>` : ''}
-                                    <div style="display:flex;gap:12px;margin-top:20px;">
-                                        ${hasD360 ? `<button class="list-btn-buy" style="flex:1;border-radius:40px; background: linear-gradient(135deg, #8b5cf6, #6d28d9);" onclick="openD360Viewer('${product.video_url}', '${escapeHtml(product.product_name).replace(/'/g, "\\'")}'); document.body.lastChild.remove();"><i class="fas fa-cube"></i> 360° View</button>` : ''}
-                                        <button class="list-btn-buy" style="flex:1;border-radius:40px;" onclick="buyNow('${product.id}', '${escapeHtml(product.product_name).replace(/'/g, "\\'")}', ${product.price}, '${product.sku}', '${media[0]?.url || img}', ${product.gst || 18}); document.body.lastChild.remove();">Buy Now</button>
-                                        <button class="list-btn-cart" style="flex:1;border-radius:40px;" onclick="addToCart('${product.id}', '${escapeHtml(product.product_name).replace(/'/g, "\\'")}', ${product.price}, '${product.sku}', '${media[0]?.url || img}', ${product.gst || 18}); document.body.lastChild.remove();">Add to Cart</button>
-                                    </div>
-                                </div>
-                            </div>`;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-        };
+        }
         
         function openFilterModal() { document.getElementById('filterModal').classList.add('active'); document.body.style.overflow = 'hidden'; }
         window.closeFilterModal = function() { document.getElementById('filterModal').classList.remove('active'); document.body.style.overflow = ''; };
