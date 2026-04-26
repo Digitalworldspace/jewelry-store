@@ -307,6 +307,22 @@
             border-radius: 20px;
             z-index: 5;
         }
+        /* D360 Badge */
+        .d360-badge {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            color: var(--gold);
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
         .product-info {
             padding: 18px;
         }
@@ -440,6 +456,87 @@
         .swipe-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.7); font-size: 13px; white-space: nowrap; pointer-events: none; }
         .action-card { background: rgba(255,255,255,0.08); border-radius: 50px; padding: 10px 20px; text-align: center; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; }
         
+        /* D360 Modal Styles */
+        .d360-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .d360-modal-content {
+            background: linear-gradient(135deg, #1a1a2a, #0a0a1a);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 900px;
+            height: 80%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(212,175,55,0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .d360-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.5);
+            border-bottom: 1px solid rgba(212,175,55,0.2);
+        }
+        .d360-modal-header h3 {
+            color: var(--gold);
+            font-size: 18px;
+        }
+        .d360-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .d360-close:hover {
+            color: var(--gold);
+            transform: scale(1.1);
+        }
+        .d360-iframe-container {
+            flex: 1;
+            position: relative;
+            background: #000;
+        }
+        .d360-iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .d360-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        .d360-loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(212,175,55,0.2);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -527,6 +624,10 @@
             .list-product-price {
                 font-size: 20px;
             }
+            .d360-modal-content {
+                width: 95%;
+                height: 70%;
+            }
         }
     </style>
 </head>
@@ -598,6 +699,7 @@
     </div>
     
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
+    
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
@@ -640,6 +742,83 @@
         document.querySelectorAll('[data-page]').forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); navigateTo(el.getAttribute('data-page')); }));
         
         function showToast(msg, isErr = false) { const t = document.createElement('div'); t.className = 'toast' + (isErr ? ' toast-error' : ''); t.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+        
+        // ========== D360 DETECTION FUNCTION ==========
+        function isD360Url(url) {
+            if (!url) return false;
+            return url.includes('d360.tech/view.html') || 
+                   url.includes('/view.html?d=') ||
+                   url.includes('3dviewer') ||
+                   url.includes('360view') ||
+                   (url.includes('.html') && url.includes('360'));
+        }
+        
+        function isVideoUrl(url) {
+            if (!url) return false;
+            return url.match(/\.(mp4|webm|mov|avi|m3u8)$/i) || 
+                   url.includes('youtube.com') || 
+                   url.includes('youtu.be') || 
+                   url.includes('vimeo.com');
+        }
+        
+        // ========== D360 MODAL FUNCTION ==========
+        window.openD360Viewer = function(url, productName) {
+            // Remove any existing modal
+            const existingModal = document.querySelector('.d360-modal');
+            if (existingModal) existingModal.remove();
+            
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = 'd360-modal';
+            modal.innerHTML = `
+                <div class="d360-modal-content">
+                    <div class="d360-modal-header">
+                        <h3><i class="fas fa-cube"></i> 360° View - ${escapeHtml(productName || 'Product')}</h3>
+                        <button class="d360-close" onclick="this.closest('.d360-modal').remove()">&times;</button>
+                    </div>
+                    <div class="d360-iframe-container">
+                        <div class="d360-loading">
+                            <div class="spinner"></div>
+                            <p>Loading 3D experience...</p>
+                        </div>
+                        <iframe src="${url}" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals"></iframe>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Remove loading when iframe loads
+            const iframe = modal.querySelector('iframe');
+            const loadingDiv = modal.querySelector('.d360-loading');
+            
+            iframe.onload = function() {
+                loadingDiv.style.display = 'none';
+            };
+            
+            // Close on escape key
+            const closeModal = () => modal.remove();
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && document.querySelector('.d360-modal')) {
+                    closeModal();
+                }
+            });
+            
+            // Close on backdrop click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+        };
+        
+        window.openImageModal = function(imageUrl) {
+            const modalHtml = `<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:3000;display:flex;justify-content:center;align-items:center;" onclick="this.remove()">
+                <div style="background:white;border-radius:20px;max-width:90%;max-height:90%;padding:10px;" onclick="event.stopPropagation()">
+                    <img src="${imageUrl}" style="max-width:100%;max-height:80vh;border-radius:16px;">
+                    <button style="position:absolute;top:20px;right:20px;background:black;color:white;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:20px;" onclick="this.closest('div').remove()">×</button>
+                </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        };
         
         // ========== CART FUNCTIONS ==========
         async function updateCartCount() {
@@ -856,13 +1035,14 @@
             try {
                 const [mainRes, vendorRes] = await Promise.all([
                     supabase.from('products').select('*'),
-                    supabase.from('vendor_products').select('*').eq('status', 'approved')
+                    supabase.from('vendor_products').select('*')
                 ]);
                 
                 const mainProducts = mainRes.data || [];
+                // For vendor products - show all approved products (no approval status needed now)
                 const vendorProducts = vendorRes.data || [];
                 
-                console.log(`✅ Shop loaded: ${mainProducts.length} main products, ${vendorProducts.length} approved vendor products`);
+                console.log(`✅ Shop loaded: ${mainProducts.length} main products, ${vendorProducts.length} vendor products`);
                 
                 const mainMarked = mainProducts.map(p => ({ ...p, source: 'main', product_name: p.product_name || p.name }));
                 const vendorMarked = vendorProducts.map(p => ({ ...p, source: 'vendor', product_name: p.product_name }));
@@ -1129,7 +1309,7 @@
             applyFilters();
         };
         
-        // ========== LIST VIEW RENDER (Image Left, Details Right) ==========
+        // ========== LIST VIEW RENDER (with D360 support) ==========
         function renderListView(products) {
             const container = document.getElementById('productsContainer');
             if (!products.length) {
@@ -1147,16 +1327,18 @@
                     : '<div class="main-badge-list"><i class="fas fa-crown"></i> Style Of Life</div>';
                 
                 const hasDiamond = p.carat || p.diamond_color || p.diamond_clarity;
+                const hasD360 = isD360Url(p.video_url);
+                const d360Badge = hasD360 ? '<span class="d360-badge" style="position:relative; display:inline-block; margin-left:8px; background:rgba(0,0,0,0.6);"><i class="fas fa-cube"></i> 360°</span>' : '';
                 
                 html += `
-                    <div class="list-product-card" onclick='openProductModal(${JSON.stringify(p)})'>
-                        <div class="list-image-container">
+                    <div class="list-product-card">
+                        <div class="list-image-container" onclick='openProductModal(${JSON.stringify(p)})'>
                             ${badge}
                             <img class="list-product-image" src="${img}" alt="${escapeHtml(p.product_name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/200x200?text=Style'">
                         </div>
                         <div class="list-product-info">
                             <div>
-                                <div class="list-product-name">${escapeHtml(p.product_name)}</div>
+                                <div class="list-product-name">${escapeHtml(p.product_name)} ${d360Badge}</div>
                                 <div class="list-product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
                                 ${hasDiamond ? `
                                 <div class="list-diamond-details">
@@ -1171,6 +1353,7 @@
                             <div>
                                 <div class="list-price-section">
                                     <div class="list-product-price">₹${total.toLocaleString()} <small>Incl. GST</small></div>
+                                    ${hasD360 ? `<button class="list-btn-buy" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);" onclick="event.stopPropagation(); openD360Viewer('${p.video_url}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}')"><i class="fas fa-cube"></i> 360° View</button>` : ''}
                                 </div>
                                 <div class="list-buttons" onclick="event.stopPropagation()">
                                     <button class="list-btn-buy" onclick="event.stopPropagation(); buyNow('${p.id}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}', ${gstPercent})"><i class="fas fa-bolt"></i> Buy Now</button>
@@ -1184,7 +1367,7 @@
             container.innerHTML = html;
         }
         
-        // ========== GRID VIEW RENDER ==========
+        // ========== GRID VIEW RENDER (with D360 support) ==========
         function renderGridView(products) {
             const container = document.getElementById('productsContainer');
             if (!products.length) {
@@ -1202,6 +1385,9 @@
                     : '<div class="main-badge"><i class="fas fa-crown"></i> Style Of Life</div>';
                 
                 const hasDiamond = p.carat || p.diamond_color || p.diamond_clarity;
+                const hasD360 = isD360Url(p.video_url);
+                const d360Badge = hasD360 ? '<div class="d360-badge"><i class="fas fa-cube"></i> 360° View</div>' : '';
+                
                 let diamondHtml = '';
                 if (hasDiamond) {
                     diamondHtml = `<div class="diamond-details">
@@ -1211,9 +1397,10 @@
                     </div>`;
                 }
                 
-                html += `<div class="product-card" onclick='openProductModal(${JSON.stringify(p)})'>
-                    <div class="product-image-container">
+                html += `<div class="product-card">
+                    <div class="product-image-container" onclick='openProductModal(${JSON.stringify(p)})'>
                         ${badge}
+                        ${d360Badge}
                         <img class="product-image" src="${img}" alt="${escapeHtml(p.product_name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/400'">
                     </div>
                     <div class="product-info">
@@ -1223,6 +1410,7 @@
                         <div class="product-desc">${escapeHtml((p.description || '').substring(0, 80))}</div>
                         <div class="product-price">₹${total.toLocaleString()} <small>Incl. GST</small></div>
                         <div class="product-buttons-icon" onclick="event.stopPropagation()">
+                            ${hasD360 ? `<button class="btn-icon-buy" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);" onclick="event.stopPropagation(); openD360Viewer('${p.video_url}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}')"><i class="fas fa-cube"></i></button>` : ''}
                             <button class="btn-icon-buy" onclick="event.stopPropagation(); buyNow('${p.id}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}', ${gstPercent})"><i class="fas fa-bolt"></i></button>
                             <button class="btn-icon-cart" onclick="event.stopPropagation(); addToCart('${p.id}', '${escapeHtml(p.product_name).replace(/'/g, "\\'")}', ${p.price}, '${p.sku}', '${img}', ${gstPercent})"><i class="fas fa-shopping-cart"></i></button>
                         </div>
@@ -1236,6 +1424,7 @@
         window.openProductModal = function(product) {
             const img = product.images_url_1 || product.image1_url || 'https://via.placeholder.com/400';
             const { total } = calculateGST(product.price || 0, product.gst || 18);
+            const hasD360 = isD360Url(product.video_url);
             
             // Get all media for the product
             const media = [];
@@ -1245,7 +1434,9 @@
             if (product.images_url_1) media.push({ url: product.images_url_1, type: 'image' });
             if (product.images_url_2) media.push({ url: product.images_url_2, type: 'image' });
             if (product.images_url_3) media.push({ url: product.images_url_3, type: 'image' });
-            if (product.video_url) media.push({ url: product.video_url, type: 'video' });
+            if (product.video_url && !isD360Url(product.video_url) && isVideoUrl(product.video_url)) {
+                media.push({ url: product.video_url, type: 'video' });
+            }
             
             let galleryHtml = '';
             if (media.length > 0) {
@@ -1272,16 +1463,12 @@
                                     <p style="color:var(--gray); margin-bottom:15px;">${escapeHtml(product.description || 'Exquisite handcrafted piece.')}</p>
                                     ${product.carat ? `<div style="background:var(--white-light); padding:10px; border-radius:12px; margin:10px 0;"><strong><i class="fas fa-gem"></i> Diamond:</strong> ${product.carat}ct | ${product.diamond_color || ''} | ${product.diamond_clarity || ''}</div>` : ''}
                                     <div style="display:flex;gap:12px;margin-top:20px;">
+                                        ${hasD360 ? `<button class="list-btn-buy" style="flex:1;border-radius:40px; background: linear-gradient(135deg, #8b5cf6, #6d28d9);" onclick="openD360Viewer('${product.video_url}', '${escapeHtml(product.product_name).replace(/'/g, "\\'")}'); document.body.lastChild.remove();"><i class="fas fa-cube"></i> 360° View</button>` : ''}
                                         <button class="list-btn-buy" style="flex:1;border-radius:40px;" onclick="buyNow('${product.id}', '${escapeHtml(product.product_name).replace(/'/g, "\\'")}', ${product.price}, '${product.sku}', '${media[0]?.url || img}', ${product.gst || 18}); document.body.lastChild.remove();">Buy Now</button>
                                         <button class="list-btn-cart" style="flex:1;border-radius:40px;" onclick="addToCart('${product.id}', '${escapeHtml(product.product_name).replace(/'/g, "\\'")}', ${product.price}, '${product.sku}', '${media[0]?.url || img}', ${product.gst || 18}); document.body.lastChild.remove();">Add to Cart</button>
                                     </div>
                                 </div>
                             </div>`;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-        };
-        
-        window.openImageModal = function(imageUrl) {
-            const modalHtml = `<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:3000;display:flex;justify-content:center;align-items:center;" onclick="this.remove()"><div style="background:white;border-radius:20px;max-width:90%;max-height:90%;padding:10px;" onclick="event.stopPropagation()"><img src="${imageUrl}" style="max-width:100%;max-height:80vh;border-radius:16px;"><button style="position:absolute;top:20px;right:20px;background:black;color:white;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:20px;" onclick="this.closest('div').remove()">×</button></div></div>`;
             document.body.insertAdjacentHTML('beforeend', modalHtml);
         };
         
