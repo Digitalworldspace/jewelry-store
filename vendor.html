@@ -271,7 +271,100 @@
         .quick-select { background: rgba(0,0,0,0.3); border: 1px solid rgba(0,212,255,0.3); border-radius: 40px; padding: 8px 15px; color: white; }
         .filter-stats { color: rgba(255,255,255,0.6); font-size: 12px; margin-left: auto; }
         
-        /* Product List View */
+        /* ========== BULK ACTIONS BAR ========== */
+        .bulk-actions-bar {
+            background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,100,150,0.1));
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid rgba(0,212,255,0.4);
+            animation: slideDown 0.3s ease;
+        }
+        .bulk-actions-bar.active { display: flex; }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .bulk-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .bulk-count {
+            background: #00d4ff;
+            color: #0a2a3a;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .bulk-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        .bulk-approve-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .bulk-delete-btn {
+            background: rgba(239,68,68,0.2);
+            border: 1px solid rgba(239,68,68,0.5);
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: #f87171;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .bulk-clear-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: rgba(255,255,255,0.7);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .bulk-approve-btn:hover, .bulk-delete-btn:hover, .bulk-clear-btn:hover {
+            transform: translateY(-2px);
+        }
+        .bulk-approve-btn:hover { box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+        .bulk-delete-btn:hover { background: rgba(239,68,68,0.4); border-color: #ef4444; color: #ff6b6b; }
+        
+        /* Select All Checkbox */
+        .select-all-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.3);
+            padding: 5px 12px;
+            border-radius: 30px;
+        }
+        .select-all-container input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #00d4ff;
+        }
+        .select-all-container label {
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        /* Product List View with Checkboxes */
         .products-list { display: flex; flex-direction: column; gap: 20px; }
         .list-product-card {
             background: rgba(255, 255, 255, 0.08);
@@ -282,8 +375,23 @@
             transition: all 0.3s;
             display: flex;
             flex-direction: row;
+            position: relative;
         }
         .list-product-card:hover { transform: translateX(5px); border-color: #00d4ff; }
+        .list-product-card.selected {
+            border: 2px solid #00d4ff;
+            background: rgba(0,212,255,0.05);
+        }
+        .product-checkbox {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 5;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: #00d4ff;
+        }
         .list-image-container { width: 200px; min-width: 200px; aspect-ratio: 1 / 1; overflow: hidden; background: rgba(0,0,0,0.3); }
         .list-product-image { width: 100%; height: 100%; object-fit: cover; }
         .list-product-info { flex: 1; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
@@ -315,6 +423,55 @@
         .form-group input, .form-group textarea { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0,212,255,0.3); border-radius: 12px; color: white; }
         .btn-primary { background: linear-gradient(135deg, #00d4ff, #0099cc); color: #0a2a3a; padding: 12px 28px; border: none; border-radius: 40px; cursor: pointer; font-weight: 700; }
         
+        /* Progress Modal for Bulk Actions */
+        .progress-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 3000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .progress-modal.active { display: flex; }
+        .progress-content {
+            background: linear-gradient(135deg, #0a2a3a, #0a1a2a);
+            border-radius: 24px;
+            padding: 30px;
+            text-align: center;
+            min-width: 300px;
+            border: 1px solid rgba(0,212,255,0.3);
+        }
+        .progress-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0,212,255,0.2);
+            border-top-color: #00d4ff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+        .progress-text { color: #00d4ff; font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+        .progress-count { color: rgba(255,255,255,0.6); font-size: 14px; }
+        .progress-bar-bulk {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #7fffd4);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
         .toast {
             position: fixed;
             bottom: 30px;
@@ -343,6 +500,8 @@
             .list-image-container { width: 100%; }
             .charts-grid { grid-template-columns: 1fr; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .bulk-actions-bar { flex-direction: column; align-items: stretch; }
+            .bulk-info { justify-content: space-between; }
             .shark-video, .whale-video { transform: scale(0.6); width: 180px; height: 100px; }
         }
     </style>
@@ -387,13 +546,12 @@
         </div>
         
         <div class="vendor-main">
-            <!-- DASHBOARD PAGE - Clean with Company Name + Analytics -->
+            <!-- DASHBOARD PAGE -->
             <div id="dashboardPage">
                 <div class="page-header">
                     <div class="page-title">🐙 Dashboard</div>
                 </div>
                 
-                <!-- Company Info Card -->
                 <div style="background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,100,150,0.1)); border-radius: 24px; padding: 25px; margin-bottom: 30px; border: 1px solid rgba(0,212,255,0.3);">
                     <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
                         <div style="width: 70px; height: 70px; background: rgba(0,212,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
@@ -407,7 +565,6 @@
                     </div>
                 </div>
                 
-                <!-- Statistics Cards -->
                 <div class="stats-grid" id="statsGrid">
                     <div class="stat-card"><div class="stat-icon"><i class="fas fa-box"></i></div><div class="stat-value" id="statTotalProducts">0</div><div class="stat-label">Total Products</div></div>
                     <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-value" id="statApprovedProducts">0</div><div class="stat-label">Approved Products</div></div>
@@ -415,32 +572,39 @@
                     <div class="stat-card"><div class="stat-icon"><i class="fas fa-shopping-cart"></i></div><div class="stat-value" id="statTotalOrders">0</div><div class="stat-label">Orders Received</div></div>
                 </div>
                 
-                <!-- Analytics Charts -->
                 <div class="charts-grid">
-                    <div class="chart-card">
-                        <div class="chart-title"><i class="fas fa-chart-bar"></i> Carat Distribution</div>
-                        <canvas id="caratChart"></canvas>
-                    </div>
-                    <div class="chart-card">
-                        <div class="chart-title"><i class="fas fa-chart-pie"></i> Diamond Color</div>
-                        <canvas id="colorChart"></canvas>
-                    </div>
-                    <div class="chart-card">
-                        <div class="chart-title"><i class="fas fa-chart-pie"></i> Diamond Clarity</div>
-                        <canvas id="clarityChart"></canvas>
-                    </div>
-                    <div class="chart-card">
-                        <div class="chart-title"><i class="fas fa-chart-line"></i> Price Distribution</div>
-                        <canvas id="priceChart"></canvas>
-                    </div>
+                    <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-bar"></i> Carat Distribution</div><canvas id="caratChart"></canvas></div>
+                    <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-pie"></i> Diamond Color</div><canvas id="colorChart"></canvas></div>
+                    <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-pie"></i> Diamond Clarity</div><canvas id="clarityChart"></canvas></div>
+                    <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-line"></i> Price Distribution</div><canvas id="priceChart"></canvas></div>
                 </div>
             </div>
             
-            <!-- PRODUCTS PAGE -->
+            <!-- PRODUCTS PAGE WITH BULK ACTIONS -->
             <div id="productsPage" style="display: none;">
                 <div class="page-header">
                     <div class="page-title">📦 My Ocean Treasures</div>
                     <div style="color: rgba(255,255,255,0.6);" id="productsCompanyName"></div>
+                </div>
+                
+                <!-- BULK ACTIONS BAR -->
+                <div id="bulkActionsBar" class="bulk-actions-bar">
+                    <div class="bulk-info">
+                        <i class="fas fa-check-square" style="color: #00d4ff;"></i>
+                        <span class="bulk-count" id="selectedCount">0</span>
+                        <span>product(s) selected</span>
+                    </div>
+                    <div class="bulk-buttons">
+                        <button class="bulk-approve-btn" onclick="bulkApproveProducts()">
+                            <i class="fas fa-check-circle"></i> Bulk Approve
+                        </button>
+                        <button class="bulk-delete-btn" onclick="bulkDeleteProducts()">
+                            <i class="fas fa-trash-alt"></i> Bulk Delete
+                        </button>
+                        <button class="bulk-clear-btn" onclick="clearSelection()">
+                            <i class="fas fa-times"></i> Clear Selection
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Diamond Filter Section -->
@@ -470,11 +634,15 @@
                     </div>
                 </div>
                 
-                <!-- Quick Filter Bar -->
+                <!-- Quick Filter Bar with Select All -->
                 <div class="quick-filter-bar">
                     <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Search by name or SKU..." onkeyup="applyAllFilters()"></div>
                     <select id="categoryFilter" class="quick-select" onchange="applyAllFilters()"><option value="all">All Categories</option></select>
                     <select id="statusFilter" class="quick-select" onchange="applyAllFilters()"><option value="all">All Status</option><option value="pending">Pending</option><option value="approved">Approved</option></select>
+                    <div class="select-all-container">
+                        <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()">
+                        <label for="selectAllCheckbox">Select All (Current View)</label>
+                    </div>
                     <button class="btn-reset-filters" onclick="resetAllFilters()" style="padding: 8px 16px;">Reset All</button>
                     <div class="filter-stats" id="filterStats"></div>
                 </div>
@@ -558,6 +726,16 @@
         </div>
     </div>
     
+    <!-- Progress Modal for Bulk Actions -->
+    <div id="progressModal" class="progress-modal">
+        <div class="progress-content">
+            <div class="progress-spinner"></div>
+            <div class="progress-text" id="progressText">Processing...</div>
+            <div class="progress-count" id="progressCount">0 / 0</div>
+            <div class="progress-bar-bulk"><div class="progress-bar-fill" id="progressFill"></div></div>
+        </div>
+    </div>
+    
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     
     <script type="module">
@@ -571,6 +749,8 @@
         let currentCompanyId = null;
         let allProducts = [];
         let allOrders = [];
+        let filteredProducts = [];
+        let selectedProductIds = new Set();
         let categoriesSet = new Set();
         let availableColors = new Set();
         let availableClarities = new Set();
@@ -589,6 +769,19 @@
         
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
         
+        function showProgressModal(show, text = '', current = 0, total = 0) {
+            const modal = document.getElementById('progressModal');
+            if (show) {
+                modal.classList.add('active');
+                document.getElementById('progressText').innerText = text;
+                document.getElementById('progressCount').innerText = `${current} / ${total}`;
+                const percent = total > 0 ? (current / total) * 100 : 0;
+                document.getElementById('progressFill').style.width = `${percent}%`;
+            } else {
+                modal.classList.remove('active');
+            }
+        }
+        
         async function loadVendorData() {
             if (!vendorEmail) { showToast('Session expired', true); setTimeout(() => window.location.href = 'login.html', 1500); return; }
             try {
@@ -598,7 +791,6 @@
                 vendorData = data;
                 currentCompanyId = data.id;
                 
-                // Update dashboard company info
                 document.getElementById('dashboardCompanyName').innerText = vendorData?.business_name || 'My Company';
                 document.getElementById('dashboardOwnerName').innerHTML = `<i class="fas fa-user"></i> ${vendorData?.owner_name || 'Owner'}`;
                 document.getElementById('headerCompanyNameText').innerText = vendorData?.business_name || 'My Company';
@@ -640,7 +832,6 @@
             document.getElementById('productCount').innerText = totalProducts;
             document.getElementById('orderCount').innerText = totalOrders;
             
-            // Update Charts
             updateCaratChart(allProducts);
             updateColorChart(allProducts);
             updateClarityChart(allProducts);
@@ -680,9 +871,6 @@
                     data: { labels: Object.keys(colorCount), datasets: [{ data: Object.values(colorCount), backgroundColor: ['#00d4ff', '#0099cc', '#7fffd4', '#60a5fa', '#f87171', '#f59e0b'] }] },
                     options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: '#fff' }, position: 'bottom' } } }
                 });
-            } else if (ctx) {
-                if (colorChart) colorChart.destroy();
-                colorChart = new Chart(ctx, { type: 'pie', data: { labels: ['No Data'], datasets: [{ data: [1], backgroundColor: ['#333'] }] } });
             }
         }
         
@@ -697,9 +885,6 @@
                     data: { labels: Object.keys(clarityCount), datasets: [{ data: Object.values(clarityCount), backgroundColor: ['#00d4ff', '#0099cc', '#7fffd4', '#60a5fa', '#f87171', '#f59e0b', '#10b981'] }] },
                     options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: '#fff' }, position: 'bottom' } } }
                 });
-            } else if (ctx) {
-                if (clarityChart) clarityChart.destroy();
-                clarityChart = new Chart(ctx, { type: 'pie', data: { labels: ['No Data'], datasets: [{ data: [1], backgroundColor: ['#333'] }] } });
             }
         }
         
@@ -759,11 +944,138 @@
             const { data, error } = await supabase.from('vendor_orders').select('*').eq('vendor_id', currentCompanyId).order('created_at', { ascending: false });
             if (error || !data?.length) { container.innerHTML = '<div class="loading">📭 No orders yet</div>'; return; }
             let html = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><thead><tr style="background:rgba(0,212,255,0.1);"><th style="padding:12px;text-align:left;">Order ID</th><th>Product</th><th>Qty</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
-            data.forEach(o => { html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:12px;">${o.order_id}</td><td>${escapeHtml(o.product_name)}</td><td>${o.quantity}</td><td>₹${o.total_amount?.toLocaleString()}</td><td><span style="background:rgba(0,212,255,0.2);padding:4px 12px;border-radius:20px;">${o.order_status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`; });
+            data.forEach(o => { html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:12px;">${o.order_id}</td clody<td>${escapeHtml(o.product_name)}</td clody<td>${o.quantity}</td clody<td>₹${o.total_amount?.toLocaleString()}</td clody<td><span style="background:rgba(0,212,255,0.2);padding:4px 12px;border-radius:20px;">${o.order_status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td</tr>`; });
             html += '</tbody></table></div>';
             container.innerHTML = html;
         }
         
+        // ========== BULK ACTIONS FUNCTIONS ==========
+        
+        window.toggleSelectProduct = function(productId) {
+            if (selectedProductIds.has(productId)) {
+                selectedProductIds.delete(productId);
+            } else {
+                selectedProductIds.add(productId);
+            }
+            updateBulkActionsBar();
+            renderProductList(filteredProducts);
+        };
+        
+        window.toggleSelectAll = function() {
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            if (selectAllCheckbox.checked) {
+                filteredProducts.forEach(p => selectedProductIds.add(p.id));
+            } else {
+                selectedProductIds.clear();
+            }
+            updateBulkActionsBar();
+            renderProductList(filteredProducts);
+        };
+        
+        function updateBulkActionsBar() {
+            const count = selectedProductIds.size;
+            const bar = document.getElementById('bulkActionsBar');
+            const selectedCountSpan = document.getElementById('selectedCount');
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            
+            selectedCountSpan.innerText = count;
+            
+            if (count > 0) {
+                bar.classList.add('active');
+            } else {
+                bar.classList.remove('active');
+            }
+            
+            if (selectAllCheckbox && filteredProducts.length > 0) {
+                selectAllCheckbox.checked = selectedProductIds.size === filteredProducts.length;
+                selectAllCheckbox.indeterminate = selectedProductIds.size > 0 && selectedProductIds.size < filteredProducts.length;
+            }
+        }
+        
+        window.clearSelection = function() {
+            selectedProductIds.clear();
+            updateBulkActionsBar();
+            renderProductList(filteredProducts);
+            showToast('Selection cleared');
+        };
+        
+        window.bulkApproveProducts = async function() {
+            const selectedIds = Array.from(selectedProductIds);
+            if (selectedIds.length === 0) {
+                showToast('No products selected', true);
+                return;
+            }
+            
+            if (!confirm(`Approve ${selectedIds.length} product(s)? This will submit them for admin approval.`)) return;
+            
+            showProgressModal(true, 'Approving products...', 0, selectedIds.length);
+            
+            let success = 0;
+            const BATCH_SIZE = 50;
+            
+            for (let i = 0; i < selectedIds.length; i += BATCH_SIZE) {
+                const batch = selectedIds.slice(i, i + BATCH_SIZE);
+                const { error } = await supabase
+                    .from('vendor_products')
+                    .update({ status: 'pending', updated_at: new Date() })
+                    .in('id', batch);
+                
+                if (!error) {
+                    success += batch.length;
+                }
+                
+                showProgressModal(true, `Approving products...`, Math.min(i + BATCH_SIZE, selectedIds.length), selectedIds.length);
+                await new Promise(r => setTimeout(r, 50));
+            }
+            
+            showProgressModal(false);
+            showToast(`✅ ${success} product(s) submitted for approval`);
+            
+            selectedProductIds.clear();
+            await loadProducts();
+            await loadDashboard();
+            updateBulkActionsBar();
+        };
+        
+        window.bulkDeleteProducts = async function() {
+            const selectedIds = Array.from(selectedProductIds);
+            if (selectedIds.length === 0) {
+                showToast('No products selected', true);
+                return;
+            }
+            
+            if (!confirm(`⚠️ DELETE ${selectedIds.length} product(s)? This action cannot be undone!`)) return;
+            
+            showProgressModal(true, 'Deleting products...', 0, selectedIds.length);
+            
+            let success = 0;
+            const BATCH_SIZE = 50;
+            
+            for (let i = 0; i < selectedIds.length; i += BATCH_SIZE) {
+                const batch = selectedIds.slice(i, i + BATCH_SIZE);
+                const { error } = await supabase
+                    .from('vendor_products')
+                    .delete()
+                    .in('id', batch);
+                
+                if (!error) {
+                    success += batch.length;
+                }
+                
+                showProgressModal(true, `Deleting products...`, Math.min(i + BATCH_SIZE, selectedIds.length), selectedIds.length);
+                await new Promise(r => setTimeout(r, 50));
+            }
+            
+            showProgressModal(false);
+            showToast(`🗑️ ${success} product(s) deleted successfully`);
+            
+            selectedProductIds.clear();
+            await loadProducts();
+            await loadDashboard();
+            updateBulkActionsBar();
+        };
+        
+        // Apply Filters
         window.applyAllFilters = function() {
             const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
             const category = document.getElementById('categoryFilter')?.value || 'all';
@@ -773,16 +1085,20 @@
             const selectedColor = document.getElementById('diamondColorFilter')?.value || 'all';
             const selectedClarity = document.getElementById('diamondClarityFilter')?.value || 'all';
             
-            let filtered = [...allProducts];
-            if (searchTerm) filtered = filtered.filter(p => p.product_name?.toLowerCase().includes(searchTerm) || p.sku?.toLowerCase().includes(searchTerm));
-            if (category !== 'all') filtered = filtered.filter(p => p.category === category);
-            if (status !== 'all') filtered = filtered.filter(p => p.status === status);
-            filtered = filtered.filter(p => (p.carat || 0) >= minCarat && (p.carat || 0) <= maxCarat);
-            if (selectedColor !== 'all') filtered = filtered.filter(p => p.diamond_color === selectedColor);
-            if (selectedClarity !== 'all') filtered = filtered.filter(p => p.diamond_clarity === selectedClarity);
+            filteredProducts = [...allProducts];
+            if (searchTerm) filteredProducts = filteredProducts.filter(p => p.product_name?.toLowerCase().includes(searchTerm) || p.sku?.toLowerCase().includes(searchTerm));
+            if (category !== 'all') filteredProducts = filteredProducts.filter(p => p.category === category);
+            if (status !== 'all') filteredProducts = filteredProducts.filter(p => p.status === status);
+            filteredProducts = filteredProducts.filter(p => (p.carat || 0) >= minCarat && (p.carat || 0) <= maxCarat);
+            if (selectedColor !== 'all') filteredProducts = filteredProducts.filter(p => p.diamond_color === selectedColor);
+            if (selectedClarity !== 'all') filteredProducts = filteredProducts.filter(p => p.diamond_clarity === selectedClarity);
             
-            document.getElementById('filterStats').innerHTML = `📊 ${filtered.length} of ${allProducts.length} products`;
-            renderProductList(filtered);
+            document.getElementById('filterStats').innerHTML = `📊 ${filteredProducts.length} of ${allProducts.length} products`;
+            
+            // Clear selections when filters change
+            selectedProductIds.clear();
+            updateBulkActionsBar();
+            renderProductList(filteredProducts);
         };
         
         window.applyDiamondFilters = function() { applyAllFilters(); showToast('Filters applied'); };
@@ -813,8 +1129,10 @@
             for (const p of products) {
                 const img = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/200x200?text=No+Image';
                 const statusClass = p.status === 'approved' ? 'status-approved' : 'status-pending';
+                const isSelected = selectedProductIds.has(p.id);
                 html += `
-                    <div class="list-product-card">
+                    <div class="list-product-card ${isSelected ? 'selected' : ''}">
+                        <input type="checkbox" class="product-checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelectProduct(${p.id})">
                         <div class="list-image-container"><img class="list-product-image" src="${img}" onerror="this.src='https://via.placeholder.com/200x200'"></div>
                         <div class="list-product-info">
                             <div>
@@ -878,7 +1196,17 @@
             document.querySelector('.nav-item[data-page="add-product"]').click();
         };
         
-        window.deleteProduct = async function(id) { if (confirm('Delete this product?')) { await supabase.from('vendor_products').delete().eq('id', id); showToast('Product deleted'); await loadProducts(); await loadDashboard(); } };
+        window.deleteProduct = async function(id) { 
+            if (confirm('Delete this product?')) { 
+                await supabase.from('vendor_products').delete().eq('id', id); 
+                showToast('Product deleted'); 
+                selectedProductIds.delete(id);
+                await loadProducts(); 
+                await loadDashboard(); 
+                updateBulkActionsBar();
+            } 
+        };
+        
         window.cancelProductForm = function() { document.getElementById('editProductId').value = ''; document.querySelector('.nav-item[data-page="products"]').click(); };
         
         window.updateProfile = async function() {
@@ -933,6 +1261,10 @@
                 document.getElementById('bulkUploadPage').style.display = page === 'bulk-upload' ? 'block' : 'none';
                 document.getElementById('ordersPage').style.display = page === 'orders' ? 'block' : 'none';
                 document.getElementById('profilePage').style.display = page === 'profile' ? 'block' : 'none';
+                // Clear selections when switching pages
+                if (page !== 'products') {
+                    selectedProductIds.clear();
+                }
             });
         });
         
