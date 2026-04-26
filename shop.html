@@ -137,8 +137,6 @@
             position: relative;
             width: 200px;
             min-width: 200px;
-            aspect-ratio: 1 / 1;
-            overflow: hidden;
             background: #f5f5f5;
         }
         .list-product-image {
@@ -373,13 +371,13 @@
             color: var(--gold);
         }
         
-        /* Gallery Swipe Styles */
+        /* Product Gallery Swipe Styles */
         .product-gallery-container {
             position: relative;
             width: 100%;
             aspect-ratio: 1 / 1;
             overflow: hidden;
-            background: #f5f5f5;
+            background: #1a1a2a;
         }
         .product-gallery {
             display: flex;
@@ -389,12 +387,13 @@
             height: 100%;
             width: 100%;
             cursor: grab;
-        }
-        .product-gallery:active {
-            cursor: grabbing;
+            scrollbar-width: none;
         }
         .product-gallery::-webkit-scrollbar {
             display: none;
+        }
+        .product-gallery:active {
+            cursor: grabbing;
         }
         .gallery-item {
             min-width: 100%;
@@ -407,7 +406,6 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            cursor: pointer;
         }
         .gallery-video {
             width: 100%;
@@ -433,9 +431,9 @@
             font-size: 48px;
             color: var(--gold);
             margin-bottom: 10px;
-            animation: pulse 2s infinite;
+            animation: d360Pulse 2s infinite;
         }
-        @keyframes pulse {
+        @keyframes d360Pulse {
             0%, 100% { transform: scale(1); opacity: 1; }
             50% { transform: scale(1.1); opacity: 0.8; }
         }
@@ -443,10 +441,11 @@
             font-size: 14px;
             color: var(--gold);
             font-weight: 600;
+            margin-top: 10px;
         }
         .gallery-d360 p {
             font-size: 11px;
-            color: rgba(255,255,255,0.6);
+            color: rgba(255,255,255,0.5);
             margin-top: 5px;
         }
         .gallery-dots {
@@ -517,8 +516,8 @@
             background: linear-gradient(135deg, #1a1a2a, #0a0a1a);
             border-radius: 24px;
             width: 90%;
-            max-width: 900px;
-            height: 80%;
+            max-width: 1000px;
+            height: 85%;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -550,6 +549,7 @@
         .d360-iframe-container {
             flex: 1;
             position: relative;
+            background: #000;
         }
         .d360-iframe-container iframe {
             width: 100%;
@@ -638,7 +638,7 @@
             background: rgba(255,255,255,0.95);
             backdrop-filter: blur(20px);
             display: flex;
-            justify-content: around;
+            justify-content: space-around;
             padding: 10px 20px 20px;
             border-top: 1px solid rgba(0,0,0,0.05);
             z-index: 100;
@@ -838,7 +838,7 @@
                    url.includes('/view.html?d=') ||
                    url.includes('3dviewer') ||
                    url.includes('360view') ||
-                   (url.includes('.html') && (url.includes('360') || url.includes('3d')));
+                   url.includes('.html?d=');
         }
         
         function openD360Viewer(url, productName) {
@@ -854,7 +854,7 @@
                         <button class="d360-close" onclick="this.closest('.d360-modal').remove()">&times;</button>
                     </div>
                     <div class="d360-iframe-container">
-                        <div class="d360-loading" id="d360Loading">
+                        <div class="d360-loading">
                             <div class="spinner"></div>
                             <p>Loading 3D experience...</p>
                         </div>
@@ -865,7 +865,7 @@
             
             document.body.appendChild(modal);
             const iframe = modal.querySelector('iframe');
-            const loadingDiv = modal.querySelector('#d360Loading');
+            const loadingDiv = modal.querySelector('.d360-loading');
             
             iframe.onload = function() {
                 if (loadingDiv) loadingDiv.style.display = 'none';
@@ -1097,26 +1097,26 @@
             if (product.images_url_2 && product.images_url_2.trim()) media.push({ url: product.images_url_2, type: 'image' });
             if (product.images_url_3 && product.images_url_3.trim()) media.push({ url: product.images_url_3, type: 'image' });
             
-            // Add video if it's a regular video (not D360)
+            // Add video or D360
             if (product.video_url && product.video_url.trim()) {
-                if (isVideoUrl(product.video_url)) {
-                    media.push({ url: product.video_url, type: 'video' });
-                } else if (isD360Url(product.video_url)) {
+                if (isD360Url(product.video_url)) {
                     media.push({ url: product.video_url, type: 'd360' });
+                } else if (isVideoUrl(product.video_url)) {
+                    media.push({ url: product.video_url, type: 'video' });
                 }
             }
             
             return media;
         }
         
-        // ========== CREATE GALLERY HTML (WITH D360 AS A SLIDE) ==========
+        // ========== CREATE GALLERY HTML ==========
         function createGalleryHTML(product, media, uniqueId) {
             if (!media.length) {
-                const defaultImg = product.image1_url || product.image2_url || product.image3_url || product.images_url_1 || 'https://via.placeholder.com/400';
+                const defaultImg = product.image1_url || product.image2_url || product.image3_url || product.images_url_1 || 'https://via.placeholder.com/400x400?text=No+Image';
                 return `<div class="product-gallery-container">
                             <div class="product-gallery" id="gallery-${uniqueId}">
-                                <div class="gallery-item" data-type="image" data-url="${defaultImg}">
-                                    <img class="gallery-image" src="${defaultImg}" alt="${escapeHtml(product.product_name)}" loading="lazy" onclick="event.stopPropagation(); openImageModal('${defaultImg}')" onerror="this.src='https://via.placeholder.com/400'">
+                                <div class="gallery-item">
+                                    <img class="gallery-image" src="${defaultImg}" alt="${escapeHtml(product.product_name)}" loading="lazy" onclick="event.stopPropagation(); openImageModal('${defaultImg}')" onerror="this.src='https://via.placeholder.com/400x400?text=No+Image'">
                                 </div>
                             </div>
                         </div>`;
@@ -1126,11 +1126,11 @@
             for (let i = 0; i < media.length; i++) {
                 const m = media[i];
                 if (m.type === 'video') {
-                    galleryItems += `<div class="gallery-item" data-type="video" data-url="${m.url}">
+                    galleryItems += `<div class="gallery-item">
                                         <video class="gallery-video" id="video-${uniqueId}-${i}" src="${m.url}" poster="${media[0]?.url || ''}" preload="metadata" muted playsinline loop webkit-playsinline></video>
                                     </div>`;
                 } else if (m.type === 'd360') {
-                    galleryItems += `<div class="gallery-item" data-type="d360" data-url="${m.url}">
+                    galleryItems += `<div class="gallery-item">
                                         <div class="gallery-d360" onclick="event.stopPropagation(); openD360Viewer('${m.url}', '${escapeHtml(product.product_name)}')">
                                             <i class="fas fa-cube"></i>
                                             <span>360° View</span>
@@ -1138,28 +1138,24 @@
                                         </div>
                                     </div>`;
                 } else {
-                    galleryItems += `<div class="gallery-item" data-type="image" data-url="${m.url}">
-                                        <img class="gallery-image" src="${m.url}" alt="${escapeHtml(product.product_name)}" loading="lazy" onclick="event.stopPropagation(); openImageModal('${m.url}')" onerror="this.src='https://via.placeholder.com/400'">
+                    galleryItems += `<div class="gallery-item">
+                                        <img class="gallery-image" src="${m.url}" alt="${escapeHtml(product.product_name)}" loading="lazy" onclick="event.stopPropagation(); openImageModal('${m.url}')" onerror="this.src='https://via.placeholder.com/400x400?text=No+Image'">
                                     </div>`;
                 }
             }
             
             let dotsHtml = '';
-            if (media.length > 1) {
-                for (let i = 0; i < media.length; i++) {
-                    dotsHtml += `<div class="gallery-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>`;
-                }
+            for (let i = 0; i < media.length; i++) {
+                dotsHtml += `<div class="gallery-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></div>`;
             }
             
             return `<div class="product-gallery-container">
                         <div class="product-gallery" id="gallery-${uniqueId}">
                             ${galleryItems}
                         </div>
-                        ${media.length > 1 ? `
                         <div class="gallery-dots">${dotsHtml}</div>
                         <div class="gallery-arrow gallery-arrow-left" onclick="event.stopPropagation(); scrollGallery('gallery-${uniqueId}', -1)"><i class="fas fa-chevron-left"></i></div>
                         <div class="gallery-arrow gallery-arrow-right" onclick="event.stopPropagation(); scrollGallery('gallery-${uniqueId}', 1)"><i class="fas fa-chevron-right"></i></div>
-                        ` : ''}
                     </div>`;
         }
         
@@ -1169,10 +1165,27 @@
                 const scrollAmount = gallery.clientWidth;
                 gallery.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
                 setTimeout(() => {
+                    updateGalleryActiveDot(galleryId);
                     checkAndPlayMedia(galleryId);
                 }, 100);
             }
         };
+        
+        function updateGalleryActiveDot(galleryId) {
+            const gallery = document.getElementById(galleryId);
+            if (!gallery) return;
+            const container = gallery.closest('.product-gallery-container');
+            const dots = container?.querySelectorAll('.gallery-dot');
+            if (!dots) return;
+            
+            const scrollPos = gallery.scrollLeft;
+            const itemWidth = gallery.clientWidth;
+            const activeIndex = Math.round(scrollPos / itemWidth);
+            
+            dots.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === activeIndex);
+            });
+        }
         
         function checkAndPlayMedia(galleryId) {
             const gallery = document.getElementById(galleryId);
@@ -1195,31 +1208,27 @@
             }
         }
         
-        function setupGalleryListeners(galleryId, mediaLength) {
-            if (mediaLength <= 1) return;
+        function setupGalleryListeners(galleryId) {
             setTimeout(() => {
                 const gallery = document.getElementById(galleryId);
                 if (!gallery) return;
-                const container = gallery.closest('.product-gallery-container');
-                const dots = container?.querySelectorAll('.gallery-dot');
                 
                 gallery.addEventListener('scroll', () => {
-                    const scrollPos = gallery.scrollLeft;
-                    const itemWidth = gallery.clientWidth;
-                    const activeIndex = Math.round(scrollPos / itemWidth);
-                    if (dots) {
-                        dots.forEach((dot, idx) => {
-                            dot.classList.toggle('active', idx === activeIndex);
-                        });
-                    }
+                    updateGalleryActiveDot(galleryId);
                     checkAndPlayMedia(galleryId);
                 });
                 
+                const container = gallery.closest('.product-gallery-container');
+                const dots = container?.querySelectorAll('.gallery-dot');
                 if (dots) {
                     dots.forEach((dot, idx) => {
                         dot.addEventListener('click', (e) => {
                             e.stopPropagation();
                             gallery.scrollTo({ left: idx * gallery.clientWidth, behavior: 'smooth' });
+                            setTimeout(() => {
+                                updateGalleryActiveDot(galleryId);
+                                checkAndPlayMedia(galleryId);
+                            }, 100);
                         });
                     });
                 }
@@ -1541,7 +1550,7 @@
             for (let idx = 0; idx < products.length; idx++) {
                 const p = products[idx];
                 const media = getProductMedia(p);
-                const galleryHtml = createGalleryHTML(p, media, `${p.id}-${idx}`);
+                const galleryHtml = createGalleryHTML(p, media, `list-${p.id}-${idx}`);
                 const gstPercent = p.gst || 18;
                 const { total } = calculateGST(p.price || 0, gstPercent);
                 const badge = p.source === 'vendor' 
@@ -1589,7 +1598,7 @@
                 const p = products[idx];
                 const media = getProductMedia(p);
                 if (media.length > 1) {
-                    setupGalleryListeners(`gallery-${p.id}-${idx}`, media.length);
+                    setupGalleryListeners(`list-${p.id}-${idx}`);
                 }
             }
         }
@@ -1606,7 +1615,7 @@
             for (let idx = 0; idx < products.length; idx++) {
                 const p = products[idx];
                 const media = getProductMedia(p);
-                const galleryHtml = createGalleryHTML(p, media, `${p.id}-${idx}`);
+                const galleryHtml = createGalleryHTML(p, media, `grid-${p.id}-${idx}`);
                 const gstPercent = p.gst || 18;
                 const { total } = calculateGST(p.price || 0, gstPercent);
                 const badge = p.source === 'vendor' 
@@ -1649,7 +1658,7 @@
                 const p = products[idx];
                 const media = getProductMedia(p);
                 if (media.length > 1) {
-                    setupGalleryListeners(`gallery-${p.id}-${idx}`, media.length);
+                    setupGalleryListeners(`grid-${p.id}-${idx}`);
                 }
             }
         }
