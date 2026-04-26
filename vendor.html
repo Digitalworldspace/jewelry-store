@@ -263,6 +263,100 @@
         .chart-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; color: #00d4ff; }
         canvas { max-height: 250px; }
         
+        /* ========== FILTER BAR STYLES ========== */
+        .filter-bar {
+            background: rgba(10, 30, 50, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 15px;
+            border-radius: 40px;
+        }
+        .filter-group i {
+            color: #00d4ff;
+            font-size: 14px;
+        }
+        .filter-select {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 8px 5px;
+            font-size: 13px;
+            cursor: pointer;
+            outline: none;
+        }
+        .filter-select option {
+            background: #0a2a3a;
+            color: white;
+        }
+        .filter-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 30px;
+            padding: 8px 15px;
+            color: white;
+            font-size: 13px;
+            width: 150px;
+        }
+        .filter-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .filter-input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 40px;
+            padding: 5px 15px;
+        }
+        .search-box i {
+            color: #00d4ff;
+            margin-right: 8px;
+        }
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 8px 0;
+            width: 100%;
+            outline: none;
+        }
+        .reset-filter-btn {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #f87171;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .reset-filter-btn:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+        .filter-stats {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            margin-left: auto;
+        }
+        
         /* LIST VIEW for Products */
         .products-list {
             display: flex;
@@ -503,6 +597,10 @@
             .charts-grid { grid-template-columns: 1fr; }
             .list-product-card { flex-direction: column; }
             .list-image-container { width: 100%; min-width: 100%; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .filter-group { justify-content: space-between; }
+            .search-box { width: 100%; }
+            .filter-stats { margin-left: 0; text-align: center; margin-top: 10px; }
             .shark-video, .whale-video { transform: scale(0.5); width: 200px; }
             .shark-video { bottom: 5%; }
             .whale-video { top: 10%; }
@@ -595,12 +693,52 @@
                 </div>
             </div>
             
-            <!-- Products Page - LIST VIEW -->
+            <!-- Products Page - LIST VIEW with FILTERS -->
             <div id="productsPage" style="display: none;">
                 <div class="page-header">
                     <div class="page-title">📦 My Ocean Treasures</div>
                     <div style="color: rgba(255,255,255,0.6);" id="productsCompanyName"></div>
                 </div>
+                
+                <!-- FILTER BAR -->
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchProductInput" placeholder="Search by name or SKU..." onkeyup="filterProducts()">
+                    </div>
+                    <div class="filter-group">
+                        <i class="fas fa-tag"></i>
+                        <select id="categoryFilter" class="filter-select" onchange="filterProducts()">
+                            <option value="all">All Categories</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <i class="fas fa-chart-line"></i>
+                        <select id="statusFilter" class="filter-select" onchange="filterProducts()">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <i class="fas fa-gem"></i>
+                        <select id="diamondFilter" class="filter-select" onchange="filterProducts()">
+                            <option value="all">All Products</option>
+                            <option value="with-diamond">With Diamond</option>
+                            <option value="without-diamond">Without Diamond</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <i class="fas fa-rupee-sign"></i>
+                        <input type="number" id="minPriceFilter" class="filter-input" placeholder="Min Price" onkeyup="filterProducts()">
+                        <span>-</span>
+                        <input type="number" id="maxPriceFilter" class="filter-input" placeholder="Max Price" onkeyup="filterProducts()">
+                    </div>
+                    <button class="reset-filter-btn" onclick="resetFilters()"><i class="fas fa-undo-alt"></i> Reset</button>
+                    <div class="filter-stats" id="filterStats"></div>
+                </div>
+                
                 <div id="productsListContainer" class="products-list"><div class="loading"><div class="spinner"></div><p>Loading treasures...</p></div></div>
             </div>
             
@@ -718,6 +856,8 @@
         let vendorData = null;
         let currentCompanyId = null;
         let caratChart, colorChart, clarityChart, salesChart;
+        let allProducts = [];
+        let categoriesSet = new Set();
         
         const vendorEmail = sessionStorage.getItem('userEmail');
         
@@ -848,24 +988,105 @@
             }
         }
         
-        // LIST VIEW for Products
+        // Load Products and populate category filter
         async function loadProducts() {
-            const container = document.getElementById('productsListContainer');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading treasures...</p></div>';
-            
             const { data, error } = await supabase.from('vendor_products').select('*').eq('vendor_id', currentCompanyId).order('id', { ascending: false });
             
-            if (error || !data?.length) { 
-                container.innerHTML = '<div class="loading">✨ No products yet. Add your first product!</div>'; 
-                return; 
+            if (error) {
+                console.error('Error loading products:', error);
+                allProducts = [];
+            } else {
+                allProducts = data || [];
+            }
+            
+            // Populate category filter
+            categoriesSet.clear();
+            allProducts.forEach(p => { if(p.category) categoriesSet.add(p.category); });
+            const categorySelect = document.getElementById('categoryFilter');
+            categorySelect.innerHTML = '<option value="all">All Categories</option>';
+            Array.from(categoriesSet).sort().forEach(cat => {
+                categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+            });
+            
+            filterProducts();
+        }
+        
+        // FILTER PRODUCTS FUNCTION
+        window.filterProducts = function() {
+            const searchTerm = document.getElementById('searchProductInput').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const diamondFilter = document.getElementById('diamondFilter').value;
+            const minPrice = parseFloat(document.getElementById('minPriceFilter').value);
+            const maxPrice = parseFloat(document.getElementById('maxPriceFilter').value);
+            
+            let filtered = [...allProducts];
+            
+            // Search filter
+            if (searchTerm) {
+                filtered = filtered.filter(p => 
+                    p.product_name?.toLowerCase().includes(searchTerm) || 
+                    p.sku?.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Category filter
+            if (category !== 'all') {
+                filtered = filtered.filter(p => p.category === category);
+            }
+            
+            // Status filter
+            if (status !== 'all') {
+                filtered = filtered.filter(p => p.status === status);
+            }
+            
+            // Diamond filter
+            if (diamondFilter === 'with-diamond') {
+                filtered = filtered.filter(p => p.carat && p.carat > 0);
+            } else if (diamondFilter === 'without-diamond') {
+                filtered = filtered.filter(p => !p.carat || p.carat === 0);
+            }
+            
+            // Price range filter
+            if (!isNaN(minPrice)) {
+                filtered = filtered.filter(p => p.price >= minPrice);
+            }
+            if (!isNaN(maxPrice)) {
+                filtered = filtered.filter(p => p.price <= maxPrice);
+            }
+            
+            // Update filter stats
+            document.getElementById('filterStats').innerHTML = `📊 Showing ${filtered.length} of ${allProducts.length} products`;
+            
+            // Render filtered products
+            renderProductList(filtered);
+        };
+        
+        // RESET FILTERS
+        window.resetFilters = function() {
+            document.getElementById('searchProductInput').value = '';
+            document.getElementById('categoryFilter').value = 'all';
+            document.getElementById('statusFilter').value = 'all';
+            document.getElementById('diamondFilter').value = 'all';
+            document.getElementById('minPriceFilter').value = '';
+            document.getElementById('maxPriceFilter').value = '';
+            filterProducts();
+        };
+        
+        // RENDER PRODUCT LIST
+        function renderProductList(products) {
+            const container = document.getElementById('productsListContainer');
+            
+            if (!products.length) {
+                container.innerHTML = '<div class="loading">✨ No products match your filters. Try adjusting your search!</div>';
+                return;
             }
             
             let html = '';
-            for (const p of data) {
+            for (const p of products) {
                 const img = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/200x200?text=No+Image';
                 const statusClass = p.status === 'approved' ? 'status-approved' : (p.status === 'rejected' ? 'status-rejected' : 'status-pending');
                 const statusText = p.status || 'pending';
-                
                 const hasDiamond = p.carat || p.diamond_color || p.diamond_clarity;
                 
                 html += `
