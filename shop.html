@@ -139,15 +139,6 @@
             min-width: 200px;
             background: #f5f5f5;
         }
-        .list-product-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s;
-        }
-        .list-product-card:hover .list-product-image {
-            transform: scale(1.05);
-        }
         .list-product-info {
             flex: 1;
             padding: 18px;
@@ -231,9 +222,6 @@
             border: 1.5px solid var(--gold);
             color: var(--gold);
         }
-        .list-btn-buy:hover, .list-btn-cart:hover {
-            transform: translateY(-2px);
-        }
         .vendor-badge-list {
             display: inline-block;
             background: linear-gradient(135deg, var(--purple), #6d28d9);
@@ -272,12 +260,6 @@
             aspect-ratio: 1 / 1;
             overflow: hidden;
             background: #f5f5f5;
-        }
-        .product-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s;
         }
         .vendor-badge {
             position: absolute;
@@ -425,28 +407,19 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            cursor: pointer;
         }
-        .gallery-d360 i {
-            font-size: 48px;
-            color: var(--gold);
-            margin-bottom: 10px;
-            animation: d360Pulse 2s infinite;
+        .gallery-d360 iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
-        @keyframes d360Pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
-        .gallery-d360 span {
-            font-size: 14px;
-            color: var(--gold);
-            font-weight: 600;
-            margin-top: 10px;
-        }
-        .gallery-d360 p {
-            font-size: 11px;
-            color: rgba(255,255,255,0.5);
-            margin-top: 5px;
+        .gallery-d360-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
         }
         .gallery-dots {
             position: absolute;
@@ -498,8 +471,8 @@
             right: 8px;
         }
         
-        /* D360 Modal */
-        .d360-modal {
+        /* Product Modal */
+        .product-modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -512,62 +485,43 @@
             align-items: center;
             animation: fadeIn 0.3s ease;
         }
-        .d360-modal-content {
-            background: linear-gradient(135deg, #1a1a2a, #0a0a1a);
-            border-radius: 24px;
+        .product-modal-content {
+            background: white;
+            border-radius: 28px;
             width: 90%;
-            max-width: 1000px;
-            height: 85%;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border: 1px solid rgba(212,175,55,0.3);
-        }
-        .d360-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background: rgba(0,0,0,0.5);
-            border-bottom: 1px solid rgba(212,175,55,0.2);
-        }
-        .d360-modal-header h3 {
-            color: var(--gold);
-            font-size: 18px;
-        }
-        .d360-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 28px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .d360-close:hover {
-            color: var(--gold);
-        }
-        .d360-iframe-container {
-            flex: 1;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
             position: relative;
-            background: #000;
         }
-        .d360-iframe-container iframe {
+        .product-modal-gallery {
             width: 100%;
-            height: 100%;
+            aspect-ratio: 1 / 1;
+            position: relative;
+            background: #1a1a2a;
+            border-radius: 28px 28px 0 0;
+            overflow: hidden;
+        }
+        .product-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 20;
+            font-size: 20px;
             border: none;
         }
-        .d360-loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
+        .product-modal-info {
+            padding: 20px;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
         .floating-cart {
             position: fixed;
             bottom: 80px;
@@ -680,8 +634,10 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .empty-state { text-align: center; padding: 60px; color: var(--gray); }
         
-        .load-more-container { text-align: center; margin-top: 40px; }
-        .load-more-btn { background: var(--gold); color: var(--black); padding: 12px 30px; border: none; border-radius: 40px; font-weight: 600; cursor: pointer; }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
         
         @media (min-width: 768px) {
             .products-grid.grid-view {
@@ -716,10 +672,6 @@
             }
             .list-product-price {
                 font-size: 20px;
-            }
-            .d360-modal-content {
-                width: 95%;
-                height: 70%;
             }
         }
     </style>
@@ -778,7 +730,6 @@
                 </div>
             </div>
             <div id="productsContainer" class="products-list"><div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div></div>
-            <div class="load-more-container" id="loadMoreContainer" style="display: none;"><button class="load-more-btn" onclick="loadMoreProducts()">Load More Products</button></div>
         </div>
     </div>
     
@@ -839,61 +790,6 @@
                    url.includes('3dviewer') ||
                    url.includes('360view') ||
                    url.includes('.html?d=');
-        }
-        
-        function openD360Viewer(url, productName) {
-            const existingModal = document.querySelector('.d360-modal');
-            if (existingModal) existingModal.remove();
-            
-            const modal = document.createElement('div');
-            modal.className = 'd360-modal';
-            modal.innerHTML = `
-                <div class="d360-modal-content">
-                    <div class="d360-modal-header">
-                        <h3><i class="fas fa-cube"></i> 360° View - ${escapeHtml(productName || 'Product')}</h3>
-                        <button class="d360-close" onclick="this.closest('.d360-modal').remove()">&times;</button>
-                    </div>
-                    <div class="d360-iframe-container">
-                        <div class="d360-loading">
-                            <div class="spinner"></div>
-                            <p>Loading 3D experience...</p>
-                        </div>
-                        <iframe src="${url}" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals"></iframe>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            const iframe = modal.querySelector('iframe');
-            const loadingDiv = modal.querySelector('.d360-loading');
-            
-            iframe.onload = function() {
-                if (loadingDiv) loadingDiv.style.display = 'none';
-            };
-            
-            setTimeout(() => {
-                if (loadingDiv) loadingDiv.style.display = 'none';
-            }, 5000);
-            
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && document.querySelector('.d360-modal')) {
-                    modal.remove();
-                }
-            });
-            
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.remove();
-            });
-        }
-        
-        function openImageModal(imageUrl) {
-            const modalHtml = `<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:3000;display:flex;justify-content:center;align-items:center;" onclick="this.remove()">
-                <div style="background:white;border-radius:20px;max-width:90%;max-height:90%;padding:10px;" onclick="event.stopPropagation()">
-                    <img src="${imageUrl}" style="max-width:100%;max-height:80vh;border-radius:16px;">
-                    <button style="position:absolute;top:20px;right:20px;background:black;color:white;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:20px;" onclick="this.closest('div').remove()">×</button>
-                </div>
-            </div>`;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
         
         // ========== CART FUNCTIONS ==========
@@ -1085,7 +981,7 @@
             }
         };
         
-        // ========== GET PRODUCT MEDIA (INCLUDING D360 AS A SLIDE) ==========
+        // ========== GET PRODUCT MEDIA (INCLUDING D360 AS IFRAME) ==========
         function getProductMedia(product) {
             const media = [];
             
@@ -1109,7 +1005,7 @@
             return media;
         }
         
-        // ========== CREATE GALLERY HTML ==========
+        // ========== CREATE GALLERY HTML (D360 PLAYS DIRECTLY) ==========
         function createGalleryHTML(product, media, uniqueId) {
             if (!media.length) {
                 const defaultImg = product.image1_url || product.image2_url || product.image3_url || product.images_url_1 || 'https://via.placeholder.com/400x400?text=No+Image';
@@ -1127,14 +1023,17 @@
                 const m = media[i];
                 if (m.type === 'video') {
                     galleryItems += `<div class="gallery-item">
-                                        <video class="gallery-video" id="video-${uniqueId}-${i}" src="${m.url}" poster="${media[0]?.url || ''}" preload="metadata" muted playsinline loop webkit-playsinline></video>
+                                        <video class="gallery-video" id="video-${uniqueId}-${i}" src="${m.url}" poster="${media[0]?.url || ''}" preload="metadata" muted playsinline loop webkit-playsinline controls></video>
                                     </div>`;
                 } else if (m.type === 'd360') {
+                    // D360 plays directly inside the gallery as an iframe
                     galleryItems += `<div class="gallery-item">
-                                        <div class="gallery-d360" onclick="event.stopPropagation(); openD360Viewer('${m.url}', '${escapeHtml(product.product_name)}')">
-                                            <i class="fas fa-cube"></i>
-                                            <span>360° View</span>
-                                            <p>Click to explore in 3D</p>
+                                        <div class="gallery-d360" style="position:relative; width:100%; height:100%;">
+                                            <div class="gallery-d360-loading" id="d360-loading-${uniqueId}-${i}">
+                                                <div class="spinner"></div>
+                                                <p style="color:white; margin-top:10px;">Loading 3D Experience...</p>
+                                            </div>
+                                            <iframe id="d360-iframe-${uniqueId}-${i}" src="${m.url}" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals" style="width:100%; height:100%; border:none; display:none;"></iframe>
                                         </div>
                                     </div>`;
                 } else {
@@ -1167,9 +1066,38 @@
                 setTimeout(() => {
                     updateGalleryActiveDot(galleryId);
                     checkAndPlayMedia(galleryId);
+                    loadD360IframesInView(galleryId);
                 }, 100);
             }
         };
+        
+        function loadD360IframesInView(galleryId) {
+            const gallery = document.getElementById(galleryId);
+            if (!gallery) return;
+            
+            const scrollPos = gallery.scrollLeft;
+            const itemWidth = gallery.clientWidth;
+            const activeIndex = Math.round(scrollPos / itemWidth);
+            const items = gallery.querySelectorAll('.gallery-item');
+            
+            items.forEach((item, idx) => {
+                const iframe = item.querySelector('iframe');
+                const loadingDiv = item.querySelector('.gallery-d360-loading');
+                if (iframe && loadingDiv) {
+                    if (idx === activeIndex) {
+                        // Load the iframe when it becomes active
+                        if (!iframe.src && iframe.getAttribute('data-src')) {
+                            iframe.src = iframe.getAttribute('data-src');
+                        }
+                        iframe.style.display = 'block';
+                        loadingDiv.style.display = 'none';
+                    } else {
+                        iframe.style.display = 'none';
+                        loadingDiv.style.display = 'flex';
+                    }
+                }
+            });
+        }
         
         function updateGalleryActiveDot(galleryId) {
             const gallery = document.getElementById(galleryId);
@@ -1208,7 +1136,7 @@
             }
         }
         
-        function setupGalleryListeners(galleryId) {
+        function setupGalleryListeners(galleryId, mediaItems) {
             setTimeout(() => {
                 const gallery = document.getElementById(galleryId);
                 if (!gallery) return;
@@ -1216,6 +1144,7 @@
                 gallery.addEventListener('scroll', () => {
                     updateGalleryActiveDot(galleryId);
                     checkAndPlayMedia(galleryId);
+                    loadD360IframesInView(galleryId);
                 });
                 
                 const container = gallery.closest('.product-gallery-container');
@@ -1228,15 +1157,41 @@
                             setTimeout(() => {
                                 updateGalleryActiveDot(galleryId);
                                 checkAndPlayMedia(galleryId);
+                                loadD360IframesInView(galleryId);
                             }, 100);
                         });
                     });
                 }
                 
+                // Setup D360 iframes
+                const iframes = gallery.querySelectorAll('iframe');
+                iframes.forEach((iframe, idx) => {
+                    const src = iframe.src;
+                    if (src && src.includes('d360')) {
+                        iframe.setAttribute('data-src', src);
+                        iframe.src = '';
+                    }
+                    const loadingDiv = gallery.querySelector(`#d360-loading-${galleryId.split('-').slice(1).join('-')}-${idx}`);
+                    if (loadingDiv) {
+                        loadingDiv.style.display = 'flex';
+                    }
+                });
+                
                 setTimeout(() => {
                     checkAndPlayMedia(galleryId);
+                    loadD360IframesInView(galleryId);
                 }, 500);
             }, 100);
+        }
+        
+        function openImageModal(imageUrl) {
+            const modalHtml = `<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:4000;display:flex;justify-content:center;align-items:center;" onclick="this.remove()">
+                <div style="background:white;border-radius:20px;max-width:90%;max-height:90%;padding:10px;" onclick="event.stopPropagation()">
+                    <img src="${imageUrl}" style="max-width:100%;max-height:80vh;border-radius:16px;">
+                    <button style="position:absolute;top:20px;right:20px;background:black;color:white;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:20px;" onclick="this.closest('div').remove()">×</button>
+                </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
         
         // ========== FILTER FUNCTIONS ==========
@@ -1511,18 +1466,6 @@
             
             updateActiveFiltersDisplay();
             document.getElementById('productsCount').innerHTML = `Showing ${Math.min(currentDisplayCount, filteredProducts.length)} of ${filteredProducts.length} products`;
-            document.getElementById('loadMoreContainer').style.display = filteredProducts.length > currentDisplayCount ? 'block' : 'none';
-        };
-        
-        window.loadMoreProducts = function() {
-            currentDisplayCount += 30;
-            if (currentView === 'list') {
-                renderListView(filteredProducts.slice(0, currentDisplayCount));
-            } else {
-                renderGridView(filteredProducts.slice(0, currentDisplayCount));
-            }
-            document.getElementById('productsCount').innerHTML = `Showing ${Math.min(currentDisplayCount, filteredProducts.length)} of ${filteredProducts.length} products`;
-            document.getElementById('loadMoreContainer').style.display = filteredProducts.length > currentDisplayCount ? 'block' : 'none';
         };
         
         window.resetFilters = function() {
@@ -1560,7 +1503,7 @@
                 const hasDiamond = p.carat || p.diamond_color || p.diamond_clarity;
                 
                 html += `
-                    <div class="list-product-card">
+                    <div class="list-product-card" onclick='openProductModal(${JSON.stringify(p)})'>
                         <div class="list-image-container">
                             ${badge}
                             ${galleryHtml}
@@ -1598,7 +1541,7 @@
                 const p = products[idx];
                 const media = getProductMedia(p);
                 if (media.length > 1) {
-                    setupGalleryListeners(`list-${p.id}-${idx}`);
+                    setupGalleryListeners(`list-${p.id}-${idx}`, media);
                 }
             }
         }
@@ -1632,7 +1575,7 @@
                     </div>`;
                 }
                 
-                html += `<div class="product-card">
+                html += `<div class="product-card" onclick='openProductModal(${JSON.stringify(p)})'>
                     <div class="product-image-container">
                         ${badge}
                         ${galleryHtml}
@@ -1658,10 +1601,53 @@
                 const p = products[idx];
                 const media = getProductMedia(p);
                 if (media.length > 1) {
-                    setupGalleryListeners(`grid-${p.id}-${idx}`);
+                    setupGalleryListeners(`grid-${p.id}-${idx}`, media);
                 }
             }
         }
+        
+        // ========== PRODUCT MODAL WITH GALLERY ==========
+        window.openProductModal = function(product) {
+            const media = getProductMedia(product);
+            const { total } = calculateGST(product.price || 0, product.gst || 18);
+            const galleryId = `modal-gallery-${product.id}`;
+            const galleryHtml = createGalleryHTML(product, media, `modal-${product.id}`);
+            
+            const modalHtml = `
+                <div id="productModal" class="product-modal" onclick="if(event.target===this) closeProductModal()">
+                    <div class="product-modal-content">
+                        <button class="product-modal-close" onclick="closeProductModal()">&times;</button>
+                        <div class="product-modal-gallery">
+                            ${galleryHtml}
+                        </div>
+                        <div class="product-modal-info">
+                            <h2 style="font-size:22px; margin-bottom:8px;">${escapeHtml(product.product_name)}</h2>
+                            <div style="color:var(--gold);font-size:28px;font-weight:700;margin:10px 0;">₹${total.toLocaleString()}</div>
+                            <p style="color:var(--gray); margin-bottom:15px;">${escapeHtml(product.description || 'Exquisite handcrafted piece.')}</p>
+                            ${product.carat ? `<div style="background:var(--white-light); padding:10px; border-radius:12px; margin:10px 0;"><strong><i class="fas fa-gem"></i> Diamond:</strong> ${product.carat}ct | ${product.diamond_color || ''} | ${product.diamond_clarity || ''}</div>` : ''}
+                            <div style="display:flex;gap:12px;margin-top:20px;">
+                                <button class="list-btn-buy" style="flex:1;border-radius:40px;" onclick="buyNow('${product.id}', '${escapeHtml(product.product_name).replace(/'/g, "\\'")}', ${product.price}, '${product.sku}', '${media[0]?.url || ''}', ${product.gst || 18}); closeProductModal();">Buy Now</button>
+                                <button class="list-btn-cart" style="flex:1;border-radius:40px;" onclick="addToCart('${product.id}', '${escapeHtml(product.product_name).replace(/'/g, "\\'")}', ${product.price}, '${product.sku}', '${media[0]?.url || ''}', ${product.gst || 18}); closeProductModal();">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // Setup gallery in modal
+            setTimeout(() => {
+                if (media.length > 1) {
+                    setupGalleryListeners(`modal-${product.id}`, media);
+                }
+            }, 100);
+        };
+        
+        window.closeProductModal = function() {
+            const modal = document.getElementById('productModal');
+            if (modal) modal.remove();
+        };
         
         function openFilterModal() { document.getElementById('filterModal').classList.add('active'); document.body.style.overflow = 'hidden'; }
         window.closeFilterModal = function() { document.getElementById('filterModal').classList.remove('active'); document.body.style.overflow = ''; };
