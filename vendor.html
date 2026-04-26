@@ -3,1034 +3,723 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Vendor Portal - Style Of Life | Deep Sea Experience</title>
+    <title>Deep Sea Vendor Portal | Style Of Life</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
-    <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             font-family: 'Inter', sans-serif;
-            background: #0a1a2a;
+            background: #03101a;
             color: #ffffff;
             min-height: 100vh;
             overflow-x: hidden;
         }
-        
-        /* Real Underwater Video Background */
-        .underwater-bg {
+        /* Underwater Background */
+        .ocean-backdrop {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: 0;
+            background: radial-gradient(circle at 20% 30%, #043b5e, #011126);
             overflow: hidden;
         }
-        
-        .bg-video {
+        .ocean-backdrop::before {
+            content: "";
             position: absolute;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            transform: translate(-50%, -50%);
-            object-fit: cover;
-            filter: brightness(0.5) contrast(1.2);
-        }
-        
-        .ocean-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(0,40,60,0.7), rgba(0,20,40,0.85));
+            background: repeating-linear-gradient(transparent, transparent 98px, rgba(0,180,255,0.08) 98px, rgba(0,180,255,0.1) 100px);
             pointer-events: none;
-            z-index: 1;
         }
-        
-        /* Floating Marine Life Videos */
-        .marine-creature {
+        /* Marine life animations - floating & swimming */
+        .sea-creature {
             position: fixed;
             z-index: 2;
             pointer-events: none;
-            filter: drop-shadow(0 5px 20px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+            opacity: 0.7;
+            transition: transform 0.2s ease;
         }
-        
-        .shark-video { bottom: 10%; right: -300px; width: 350px; animation: swimShark 35s ease-in-out infinite; }
-        .whale-video { top: 20%; left: -400px; width: 450px; animation: swimWhale 45s ease-in-out infinite; }
-        .octopus-video { bottom: 15%; left: 5%; width: 180px; animation: floatOctopus 20s ease-in-out infinite; }
-        .stingray-video { top: 60%; right: 5%; width: 200px; animation: glideStingray 25s ease-in-out infinite; }
-        
-        @keyframes swimShark {
-            0% { transform: translateX(0) translateY(0px); right: -300px; }
-            30% { transform: translateX(0) translateY(-20px); }
-            70% { transform: translateX(0) translateY(15px); }
-            100% { transform: translateX(-1800px) translateY(0px); right: 100%; }
+        .whale-animation {
+            top: 15%;
+            left: -20%;
+            width: 320px;
+            animation: swimWhale 38s linear infinite;
+        }
+        .shark-animation {
+            bottom: 12%;
+            right: -15%;
+            width: 240px;
+            animation: swimShark 42s ease-in-out infinite;
+        }
+        .dolphin-animation {
+            top: 65%;
+            left: -25%;
+            width: 180px;
+            animation: swimDolphin 35s ease-in-out infinite;
+        }
+        .turtle-animation {
+            bottom: 25%;
+            right: 5%;
+            width: 150px;
+            animation: floatTurtle 24s ease-in-out infinite;
+        }
+        .jellyfish {
+            top: 40%;
+            left: 80%;
+            width: 100px;
+            animation: floatJelly 18s ease-in-out infinite;
+        }
+        .stingray {
+            bottom: 40%;
+            left: 10%;
+            width: 200px;
+            animation: glideStingray 30s linear infinite;
         }
         @keyframes swimWhale {
-            0% { transform: translateX(0) translateY(0px); left: -400px; }
-            30% { transform: translateX(0) translateY(-30px); }
-            70% { transform: translateX(0) translateY(20px); }
-            100% { transform: translateX(2000px) translateY(0px); left: 100%; }
+            0% { transform: translateX(0) translateY(0px); left: -20%; }
+            50% { transform: translateX(20px) translateY(-25px); }
+            100% { transform: translateX(calc(100vw + 20%)) translateY(10px); left: 100%; }
         }
-        @keyframes floatOctopus { 0%,100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-25px) rotate(5deg); } }
-        @keyframes glideStingray { 0%,100% { transform: translateX(0px) translateY(0px); } 50% { transform: translateX(-30px) translateY(-15px); } }
-        
+        @keyframes swimShark {
+            0% { transform: translateX(0) scaleX(1); right: -15%; }
+            45% { transform: translateX(-30px) translateY(-15px) scaleX(1); }
+            55% { transform: translateX(-30px) translateY(15px) scaleX(1); }
+            100% { transform: translateX(calc(-100vw - 20%)) scaleX(1); right: 100%; }
+        }
+        @keyframes swimDolphin {
+            0% { transform: translateX(0) translateY(0); left: -25%; }
+            40% { transform: translateX(12vw) translateY(-20px); }
+            70% { transform: translateX(35vw) translateY(15px); }
+            100% { transform: translateX(calc(100vw + 25%)) translateY(0); left: 100%; }
+        }
+        @keyframes floatTurtle {
+            0%,100% { transform: translateX(0px) translateY(0px) rotate(0deg); }
+            50% { transform: translateX(-20px) translateY(-15px) rotate(5deg); }
+        }
+        @keyframes floatJelly {
+            0%,100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-30px) scale(1.05); }
+        }
+        @keyframes glideStingray {
+            0% { transform: translateX(0) translateY(0) rotate(0deg); left: 5%; }
+            50% { transform: translateX(40px) translateY(-20px) rotate(10deg); }
+            100% { transform: translateX(calc(100vw + 10%)) translateY(10px) rotate(0deg); left: 100%; }
+        }
         /* Bubbles */
         .bubble {
             position: fixed;
-            background: radial-gradient(circle, rgba(100,200,255,0.3), rgba(50,150,200,0.1));
+            background: radial-gradient(circle, rgba(120,210,255,0.5), rgba(70,150,200,0.15));
             border-radius: 50%;
             pointer-events: none;
             z-index: 2;
-            animation: bubbleRise 8s ease-in-out infinite;
+            animation: bubbleRise 7s infinite ease-in;
         }
         @keyframes bubbleRise {
-            0% { transform: translateY(0) scale(1); opacity: 0.6; }
-            100% { transform: translateY(-100vh) scale(1.3); opacity: 0; }
+            0% { transform: translateY(0) scale(0.8); opacity: 0.6; }
+            100% { transform: translateY(-100vh) scale(1.1); opacity: 0; }
         }
-        
-        /* Main UI */
-        .vendor-header, .vendor-sidebar, .vendor-main, .stat-card, .chart-card, .form-card, .product-card { position: relative; z-index: 10; }
-        
+        /* UI Overlay */
+        .vendor-header, .vendor-sidebar, .vendor-main, .stat-card, .chart-card, .form-card, .product-card {
+            position: relative;
+            z-index: 12;
+        }
         .vendor-header {
-            background: rgba(10, 30, 50, 0.85);
-            backdrop-filter: blur(20px);
-            padding: 15px 30px;
+            background: rgba(2, 20, 35, 0.9);
+            backdrop-filter: blur(18px);
+            padding: 14px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 15px;
-            position: sticky;
-            top: 0;
+            border-bottom: 1px solid #00b8ff70;
             z-index: 100;
-            border-bottom: 2px solid rgba(0, 200, 255, 0.4);
         }
-        
         .logo {
             font-size: 28px;
             font-weight: 800;
-            background: linear-gradient(135deg, #00d4ff, #0099cc, #00d4ff);
+            background: linear-gradient(135deg, #2dd4ff, #00a3cc, #2dd4ff);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        .logo span { background: linear-gradient(135deg, #00d4ff, #0099cc); color: #0a2a3a; padding: 4px 12px; border-radius: 30px; font-size: 12px; margin-left: 8px; }
-        
         .company-name-display {
-            background: rgba(0, 212, 255, 0.2);
-            padding: 8px 20px;
-            border-radius: 40px;
-            font-weight: 600;
-            color: #00d4ff;
+            background: #00a3cc20;
+            padding: 6px 22px;
+            border-radius: 36px;
+            font-weight: 500;
+            border-left: 2px solid #2dd4ff;
         }
-        .company-name-display i { margin-right: 8px; }
-        
         .logout-btn {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.5);
-            color: #ff6b6b;
-            padding: 8px 20px;
-            border-radius: 40px;
+            background: #ef444430;
+            border: 1px solid #ef4444a0;
+            padding: 8px 24px;
+            border-radius: 32px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: 0.2s;
         }
-        
         .vendor-sidebar {
-            width: 280px;
-            background: rgba(10, 30, 50, 0.7);
-            backdrop-filter: blur(15px);
-            border-right: 1px solid rgba(0, 212, 255, 0.2);
-            padding: 30px 20px;
-            height: calc(100vh - 70px);
+            width: 270px;
+            background: #021a2ad9;
+            backdrop-filter: blur(12px);
+            padding: 28px 16px;
+            height: calc(100vh - 72px);
             position: sticky;
-            top: 70px;
-            overflow-y: auto;
+            top: 72px;
+            border-right: 1px solid #40e0ff30;
         }
-        
         .nav-item {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 14px 18px;
-            color: rgba(255, 255, 255, 0.8);
-            border-radius: 12px;
+            padding: 12px 18px;
+            border-radius: 14px;
             margin-bottom: 8px;
-            transition: all 0.3s;
             cursor: pointer;
+            transition: 0.2s;
+            color: #d4f1ff;
         }
         .nav-item:hover, .nav-item.active {
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.05));
-            color: #00f5ff;
-            transform: translateX(5px);
-            border-left: 3px solid #00d4ff;
+            background: linear-gradient(90deg, #1aa3c030, #005f8a30);
+            color: #b0f5ff;
+            border-left: 3px solid #2dd4ff;
+            transform: translateX(4px);
         }
-        .nav-item i { width: 24px; }
-        .nav-badge { margin-left: auto; background: linear-gradient(135deg, #00d4ff, #0099cc); color: #0a2a3a; padding: 2px 10px; border-radius: 30px; font-size: 11px; font-weight: 700; }
-        
-        .vendor-layout { display: flex; min-height: calc(100vh - 70px); }
-        .vendor-main { flex: 1; padding: 30px; overflow-x: auto; }
-        
+        .vendor-main {
+            flex: 1;
+            padding: 28px 30px;
+            overflow-y: auto;
+            max-height: calc(100vh - 72px);
+        }
         .page-title {
             font-size: 32px;
             font-weight: 800;
-            background: linear-gradient(135deg, #00d4ff, #7fffd4);
+            background: linear-gradient(135deg, #6ee7ff, #9efff0);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 8px;
         }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
         .stat-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 22px;
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            transition: all 0.3s;
-        }
-        .stat-card:hover { transform: translateY(-5px); border-color: #00d4ff; box-shadow: 0 8px 20px rgba(0,212,255,0.15); }
-        .stat-icon { font-size: 36px; color: #00d4ff; margin-bottom: 12px; }
-        .stat-value { font-size: 36px; font-weight: 800; color: #00d4ff; }
-        .stat-label { font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-top: 5px; }
-        
-        .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px; }
-        .chart-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
+            background: rgba(255,255,255,0.07);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
             padding: 20px;
-            border: 1px solid rgba(0, 212, 255, 0.2);
+            border: 1px solid #2dd4ff50;
         }
-        .chart-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; color: #00d4ff; }
-        canvas { max-height: 250px; }
-        
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+        .stat-value {
+            font-size: 38px;
+            font-weight: 800;
+            color: #6ee7ff;
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        .chart-card {
+            background: #031e2ed9;
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 18px;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 22px;
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+        /* Scrollbar styling */
+        .products-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+        .products-grid::-webkit-scrollbar-track {
+            background: #0a344e;
+            border-radius: 10px;
+        }
+        .products-grid::-webkit-scrollbar-thumb {
+            background: #2dd4ff;
+            border-radius: 10px;
+        }
         .product-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
+            background: #032a3fb3;
+            border-radius: 24px;
             overflow: hidden;
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            transition: all 0.3s;
+            transition: 0.25s;
+            border: 1px solid #3ad1ff40;
         }
-        .product-card:hover { transform: translateY(-5px); border-color: #00d4ff; }
-        .product-image { width: 100%; height: 180px; object-fit: cover; background: rgba(0,0,0,0.3); }
-        .product-info { padding: 15px; }
-        .product-name { font-size: 16px; font-weight: 600; }
-        .product-price { font-size: 18px; font-weight: 700; color: #00d4ff; }
-        .product-status { display: inline-block; padding: 2px 12px; border-radius: 30px; font-size: 10px; margin-top: 8px; }
-        .status-pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
-        .status-approved { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-        .card-actions { display: flex; gap: 10px; margin-top: 12px; }
-        .card-actions button { flex: 1; padding: 8px; border: none; border-radius: 30px; cursor: pointer; font-size: 12px; transition: all 0.3s; }
-        .btn-edit { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-        .btn-delete { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-        
-        .form-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 25px;
-            border: 1px solid rgba(0, 212, 255, 0.2);
-        }
-        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 13px; color: rgba(255, 255, 255, 0.7); }
-        .form-group input, .form-group textarea, .form-group select {
+        .product-image {
             width: 100%;
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 12px;
-            font-size: 14px;
-            color: white;
+            height: 170px;
+            object-fit: cover;
         }
-        .form-group input:focus { border-color: #00d4ff; outline: none; }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #00d4ff, #0099cc);
-            color: #0a2a3a;
-            padding: 12px 28px;
-            border: none;
-            border-radius: 40px;
-            cursor: pointer;
+        .product-info {
+            padding: 16px;
+        }
+        .product-price {
+            color: #6ee7ff;
             font-weight: 700;
-            transition: all 0.3s;
+            font-size: 20px;
         }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3); }
-        
-        .orders-table { width: 100%; border-collapse: collapse; background: rgba(255, 255, 255, 0.05); border-radius: 16px; overflow: hidden; }
-        .orders-table th, .orders-table td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-        .orders-table th { background: rgba(0, 0, 0, 0.3); color: #00d4ff; }
-        
-        .company-stats {
-            background: rgba(0, 212, 255, 0.1);
-            border-radius: 16px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 15px;
-            border: 1px solid rgba(0, 212, 255, 0.3);
+        .form-card {
+            background: #032535b3;
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 28px;
         }
-        .company-stat-item { text-align: center; }
-        .company-stat-label { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; }
-        .company-stat-value { font-size: 20px; font-weight: 700; color: #00d4ff; }
-        
-        /* Bulk Upload Styles */
-        .bulk-area {
-            text-align: center;
-            padding: 50px;
-            border: 2px dashed rgba(0, 212, 255, 0.4);
-            border-radius: 20px;
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 20px;
+        }
+        .btn-primary {
+            background: linear-gradient(95deg, #00c3ff, #0077aa);
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: 700;
+            border: none;
             cursor: pointer;
-            transition: all 0.3s;
         }
-        .bulk-area:hover { border-color: #00d4ff; background: rgba(0,212,255,0.05); }
-        .progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-top: 20px; display: none; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #00d4ff, #7fffd4); width: 0%; transition: width 0.3s; }
-        .batch-status { font-size: 12px; margin-top: 10px; text-align: center; color: rgba(255,255,255,0.6); }
-        .format-hint {
-            background: rgba(0,0,0,0.3);
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 20px;
-            font-size: 12px;
-            border-left: 3px solid #00d4ff;
+        .orders-table {
+            width: 100%;
+            background: #022b3ed9;
+            border-radius: 20px;
+            overflow: auto;
+            display: block;
         }
-        .format-hint code { background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-        
         .toast {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            background: linear-gradient(135deg, #00d4ff, #0099cc);
-            color: #0a2a3a;
+            background: #0f4c5f;
             padding: 12px 24px;
-            border-radius: 40px;
-            z-index: 1000;
-            font-weight: 700;
-            animation: slideIn 0.3s;
+            border-radius: 48px;
+            z-index: 2000;
+            font-weight: 600;
         }
-        .toast-error { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
-        .loading { text-align: center; padding: 60px; color: rgba(255,255,255,0.6); }
-        .spinner { width: 40px; height: 40px; border: 3px solid rgba(0,212,255,0.2); border-top-color: #00d4ff; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
-        @media (max-width: 768px) {
-            .vendor-layout { flex-direction: column; }
-            .vendor-sidebar { width: 100%; padding: 15px; overflow-x: auto; display: flex; gap: 10px; height: auto; }
+        .loading {
+            text-align: center;
+            padding: 50px;
+        }
+        @media (max-width: 780px) {
+            .vendor-sidebar { width: 100%; height: auto; display: flex; gap: 6px; overflow-x: auto; }
             .nav-item { white-space: nowrap; }
+            .vendor-layout { flex-direction: column; }
             .form-grid { grid-template-columns: 1fr; }
             .charts-grid { grid-template-columns: 1fr; }
-            .marine-creature { transform: scale(0.5); }
-            .company-name-display { font-size: 12px; padding: 5px 12px; }
+        }
+        .company-stats {
+            background: #0177a330;
+            border-radius: 28px;
+            padding: 16px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 30px;
+            align-items: center;
+        }
+        .page-btn {
+            background: #085f7c;
+            padding: 8px 16px;
+            border-radius: 32px;
+            cursor: pointer;
+            border: none;
+            color: white;
+        }
+        .page-btn.active-page {
+            background: #2dd4ff;
+            color: #022b36;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <!-- ========================================== -->
-    <!-- VENDOR AUTHENTICATION CHECK - MUST BE FIRST -->
-    <!-- ========================================== -->
-    <script>
-        (function checkVendorAuth() {
-            try {
-                const isVendorLoggedIn = sessionStorage.getItem('vendorLoggedIn') === 'true';
-                const userRole = sessionStorage.getItem('userRole');
-                const userEmail = sessionStorage.getItem('userEmail');
-                
-                console.log('🔐 Vendor Auth Check - vendorLoggedIn:', isVendorLoggedIn, 'userRole:', userRole, 'userEmail:', userEmail);
-                
-                if (!isVendorLoggedIn || userRole !== 'vendor' || !userEmail) {
-                    console.log('❌ Vendor not authenticated, redirecting to login...');
-                    window.location.href = 'login.html';
-                    return;
-                }
-                
-                console.log('✅ Vendor authenticated successfully');
-            } catch (error) {
-                console.error('Auth check error:', error);
-                window.location.href = 'login.html';
-            }
-        })();
-    </script>
+<div class="ocean-backdrop"></div>
 
-    <!-- Real Underwater Video Background -->
-    <div class="underwater-bg">
-        <video class="bg-video" autoplay muted loop playsinline>
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-underwater-ocean-scene-with-seaweed-and-fish-4080-large.mp4" type="video/mp4">
-        </video>
-        <div class="ocean-overlay"></div>
+<!-- Enhanced marine life with videos + animated SVG creatures -->
+<div class="sea-creature whale-animation"><i class="fas fa-fish" style="font-size: 120px; color: #6fbfe6; text-shadow: 0 0 10px cyan;"></i><span style="position: absolute; top: -30px; left: 20px; font-size: 12px;">🐋 WHALE</span></div>
+<div class="sea-creature shark-animation"><i class="fas fa-fish" style="font-size: 90px; color: #426e86; transform: scaleX(-1);"></i><span style="position: absolute; top: -20px;">🦈 SHARK</span></div>
+<div class="sea-creature dolphin-animation"><i class="fas fa-water" style="font-size: 70px; color: #3498db;"></i><span>🐬 DOLPHIN</span></div>
+<div class="sea-creature turtle-animation"><i class="fas fa-crown" style="font-size: 50px; color: #59bd6b;"></i><span style="font-size: 11px;">🐢 SEA TURTLE</span></div>
+<div class="sea-creature jellyfish"><i class="fas fa-bezier-curve" style="font-size: 60px; color: #f5b0e6;"></i>🪼</div>
+<div class="sea-creature stingray"><i class="fas fa-rocket" style="font-size: 55px; color: #b58b6b;"></i><span>🪼 RAY</span></div>
+
+<script>
+    for(let i=0;i<22;i++){
+        let b = document.createElement('div');
+        b.className = 'bubble';
+        let size = 4+Math.random()*12;
+        b.style.width = size+'px';
+        b.style.height = size+'px';
+        b.style.bottom = Math.random()*100+'%';
+        b.style.left = Math.random()*100+'%';
+        b.style.animationDuration = 5+Math.random()*10+'s';
+        b.style.animationDelay = Math.random()*8+'s';
+        document.body.appendChild(b);
+    }
+</script>
+
+<div class="vendor-header">
+    <div class="logo">🌊 STYLE OF LIFE <span style="font-size:12px;">DEEP SEA VENDOR</span></div>
+    <div class="company-name-display"><i class="fas fa-building"></i> <span id="headerCompanyName">Loading...</span></div>
+    <button class="logout-btn" onclick="logoutVendor()"><i class="fas fa-sign-out-alt"></i> Surface</button>
+</div>
+
+<div class="vendor-layout">
+    <div class="vendor-sidebar">
+        <div class="nav-item active" data-page="dashboard"><i class="fas fa-chart-line"></i> Dashboard</div>
+        <div class="nav-item" data-page="products"><i class="fas fa-box"></i> My Products <span class="nav-badge" id="productCountBadge">0</span></div>
+        <div class="nav-item" data-page="add-product"><i class="fas fa-plus-circle"></i> Add Product</div>
+        <div class="nav-item" data-page="bulk-upload"><i class="fas fa-file-upload"></i> Bulk Upload</div>
+        <div class="nav-item" data-page="orders"><i class="fas fa-shopping-cart"></i> My Orders <span id="orderCountBadge">0</span></div>
+        <div class="nav-item" data-page="profile"><i class="fas fa-user-circle"></i> Profile</div>
     </div>
-    
-    <!-- Real Marine Life Videos -->
-    <video class="marine-creature shark-video" autoplay muted loop playsinline>
-        <source src="https://cdn.pixabay.com/video/2022/03/29/113795-693997588_large.mp4" type="video/mp4">
-    </video>
-    <video class="marine-creature whale-video" autoplay muted loop playsinline>
-        <source src="https://cdn.pixabay.com/video/2021/10/13/92812-623435664_large.mp4" type="video/mp4">
-    </video>
-    <video class="marine-creature octopus-video" autoplay muted loop playsinline>
-        <source src="https://cdn.pixabay.com/video/2022/09/01/129852-744537218_large.mp4" type="video/mp4">
-    </video>
-    <video class="marine-creature stingray-video" autoplay muted loop playsinline>
-        <source src="https://cdn.pixabay.com/video/2021/05/02/72371-542160546_large.mp4" type="video/mp4">
-    </video>
-    
-    <!-- Bubbles -->
-    <div class="bubble" style="bottom: 5%; left: 15%; width: 8px; height: 8px; animation-duration: 6s;"></div>
-    <div class="bubble" style="bottom: 10%; left: 35%; width: 12px; height: 12px; animation-duration: 8s;"></div>
-    <div class="bubble" style="bottom: 15%; left: 55%; width: 6px; height: 6px; animation-duration: 5s;"></div>
-    <div class="bubble" style="bottom: 20%; left: 80%; width: 10px; height: 10px; animation-duration: 7s;"></div>
-    <div class="bubble" style="bottom: 30%; left: 25%; width: 14px; height: 14px; animation-duration: 9s;"></div>
-    <div class="bubble" style="bottom: 50%; left: 70%; width: 5px; height: 5px; animation-duration: 4s;"></div>
-    <div class="bubble" style="bottom: 65%; left: 45%; width: 9px; height: 9px; animation-duration: 7.5s;"></div>
-    
-    <div class="vendor-header">
-        <div class="logo">🌊 STYLE OF LIFE <span>DEEP SEA VENDOR</span></div>
-        <div class="company-name-display" id="headerCompanyName">
-            <i class="fas fa-building"></i> <span id="headerCompanyNameText">Loading...</span>
-        </div>
-        <div class="vendor-info">
-            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Surface</button>
-        </div>
+    <div class="vendor-main" id="mainContent">
+        <!-- dynamic pages injected via JS  -->
     </div>
+</div>
+
+<script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
+<script type="module">
+    import { createClient } from '@supabase/supabase-js';
+    const SUPABASE_URL = "https://kkvgdagjboxhtuyqlomq.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrdmdkYWdqYm94aHR1eXFsb21xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzgyMTksImV4cCI6MjA5MDA1NDIxOX0.5A4UUcvwAi5UM8K81mmrN3lOTmzUYq70qRouaVqpwDA";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    <div class="vendor-layout">
-        <div class="vendor-sidebar">
-            <div class="nav-item active" data-page="dashboard"><i class="fas fa-chart-line"></i> Dashboard</div>
-            <div class="nav-item" data-page="products"><i class="fas fa-box"></i> My Products <span class="nav-badge" id="productCount">0</span></div>
-            <div class="nav-item" data-page="add-product"><i class="fas fa-plus-circle"></i> Add Product</div>
-            <div class="nav-item" data-page="bulk-upload"><i class="fas fa-file-upload"></i> Bulk Upload</div>
-            <div class="nav-item" data-page="orders"><i class="fas fa-shopping-cart"></i> My Orders <span class="nav-badge" id="orderCount">0</span></div>
-            <div class="nav-item" data-page="profile"><i class="fas fa-user-circle"></i> Profile</div>
-        </div>
-        
-        <div class="vendor-main">
-            <div id="dashboardPage">
-                <div class="page-header">
-                    <div class="page-title">🐙 Company Dashboard</div>
-                    <div style="color: rgba(255,255,255,0.6);" id="currentCompanyName"></div>
-                </div>
-                <div id="companyStatsContainer" class="company-stats"></div>
-                <div class="stats-grid" id="statsGrid"></div>
-                <div class="charts-grid">
-                    <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-line"></i> Diamond Carat Analysis</div><canvas id="caratChart"></canvas></div>
-                    <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-pie"></i> Diamond Color Distribution</div><canvas id="colorChart"></canvas></div>
-                    <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-bar"></i> Diamond Clarity</div><canvas id="clarityChart"></canvas></div>
-                    <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-line"></i> Monthly Sales Trend</div><canvas id="salesChart"></canvas></div>
-                </div>
-            </div>
-            
-            <div id="productsPage" style="display: none;">
-                <div class="page-header">
-                    <div class="page-title">📦 My Ocean Treasures</div>
-                    <div style="color: rgba(255,255,255,0.6);" id="productsCompanyName"></div>
-                </div>
-                <div class="products-grid" id="productsGrid"><div class="loading"><div class="spinner"></div><p>Loading treasures...</p></div></div>
-            </div>
-            
-            <div id="addProductPage" style="display: none;">
-                <div class="page-header">
-                    <div class="page-title">➕ Add New Ocean Treasure</div>
-                    <div style="color: rgba(255,255,255,0.6);" id="addProductCompanyName"></div>
-                </div>
-                <div class="form-card">
-                    <input type="hidden" id="editProductId">
-                    <div class="form-grid">
-                        <div class="form-group"><label>SKU *</label><input type="text" id="sku" placeholder="Unique product code"></div>
-                        <div class="form-group"><label>Product Name *</label><input type="text" id="product_name" placeholder="Product name"></div>
-                        <div class="form-group"><label>Category *</label><input type="text" id="category" placeholder="e.g., Rings, Necklaces, Earrings, Bracelets"></div>
-                        <div class="form-group"><label>Price (₹) *</label><input type="number" id="price" step="0.01"></div>
-                        <div class="form-group"><label>GST (%)</label><input type="number" id="gst" value="18"></div>
-                        <div class="form-group"><label>Stock *</label><input type="number" id="stock"></div>
-                    </div>
-                    <div class="form-group"><label>Description</label><textarea id="description" rows="2" placeholder="Product description..."></textarea></div>
-                    <div class="form-grid">
-                        <div class="form-group"><label>Image URL 1</label><input type="url" id="image1_url" placeholder="https://..."></div>
-                        <div class="form-group"><label>Image URL 2</label><input type="url" id="image2_url" placeholder="https://..."></div>
-                        <div class="form-group"><label>Image URL 3</label><input type="url" id="image3_url" placeholder="https://..."></div>
-                        <div class="form-group"><label>Video URL</label><input type="url" id="video_url" placeholder="https://...mp4 or 360 view link"></div>
-                    </div>
-                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin: 15px 0;">
-                        <h4 style="color: #00d4ff;"><i class="fas fa-gem"></i> Diamond Specifications (Optional - Type any values)</h4>
-                        <div class="form-grid">
-                            <div class="form-group"><label>Carat</label><input type="number" id="carat" step="0.01" placeholder="e.g., 1.00"></div>
-                            <div class="form-group"><label>Diamond Color</label><input type="text" id="diamond_color" placeholder="e.g., D, E, F, G, H, I, J"></div>
-                            <div class="form-group"><label>Diamond Clarity</label><input type="text" id="diamond_clarity" placeholder="e.g., FL, IF, VVS1, VS1, SI1"></div>
-                            <div class="form-group"><label>Diamond Cut</label><input type="text" id="diamond_cut" placeholder="e.g., Excellent, Very Good, Good"></div>
-                            <div class="form-group"><label>Diamond Polish</label><input type="text" id="diamond_polish" placeholder="e.g., Excellent, Very Good"></div>
-                            <div class="form-group"><label>Diamond Symmetry</label><input type="text" id="diamond_symmetry" placeholder="e.g., Excellent, Very Good"></div>
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 15px;">
-                        <button class="btn-primary" onclick="saveProduct()"><i class="fas fa-save"></i> Save Product</button>
-                        <button class="btn-primary" style="background: rgba(255,255,255,0.1);" onclick="cancelProductForm()">Cancel</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="bulkUploadPage" style="display: none;">
-                <div class="page-header">
-                    <div class="page-title">📂 Bulk Upload Products</div>
-                    <div style="color: rgba(255,255,255,0.6);" id="bulkUploadCompanyName"></div>
-                </div>
-                <div class="form-card">
-                    <div class="bulk-area" id="bulkUploadArea">
-                        <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #00d4ff;"></i>
-                        <p style="margin-top: 10px;">Click or drag & drop CSV / Excel file here</p>
-                        <p style="font-size: 12px; color: rgba(255,255,255,0.6);">Supported: .csv, .xlsx, .xls | Handles 1000+ products</p>
-                    </div>
-                    <input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display: none;">
-                    
-                    <div class="progress-bar" id="bulkProgress">
-                        <div class="progress-fill" id="bulkProgressFill"></div>
-                    </div>
-                    <div class="batch-status" id="batchStatus"></div>
-                    <div id="bulkResult"></div>
-                    
-                    <div class="format-hint">
-                        <strong>📋 Excel Format Required - Download Sample Below (Use exact lowercase column names):</strong><br>
-                        <code>sku | product_name | category | price | gst | stock | description | image1_url | image2_url | image3_url | video_url | carat | diamond_color | diamond_clarity | diamond_cut | diamond_polish | diamond_symmetry</code>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: center; margin-top: 20px;">
-                        <button class="btn-primary" onclick="downloadSampleExcel()"><i class="fas fa-download"></i> Download Sample Excel File</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="ordersPage" style="display: none;">
-                <div class="page-header">
-                    <div class="page-title">📦 My Orders</div>
-                    <div style="color: rgba(255,255,255,0.6);" id="ordersCompanyName"></div>
-                </div>
-                <div id="ordersList"><div class="loading"><div class="spinner"></div><p>Loading orders...</p></div></div>
-            </div>
-            
-            <div id="profilePage" style="display: none;">
-                <div class="page-header">
-                    <div class="page-title">👤 My Profile</div>
-                    <div style="color: rgba(255,255,255,0.6);" id="profileCompanyName"></div>
-                </div>
-                <div class="form-card">
-                    <div class="form-grid">
-                        <div class="form-group"><label>Business Name *</label><input type="text" id="business_name" placeholder="Your business/company name"></div>
-                        <div class="form-group"><label>Owner Name</label><input type="text" id="owner_name"></div>
-                        <div class="form-group"><label>Email</label><input type="email" id="vendor_email" readonly style="background: rgba(0,0,0,0.5);"></div>
-                        <div class="form-group"><label>Phone</label><input type="tel" id="phone"></div>
-                        <div class="form-group"><label>GST Number</label><input type="text" id="gst_number"></div>
-                        <div class="form-group"><label>Address</label><textarea id="address" rows="2"></textarea></div>
-                    </div>
-                    <button class="btn-primary" onclick="updateProfile()"><i class="fas fa-save"></i> Update Profile</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    let vendorData = null, companyId = null;
+    let currentPage = 1, productsPerPage = 24, totalProductsCount = 0, allProductsList = [];
+    let caratChart,colorChart,clarityChart,salesChart;
     
-    <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
+    const vendorEmail = sessionStorage.getItem('userEmail');
+    if(!vendorEmail || sessionStorage.getItem('vendorLoggedIn') !== 'true') window.location.href = 'login.html';
     
-    <script type="module">
-        import { createClient } from '@supabase/supabase-js';
-        
-        const SUPABASE_URL = "https://kkvgdagjboxhtuyqlomq.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrdmdkYWdqYm94aHR1eXFsb21xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzgyMTksImV4cCI6MjA5MDA1NDIxOX0.5A4UUcvwAi5UM8K81mmrN3lOTmzUYq70qRouaVqpwDA";
-        
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        let vendorData = null;
-        let currentCompanyId = null;
-        let caratChart, colorChart, clarityChart, salesChart;
-        
-        const vendorEmail = sessionStorage.getItem('userEmail');
-        
-        function showToast(msg, isErr = false) {
-            const t = document.createElement('div');
-            t.className = 'toast' + (isErr ? ' toast-error' : '');
-            t.innerHTML = msg;
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 3000);
+    function showToast(msg,err=false){
+        let t = document.createElement('div');
+        t.className = 'toast';
+        t.innerHTML = msg;
+        t.style.background = err ? '#aa2e3e' : '#117f8c';
+        document.body.appendChild(t);
+        setTimeout(()=>t.remove(),3000);
+    }
+    
+    function renderPage(html){
+        document.getElementById('mainContent').innerHTML = html;
+    }
+    
+    async function loadVendor(){
+        let {data,error} = await supabase.from('vendors').select('*').eq('email',vendorEmail).maybeSingle();
+        if(error || !data || data.status !== 'approved'){
+            showToast('Vendor not approved',true);
+            setTimeout(()=>window.location.href='login.html',1500);
+            return;
         }
-        
-        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
-        
-        function updateAllCompanyNameDisplays() {
-            const companyName = vendorData?.business_name || 'My Company';
-            document.getElementById('headerCompanyNameText').innerText = companyName;
-            document.getElementById('currentCompanyName').innerHTML = `<i class="fas fa-building"></i> Currently viewing: <strong>${companyName}</strong>`;
-            document.getElementById('productsCompanyName').innerHTML = `<i class="fas fa-building"></i> Showing products for: <strong>${companyName}</strong>`;
-            document.getElementById('addProductCompanyName').innerHTML = `<i class="fas fa-building"></i> Adding product for: <strong>${companyName}</strong>`;
-            document.getElementById('bulkUploadCompanyName').innerHTML = `<i class="fas fa-building"></i> Uploading products for: <strong>${companyName}</strong>`;
-            document.getElementById('ordersCompanyName').innerHTML = `<i class="fas fa-building"></i> Showing orders for: <strong>${companyName}</strong>`;
-            document.getElementById('profileCompanyName').innerHTML = `<i class="fas fa-building"></i> Managing profile for: <strong>${companyName}</strong>`;
+        vendorData = data; companyId = data.id;
+        document.getElementById('headerCompanyName').innerText = data.business_name || 'Vendor';
+        await loadDashboardUI();
+        attachNavEvents();
+        await loadAllProductsData();
+        loadOrders();
+    }
+    
+    async function loadAllProductsData(){
+        let {data,error} = await supabase.from('vendor_products').select('*').eq('vendor_id',companyId);
+        if(!error) {
+            allProductsList = data || [];
+            totalProductsCount = allProductsList.length;
+            document.getElementById('productCountBadge') && (document.getElementById('productCountBadge').innerText = totalProductsCount);
         }
-        
-        async function loadVendorData() {
-            if (!vendorEmail) {
-                showToast('Session expired. Please login again.', true);
-                setTimeout(() => { window.location.href = 'login.html'; }, 1500);
-                return;
-            }
-            
-            try {
-                const { data, error } = await supabase
-                    .from('vendors')
-                    .select('*')
-                    .eq('email', vendorEmail)
-                    .maybeSingle();
-                
-                if (error || !data) {
-                    console.error('Vendor not found:', error);
-                    showToast('Vendor account not found. Please login again.', true);
-                    setTimeout(() => { window.location.href = 'login.html'; }, 1500);
-                    return;
-                }
-                
-                if (data.status !== 'approved') {
-                    showToast('Your account is pending approval. Please wait for admin approval.', true);
-                    setTimeout(() => { window.location.href = 'login.html'; }, 2000);
-                    return;
-                }
-                
-                vendorData = data;
-                currentCompanyId = data.id;
-                
-                updateAllCompanyNameDisplays();
-                
-                document.getElementById('business_name').value = vendorData?.business_name || '';
-                document.getElementById('owner_name').value = vendorData?.owner_name || '';
-                document.getElementById('vendor_email').value = vendorData?.email || vendorEmail;
-                document.getElementById('phone').value = vendorData?.phone || '';
-                document.getElementById('gst_number').value = vendorData?.gst_number || '';
-                document.getElementById('address').value = vendorData?.address || '';
-                
-                await loadDashboard();
-                await loadProducts();
-                await loadOrders();
-                
-            } catch (err) {
-                console.error('Error loading vendor data:', err);
-                showToast('Error loading vendor data. Please refresh.', true);
-            }
+        displayProductsPageList(currentPage);
+    }
+    
+    function displayProductsPageList(page){
+        let start = (page-1)*productsPerPage;
+        let end = start + productsPerPage;
+        let paginated = allProductsList.slice(start,end);
+        let gridHtml = `<div class="page-header"><div class="page-title">📦 Ocean Treasures (${totalProductsCount} products)</div></div>
+        <div class="products-grid" id="productsGridDynamic">`;
+        if(paginated.length===0) gridHtml += `<div class="loading">✨ No products found</div>`;
+        paginated.forEach(p => {
+            let img = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/300x180?text=Pearl';
+            gridHtml += `<div class="product-card">
+                <img class="product-image" src="${img}" onerror="this.src='https://placehold.co/400x200?text=Ocean+Gem'">
+                <div class="product-info"><div class="product-name">${escapeHtml(p.product_name)}</div>
+                <div class="product-price">₹${Number(p.price).toLocaleString()}</div>
+                <span class="product-status status-${p.status}">${p.status||'pending'}</span>
+                <div class="card-actions" style="display:flex; gap:10px; margin-top:12px;">
+                    <button class="btn-edit" onclick="window.editProductModal(${p.id})" style="background:#2c5a70; padding:6px 12px; border-radius:30px;">✏️ Edit</button>
+                    <button class="btn-delete" onclick="window.deleteProductById(${p.id})" style="background:#8b3c3c; padding:6px 12px; border-radius:30px;">🗑️ Delete</button>
+                </div></div></div>`;
+        });
+        gridHtml += `</div><div class="pagination-controls">`;
+        let totalPages = Math.ceil(totalProductsCount/productsPerPage);
+        for(let i=1;i<=totalPages && i<=12;i++){
+            gridHtml += `<button class="page-btn ${currentPage===i?'active-page':''}" data-page-num="${i}">${i}</button>`;
         }
-        
-        async function loadDashboard() {
-            const { data: products } = await supabase.from('vendor_products').select('*').eq('vendor_id', currentCompanyId);
-            const productCount = products?.length || 0;
-            const totalRevenue = products?.reduce((sum, p) => sum + ((p.price || 0) * (p.orders_count || 0)), 0) || 0;
-            const { data: orders } = await supabase.from('vendor_orders').select('*').eq('vendor_id', currentCompanyId);
-            const orderCount = orders?.length || 0;
-            const approvedCount = products?.filter(p => p.status === 'approved').length || 0;
-            const pendingCount = products?.filter(p => p.status === 'pending').length || 0;
-            
-            document.getElementById('companyStatsContainer').innerHTML = `
-                <div class="company-stat-item"><div class="company-stat-label">Company</div><div class="company-stat-value">${vendorData?.business_name || 'N/A'}</div></div>
-                <div class="company-stat-item"><div class="company-stat-label">Owner</div><div class="company-stat-value">${vendorData?.owner_name || 'N/A'}</div></div>
-                <div class="company-stat-item"><div class="company-stat-label">GST</div><div class="company-stat-value">${vendorData?.gst_number || 'N/A'}</div></div>
-                <div class="company-stat-item"><div class="company-stat-label">Approved</div><div class="company-stat-value">${approvedCount}</div></div>
-                <div class="company-stat-item"><div class="company-stat-label">Pending</div><div class="company-stat-value">${pendingCount}</div></div>
-            `;
-            
-            document.getElementById('statsGrid').innerHTML = `
-                <div class="stat-card"><div class="stat-icon"><i class="fas fa-box"></i></div><div class="stat-value">${productCount}</div><div class="stat-label">Total Products</div></div>
-                <div class="stat-card"><div class="stat-icon"><i class="fas fa-shopping-cart"></i></div><div class="stat-value">${orderCount}</div><div class="stat-label">Orders Received</div></div>
-                <div class="stat-card"><div class="stat-icon"><i class="fas fa-rupee-sign"></i></div><div class="stat-value">₹${totalRevenue.toLocaleString()}</div><div class="stat-label">Total Revenue</div></div>
-                <div class="stat-card"><div class="stat-icon"><i class="fas fa-gem"></i></div><div class="stat-value">${products?.filter(p => p.carat).length || 0}</div><div class="stat-label">Diamond Products</div></div>
-            `;
-            document.getElementById('productCount').innerText = productCount;
-            document.getElementById('orderCount').innerText = orderCount;
-            
-            const diamondProducts = products?.filter(p => p.carat) || [];
-            const caratData = diamondProducts.map(p => p.carat).sort((a,b) => a-b);
-            const colorData = {};
-            const clarityData = {};
-            diamondProducts.forEach(p => { if(p.diamond_color) colorData[p.diamond_color] = (colorData[p.diamond_color] || 0) + 1; if(p.diamond_clarity) clarityData[p.diamond_clarity] = (clarityData[p.diamond_clarity] || 0) + 1; });
-            
-            if (caratChart) caratChart.destroy();
-            const caratCtx = document.getElementById('caratChart')?.getContext('2d');
-            if (caratCtx) {
-                caratChart = new Chart(caratCtx, { type: 'bar', data: { labels: diamondProducts.map(p => p.product_name?.slice(0,10)), datasets: [{ label: 'Carat', data: caratData, backgroundColor: '#00d4ff' }] }, options: { responsive: true, plugins: { legend: { labels: { color: '#fff' } } } } });
-            }
-            
-            if (colorChart) colorChart.destroy();
-            const colorCtx = document.getElementById('colorChart')?.getContext('2d');
-            if (colorCtx && Object.keys(colorData).length) {
-                colorChart = new Chart(colorCtx, { type: 'pie', data: { labels: Object.keys(colorData), datasets: [{ data: Object.values(colorData), backgroundColor: ['#00d4ff', '#0099cc', '#7fffd4', '#60a5fa', '#f87171', '#f59e0b', '#10b981'] }] }, options: { plugins: { legend: { labels: { color: '#fff' } } } } });
-            }
-            
-            if (clarityChart) clarityChart.destroy();
-            const clarityCtx = document.getElementById('clarityChart')?.getContext('2d');
-            if (clarityCtx && Object.keys(clarityData).length) {
-                clarityChart = new Chart(clarityCtx, { type: 'bar', data: { labels: Object.keys(clarityData), datasets: [{ label: 'Count', data: Object.values(clarityData), backgroundColor: '#00d4ff' }] }, options: { plugins: { legend: { labels: { color: '#fff' } } } } });
-            }
-            
-            if (salesChart) salesChart.destroy();
-            const salesCtx = document.getElementById('salesChart')?.getContext('2d');
-            if (salesCtx) {
-                salesChart = new Chart(salesCtx, { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Sales (₹)', data: [0,0,0,0,0,0], borderColor: '#00d4ff', backgroundColor: 'rgba(0,212,255,0.1)', fill: true, tension: 0.4 }] }, options: { plugins: { legend: { labels: { color: '#fff' } } } } });
-            }
-        }
-        
-        async function loadProducts() {
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading products...</p></div>';
-            const { data, error } = await supabase.from('vendor_products').select('*').eq('vendor_id', currentCompanyId).order('id', { ascending: false });
-            if (error || !data?.length) { grid.innerHTML = '<div class="loading">✨ No products yet. Add your first product!</div>'; return; }
-            let html = '';
-            for (const p of data) {
-                const img = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/300x180';
-                html += `<div class="product-card"><img class="product-image" src="${img}" onerror="this.src='https://via.placeholder.com/300x180'"><div class="product-info"><div class="product-name">${escapeHtml(p.product_name)}</div><div class="product-price">₹${p.price.toLocaleString()}</div><div class="product-status status-${p.status}">${p.status || 'pending'}</div><div class="card-actions"><button class="btn-edit" onclick="editProduct(${p.id})"><i class="fas fa-edit"></i> Edit</button><button class="btn-delete" onclick="deleteProduct(${p.id})"><i class="fas fa-trash-alt"></i> Delete</button></div></div></div>`;
-            }
-            grid.innerHTML = html;
-        }
-        
-        async function loadOrders() {
-            const container = document.getElementById('ordersList');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading orders...</p></div>';
-            const { data, error } = await supabase.from('vendor_orders').select('*').eq('vendor_id', currentCompanyId).order('created_at', { ascending: false });
-            if (error || !data?.length) { container.innerHTML = '<div class="loading">📭 No orders yet for your products</div>'; return; }
-            let html = '<table class="orders-table"><thead><tr><th>Order ID</th><th>Product</th><th>Quantity</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
-            data.forEach(o => { html += `<tr><td><strong>${o.order_id}</strong></td><td>${escapeHtml(o.product_name)}</td><td>${o.quantity}</td><td>₹${o.total_amount.toLocaleString()}</td><td><span style="background:rgba(0,212,255,0.2); padding:2px 8px; border-radius:20px;">${o.order_status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`; });
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
-        
-        window.saveProduct = async function() {
-            const id = document.getElementById('editProductId').value;
-            const productData = {
-                vendor_id: currentCompanyId,
-                sku: document.getElementById('sku').value.trim(),
-                product_name: document.getElementById('product_name').value.trim(),
-                category: document.getElementById('category').value.trim(),
+        gridHtml += `</div>`;
+        renderPage(gridHtml);
+        document.querySelectorAll('.page-btn').forEach(btn=>{
+            btn.addEventListener('click',(e)=>{
+                currentPage = parseInt(btn.getAttribute('data-page-num'));
+                displayProductsPageList(currentPage);
+            });
+        });
+        window.editProductModal = editProductById;
+        window.deleteProductById = deleteProduct;
+    }
+    
+    window.editProductById = async function(id){
+        let prod = allProductsList.find(p=>p.id==id);
+        if(!prod) return;
+        await showAddProductForm(prod);
+    };
+    
+    async function showAddProductForm(product=null){
+        renderPage(`
+            <div class="page-header"><div class="page-title">${product ? '✏️ Edit Product' : '➕ Add New Treasure'}</div></div>
+            <div class="form-card">
+                <input type="hidden" id="editProdId" value="${product?.id||''}">
+                <div class="form-grid">
+                    <div class="form-group"><label>SKU *</label><input id="sku" value="${escapeHtml(product?.sku||'')}"></div>
+                    <div class="form-group"><label>Name *</label><input id="product_name" value="${escapeHtml(product?.product_name||'')}"></div>
+                    <div class="form-group"><label>Category</label><input id="category" value="${escapeHtml(product?.category||'')}"></div>
+                    <div class="form-group"><label>Price (₹)</label><input id="price" type="number" value="${product?.price||''}"></div>
+                    <div class="form-group"><label>GST (%)</label><input id="gst" value="${product?.gst||18}"></div>
+                    <div class="form-group"><label>Stock</label><input id="stock" type="number" value="${product?.stock||0}"></div>
+                </div>
+                <div><label>Description</label><textarea id="description" rows="2">${escapeHtml(product?.description||'')}</textarea></div>
+                <div class="form-grid">
+                    <div><label>Image URL1</label><input id="image1_url" value="${product?.image1_url||''}"></div>
+                    <div><label>Image URL2</label><input id="image2_url" value="${product?.image2_url||''}"></div>
+                    <div><label>Video URL</label><input id="video_url" value="${product?.video_url||''}"></div>
+                </div>
+                <div style="background:#022b38; padding:16px; border-radius:20px; margin:15px 0;">
+                    <h4>💎 Diamond Details</h4>
+                    <div class="form-grid">
+                        <div><label>Carat</label><input id="carat" value="${product?.carat||''}"></div>
+                        <div><label>Color</label><input id="diamond_color" value="${product?.diamond_color||''}"></div>
+                        <div><label>Clarity</label><input id="diamond_clarity" value="${product?.diamond_clarity||''}"></div>
+                        <div><label>Cut</label><input id="diamond_cut" value="${product?.diamond_cut||''}"></div>
+                    </div>
+                </div>
+                <div><button class="btn-primary" id="saveProdBtn">💾 Save Product</button>
+                <button class="btn-primary" style="background:#2a4758" onclick="loadAllProductsData()">Cancel</button></div>
+            </div>
+        `);
+        document.getElementById('saveProdBtn').onclick = async()=>{
+            let id = document.getElementById('editProdId').value;
+            let payload = {
+                vendor_id: companyId,
+                sku: document.getElementById('sku').value,
+                product_name: document.getElementById('product_name').value,
+                category: document.getElementById('category').value,
                 price: parseFloat(document.getElementById('price').value),
-                gst: parseFloat(document.getElementById('gst').value) || 18,
-                stock: parseInt(document.getElementById('stock').value) || 0,
+                gst: parseFloat(document.getElementById('gst').value)||18,
+                stock: parseInt(document.getElementById('stock').value)||0,
                 description: document.getElementById('description').value,
                 image1_url: document.getElementById('image1_url').value,
                 image2_url: document.getElementById('image2_url').value,
-                image3_url: document.getElementById('image3_url').value,
                 video_url: document.getElementById('video_url').value,
-                carat: document.getElementById('carat').value ? parseFloat(document.getElementById('carat').value) : null,
-                diamond_color: document.getElementById('diamond_color').value || null,
-                diamond_clarity: document.getElementById('diamond_clarity').value || null,
-                diamond_cut: document.getElementById('diamond_cut').value || null,
-                diamond_polish: document.getElementById('diamond_polish').value || null,
-                diamond_symmetry: document.getElementById('diamond_symmetry').value || null,
+                carat: document.getElementById('carat').value ? parseFloat(document.getElementById('carat').value):null,
+                diamond_color: document.getElementById('diamond_color').value,
+                diamond_clarity: document.getElementById('diamond_clarity').value,
+                diamond_cut: document.getElementById('diamond_cut').value,
                 status: 'pending',
                 updated_at: new Date()
             };
-            if (!productData.sku || !productData.product_name || !productData.category || isNaN(productData.price)) { showToast('Fill required fields', true); return; }
-            if (id) {
-                await supabase.from('vendor_products').update(productData).eq('id', id);
-                showToast('Product updated!');
+            if(!payload.sku || !payload.product_name || !payload.category || isNaN(payload.price)) { showToast("Fill required fields",true); return; }
+            if(id){
+                await supabase.from('vendor_products').update(payload).eq('id',id);
+                showToast("Product updated");
             } else {
-                await supabase.from('vendor_products').insert([productData]);
-                showToast('Product added! Waiting for admin approval.');
+                await supabase.from('vendor_products').insert([payload]);
+                showToast("Added, pending approval");
             }
-            cancelProductForm();
-            await loadProducts();
-            await loadDashboard();
+            await loadAllProductsData();
+            document.querySelector('.nav-item[data-page="products"]').click();
         };
-        
-        window.editProduct = async function(id) {
-            const { data } = await supabase.from('vendor_products').select('*').eq('id', id).single();
-            document.getElementById('editProductId').value = data.id;
-            document.getElementById('sku').value = data.sku;
-            document.getElementById('product_name').value = data.product_name;
-            document.getElementById('category').value = data.category || '';
-            document.getElementById('price').value = data.price;
-            document.getElementById('gst').value = data.gst;
-            document.getElementById('stock').value = data.stock;
-            document.getElementById('description').value = data.description || '';
-            document.getElementById('image1_url').value = data.image1_url || '';
-            document.getElementById('image2_url').value = data.image2_url || '';
-            document.getElementById('image3_url').value = data.image3_url || '';
-            document.getElementById('video_url').value = data.video_url || '';
-            document.getElementById('carat').value = data.carat || '';
-            document.getElementById('diamond_color').value = data.diamond_color || '';
-            document.getElementById('diamond_clarity').value = data.diamond_clarity || '';
-            document.getElementById('diamond_cut').value = data.diamond_cut || '';
-            document.getElementById('diamond_polish').value = data.diamond_polish || '';
-            document.getElementById('diamond_symmetry').value = data.diamond_symmetry || '';
-            document.querySelector('.nav-item[data-page="add-product"]').click();
+    }
+    
+    window.deleteProduct = async function(id){
+        if(!confirm('Delete permanently?')) return;
+        await supabase.from('vendor_products').delete().eq('id',id);
+        showToast("Deleted");
+        await loadAllProductsData();
+        if(document.querySelector('.nav-item[data-page="products"]').classList.contains('active')) document.querySelector('.nav-item[data-page="products"]').click();
+        else await loadDashboardUI();
+    };
+    
+    async function loadDashboardUI(){
+        let {data:products} = await supabase.from('vendor_products').select('*').eq('vendor_id',companyId);
+        let productCount = products?.length||0;
+        let revenue = products?.reduce((s,p)=>s+((p.price||0)*(p.orders_count||0)),0)||0;
+        let {data:orders} = await supabase.from('vendor_orders').select('*').eq('vendor_id',companyId);
+        let orderCount = orders?.length||0;
+        let pending = products?.filter(p=>p.status==='pending').length||0;
+        let approved = productCount-pending;
+        let diamondItems = products?.filter(p=>p.carat).length||0;
+        renderPage(`
+            <div class="page-title">🐙 Dashboard</div>
+            <div class="company-stats">
+                <div><strong>${vendorData?.business_name}</strong> | Owner: ${vendorData?.owner_name||'N/A'}</div>
+                <div>GST: ${vendorData?.gst_number||'N/A'}</div>
+                <div>✅ Approved: ${approved} | ⏳ Pending: ${pending}</div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card"><i class="fas fa-box"></i><div class="stat-value">${productCount}</div><div>Total Products</div></div>
+                <div class="stat-card"><i class="fas fa-shopping-cart"></i><div class="stat-value">${orderCount}</div><div>Orders</div></div>
+                <div class="stat-card"><i class="fas fa-rupee-sign"></i><div class="stat-value">₹${revenue.toLocaleString()}</div><div>Revenue</div></div>
+                <div class="stat-card"><i class="fas fa-gem"></i><div class="stat-value">${diamondItems}</div><div>Diamond SKUs</div></div>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-card"><canvas id="caratChart"></canvas></div>
+                <div class="chart-card"><canvas id="colorChart"></canvas></div>
+                <div class="chart-card"><canvas id="clarityChart"></canvas></div>
+                <div class="chart-card"><canvas id="salesChart"></canvas></div>
+            </div>
+        `);
+        let diamonds = products?.filter(p=>p.carat)||[];
+        if(caratChart) caratChart.destroy();
+        let ctx1 = document.getElementById('caratChart')?.getContext('2d');
+        if(ctx1) caratChart = new Chart(ctx1, { type:'bar', data:{ labels:diamonds.map(d=>d.product_name?.slice(0,12)), datasets:[{label:'Carat', data:diamonds.map(d=>d.carat), backgroundColor:'#44ddff'}] }, options:{responsive:true, plugins:{legend:{labels:{color:'#fff'}}}}});
+        let colorMap={}; diamonds.forEach(d=>{if(d.diamond_color) colorMap[d.diamond_color]=(colorMap[d.diamond_color]||0)+1});
+        let colorCtx = document.getElementById('colorChart')?.getContext('2d');
+        if(colorCtx) colorChart = new Chart(colorCtx, {type:'pie', data:{labels:Object.keys(colorMap), datasets:[{data:Object.values(colorMap), backgroundColor:['#2dd4ff','#60a5fa','#f97316','#10b981','#facc15']}]}});
+        let clarityMap={}; diamonds.forEach(d=>{if(d.diamond_clarity) clarityMap[d.diamond_clarity]=(clarityMap[d.diamond_clarity]||0)+1});
+        let clarCtx = document.getElementById('clarityChart')?.getContext('2d');
+        if(clarCtx) clarityChart = new Chart(clarCtx, {type:'bar', data:{labels:Object.keys(clarityMap), datasets:[{label:'Clarity count', data:Object.values(clarityMap), backgroundColor:'#34d399'}]}});
+    }
+    
+    async function loadOrders(){
+        let {data} = await supabase.from('vendor_orders').select('*').eq('vendor_id',companyId).order('created_at',{ascending:false});
+        let html = `<div class="page-title">📦 My Orders</div><div style="overflow-x:auto;"><table class="orders-table" style="width:100%; border-collapse:collapse;"><tr><th>Order ID</th><th>Product</th><th>Qty</th><th>Amount</th><th>Status</th><th>Date</th></tr>`;
+        (data||[]).forEach(o=>{
+            html+=`<tr><td>${o.order_id}</td><td>${escapeHtml(o.product_name)}</td><td>${o.quantity}</td><td>₹${Number(o.total_amount).toLocaleString()}</td><td>${o.order_status||'Processing'}</td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`;
+        });
+        if(!data||data.length===0) html+='<tr><td colspan="6">No orders yet</td></tr>';
+        html+=`</table></div>`;
+        renderPage(html);
+    }
+    
+    function bulkUploadPage(){
+        renderPage(`
+            <div class="page-title">📂 Bulk Upload (Up to 10000 products)</div>
+            <div class="form-card">
+                <div id="bulkDropZone" style="border:2px dashed #2dd4ff; padding:40px; text-align:center; border-radius:30px; cursor:pointer;"><i class="fas fa-cloud-upload-alt fa-3x"></i><p>Click or Drag Excel/CSV</p></div>
+                <input type="file" id="bulkFile" accept=".csv,.xlsx,.xls" style="display:none">
+                <div id="bulkProgressBar" style="height:6px; background:#0f4e62; margin:20px 0; border-radius:4px;"><div id="bulkFill" style="width:0%; height:100%; background:#2dd4ff;"></div></div>
+                <div id="uploadStatus"></div>
+                <div style="margin-top:20px;"><button class="btn-primary" onclick="downloadSample()">📎 Download Sample Excel</button></div>
+            </div>
+        `);
+        let zone = document.getElementById('bulkDropZone');
+        let fileInput = document.getElementById('bulkFile');
+        zone.onclick = ()=>fileInput.click();
+        fileInput.onchange = async(e)=>{
+            let file = e.target.files[0];
+            if(!file) return;
+            let fill = document.getElementById('bulkFill');
+            let statusDiv = document.getElementById('uploadStatus');
+            fill.style.width = '5%';
+            statusDiv.innerText = 'Reading...';
+            let data = await file.arrayBuffer();
+            let workbook = XLSX.read(data);
+            let rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+            fill.style.width='20%';
+            let success=0, errors=0;
+            let batchSize=50;
+            for(let i=0;i<rows.length;i+=batchSize){
+                let batch = rows.slice(i,i+batchSize);
+                let inserts = [];
+                for(let row of batch){
+                    let sku = row.sku || row.SKU || '';
+                    if(!sku || !row.product_name || !row.category || !row.price) { errors++; continue; }
+                    inserts.push({ vendor_id:companyId, sku:String(sku), product_name:String(row.product_name), category:String(row.category), price:parseFloat(row.price), gst:row.gst||18, stock:row.stock||0, description:row.description||'', image1_url:row.image1_url||'', carat:row.carat?parseFloat(row.carat):null, diamond_color:row.diamond_color||null, diamond_clarity:row.diamond_clarity||null, status:'pending', created_at:new Date() });
+                }
+                if(inserts.length) {
+                    let {error} = await supabase.from('vendor_products').insert(inserts);
+                    if(!error) success+=inserts.length; else errors+=inserts.length;
+                }
+                let percent = 20 + (i+batchSize)/rows.length * 70;
+                fill.style.width = Math.min(percent,98)+'%';
+                statusDiv.innerText = `Uploaded: ${success} products, errors: ${errors}`;
+                await new Promise(r=>setTimeout(r,20));
+            }
+            fill.style.width='100%';
+            statusDiv.innerHTML = `✅ Done: ${success} imported, ${errors} skipped`;
+            await loadAllProductsData();
+            showToast(`${success} products uploaded`);
         };
-        
-        window.deleteProduct = async function(id) { if (confirm('Delete this product?')) { await supabase.from('vendor_products').delete().eq('id', id); showToast('Product deleted'); await loadProducts(); await loadDashboard(); } };
-        window.cancelProductForm = function() { document.getElementById('editProductId').value = ''; document.querySelector('.nav-item[data-page="products"]').click(); };
-        
-        window.updateProfile = async function() {
-            const businessName = document.getElementById('business_name').value;
-            if (!businessName) { showToast('Business name is required', true); return; }
-            const updates = {
-                business_name: businessName,
-                owner_name: document.getElementById('owner_name').value,
-                phone: document.getElementById('phone').value,
-                gst_number: document.getElementById('gst_number').value,
-                address: document.getElementById('address').value,
-                updated_at: new Date()
+        window.downloadSample = ()=>{
+            let sample = [{sku:"RING-999", product_name:"Deep Blue Diamond", category:"Rings", price:34999, gst:18, stock:5, description:"Sapphire touch", carat:1.2, diamond_color:"F"}];
+            let ws = XLSX.utils.json_to_sheet(sample);
+            let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb,ws,"Sample");
+            XLSX.writeFile(wb,"vendor_sample.xlsx");
+        };
+    }
+    
+    function profilePage(){
+        renderPage(`
+            <div class="page-title">👤 Profile Settings</div>
+            <div class="form-card">
+                <div class="form-grid">
+                    <div><label>Business Name</label><input id="bizName" value="${escapeHtml(vendorData?.business_name||'')}"></div>
+                    <div><label>Owner Name</label><input id="ownerName" value="${escapeHtml(vendorData?.owner_name||'')}"></div>
+                    <div><label>Phone</label><input id="phone" value="${escapeHtml(vendorData?.phone||'')}"></div>
+                    <div><label>GST Number</label><input id="gstNum" value="${escapeHtml(vendorData?.gst_number||'')}"></div>
+                    <div><label>Address</label><textarea id="address">${escapeHtml(vendorData?.address||'')}</textarea></div>
+                </div>
+                <button class="btn-primary" id="updateProfileBtn">Update Profile</button>
+            </div>
+        `);
+        document.getElementById('updateProfileBtn').onclick = async()=>{
+            let updates = { business_name:document.getElementById('bizName').value, owner_name:document.getElementById('ownerName').value, phone:document.getElementById('phone').value, gst_number:document.getElementById('gstNum').value, address:document.getElementById('address').value, updated_at:new Date() };
+            await supabase.from('vendors').update(updates).eq('id',companyId);
+            vendorData = {...vendorData,...updates};
+            document.getElementById('headerCompanyName').innerText = vendorData.business_name;
+            showToast("Profile saved");
+        };
+    }
+    
+    function attachNavEvents(){
+        document.querySelectorAll('.nav-item').forEach(nav=>{
+            nav.onclick = ()=>{
+                document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+                nav.classList.add('active');
+                let page = nav.getAttribute('data-page');
+                if(page === 'dashboard') loadDashboardUI();
+                else if(page === 'products') displayProductsPageList(1);
+                else if(page === 'add-product') showAddProductForm();
+                else if(page === 'bulk-upload') bulkUploadPage();
+                else if(page === 'orders') loadOrders();
+                else if(page === 'profile') profilePage();
             };
-            await supabase.from('vendors').update(updates).eq('id', currentCompanyId);
-            vendorData = { ...vendorData, ...updates };
-            updateAllCompanyNameDisplays();
-            await loadDashboard();
-            showToast('Profile updated successfully!');
-        };
-        
-        // ============================================
-        // SAMPLE EXCEL DOWNLOAD - CORRECT LOWERCASE COLUMN NAMES
-        // ============================================
-        window.downloadSampleExcel = function() {
-            const sampleData = [{
-                'sku': 'RING-001',
-                'product_name': 'Diamond Solitaire Ring',
-                'category': 'Rings',
-                'price': 29999,
-                'gst': 18,
-                'stock': 10,
-                'description': 'Beautiful diamond solitaire ring with platinum setting',
-                'image1_url': 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400',
-                'image2_url': 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=400',
-                'image3_url': '',
-                'video_url': '',
-                'carat': 1.00,
-                'diamond_color': 'D',
-                'diamond_clarity': 'VS1',
-                'diamond_cut': 'Excellent',
-                'diamond_polish': 'Excellent',
-                'diamond_symmetry': 'Excellent'
-            },
-            {
-                'sku': 'NECK-001',
-                'product_name': 'Pearl Gold Necklace',
-                'category': 'Necklaces',
-                'price': 45999,
-                'gst': 18,
-                'stock': 25,
-                'description': 'Elegant pearl necklace with 18k gold chain',
-                'image1_url': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400',
-                'image2_url': '',
-                'image3_url': '',
-                'video_url': '',
-                'carat': '',
-                'diamond_color': '',
-                'diamond_clarity': '',
-                'diamond_cut': '',
-                'diamond_polish': '',
-                'diamond_symmetry': ''
-            },
-            {
-                'sku': 'EAR-001',
-                'product_name': 'Diamond Stud Earrings',
-                'category': 'Earrings',
-                'price': 18999,
-                'gst': 18,
-                'stock': 50,
-                'description': 'Classic diamond stud earrings',
-                'image1_url': 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400',
-                'image2_url': '',
-                'image3_url': '',
-                'video_url': '',
-                'carat': 0.50,
-                'diamond_color': 'G',
-                'diamond_clarity': 'SI1',
-                'diamond_cut': 'Very Good',
-                'diamond_polish': 'Very Good',
-                'diamond_symmetry': 'Good'
-            }];
-            
-            const ws = XLSX.utils.json_to_sheet(sampleData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Sample Products');
-            
-            ws['!cols'] = [
-                {wch:12}, {wch:25}, {wch:15}, {wch:12}, {wch:10}, 
-                {wch:8}, {wch:40}, {wch:50}, {wch:50}, {wch:50}, 
-                {wch:50}, {wch:10}, {wch:15}, {wch:15}, {wch:15}, 
-                {wch:15}, {wch:15}
-            ];
-            
-            XLSX.writeFile(wb, `vendor_sample_products_${new Date().toISOString().slice(0,19)}.xlsx`);
-            showToast('✅ Sample Excel downloaded!');
-        };
-        
-        window.logout = function() {
-            sessionStorage.removeItem('vendorLoggedIn');
-            sessionStorage.removeItem('adminLoggedIn');
-            sessionStorage.removeItem('userRole');
-            sessionStorage.removeItem('userEmail');
-            sessionStorage.removeItem('userName');
-            supabase.auth.signOut();
-            window.location.href = 'login.html';
-        };
-        
-        // Navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const page = item.getAttribute('data-page');
-                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                item.classList.add('active');
-                document.getElementById('dashboardPage').style.display = page === 'dashboard' ? 'block' : 'none';
-                document.getElementById('productsPage').style.display = page === 'products' ? 'block' : 'none';
-                document.getElementById('addProductPage').style.display = page === 'add-product' ? 'block' : 'none';
-                document.getElementById('bulkUploadPage').style.display = page === 'bulk-upload' ? 'block' : 'none';
-                document.getElementById('ordersPage').style.display = page === 'orders' ? 'block' : 'none';
-                document.getElementById('profilePage').style.display = page === 'profile' ? 'block' : 'none';
-            });
         });
-        
-        // ============================================
-        // CORRECTED BULK UPLOAD - MATCHES DATABASE COLUMNS
-        // ============================================
-        document.getElementById('bulkUploadArea')?.addEventListener('click', () => document.getElementById('bulkFileInput').click());
-        document.getElementById('bulkFileInput')?.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const progressBar = document.getElementById('bulkProgress');
-            const progressFill = document.getElementById('bulkProgressFill');
-            const batchStatus = document.getElementById('batchStatus');
-            const resultDiv = document.getElementById('bulkResult');
-            
-            progressBar.style.display = 'block';
-            progressFill.style.width = '5%';
-            batchStatus.innerHTML = 'Reading file...';
-            resultDiv.innerHTML = '';
-            
-            try {
-                const data = await file.arrayBuffer();
-                const workbook = XLSX.read(data);
-                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                const totalRows = json.length;
-                
-                batchStatus.innerHTML = `Found ${totalRows} products. Processing...`;
-                progressFill.style.width = '10%';
-                
-                let success = 0, errors = 0, duplicateSkips = 0;
-                const errorList = [];
-                
-                const { data: existing } = await supabase.from('vendor_products').select('sku').eq('vendor_id', currentCompanyId);
-                const existingSkus = new Set(existing?.map(p => p.sku) || []);
-                
-                const BATCH_SIZE = 100;
-                const totalBatches = Math.ceil(totalRows / BATCH_SIZE);
-                
-                for (let batchNum = 0; batchNum < totalBatches; batchNum++) {
-                    const start = batchNum * BATCH_SIZE;
-                    const end = Math.min(start + BATCH_SIZE, totalRows);
-                    const batch = json.slice(start, end);
-                    const productsToInsert = [];
-                    
-                    for (const row of batch) {
-                        // Use lowercase column names to match sample format
-                        const sku = row.sku || row.SKU || '';
-                        const product_name = row.product_name || row['Product Name'] || '';
-                        const category = row.category || row.Category || '';
-                        const price = parseFloat(row.price || row.Price || row['Price (₹)'] || 0);
-                        const gst = parseFloat(row.gst || row.GST || row['GST (%)'] || 18);
-                        const stock = parseInt(row.stock || row.Stock || 0);
-                        const description = row.description || row.Description || '';
-                        const image1_url = row.image1_url || row['Image URL 1'] || '';
-                        const image2_url = row.image2_url || row['Image URL 2'] || '';
-                        const image3_url = row.image3_url || row['Image URL 3'] || '';
-                        const video_url = row.video_url || row['Video URL'] || '';
-                        const carat = (row.carat || row.Carat) ? parseFloat(row.carat || row.Carat) : null;
-                        const diamond_color = row.diamond_color || row['Diamond Color'] || null;
-                        const diamond_clarity = row.diamond_clarity || row['Diamond Clarity'] || null;
-                        const diamond_cut = row.diamond_cut || row['Diamond Cut'] || null;
-                        const diamond_polish = row.diamond_polish || row['Diamond Polish'] || null;
-                        const diamond_symmetry = row.diamond_symmetry || row['Diamond Symmetry'] || null;
-                        
-                        if (existingSkus.has(sku)) { 
-                            duplicateSkips++; 
-                            errorList.push(`Row ${start + batch.indexOf(row) + 1}: SKU "${sku}" already exists`); 
-                            continue; 
-                        }
-                        if (!sku || !product_name || !category || isNaN(price) || price <= 0) { 
-                            errors++; 
-                            errorList.push(`Row ${start + batch.indexOf(row) + 1}: Missing required fields (sku, product_name, category, price)`); 
-                            continue; 
-                        }
-                        
-                        productsToInsert.push({ 
-                            vendor_id: currentCompanyId, 
-                            sku: sku.toString(),
-                            product_name: product_name.toString(),
-                            category: category.toString(),
-                            price: price,
-                            gst: gst,
-                            stock: stock,
-                            description: description || '',
-                            image1_url: image1_url || '',
-                            image2_url: image2_url || '',
-                            image3_url: image3_url || '',
-                            video_url: video_url || '',
-                            carat: carat,
-                            diamond_color: diamond_color,
-                            diamond_clarity: diamond_clarity,
-                            diamond_cut: diamond_cut,
-                            diamond_polish: diamond_polish,
-                            diamond_symmetry: diamond_symmetry,
-                            status: 'pending',
-                            created_at: new Date(),
-                            updated_at: new Date()
-                        });
-                        existingSkus.add(sku);
-                    }
-                    
-                    if (productsToInsert.length > 0) {
-                        const { error } = await supabase.from('vendor_products').insert(productsToInsert);
-                        if (error) { 
-                            errors += productsToInsert.length; 
-                            errorList.push(`Batch ${batchNum + 1}: ${error.message}`); 
-                        } else {
-                            success += productsToInsert.length;
-                        }
-                    }
-                    
-                    const percent = 10 + ((batchNum + 1) / totalBatches) * 85;
-                    progressFill.style.width = `${percent}%`;
-                    batchStatus.innerHTML = `Batch ${batchNum + 1}/${totalBatches}: ${success} products added`;
-                    await new Promise(r => setTimeout(r, 50));
-                }
-                
-                progressFill.style.width = '100%';
-                batchStatus.innerHTML = `✅ Complete! ${success} products uploaded`;
-                resultDiv.innerHTML = `<div style="background:rgba(0,212,255,0.15); padding:20px; border-radius:16px; margin-top:20px;">
-                    <strong>✅ Upload Complete!</strong><br>
-                    Success: ${success}<br>
-                    Errors: ${errors}<br>
-                    Duplicates Skipped: ${duplicateSkips}<br>
-                    Total Rows Processed: ${totalRows}
-                    ${errorList.length > 0 ? `<details style="margin-top:10px;"><summary>View Errors (${errorList.length})</summary><div style="font-size:11px; margin-top:8px;">${errorList.slice(0,10).join('<br>')}${errorList.length > 10 ? '<br>... and more' : ''}</div></details>` : ''}
-                </div>`;
-                if (success > 0) { 
-                    showToast(`✅ ${success} products uploaded!`); 
-                    await loadProducts(); 
-                    await loadDashboard(); 
-                }
-                setTimeout(() => { progressBar.style.display = 'none'; }, 5000);
-            } catch (err) { 
-                showToast('Error: ' + err.message, true); 
-                progressBar.style.display = 'none';
-                resultDiv.innerHTML = `<div style="background:rgba(239,68,68,0.2); padding:15px; border-radius:12px; margin-top:15px;"><strong>❌ Error:</strong> ${err.message}</div>`;
-            }
-            e.target.value = '';
-        });
-        
-        // Initialize
-        loadVendorData();
-    </script>
+    }
+    
+    function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+    window.logoutVendor = function(){ sessionStorage.clear(); window.location.href='login.html'; };
+    loadVendor();
+</script>
 </body>
 </html>
