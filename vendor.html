@@ -50,50 +50,97 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(0,40,60,0.7), rgba(0,20,40,0.85));
+            background: linear-gradient(135deg, rgba(0,40,60,0.6), rgba(0,20,40,0.8));
             pointer-events: none;
             z-index: 1;
         }
         
-        /* Floating Marine Life Videos */
+        /* REAL Marine Life Videos - Swimming Across Screen */
         .marine-creature {
             position: fixed;
             z-index: 2;
             pointer-events: none;
             filter: drop-shadow(0 5px 20px rgba(0,0,0,0.3));
+            border-radius: 20px;
+            overflow: hidden;
         }
         
-        .shark-video { bottom: 10%; right: -300px; width: 350px; animation: swimShark 35s ease-in-out infinite; }
-        .whale-video { top: 20%; left: -400px; width: 450px; animation: swimWhale 45s ease-in-out infinite; }
-        .octopus-video { bottom: 15%; left: 5%; width: 180px; animation: floatOctopus 20s ease-in-out infinite; }
-        .stingray-video { top: 60%; right: 5%; width: 200px; animation: glideStingray 25s ease-in-out infinite; }
+        .marine-creature video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        /* REAL SHARK - Swimming from right to left */
+        .shark-video { 
+            bottom: 15%; 
+            right: -400px; 
+            width: 400px; 
+            animation: swimShark 30s ease-in-out infinite;
+        }
         
         @keyframes swimShark {
-            0% { transform: translateX(0) translateY(0px); right: -300px; }
-            30% { transform: translateX(0) translateY(-20px); }
-            70% { transform: translateX(0) translateY(15px); }
-            100% { transform: translateX(-1800px) translateY(0px); right: 100%; }
+            0% { transform: translateX(0) translateY(0px) scaleX(1); right: -400px; }
+            20% { transform: translateX(0) translateY(-15px) scaleX(1); }
+            40% { transform: translateX(0) translateY(10px) scaleX(1); }
+            60% { transform: translateX(0) translateY(-5px) scaleX(1); }
+            80% { transform: translateX(0) translateY(15px) scaleX(1); }
+            100% { transform: translateX(-1800px) translateY(0px) scaleX(1); right: 100%; }
         }
-        @keyframes swimWhale {
-            0% { transform: translateX(0) translateY(0px); left: -400px; }
-            30% { transform: translateX(0) translateY(-30px); }
-            70% { transform: translateX(0) translateY(20px); }
-            100% { transform: translateX(2000px) translateY(0px); left: 100%; }
-        }
-        @keyframes floatOctopus { 0%,100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-25px) rotate(5deg); } }
-        @keyframes glideStingray { 0%,100% { transform: translateX(0px) translateY(0px); } 50% { transform: translateX(-30px) translateY(-15px); } }
         
-        /* Bubbles */
+        /* REAL WHALE - Swimming from left to right */
+        .whale-video { 
+            top: 25%; 
+            left: -500px; 
+            width: 500px; 
+            animation: swimWhale 40s ease-in-out infinite;
+        }
+        
+        @keyframes swimWhale {
+            0% { transform: translateX(0) translateY(0px) scaleX(1); left: -500px; }
+            25% { transform: translateX(0) translateY(-25px) scaleX(1); }
+            50% { transform: translateX(0) translateY(15px) scaleX(1); }
+            75% { transform: translateX(0) translateY(-10px) scaleX(1); }
+            100% { transform: translateX(2000px) translateY(0px) scaleX(1); left: 100%; }
+        }
+        
+        /* REAL OCTOPUS - Floating in place */
+        .octopus-video { 
+            bottom: 10%; 
+            left: 3%; 
+            width: 180px; 
+            animation: floatOctopus 15s ease-in-out infinite;
+        }
+        
+        @keyframes floatOctopus { 
+            0%,100% { transform: translateY(0px) rotate(0deg); } 
+            50% { transform: translateY(-20px) rotate(5deg); } 
+        }
+        
+        /* REAL STINGRAY - Gliding */
+        .stingray-video { 
+            top: 60%; 
+            right: 3%; 
+            width: 220px; 
+            animation: glideStingray 20s ease-in-out infinite;
+        }
+        
+        @keyframes glideStingray { 
+            0%,100% { transform: translateX(0px) translateY(0px); } 
+            50% { transform: translateX(-40px) translateY(-15px); } 
+        }
+        
+        /* Bubbles Animation */
         .bubble {
             position: fixed;
-            background: radial-gradient(circle, rgba(100,200,255,0.3), rgba(50,150,200,0.1));
+            background: radial-gradient(circle, rgba(100,200,255,0.4), rgba(50,150,200,0.1));
             border-radius: 50%;
             pointer-events: none;
             z-index: 2;
-            animation: bubbleRise 8s ease-in-out infinite;
+            animation: bubbleRise linear infinite;
         }
         @keyframes bubbleRise {
-            0% { transform: translateY(0) scale(1); opacity: 0.6; }
+            0% { transform: translateY(0) scale(1); opacity: 0.7; }
             100% { transform: translateY(-100vh) scale(1.3); opacity: 0; }
         }
         
@@ -216,7 +263,7 @@
         .chart-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; color: #00d4ff; }
         canvas { max-height: 250px; }
         
-        /* ========== LIST VIEW STYLES ========== */
+        /* LIST VIEW for Products */
         .products-list {
             display: flex;
             flex-direction: column;
@@ -456,7 +503,9 @@
             .charts-grid { grid-template-columns: 1fr; }
             .list-product-card { flex-direction: column; }
             .list-image-container { width: 100%; min-width: 100%; }
-            .marine-creature { transform: scale(0.5); }
+            .shark-video, .whale-video { transform: scale(0.5); width: 200px; }
+            .shark-video { bottom: 5%; }
+            .whale-video { top: 10%; }
             .company-name-display { font-size: 12px; padding: 5px 12px; }
         }
     </style>
@@ -470,19 +519,33 @@
         <div class="ocean-overlay"></div>
     </div>
     
-    <!-- REAL MARINE LIFE VIDEOS -->
-    <video class="marine-creature shark-video" autoplay muted loop playsinline>
-        <source src="https://cdn.pixabay.com/video/2022/03/29/113795-693997588_large.mp4" type="video/mp4">
-    </video>
-    <video class="marine-creature whale-video" autoplay muted loop playsinline>
-        <source src="https://cdn.pixabay.com/video/2021/10/13/92812-623435664_large.mp4" type="video/mp4">
-    </video>
-    <video class="marine-creature octopus-video" autoplay muted loop playsinline>
-        <source src="https://cdn.pixabay.com/video/2022/09/01/129852-744537218_large.mp4" type="video/mp4">
-    </video>
-    <video class="marine-creature stingray-video" autoplay muted loop playsinline>
-        <source src="https://cdn.pixabay.com/video/2021/05/02/72371-542160546_large.mp4" type="video/mp4">
-    </video>
+    <!-- REAL SHARK VIDEO - Swimming across screen -->
+    <div class="marine-creature shark-video">
+        <video autoplay muted loop playsinline>
+            <source src="https://cdn.pixabay.com/video/2022/03/29/113795-693997588_large.mp4" type="video/mp4">
+        </video>
+    </div>
+    
+    <!-- REAL WHALE VIDEO - Swimming across screen -->
+    <div class="marine-creature whale-video">
+        <video autoplay muted loop playsinline>
+            <source src="https://cdn.pixabay.com/video/2021/10/13/92812-623435664_large.mp4" type="video/mp4">
+        </video>
+    </div>
+    
+    <!-- REAL OCTOPUS VIDEO -->
+    <div class="marine-creature octopus-video">
+        <video autoplay muted loop playsinline>
+            <source src="https://cdn.pixabay.com/video/2022/09/01/129852-744537218_large.mp4" type="video/mp4">
+        </video>
+    </div>
+    
+    <!-- REAL STINGRAY VIDEO -->
+    <div class="marine-creature stingray-video">
+        <video autoplay muted loop playsinline>
+            <source src="https://cdn.pixabay.com/video/2021/05/02/72371-542160546_large.mp4" type="video/mp4">
+        </video>
+    </div>
     
     <!-- BUBBLES -->
     <div class="bubble" style="bottom: 5%; left: 15%; width: 8px; height: 8px; animation-duration: 6s;"></div>
@@ -492,6 +555,8 @@
     <div class="bubble" style="bottom: 30%; left: 25%; width: 14px; height: 14px; animation-duration: 9s;"></div>
     <div class="bubble" style="bottom: 50%; left: 70%; width: 5px; height: 5px; animation-duration: 4s;"></div>
     <div class="bubble" style="bottom: 65%; left: 45%; width: 9px; height: 9px; animation-duration: 7.5s;"></div>
+    <div class="bubble" style="bottom: 80%; left: 10%; width: 7px; height: 7px; animation-duration: 5.5s;"></div>
+    <div class="bubble" style="bottom: 40%; left: 90%; width: 11px; height: 11px; animation-duration: 6.5s;"></div>
     
     <div class="vendor-header">
         <div class="logo">🌊 STYLE OF LIFE <span>DEEP SEA VENDOR</span></div>
@@ -847,7 +912,7 @@
             const { data, error } = await supabase.from('vendor_orders').select('*').eq('vendor_id', currentCompanyId).order('created_at', { ascending: false });
             if (error || !data?.length) { container.innerHTML = '<div class="loading">📭 No orders yet for your products</div>'; return; }
             let html = '<table class="orders-table"><thead><tr><th>Order ID</th><th>Product</th><th>Quantity</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
-            data.forEach(o => { html += `<tr><td><strong>${o.order_id}</strong></td><td>${escapeHtml(o.product_name)}</td><td>${o.quantity}</td><td>₹${o.total_amount.toLocaleString()}</td><td><span style="background:rgba(0,212,255,0.2); padding:4px 12px; border-radius:20px;">${o.order_status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`; });
+            data.forEach(o => { html += `<tr><td><strong>${o.order_id}</strong></td><td>${escapeHtml(o.product_name)}</td clody<td>${o.quantity}</td><td>₹${o.total_amount.toLocaleString()}</td><td><span style="background:rgba(0,212,255,0.2); padding:4px 12px; border-radius:20px;">${o.order_status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`; });
             html += '</tbody></table>';
             container.innerHTML = html;
         }
