@@ -67,8 +67,9 @@
         .filter-option:hover { border-color: var(--gold); }
         .filter-option.active { background: var(--gold); color: white; border-color: var(--gold); }
         
-        .price-range { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
-        .price-range input { flex: 1; padding: 10px; border: 1px solid var(--gray-200); border-radius: 8px; }
+        .price-range, .carat-range { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+        .price-range input, .carat-range input { flex: 1; padding: 10px; border: 1px solid var(--gray-200); border-radius: 8px; }
+        .range-label { font-size: 12px; color: var(--gray); margin-top: 5px; }
         
         .filter-actions { display: flex; gap: 10px; padding: 15px 20px; background: var(--white-light); }
         .btn-filter { background: var(--gold); color: black; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
@@ -103,7 +104,7 @@
         .product-price small { font-size: 11px; color: var(--gray); font-weight: normal; }
         
         .diamond-details { background: var(--white-light); border-radius: 12px; padding: 10px; margin: 10px 0; display: flex; flex-wrap: wrap; gap: 10px; }
-        .diamond-detail-item { text-align: center; flex: 1; }
+        .diamond-detail-item { text-align: center; flex: 1; min-width: 60px; }
         .diamond-detail-label { font-size: 9px; color: var(--gray); text-transform: uppercase; }
         .diamond-detail-value { font-size: 12px; font-weight: 600; color: var(--gold); }
         
@@ -182,6 +183,8 @@
                     <option value="default">Sort by: Default</option>
                     <option value="price_asc">Price: Low to High</option>
                     <option value="price_desc">Price: High to Low</option>
+                    <option value="carat_asc">Carat: Low to High</option>
+                    <option value="carat_desc">Carat: High to Low</option>
                 </select>
             </div>
             <div class="products-grid" id="productsGrid"><div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div></div>
@@ -209,8 +212,21 @@
         let filteredProducts = [];
         let currentDisplayCount = 30;
         
-        let selectedFilters = { sources: [], categories: [], minPrice: '', maxPrice: '' };
+        let selectedFilters = { 
+            sources: [], 
+            categories: [], 
+            minPrice: '', 
+            maxPrice: '',
+            minCarat: '',
+            maxCarat: '',
+            diamondColor: '',
+            diamondClarity: '',
+            diamondCut: ''
+        };
         let availableCategories = [];
+        let availableDiamondColors = [];
+        let availableDiamondClarities = [];
+        let availableDiamondCuts = [];
         
         function calculateGST(price, gstPercent) { const gst = (price * gstPercent) / 100; return { gstAmount: gst, total: price + gst }; }
         function navigateTo(page) { window.location.href = page + '.html'; }
@@ -237,6 +253,26 @@
         
         window.buyNow = async (id, name, price, sku, img, gst) => { await addToCart(id, name, price, sku, img, gst); setTimeout(() => navigateTo('checkout'), 600); };
         
+        // Extract unique values for filters
+        function extractFilterOptions(products) {
+            const categories = new Set();
+            const diamondColors = new Set();
+            const diamondClarities = new Set();
+            const diamondCuts = new Set();
+            
+            products.forEach(p => {
+                if (p.category) categories.add(p.category);
+                if (p.diamond_color) diamondColors.add(p.diamond_color);
+                if (p.diamond_clarity) diamondClarities.add(p.diamond_clarity);
+                if (p.diamond_cut) diamondCuts.add(p.diamond_cut);
+            });
+            
+            availableCategories = Array.from(categories).sort();
+            availableDiamondColors = Array.from(diamondColors).sort();
+            availableDiamondClarities = Array.from(diamondClarities).sort();
+            availableDiamondCuts = Array.from(diamondCuts).sort();
+        }
+        
         // LOAD BOTH MAIN + APPROVED VENDOR PRODUCTS
         async function loadAllProducts() {
             const container = document.getElementById('productsGrid');
@@ -257,10 +293,8 @@
                 
                 allProducts = [...mainMarked, ...vendorMarked];
                 
-                // Extract categories
-                const categorySet = new Set();
-                allProducts.forEach(p => { if (p.category) categorySet.add(p.category); });
-                availableCategories = Array.from(categorySet);
+                // Extract filter options from data
+                extractFilterOptions(allProducts);
                 
                 buildFilterUI();
                 applyFilters();
@@ -299,10 +333,66 @@
                         <i class="fas fa-chevron-down" id="priceFilterIcon"></i>
                     </div>
                     <div class="filter-content" id="priceFilter">
-                        <div class="price-range"><input type="number" id="minPrice" placeholder="Min ₹" value=""><span>-</span><input type="number" id="maxPrice" placeholder="Max ₹" value=""></div>
+                        <div class="price-range">
+                            <input type="number" id="minPrice" placeholder="Min ₹" value="" step="1000">
+                            <span>-</span>
+                            <input type="number" id="maxPrice" placeholder="Max ₹" value="" step="1000">
+                        </div>
                     </div>
                 </div>
-                <div class="filter-actions"><button class="btn-filter" onclick="applyFilters()">Apply Filters</button><button class="btn-reset" onclick="resetFilters()">Reset All</button></div>
+                <div class="filter-group">
+                    <div class="filter-header" onclick="toggleFilter('caratFilter')">
+                        <h4><i class="fas fa-gem"></i> Carat Range</h4>
+                        <i class="fas fa-chevron-down" id="caratFilterIcon"></i>
+                    </div>
+                    <div class="filter-content" id="caratFilter">
+                        <div class="carat-range">
+                            <input type="number" id="minCarat" placeholder="Min Carat" value="" step="0.1">
+                            <span>-</span>
+                            <input type="number" id="maxCarat" placeholder="Max Carat" value="" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-header" onclick="toggleFilter('diamondColorFilter')">
+                        <h4><i class="fas fa-palette"></i> Diamond Color</h4>
+                        <i class="fas fa-chevron-down" id="diamondColorFilterIcon"></i>
+                    </div>
+                    <div class="filter-content" id="diamondColorFilter">
+                        <div class="filter-options" id="diamondColorOptions">
+                            <div class="filter-option diamond-color-option" data-color="all" onclick="selectDiamondColor('all')">All Colors</div>
+                            ${availableDiamondColors.map(color => `<div class="filter-option diamond-color-option" data-color="${color}" onclick="selectDiamondColor('${color}')">${color}</div>`).join('')}
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-header" onclick="toggleFilter('diamondClarityFilter')">
+                        <h4><i class="fas fa-eye"></i> Diamond Clarity</h4>
+                        <i class="fas fa-chevron-down" id="diamondClarityFilterIcon"></i>
+                    </div>
+                    <div class="filter-content" id="diamondClarityFilter">
+                        <div class="filter-options" id="diamondClarityOptions">
+                            <div class="filter-option diamond-clarity-option" data-clarity="all" onclick="selectDiamondClarity('all')">All Clarities</div>
+                            ${availableDiamondClarities.map(clarity => `<div class="filter-option diamond-clarity-option" data-clarity="${clarity}" onclick="selectDiamondClarity('${clarity}')">${clarity}</div>`).join('')}
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-header" onclick="toggleFilter('diamondCutFilter')">
+                        <h4><i class="fas fa-cut"></i> Diamond Cut</h4>
+                        <i class="fas fa-chevron-down" id="diamondCutFilterIcon"></i>
+                    </div>
+                    <div class="filter-content" id="diamondCutFilter">
+                        <div class="filter-options" id="diamondCutOptions">
+                            <div class="filter-option diamond-cut-option" data-cut="all" onclick="selectDiamondCut('all')">All Cuts</div>
+                            ${availableDiamondCuts.map(cut => `<div class="filter-option diamond-cut-option" data-cut="${cut}" onclick="selectDiamondCut('${cut}')">${cut}</div>`).join('')}
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button class="btn-filter" onclick="applyFilters()">Apply Filters</button>
+                    <button class="btn-reset" onclick="resetFilters()">Reset All</button>
+                </div>
                 <div id="activeFilters" class="active-filters"></div>
             `;
             document.getElementById('desktopFilters').innerHTML = filterHtml;
@@ -319,6 +409,24 @@
             });
             document.getElementById('minPrice').value = selectedFilters.minPrice;
             document.getElementById('maxPrice').value = selectedFilters.maxPrice;
+            document.getElementById('minCarat').value = selectedFilters.minCarat;
+            document.getElementById('maxCarat').value = selectedFilters.maxCarat;
+            
+            document.querySelectorAll('.diamond-color-option').forEach(el => {
+                if (el.getAttribute('data-color') === selectedFilters.diamondColor) el.classList.add('active');
+                else if (selectedFilters.diamondColor === 'all' && el.getAttribute('data-color') === 'all') el.classList.add('active');
+                else el.classList.remove('active');
+            });
+            document.querySelectorAll('.diamond-clarity-option').forEach(el => {
+                if (el.getAttribute('data-clarity') === selectedFilters.diamondClarity) el.classList.add('active');
+                else if (selectedFilters.diamondClarity === 'all' && el.getAttribute('data-clarity') === 'all') el.classList.add('active');
+                else el.classList.remove('active');
+            });
+            document.querySelectorAll('.diamond-cut-option').forEach(el => {
+                if (el.getAttribute('data-cut') === selectedFilters.diamondCut) el.classList.add('active');
+                else if (selectedFilters.diamondCut === 'all' && el.getAttribute('data-cut') === 'all') el.classList.add('active');
+                else el.classList.remove('active');
+            });
         }
         
         window.toggleFilter = function(id) {
@@ -344,6 +452,24 @@
             applyFilters();
         };
         
+        window.selectDiamondColor = function(color) {
+            selectedFilters.diamondColor = color === 'all' ? '' : color;
+            updateDiamondColorUI();
+            applyFilters();
+        };
+        
+        window.selectDiamondClarity = function(clarity) {
+            selectedFilters.diamondClarity = clarity === 'all' ? '' : clarity;
+            updateDiamondClarityUI();
+            applyFilters();
+        };
+        
+        window.selectDiamondCut = function(cut) {
+            selectedFilters.diamondCut = cut === 'all' ? '' : cut;
+            updateDiamondCutUI();
+            applyFilters();
+        };
+        
         function updateSourceUI() {
             document.querySelectorAll('.source-option').forEach(el => {
                 const src = el.getAttribute('data-source');
@@ -360,16 +486,51 @@
             });
         }
         
+        function updateDiamondColorUI() {
+            document.querySelectorAll('.diamond-color-option').forEach(el => {
+                const color = el.getAttribute('data-color');
+                if (color === selectedFilters.diamondColor) el.classList.add('active');
+                else if (selectedFilters.diamondColor === '' && color === 'all') el.classList.add('active');
+                else el.classList.remove('active');
+            });
+        }
+        
+        function updateDiamondClarityUI() {
+            document.querySelectorAll('.diamond-clarity-option').forEach(el => {
+                const clarity = el.getAttribute('data-clarity');
+                if (clarity === selectedFilters.diamondClarity) el.classList.add('active');
+                else if (selectedFilters.diamondClarity === '' && clarity === 'all') el.classList.add('active');
+                else el.classList.remove('active');
+            });
+        }
+        
+        function updateDiamondCutUI() {
+            document.querySelectorAll('.diamond-cut-option').forEach(el => {
+                const cut = el.getAttribute('data-cut');
+                if (cut === selectedFilters.diamondCut) el.classList.add('active');
+                else if (selectedFilters.diamondCut === '' && cut === 'all') el.classList.add('active');
+                else el.classList.remove('active');
+            });
+        }
+        
         function updateActiveFiltersDisplay() {
             const container = document.getElementById('activeFilters');
             if (!container) return;
             const filters = [];
+            
             if (selectedFilters.sources.length) filters.push(`Source: ${selectedFilters.sources.join(', ')}`);
             if (selectedFilters.categories.length) filters.push(`Category: ${selectedFilters.categories.join(', ')}`);
-            if (selectedFilters.minPrice) filters.push(`Min: ₹${parseInt(selectedFilters.minPrice).toLocaleString()}`);
-            if (selectedFilters.maxPrice) filters.push(`Max: ₹${parseInt(selectedFilters.maxPrice).toLocaleString()}`);
+            if (selectedFilters.minPrice) filters.push(`Min Price: ₹${parseInt(selectedFilters.minPrice).toLocaleString()}`);
+            if (selectedFilters.maxPrice) filters.push(`Max Price: ₹${parseInt(selectedFilters.maxPrice).toLocaleString()}`);
+            if (selectedFilters.minCarat) filters.push(`Min Carat: ${selectedFilters.minCarat}ct`);
+            if (selectedFilters.maxCarat) filters.push(`Max Carat: ${selectedFilters.maxCarat}ct`);
+            if (selectedFilters.diamondColor) filters.push(`Diamond Color: ${selectedFilters.diamondColor}`);
+            if (selectedFilters.diamondClarity) filters.push(`Diamond Clarity: ${selectedFilters.diamondClarity}`);
+            if (selectedFilters.diamondCut) filters.push(`Diamond Cut: ${selectedFilters.diamondCut}`);
+            
             if (filters.length === 0) container.innerHTML = '<span style="color:var(--gray); font-size:12px;">No active filters</span>';
             else container.innerHTML = filters.map(f => `<span class="filter-tag">${f} <i class="fas fa-times" onclick="removeFilterTag('${f.split(':')[0]}')"></i></span>`).join('');
+            
             document.getElementById('filterBadge').style.display = filters.length ? 'flex' : 'none';
             if (filters.length) document.getElementById('filterBadge').textContent = filters.length;
         }
@@ -377,14 +538,21 @@
         window.removeFilterTag = function(type) {
             if (type === 'Source') selectedFilters.sources = [];
             if (type === 'Category') selectedFilters.categories = [];
-            if (type === 'Min') { document.getElementById('minPrice').value = ''; selectedFilters.minPrice = ''; }
-            if (type === 'Max') { document.getElementById('maxPrice').value = ''; selectedFilters.maxPrice = ''; }
+            if (type === 'Min Price') { document.getElementById('minPrice').value = ''; selectedFilters.minPrice = ''; }
+            if (type === 'Max Price') { document.getElementById('maxPrice').value = ''; selectedFilters.maxPrice = ''; }
+            if (type === 'Min Carat') { document.getElementById('minCarat').value = ''; selectedFilters.minCarat = ''; }
+            if (type === 'Max Carat') { document.getElementById('maxCarat').value = ''; selectedFilters.maxCarat = ''; }
+            if (type === 'Diamond Color') { selectedFilters.diamondColor = ''; updateDiamondColorUI(); }
+            if (type === 'Diamond Clarity') { selectedFilters.diamondClarity = ''; updateDiamondClarityUI(); }
+            if (type === 'Diamond Cut') { selectedFilters.diamondCut = ''; updateDiamondCutUI(); }
             updateSourceUI(); updateCategoryUI(); applyFilters();
         };
         
         window.applyFilters = function() {
             selectedFilters.minPrice = document.getElementById('minPrice')?.value || '';
             selectedFilters.maxPrice = document.getElementById('maxPrice')?.value || '';
+            selectedFilters.minCarat = document.getElementById('minCarat')?.value || '';
+            selectedFilters.maxCarat = document.getElementById('maxCarat')?.value || '';
             
             let filtered = [...allProducts];
             
@@ -394,14 +562,32 @@
             if (selectedFilters.categories.length) {
                 filtered = filtered.filter(p => selectedFilters.categories.includes(p.category));
             }
+            
             const minPrice = parseFloat(selectedFilters.minPrice);
             const maxPrice = parseFloat(selectedFilters.maxPrice);
             if (minPrice) filtered = filtered.filter(p => p.price >= minPrice);
             if (maxPrice) filtered = filtered.filter(p => p.price <= maxPrice);
             
+            const minCarat = parseFloat(selectedFilters.minCarat);
+            const maxCarat = parseFloat(selectedFilters.maxCarat);
+            if (minCarat) filtered = filtered.filter(p => (p.carat || 0) >= minCarat);
+            if (maxCarat) filtered = filtered.filter(p => (p.carat || 0) <= maxCarat);
+            
+            if (selectedFilters.diamondColor) {
+                filtered = filtered.filter(p => p.diamond_color === selectedFilters.diamondColor);
+            }
+            if (selectedFilters.diamondClarity) {
+                filtered = filtered.filter(p => p.diamond_clarity === selectedFilters.diamondClarity);
+            }
+            if (selectedFilters.diamondCut) {
+                filtered = filtered.filter(p => p.diamond_cut === selectedFilters.diamondCut);
+            }
+            
             const sortBy = document.getElementById('sortSelect')?.value || 'default';
             if (sortBy === 'price_asc') filtered.sort((a, b) => a.price - b.price);
             if (sortBy === 'price_desc') filtered.sort((a, b) => b.price - a.price);
+            if (sortBy === 'carat_asc') filtered.sort((a, b) => (a.carat || 0) - (b.carat || 0));
+            if (sortBy === 'carat_desc') filtered.sort((a, b) => (b.carat || 0) - (a.carat || 0));
             
             filteredProducts = filtered;
             currentDisplayCount = 30;
@@ -419,11 +605,16 @@
         };
         
         window.resetFilters = function() {
-            selectedFilters = { sources: [], categories: [], minPrice: '', maxPrice: '' };
+            selectedFilters = { 
+                sources: [], categories: [], minPrice: '', maxPrice: '',
+                minCarat: '', maxCarat: '', diamondColor: '', diamondClarity: '', diamondCut: ''
+            };
             document.getElementById('minPrice').value = '';
             document.getElementById('maxPrice').value = '';
+            document.getElementById('minCarat').value = '';
+            document.getElementById('maxCarat').value = '';
             document.getElementById('sortSelect').value = 'default';
-            updateSourceUI(); updateCategoryUI();
+            updateSourceUI(); updateCategoryUI(); updateDiamondColorUI(); updateDiamondClarityUI(); updateDiamondCutUI();
             applyFilters();
         };
         
