@@ -264,7 +264,7 @@
                     <button class="view-btn" onclick="setView('grid')"><i class="fas fa-th"></i> Grid View</button>
                 </div>
             </div>
-            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Bulk Approve/Reject/Delete | Pagination Support for Large Data</p>
+            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Bulk Approve/Reject/Delete | "Select All" selects ALL filtered products</p>
         </div>
 
         <div class="stats-row">
@@ -322,17 +322,15 @@
                     <option value="d360">D360 Products</option>
                     <option value="video">Has Video</option>
                 </select>
-                <label class="select-all-checkbox"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"> Select All on Current Page</label>
+                <label class="select-all-checkbox"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"> Select All (All Filtered Products)</label>
                 <span id="liveSelectionInfo" class="selection-info"></span>
                 <button class="btn-primary" onclick="refreshVendorProducts()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 <button class="btn-secondary" onclick="exportVendorCSV()"><i class="fas fa-file-excel"></i> Export CSV</button>
             </div>
         </div>
 
-        <!-- List View with Pagination -->
         <div id="listView" class="list-view-container"><div class="loading"><div class="spinner"></div><p>Loading vendor products...</p></div></div>
         
-        <!-- Pagination Controls -->
         <div id="paginationControls" class="pagination-controls" style="display: none;">
             <button class="pagination-btn" id="prevPageBtn" onclick="previousPage()"><i class="fas fa-chevron-left"></i> Previous</button>
             <span class="pagination-info" id="pageInfo">Page 1 of 1</span>
@@ -347,7 +345,7 @@
     <div id="confirmModal" class="modal"><div class="modal-content"><h3 style="color:var(--danger);">Confirm Deletion</h3><p id="modalMessage">Delete this vendor product? This cannot be undone.</p><div style="display:flex;gap:12px;margin-top:25px;"><button class="btn-primary" onclick="confirmDelete()">Yes, Delete</button><button class="btn-secondary" onclick="closeConfirmModal()">Cancel</button></div></div></div>
     <div id="bulkConfirmModal" class="modal"><div class="modal-content"><h3 id="bulkConfirmTitle">Confirm Bulk Action</h3><p id="bulkConfirmMessage"></p><div style="display:flex;gap:12px;margin-top:25px;"><button class="btn-primary" id="bulkConfirmYes">Yes, Proceed</button><button class="btn-secondary" onclick="closeBulkConfirmModal()">Cancel</button></div></div></div>
 
-    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management with Pagination</p></footer>
+    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management | "Select All" selects ALL filtered products</p></footer>
 
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     <script type="module">
@@ -396,7 +394,7 @@
             return vendorCompanies.get(vendorId) || `Vendor ${vendorId?.slice(0, 8)}...`;
         }
         
-        // FIXED: Load ALL products without limit - using pagination in query
+        // Load ALL products (handles pagination to get all data)
         async function loadVendorProducts() {
             try {
                 await loadCompanyNames();
@@ -410,7 +408,7 @@
                 totalProducts = count || 0;
                 console.log(`✅ Total vendor products in database: ${totalProducts}`);
                 
-                // Load all products with proper pagination (fetch in batches)
+                // Load all products with pagination
                 let allData = [];
                 let from = 0;
                 const batchSize = 1000;
@@ -427,8 +425,6 @@
                         allData = [...allData, ...data];
                     }
                     from += batchSize;
-                    
-                    // Show progress
                     console.log(`📦 Loaded ${allData.length} of ${totalProducts} products...`);
                 }
                 
@@ -551,7 +547,7 @@
             const selected = selectedProducts.size;
             const infoSpan = document.getElementById('liveSelectionInfo');
             if (selected > 0) {
-                infoSpan.innerHTML = `<i class="fas fa-check-circle"></i> ${selected} selected / ${total} total`;
+                infoSpan.innerHTML = `<i class="fas fa-check-circle"></i> ${selected} selected / ${total} total (all filtered products)`;
                 infoSpan.style.display = 'inline-flex';
             } else {
                 infoSpan.innerHTML = '';
@@ -577,11 +573,10 @@
                 renderListView(pageProducts);
             }
             
-            // Show/hide pagination controls
             const controls = document.getElementById('paginationControls');
             if (totalPages > 1) {
                 controls.style.display = 'flex';
-                document.getElementById('pageInfo').innerHTML = `Page ${currentPage} of ${totalPages} (${filteredProducts.length} products)`;
+                document.getElementById('pageInfo').innerHTML = `Page ${currentPage} of ${totalPages} (${filteredProducts.length} total filtered products)`;
                 document.getElementById('prevPageBtn').disabled = currentPage === 1;
                 document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
             } else {
@@ -592,20 +587,8 @@
             updateBulkActionsBar();
         }
         
-        function previousPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                updatePagination();
-            }
-        }
-        
-        function nextPage() {
-            const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-            if (currentPage < totalPages) {
-                currentPage++;
-                updatePagination();
-            }
-        }
+        function previousPage() { if (currentPage > 1) { currentPage--; updatePagination(); } }
+        function nextPage() { const totalPages = Math.ceil(filteredProducts.length / itemsPerPage); if (currentPage < totalPages) { currentPage++; updatePagination(); } }
         
         function renderListView(products) {
             const container = document.getElementById('listView');
@@ -663,13 +646,10 @@
         }
         
         function updateSelectAllCheckbox() {
-            const start = (currentPage - 1) * itemsPerPage;
-            const pageProducts = filteredProducts.slice(start, start + itemsPerPage);
             const selectAllCheckbox = document.getElementById('selectAllCheckbox');
             const listSelectAll = document.getElementById('listSelectAll');
-            const allSelected = pageProducts.length > 0 && pageProducts.every(p => selectedProducts.has(p.id));
-            if (selectAllCheckbox) selectAllCheckbox.checked = allSelected;
-            if (listSelectAll) listSelectAll.checked = allSelected;
+            if (selectAllCheckbox) selectAllCheckbox.checked = false;
+            if (listSelectAll) listSelectAll.checked = false;
         }
         
         function updateBulkActionsBar() {
@@ -680,31 +660,42 @@
             else bar.classList.remove('active');
         }
         
+        // IMPORTANT: toggleSelectProduct selects/deselects a single product
         window.toggleSelectProduct = function(id, checked) {
             if (checked) selectedProducts.add(id);
             else selectedProducts.delete(id);
             updateBulkActionsBar();
-            updateSelectAllCheckbox();
             updateLiveSelectionInfo();
         };
         window.toggleSelectProductList = window.toggleSelectProduct;
         
+        // IMPORTANT: toggleSelectAll selects ALL filtered products (not just current page)
         window.toggleSelectAll = function() {
-            const start = (currentPage - 1) * itemsPerPage;
-            const pageProducts = filteredProducts.slice(start, start + itemsPerPage);
             const selectAllCheckbox = document.getElementById('selectAllCheckbox');
             if (selectAllCheckbox.checked) {
-                pageProducts.forEach(p => selectedProducts.add(p.id));
+                // Select ALL filtered products
+                filteredProducts.forEach(p => selectedProducts.add(p.id));
+                showToast(`✅ Selected all ${filteredProducts.length} products`);
             } else {
-                pageProducts.forEach(p => selectedProducts.delete(p.id));
+                // Clear ALL selections
+                selectedProducts.clear();
+                showToast('Cleared all selections');
             }
             updateBulkActionsBar();
             updateLiveSelectionInfo();
+            // Refresh the current page view to show checkboxes updated
             updatePagination();
         };
         window.toggleSelectAllList = window.toggleSelectAll;
         
-        window.clearSelection = function() { selectedProducts.clear(); updateBulkActionsBar(); updateSelectAllCheckbox(); updateLiveSelectionInfo(); updatePagination(); showToast('Selection cleared'); };
+        window.clearSelection = function() { 
+            selectedProducts.clear(); 
+            updateBulkActionsBar(); 
+            updateLiveSelectionInfo(); 
+            updatePagination(); 
+            showToast('Selection cleared'); 
+        };
+        
         window.setView = function(view) { 
             currentView = view; 
             document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
@@ -729,7 +720,7 @@
         function showBulkProgress(total, action) {
             const container = document.getElementById('bulkProgressContainer');
             document.getElementById('bulkProgressFill').style.width = '0%';
-            document.getElementById('bulkProgressText').innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${action} products...`;
+            document.getElementById('bulkProgressText').innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${action} ${total} products...`;
             document.getElementById('bulkProgressCount').innerHTML = `0 / ${total} completed`;
             container.classList.add('active');
         }
