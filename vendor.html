@@ -695,7 +695,7 @@
                 <div id="productsListContainer" class="products-list"><div class="loading"><div class="spinner"></div><p>Loading treasures...</p></div></div>
             </div>
             
-            <!-- ADD PRODUCT PAGE (with Lab Only + Duplicate Check) -->
+            <!-- ADD PRODUCT PAGE -->
             <div id="addProductPage" style="display: none;">
                 <div class="page-header"><div class="page-title">➕ Add New Product</div><div id="addProductCompanyName"></div></div>
                 <div class="form-card">
@@ -716,7 +716,6 @@
                         <div class="form-group"><label>Video URL</label><input type="url" id="video_url"></div>
                     </div>
                     
-                    <!-- Diamond Specifications Section -->
                     <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin: 15px 0;">
                         <h4 style="color: #00d4ff;"><i class="fas fa-gem"></i> Diamond Specifications</h4>
                         <div class="form-grid">
@@ -729,7 +728,6 @@
                         </div>
                     </div>
                     
-                    <!-- Certification Lab Section with Duplicate Check -->
                     <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin: 15px 0;">
                         <h4 style="color: #00d4ff;"><i class="fas fa-flask"></i> Certification Lab</h4>
                         <div class="form-grid">
@@ -744,7 +742,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Lab Report Number *</label>
+                                <label>Lab Report Number</label>
                                 <input type="text" id="lab_report_no" placeholder="Enter report number" onblur="checkDuplicateCertificate()">
                                 <div id="certificateWarning" style="display: none;" class="duplicate-warning">
                                     <i class="fas fa-exclamation-triangle"></i>
@@ -762,7 +760,7 @@
                 </div>
             </div>
             
-            <!-- BULK UPLOAD PAGE - With Duplicate Certificate Check -->
+            <!-- BULK UPLOAD PAGE -->
             <div id="bulkUploadPage" style="display: none;">
                 <div class="page-header">
                     <div class="page-title">📂 Fast Bulk Upload</div>
@@ -798,14 +796,13 @@
                     <div id="uploadResult"></div>
                     
                     <div class="format-hint">
-                        <strong><i class="fas fa-info-circle"></i> Excel Format Required (Lab columns):</strong><br>
+                        <strong><i class="fas fa-info-circle"></i> Excel Format Required:</strong><br>
                         <code>sku | product_name | category | price | gst | stock | description | image1_url | image2_url | image3_url | video_url | carat | diamond_color | diamond_clarity | diamond_cut | diamond_polish | diamond_symmetry | certification_lab | lab_report_no</code>
-                        <p style="margin-top: 8px;"><strong>⚠️ Note:</strong> Duplicate certificate numbers (lab_report_no) across the portal will be rejected.</p>
                     </div>
                     
                     <div style="display: flex; justify-content: center; margin-top: 20px; gap: 15px; flex-wrap: wrap;">
                         <button class="btn-primary" onclick="downloadSampleExcel()">
-                            <i class="fas fa-download"></i> Download Sample Excel (with Lab)
+                            <i class="fas fa-download"></i> Download Sample Excel
                         </button>
                         <button class="btn-primary" onclick="downloadSampleCSV()" style="background: linear-gradient(135deg, #10b981, #059669);">
                             <i class="fas fa-file-csv"></i> Download Sample CSV
@@ -856,7 +853,7 @@
         let categoriesSet = new Set();
         let availableColors = new Set();
         let availableClarities = new Set();
-        let existingCertificates = new Set(); // Store existing certificate numbers for duplicate check
+        let existingCertificates = new Set();
         
         let caratChart, colorChart, clarityChart, priceChart;
         
@@ -872,7 +869,38 @@
         
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
         
-        // ========== DUPLICATE CERTIFICATE CHECK FUNCTION ==========
+        // ========== ACTIVITY LOGGING FUNCTION ==========
+        async function logVendorActivity(action, details) {
+            try {
+                const vendorDataFromStorage = JSON.parse(localStorage.getItem('vendorData') || '{}');
+                const vendorEmailFromStorage = sessionStorage.getItem('userEmail');
+                
+                let ipAddress = '';
+                try {
+                    const ipResponse = await fetch('https://api.ipify.org?format=json');
+                    const ipData = await ipResponse.json();
+                    ipAddress = ipData.ip;
+                } catch(e) {
+                    ipAddress = 'unknown';
+                }
+                
+                const { error } = await supabase.from('vendor_activity_logs').insert([{
+                    vendor_id: currentCompanyId || vendorDataFromStorage.id || null,
+                    vendor_email: vendorEmailFromStorage || vendorDataFromStorage.email || vendorEmail,
+                    action: action,
+                    action_display: action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                    details: details || null,
+                    ip_address: ipAddress,
+                    created_at: new Date().toISOString()
+                }]);
+                
+                if (error) console.error('Error logging activity:', error);
+            } catch(err) {
+                console.error('Failed to log activity:', err);
+            }
+        }
+        
+        // ========== DUPLICATE CERTIFICATE CHECK ==========
         async function checkDuplicateCertificate() {
             const labReportNo = document.getElementById('lab_report_no')?.value.trim();
             const editProductId = document.getElementById('editProductId')?.value;
@@ -886,7 +914,6 @@
             }
             
             try {
-                // Check for duplicate certificate across ALL vendor products (not just current vendor)
                 const { data, error } = await supabase
                     .from('vendor_products')
                     .select('id, lab_report_no, vendor_id')
@@ -894,7 +921,6 @@
                 
                 if (error) throw error;
                 
-                // Filter out the current product if editing
                 const existingDuplicate = data?.filter(item => {
                     if (editProductId && item.id == editProductId) return false;
                     return true;
@@ -904,12 +930,9 @@
                 const inputField = document.getElementById('lab_report_no');
                 
                 if (existingDuplicate && existingDuplicate.length > 0) {
-                    // Certificate already exists
                     if (warningDiv) {
                         warningDiv.style.display = 'flex';
-                        const existingVendor = existingDuplicate[0];
-                        // Show which vendor has this certificate
-                        if (existingVendor.vendor_id !== currentCompanyId) {
+                        if (existingDuplicate[0].vendor_id !== currentCompanyId) {
                             warningDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i>
                                 <span>⚠️ This certificate number "${labReportNo}" is already registered by another vendor! Please use a unique certificate number.</span>`;
                         } else {
@@ -919,11 +942,11 @@
                         warningDiv.style.display = 'flex';
                     }
                     if (inputField) inputField.classList.add('input-error');
-                    return true; // Duplicate found
+                    return true;
                 } else {
                     if (warningDiv) warningDiv.style.display = 'none';
                     if (inputField) inputField.classList.remove('input-error');
-                    return false; // No duplicate
+                    return false;
                 }
             } catch (err) {
                 console.error('Error checking certificate:', err);
@@ -931,7 +954,6 @@
             }
         }
         
-        // Function to load all existing certificates for global duplicate check
         async function loadExistingCertificates() {
             try {
                 const { data, error } = await supabase
@@ -959,6 +981,9 @@
                 vendorData = data;
                 currentCompanyId = data.id;
                 
+                // Store vendor data for activity logging
+                localStorage.setItem('vendorData', JSON.stringify({ id: data.id, email: data.email, business_name: data.business_name }));
+                
                 document.getElementById('dashboardCompanyName').innerText = vendorData?.business_name || 'My Company';
                 document.getElementById('dashboardOwnerName').innerHTML = `<i class="fas fa-user"></i> ${vendorData?.owner_name || 'Owner'}`;
                 document.getElementById('headerCompanyNameText').innerText = vendorData?.business_name || 'My Company';
@@ -974,6 +999,9 @@
                 document.getElementById('phone').value = vendorData?.phone || '';
                 document.getElementById('gst_number').value = vendorData?.gst_number || '';
                 document.getElementById('address').value = vendorData?.address || '';
+                
+                // Log login activity
+                await logVendorActivity('login', `Vendor logged into portal`);
                 
                 await loadExistingCertificates();
                 await loadDashboard();
@@ -1163,6 +1191,10 @@
                 if (!error) success += batch.length;
                 await new Promise(r => setTimeout(r, 50));
             }
+            
+            // Log bulk delete activity
+            await logVendorActivity('delete_product', `Bulk deleted ${success} products`);
+            
             showToast(`🗑️ ${success} product(s) deleted`);
             selectedProductIds.clear();
             await loadProducts();
@@ -1268,7 +1300,6 @@
             const id = document.getElementById('editProductId').value;
             const labReportNo = document.getElementById('lab_report_no').value.trim();
             
-            // Check for duplicate certificate before saving
             if (labReportNo) {
                 const isDuplicate = await checkDuplicateCertificate();
                 if (isDuplicate) {
@@ -1308,9 +1339,11 @@
             
             if (id) { 
                 await supabase.from('vendor_products').update(productData).eq('id', id); 
+                await logVendorActivity('edit_product', `Edited product: ${productData.product_name} (SKU: ${productData.sku})`);
                 showToast('✅ Product updated!'); 
             } else { 
                 await supabase.from('vendor_products').insert([productData]); 
+                await logVendorActivity('add_product', `Added product: ${productData.product_name} (SKU: ${productData.sku})`);
                 showToast('✅ Product added!'); 
             }
             cancelProductForm();
@@ -1342,7 +1375,6 @@
             document.getElementById('certification_lab').value = data.certification_lab || '';
             document.getElementById('lab_report_no').value = data.lab_report_no || '';
             
-            // Clear any warning
             const warningDiv = document.getElementById('certificateWarning');
             if (warningDiv) warningDiv.style.display = 'none';
             const inputField = document.getElementById('lab_report_no');
@@ -1353,7 +1385,9 @@
         
         window.deleteProduct = async function(id) { 
             if (confirm('Delete this product?')) { 
+                const product = allProducts.find(p => p.id === id);
                 await supabase.from('vendor_products').delete().eq('id', id); 
+                await logVendorActivity('delete_product', `Deleted product: ${product?.product_name || 'Unknown'} (ID: ${id})`);
                 showToast('✅ Product deleted'); 
                 selectedProductIds.delete(id);
                 await loadExistingCertificates();
@@ -1401,17 +1435,18 @@
                 gst_number: document.getElementById('gst_number').value,
                 address: document.getElementById('address').value
             }).eq('id', currentCompanyId);
+            
+            await logVendorActivity('update_profile', `Updated business profile information`);
+            
             vendorData.business_name = document.getElementById('business_name').value;
             document.getElementById('dashboardCompanyName').innerText = vendorData.business_name;
             document.getElementById('headerCompanyNameText').innerText = vendorData.business_name;
             showToast('✅ Profile updated');
         };
         
-        // Make checkDuplicateCertificate available globally
         window.checkDuplicateCertificate = checkDuplicateCertificate;
         
-        // ========== FAST BULK UPLOAD WITH DUPLICATE CERTIFICATE CHECK ==========
-        
+        // ========== FAST BULK UPLOAD ==========
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('bulkFileInput');
         
@@ -1474,11 +1509,9 @@
                 progressFill.style.width = '5%';
                 progressPercent.innerText = '5%';
                 
-                // Get existing SKUs and Certificates
                 const { data: existingVendorProducts } = await supabase.from('vendor_products').select('sku, lab_report_no').eq('vendor_id', currentCompanyId);
                 const existingSkus = new Set(existingVendorProducts?.map(p => p.sku) || []);
                 
-                // Get all certificates from ALL vendors for duplicate check
                 const { data: allCertificates } = await supabase.from('vendor_products').select('lab_report_no').not('lab_report_no', 'is', null);
                 const globalCertificates = new Set(allCertificates?.map(c => c.lab_report_no) || []);
                 
@@ -1520,7 +1553,6 @@
                         continue;
                     }
                     
-                    // Check for duplicate certificate number (global check)
                     if (lab_report_no && globalCertificates.has(lab_report_no)) {
                         certDuplicateCount++;
                         errors.push(`Row ${i + 1}: Certificate number "${lab_report_no}" already exists in portal - skipped`);
@@ -1590,6 +1622,9 @@
                 progressPercent.innerText = '100%';
                 batchStatusDiv.innerHTML = '✅ Upload complete!';
                 
+                // Log bulk upload activity
+                await logVendorActivity('bulk_upload', `Uploaded ${insertedCount} products in bulk (${totalRows} rows processed)`);
+                
                 resultDiv.innerHTML = `
                     <div class="result-summary">
                         <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
@@ -1656,8 +1691,8 @@
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Sample Products');
             ws['!cols'] = [{wch:12}, {wch:25}, {wch:12}, {wch:10}, {wch:6}, {wch:8}, {wch:40}, {wch:50}, {wch:50}, {wch:50}, {wch:50}, {wch:10}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:18}];
-            XLSX.writeFile(wb, `vendor_sample_products_with_lab.xlsx`);
-            showToast('✅ Sample Excel downloaded with Lab columns');
+            XLSX.writeFile(wb, `vendor_sample_products.xlsx`);
+            showToast('✅ Sample Excel downloaded');
         };
         
         window.downloadSampleCSV = function() {
@@ -1671,13 +1706,19 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'vendor_sample_products_with_lab.csv';
+            a.download = 'vendor_sample_products.csv';
             a.click();
             URL.revokeObjectURL(url);
-            showToast('✅ Sample CSV downloaded with Lab columns');
+            showToast('✅ Sample CSV downloaded');
         };
         
-        window.logout = function() { sessionStorage.clear(); supabase.auth.signOut(); window.location.href = 'login.html'; };
+        window.logout = async function() { 
+            await logVendorActivity('logout', `Vendor logged out from portal`);
+            sessionStorage.clear(); 
+            localStorage.removeItem('vendorData');
+            supabase.auth.signOut(); 
+            window.location.href = 'login.html'; 
+        };
         
         // Navigation
         document.querySelectorAll('.nav-item').forEach(item => {
@@ -1693,7 +1734,6 @@
                 document.getElementById('profilePage').style.display = page === 'profile' ? 'block' : 'none';
                 if (page !== 'products') selectedProductIds.clear();
                 if (page === 'add-product') {
-                    // Reset the form and clear warnings when switching to add product
                     const warningDiv = document.getElementById('certificateWarning');
                     if (warningDiv) warningDiv.style.display = 'none';
                     const inputField = document.getElementById('lab_report_no');
