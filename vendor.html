@@ -361,6 +361,18 @@
         .list-diamond-details { background: rgba(0,212,255,0.1); border-radius: 12px; padding: 10px 15px; margin: 10px 0; display: flex; flex-wrap: wrap; gap: 20px; }
         .list-diamond-item { font-size: 12px; }
         .list-diamond-item strong { color: #00d4ff; }
+        .list-lab-measurements {
+            background: rgba(0,212,255,0.05);
+            border-radius: 12px;
+            padding: 10px 15px;
+            margin: 8px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            border-left: 3px solid #00d4ff;
+        }
+        .list-lab-item, .list-measurement-item { font-size: 11px; }
+        .list-lab-item strong, .list-measurement-item strong { color: #00d4ff; }
         .list-price-section { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
         .list-product-price { font-size: 24px; font-weight: 700; color: #00d4ff; }
         .product-active-badge {
@@ -387,7 +399,13 @@
         .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-size: 13px; color: rgba(255,255,255,0.7); }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0,212,255,0.3); border-radius: 12px; color: white; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(0,212,255,0.3); border-radius: 12px; color: white; }
+        .form-group select option { background: #0a1a2a; }
+        .measurements-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
         .btn-primary { background: linear-gradient(135deg, #00d4ff, #0099cc); color: #0a2a3a; padding: 12px 28px; border: none; border-radius: 40px; cursor: pointer; font-weight: 700; }
         
         /* ========== FAST BULK UPLOAD STYLES ========== */
@@ -524,6 +542,8 @@
             .bulk-actions-bar { flex-direction: column; align-items: stretch; }
             .shark-video, .whale-video { transform: scale(0.6); width: 180px; height: 100px; }
             .upload-area { padding: 30px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .measurements-group { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -621,7 +641,7 @@
                 </div>
                 
                 <div class="diamond-filter-section">
-                    <div class="diamond-filter-title"><i class="fas fa-gem"></i> Diamond Filter <i class="fas fa-gem"></i></div>
+                    <div class="diamond-filter-title"><i class="fas fa-gem"></i> Diamond & Measurements Filter <i class="fas fa-gem"></i></div>
                     <div class="diamond-filter-grid">
                         <div class="filter-card">
                             <div class="filter-card-header"><i class="fas fa-weight-hanging"></i><h4>Carat Range</h4></div>
@@ -638,6 +658,10 @@
                         <div class="filter-card">
                             <div class="filter-card-header"><i class="fas fa-eye"></i><h4>Diamond Clarity</h4></div>
                             <select id="diamondClarityFilter" class="filter-select-dropdown"><option value="all">All Clarity</option></select>
+                        </div>
+                        <div class="filter-card">
+                            <div class="filter-card-header"><i class="fas fa-flask"></i><h4>Certification Lab</h4></div>
+                            <select id="labFilter" class="filter-select-dropdown"><option value="all">All Labs</option><option value="IGI">IGI</option><option value="GIA">GIA</option><option value="HRD">HRD</option><option value="Other">Other</option></select>
                         </div>
                     </div>
                     <div class="filter-actions">
@@ -660,7 +684,7 @@
                 <div id="productsListContainer" class="products-list"><div class="loading"><div class="spinner"></div><p>Loading treasures...</p></div></div>
             </div>
             
-            <!-- ADD PRODUCT PAGE -->
+            <!-- ADD PRODUCT PAGE (with Lab and Measurements) -->
             <div id="addProductPage" style="display: none;">
                 <div class="page-header"><div class="page-title">➕ Add New Product</div><div id="addProductCompanyName"></div></div>
                 <div class="form-card">
@@ -680,6 +704,8 @@
                         <div class="form-group"><label>Image URL 3</label><input type="url" id="image3_url"></div>
                         <div class="form-group"><label>Video URL</label><input type="url" id="video_url"></div>
                     </div>
+                    
+                    <!-- Diamond Specifications Section -->
                     <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin: 15px 0;">
                         <h4 style="color: #00d4ff;"><i class="fas fa-gem"></i> Diamond Specifications</h4>
                         <div class="form-grid">
@@ -691,6 +717,51 @@
                             <div class="form-group"><label>Diamond Symmetry</label><input type="text" id="diamond_symmetry"></div>
                         </div>
                     </div>
+                    
+                    <!-- Certification Lab Section -->
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin: 15px 0;">
+                        <h4 style="color: #00d4ff;"><i class="fas fa-flask"></i> Certification & Lab</h4>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Certification Lab</label>
+                                <select id="certification_lab">
+                                    <option value="">Select Lab</option>
+                                    <option value="IGI">IGI (International Gemological Institute)</option>
+                                    <option value="GIA">GIA (Gemological Institute of America)</option>
+                                    <option value="HRD">HRD Antwerp</option>
+                                    <option value="CGL">CGL (Certified Gemological Laboratory)</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Lab Report Number</label><input type="text" id="lab_report_no" placeholder="Enter report number"></div>
+                            <div class="form-group"><label>Certification Date</label><input type="date" id="certification_date"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Measurements Section -->
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin: 15px 0;">
+                        <h4 style="color: #00d4ff;"><i class="fas fa-ruler-combined"></i> Product Measurements (mm)</h4>
+                        <div class="measurements-group">
+                            <div class="form-group"><label>Length (mm)</label><input type="number" id="length_mm" step="0.01" placeholder="0.00"></div>
+                            <div class="form-group"><label>Width (mm)</label><input type="number" id="width_mm" step="0.01" placeholder="0.00"></div>
+                            <div class="form-group"><label>Height (mm)</label><input type="number" id="height_mm" step="0.01" placeholder="0.00"></div>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Weight (grams)</label><input type="number" id="weight_gm" step="0.01" placeholder="0.00"></div>
+                            <div class="form-group"><label>Metal Type</label>
+                                <select id="metal_type">
+                                    <option value="">Select Metal</option>
+                                    <option value="14K Gold">14K Gold</option>
+                                    <option value="18K Gold">18K Gold</option>
+                                    <option value="22K Gold">22K Gold</option>
+                                    <option value="24K Gold">24K Gold</option>
+                                    <option value="Platinum">Platinum</option>
+                                    <option value="Silver">Silver</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Metal Purity</label><input type="text" id="metal_purity" placeholder="e.g., 18K, 916, 999"></div>
+                        </div>
+                    </div>
+                    
                     <button class="btn-primary" onclick="saveProduct()">💾 Save Product</button>
                     <button class="btn-primary" style="background: rgba(255,255,255,0.1); margin-left: 10px;" onclick="cancelProductForm()">Cancel</button>
                     <p style="margin-top: 15px; font-size: 12px; color: rgba(255,255,255,0.5); text-align: center;">
@@ -699,7 +770,7 @@
                 </div>
             </div>
             
-            <!-- BULK UPLOAD PAGE - FAST 1000+ PRODUCTS -->
+            <!-- BULK UPLOAD PAGE - FAST 1000+ PRODUCTS (Updated with Lab & Measurements) -->
             <div id="bulkUploadPage" style="display: none;">
                 <div class="page-header">
                     <div class="page-title">📂 Fast Bulk Upload</div>
@@ -707,7 +778,6 @@
                 </div>
                 
                 <div class="bulk-upload-card">
-                    <!-- Upload Area -->
                     <div id="uploadArea" class="upload-area">
                         <i class="fas fa-cloud-upload-alt upload-icon"></i>
                         <div class="upload-title">Drag & Drop or Click to Upload</div>
@@ -715,7 +785,6 @@
                         <input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display: none;">
                     </div>
                     
-                    <!-- Progress Container -->
                     <div id="progressContainer" class="upload-progress-container">
                         <div class="progress-header">
                             <span><i class="fas fa-spinner fa-spin"></i> Processing...</span>
@@ -725,39 +794,24 @@
                             <div class="progress-fill-animated" id="progressFillBar"></div>
                         </div>
                         <div class="upload-stats">
-                            <div class="upload-stat">
-                                <div class="upload-stat-value" id="processedCount">0</div>
-                                <div class="upload-stat-label">Processed</div>
-                            </div>
-                            <div class="upload-stat">
-                                <div class="upload-stat-value" id="successCount">0</div>
-                                <div class="upload-stat-label">Success</div>
-                            </div>
-                            <div class="upload-stat">
-                                <div class="upload-stat-value" id="errorCount">0</div>
-                                <div class="upload-stat-label">Errors</div>
-                            </div>
-                            <div class="upload-stat">
-                                <div class="upload-stat-value" id="duplicateCount">0</div>
-                                <div class="upload-stat-label">Duplicates</div>
-                            </div>
+                            <div class="upload-stat"><div class="upload-stat-value" id="processedCount">0</div><div class="upload-stat-label">Processed</div></div>
+                            <div class="upload-stat"><div class="upload-stat-value" id="successCount">0</div><div class="upload-stat-label">Success</div></div>
+                            <div class="upload-stat"><div class="upload-stat-value" id="errorCount">0</div><div class="upload-stat-label">Errors</div></div>
+                            <div class="upload-stat"><div class="upload-stat-value" id="duplicateCount">0</div><div class="upload-stat-label">Duplicates</div></div>
                         </div>
                         <div id="batchStatus" class="batch-status"></div>
                     </div>
                     
-                    <!-- Results Container -->
                     <div id="uploadResult"></div>
                     
-                    <!-- Format Hint -->
                     <div class="format-hint">
-                        <strong><i class="fas fa-info-circle"></i> Excel Format Required:</strong><br>
-                        <code>sku | product_name | category | price | gst | stock | description | image1_url | image2_url | image3_url | video_url | carat | diamond_color | diamond_clarity | diamond_cut | diamond_polish | diamond_symmetry</code>
+                        <strong><i class="fas fa-info-circle"></i> Excel Format Required (Lab & Measurements included):</strong><br>
+                        <code>sku | product_name | category | price | gst | stock | description | image1_url | image2_url | image3_url | video_url | carat | diamond_color | diamond_clarity | diamond_cut | diamond_polish | diamond_symmetry | certification_lab | lab_report_no | certification_date | length_mm | width_mm | height_mm | weight_gm | metal_type | metal_purity</code>
                     </div>
                     
-                    <!-- Download Sample -->
                     <div style="display: flex; justify-content: center; margin-top: 20px; gap: 15px; flex-wrap: wrap;">
                         <button class="btn-primary" onclick="downloadSampleExcel()">
-                            <i class="fas fa-download"></i> Download Sample Excel
+                            <i class="fas fa-download"></i> Download Sample Excel (with Lab & Measurements)
                         </button>
                         <button class="btn-primary" onclick="downloadSampleCSV()" style="background: linear-gradient(135deg, #10b981, #059669);">
                             <i class="fas fa-file-csv"></i> Download Sample CSV
@@ -984,8 +1038,8 @@
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading orders...</p></div>';
             const { data, error } = await supabase.from('vendor_orders').select('*').eq('vendor_id', currentCompanyId).order('created_at', { ascending: false });
             if (error || !data?.length) { container.innerHTML = '<div class="loading">📭 No orders yet</div>'; return; }
-            let html = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><thead><tr style="background:rgba(0,212,255,0.1);"><th style="padding:12px;text-align:left;">Order ID</th><th>Product</th><th>Qty</th><th>Amount</th><th>Status</th><th>Date</th><tr></thead><tbody>';
-            data.forEach(o => { html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:12px;">${o.order_id}</td clody<td>${escapeHtml(o.product_name)}</td clody<td>${o.quantity}</td clody<td>₹${o.total_amount?.toLocaleString()}</td clody<td><span style="background:rgba(0,212,255,0.2);padding:4px 12px;border-radius:20px;">${o.order_status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td</tr>`; });
+            let html = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><thead><tr style="background:rgba(0,212,255,0.1);"><th style="padding:12px;text-align:left;">Order ID</th><th>Product</th><th>Qty</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
+            data.forEach(o => { html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:12px;">${o.order_id}</td><td>${escapeHtml(o.product_name)}</td><td>${o.quantity}</td><td>₹${o.total_amount?.toLocaleString()}</td><td><span style="background:rgba(0,212,255,0.2);padding:4px 12px;border-radius:20px;">${o.order_status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`; });
             html += '</tbody></table></div>';
             container.innerHTML = html;
         }
@@ -1042,7 +1096,7 @@
             updateBulkActionsBar();
         };
         
-        // Apply Filters
+        // Apply Filters (added lab filter)
         window.applyAllFilters = function() {
             const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
             const category = document.getElementById('categoryFilter')?.value || 'all';
@@ -1050,6 +1104,7 @@
             const maxCarat = parseFloat(document.getElementById('maxCarat')?.value) || 100;
             const selectedColor = document.getElementById('diamondColorFilter')?.value || 'all';
             const selectedClarity = document.getElementById('diamondClarityFilter')?.value || 'all';
+            const selectedLab = document.getElementById('labFilter')?.value || 'all';
             
             filteredProducts = [...allProducts];
             if (searchTerm) filteredProducts = filteredProducts.filter(p => p.product_name?.toLowerCase().includes(searchTerm) || p.sku?.toLowerCase().includes(searchTerm));
@@ -1057,6 +1112,7 @@
             filteredProducts = filteredProducts.filter(p => (p.carat || 0) >= minCarat && (p.carat || 0) <= maxCarat);
             if (selectedColor !== 'all') filteredProducts = filteredProducts.filter(p => p.diamond_color === selectedColor);
             if (selectedClarity !== 'all') filteredProducts = filteredProducts.filter(p => p.diamond_clarity === selectedClarity);
+            if (selectedLab !== 'all') filteredProducts = filteredProducts.filter(p => p.certification_lab === selectedLab);
             
             document.getElementById('filterStats').innerHTML = `📊 ${filteredProducts.length} of ${allProducts.length} products`;
             selectedProductIds.clear();
@@ -1070,6 +1126,7 @@
             document.getElementById('maxCarat').value = 10;
             document.getElementById('diamondColorFilter').value = 'all';
             document.getElementById('diamondClarityFilter').value = 'all';
+            document.getElementById('labFilter').value = 'all';
             applyAllFilters();
             showToast('Diamond filters reset');
         };
@@ -1080,6 +1137,7 @@
             document.getElementById('maxCarat').value = 10;
             document.getElementById('diamondColorFilter').value = 'all';
             document.getElementById('diamondClarityFilter').value = 'all';
+            document.getElementById('labFilter').value = 'all';
             applyAllFilters();
             showToast('All filters reset');
         };
@@ -1091,6 +1149,27 @@
             for (const p of products) {
                 const img = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/200x200?text=No+Image';
                 const isSelected = selectedProductIds.has(p.id);
+                
+                // Build lab info HTML
+                let labHtml = '';
+                if (p.certification_lab || p.lab_report_no) {
+                    labHtml = `<div class="list-lab-measurements">
+                        ${p.certification_lab ? `<div class="list-lab-item"><strong><i class="fas fa-flask"></i> Lab:</strong> ${p.certification_lab}</div>` : ''}
+                        ${p.lab_report_no ? `<div class="list-lab-item"><strong>Report No:</strong> ${p.lab_report_no}</div>` : ''}
+                        ${p.certification_date ? `<div class="list-lab-item"><strong>Cert Date:</strong> ${new Date(p.certification_date).toLocaleDateString()}</div>` : ''}
+                    </div>`;
+                }
+                
+                // Build measurements HTML
+                let measurementsHtml = '';
+                if (p.length_mm || p.width_mm || p.height_mm || p.weight_gm || p.metal_type) {
+                    measurementsHtml = `<div class="list-lab-measurements">
+                        ${p.length_mm || p.width_mm || p.height_mm ? `<div class="list-measurement-item"><strong><i class="fas fa-ruler"></i> Size:</strong> ${p.length_mm || 0}×${p.width_mm || 0}×${p.height_mm || 0} mm</div>` : ''}
+                        ${p.weight_gm ? `<div class="list-measurement-item"><strong>Weight:</strong> ${p.weight_gm} gm</div>` : ''}
+                        ${p.metal_type ? `<div class="list-measurement-item"><strong>Metal:</strong> ${p.metal_type} ${p.metal_purity || ''}</div>` : ''}
+                    </div>`;
+                }
+                
                 html += `
                     <div class="list-product-card ${isSelected ? 'selected' : ''}">
                         <input type="checkbox" class="product-checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelectProduct(${p.id})">
@@ -1099,7 +1178,13 @@
                             <div>
                                 <div class="list-product-name">${escapeHtml(p.product_name)}</div>
                                 <div class="list-product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
-                                ${(p.carat || p.diamond_color || p.diamond_clarity) ? `<div class="list-diamond-details">${p.carat ? `<div class="list-diamond-item"><strong>Carat:</strong> ${p.carat}ct</div>` : ''}${p.diamond_color ? `<div class="list-diamond-item"><strong>Color:</strong> ${p.diamond_color}</div>` : ''}${p.diamond_clarity ? `<div class="list-diamond-item"><strong>Clarity:</strong> ${p.diamond_clarity}</div>` : ''}</div>` : ''}
+                                ${(p.carat || p.diamond_color || p.diamond_clarity) ? `<div class="list-diamond-details">
+                                    ${p.carat ? `<div class="list-diamond-item"><strong>Carat:</strong> ${p.carat}ct</div>` : ''}
+                                    ${p.diamond_color ? `<div class="list-diamond-item"><strong>Color:</strong> ${p.diamond_color}</div>` : ''}
+                                    ${p.diamond_clarity ? `<div class="list-diamond-item"><strong>Clarity:</strong> ${p.diamond_clarity}</div>` : ''}
+                                </div>` : ''}
+                                ${labHtml}
+                                ${measurementsHtml}
                             </div>
                             <div>
                                 <div class="list-price-section">
@@ -1121,16 +1206,36 @@
         window.saveProduct = async function() {
             const id = document.getElementById('editProductId').value;
             const productData = {
-                vendor_id: currentCompanyId, sku: document.getElementById('sku').value.trim(),
-                product_name: document.getElementById('product_name').value.trim(), category: document.getElementById('category').value.trim(),
-                price: parseFloat(document.getElementById('price').value), gst: parseFloat(document.getElementById('gst').value) || 18,
-                stock: parseInt(document.getElementById('stock').value) || 0, description: document.getElementById('description').value,
-                image1_url: document.getElementById('image1_url').value, image2_url: document.getElementById('image2_url').value,
-                image3_url: document.getElementById('image3_url').value, video_url: document.getElementById('video_url').value,
+                vendor_id: currentCompanyId,
+                sku: document.getElementById('sku').value.trim(),
+                product_name: document.getElementById('product_name').value.trim(),
+                category: document.getElementById('category').value.trim(),
+                price: parseFloat(document.getElementById('price').value),
+                gst: parseFloat(document.getElementById('gst').value) || 18,
+                stock: parseInt(document.getElementById('stock').value) || 0,
+                description: document.getElementById('description').value,
+                image1_url: document.getElementById('image1_url').value,
+                image2_url: document.getElementById('image2_url').value,
+                image3_url: document.getElementById('image3_url').value,
+                video_url: document.getElementById('video_url').value,
                 carat: document.getElementById('carat').value ? parseFloat(document.getElementById('carat').value) : null,
-                diamond_color: document.getElementById('diamond_color').value || null, diamond_clarity: document.getElementById('diamond_clarity').value || null,
-                diamond_cut: document.getElementById('diamond_cut').value || null, diamond_polish: document.getElementById('diamond_polish').value || null,
-                diamond_symmetry: document.getElementById('diamond_symmetry').value || null, updated_at: new Date()
+                diamond_color: document.getElementById('diamond_color').value || null,
+                diamond_clarity: document.getElementById('diamond_clarity').value || null,
+                diamond_cut: document.getElementById('diamond_cut').value || null,
+                diamond_polish: document.getElementById('diamond_polish').value || null,
+                diamond_symmetry: document.getElementById('diamond_symmetry').value || null,
+                // Lab fields
+                certification_lab: document.getElementById('certification_lab').value || null,
+                lab_report_no: document.getElementById('lab_report_no').value || null,
+                certification_date: document.getElementById('certification_date').value || null,
+                // Measurements fields
+                length_mm: document.getElementById('length_mm').value ? parseFloat(document.getElementById('length_mm').value) : null,
+                width_mm: document.getElementById('width_mm').value ? parseFloat(document.getElementById('width_mm').value) : null,
+                height_mm: document.getElementById('height_mm').value ? parseFloat(document.getElementById('height_mm').value) : null,
+                weight_gm: document.getElementById('weight_gm').value ? parseFloat(document.getElementById('weight_gm').value) : null,
+                metal_type: document.getElementById('metal_type').value || null,
+                metal_purity: document.getElementById('metal_purity').value || null,
+                updated_at: new Date()
             };
             if (!productData.sku || !productData.product_name || !productData.category || isNaN(productData.price)) { showToast('Fill required fields', true); return; }
             if (id) { await supabase.from('vendor_products').update(productData).eq('id', id); showToast('✅ Product updated!'); }
@@ -1160,6 +1265,18 @@
             document.getElementById('diamond_cut').value = data.diamond_cut || '';
             document.getElementById('diamond_polish').value = data.diamond_polish || '';
             document.getElementById('diamond_symmetry').value = data.diamond_symmetry || '';
+            // Lab fields
+            document.getElementById('certification_lab').value = data.certification_lab || '';
+            document.getElementById('lab_report_no').value = data.lab_report_no || '';
+            document.getElementById('certification_date').value = data.certification_date || '';
+            // Measurements fields
+            document.getElementById('length_mm').value = data.length_mm || '';
+            document.getElementById('width_mm').value = data.width_mm || '';
+            document.getElementById('height_mm').value = data.height_mm || '';
+            document.getElementById('weight_gm').value = data.weight_gm || '';
+            document.getElementById('metal_type').value = data.metal_type || '';
+            document.getElementById('metal_purity').value = data.metal_purity || '';
+            
             document.querySelector('.nav-item[data-page="add-product"]').click();
         };
         
@@ -1174,7 +1291,37 @@
             } 
         };
         
-        window.cancelProductForm = function() { document.getElementById('editProductId').value = ''; document.querySelector('.nav-item[data-page="products"]').click(); };
+        window.cancelProductForm = function() { 
+            // Reset all form fields including new ones
+            document.getElementById('editProductId').value = '';
+            document.getElementById('sku').value = '';
+            document.getElementById('product_name').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('gst').value = '18';
+            document.getElementById('stock').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('image1_url').value = '';
+            document.getElementById('image2_url').value = '';
+            document.getElementById('image3_url').value = '';
+            document.getElementById('video_url').value = '';
+            document.getElementById('carat').value = '';
+            document.getElementById('diamond_color').value = '';
+            document.getElementById('diamond_clarity').value = '';
+            document.getElementById('diamond_cut').value = '';
+            document.getElementById('diamond_polish').value = '';
+            document.getElementById('diamond_symmetry').value = '';
+            document.getElementById('certification_lab').value = '';
+            document.getElementById('lab_report_no').value = '';
+            document.getElementById('certification_date').value = '';
+            document.getElementById('length_mm').value = '';
+            document.getElementById('width_mm').value = '';
+            document.getElementById('height_mm').value = '';
+            document.getElementById('weight_gm').value = '';
+            document.getElementById('metal_type').value = '';
+            document.getElementById('metal_purity').value = '';
+            document.querySelector('.nav-item[data-page="products"]').click();
+        };
         
         window.updateProfile = async function() {
             await supabase.from('vendors').update({
@@ -1190,9 +1337,8 @@
             showToast('✅ Profile updated');
         };
         
-        // ========== FAST BULK UPLOAD (1000+ PRODUCTS) ==========
+        // ========== FAST BULK UPLOAD (with Lab & Measurements) ==========
         
-        // Setup upload area
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('bulkFileInput');
         
@@ -1253,11 +1399,9 @@
                 progressFill.style.width = '5%';
                 progressPercent.innerText = '5%';
                 
-                // Get existing SKUs to check duplicates
                 const { data: existingProducts } = await supabase.from('vendor_products').select('sku').eq('vendor_id', currentCompanyId);
                 const existingSkus = new Set(existingProducts?.map(p => p.sku) || []);
                 
-                // Prepare all valid products
                 const productsToInsert = [];
                 const errors = [];
                 let duplicateCount = 0;
@@ -1281,8 +1425,18 @@
                     const diamond_cut = row.diamond_cut || row['Diamond Cut'] || null;
                     const diamond_polish = row.diamond_polish || row['Diamond Polish'] || null;
                     const diamond_symmetry = row.diamond_symmetry || row['Diamond Symmetry'] || null;
+                    // Lab fields
+                    const certification_lab = row.certification_lab || row['Certification Lab'] || null;
+                    const lab_report_no = row.lab_report_no || row['Lab Report No'] || null;
+                    const certification_date = row.certification_date || row['Certification Date'] || null;
+                    // Measurements fields
+                    const length_mm = row.length_mm || row['Length (mm)'] ? parseFloat(row.length_mm || row['Length (mm)']) : null;
+                    const width_mm = row.width_mm || row['Width (mm)'] ? parseFloat(row.width_mm || row['Width (mm)']) : null;
+                    const height_mm = row.height_mm || row['Height (mm)'] ? parseFloat(row.height_mm || row['Height (mm)']) : null;
+                    const weight_gm = row.weight_gm || row['Weight (gm)'] ? parseFloat(row.weight_gm || row['Weight (gm)']) : null;
+                    const metal_type = row.metal_type || row['Metal Type'] || null;
+                    const metal_purity = row.metal_purity || row['Metal Purity'] || null;
                     
-                    // Validation
                     if (!sku || !product_name || !category || isNaN(price) || price <= 0) {
                         errors.push(`Row ${i + 1}: Missing required fields (sku, product_name, category, price)`);
                         continue;
@@ -1303,12 +1457,13 @@
                         image3_url: image3_url || '',
                         video_url: video_url || '',
                         carat, diamond_color, diamond_clarity, diamond_cut, diamond_polish, diamond_symmetry,
+                        certification_lab, lab_report_no, certification_date: certification_date || null,
+                        length_mm, width_mm, height_mm, weight_gm, metal_type, metal_purity,
                         updated_at: new Date()
                     });
                     
                     existingSkus.add(sku);
                     
-                    // Update progress
                     const percent = 5 + ((i + 1) / totalRows) * 10;
                     progressFill.style.width = `${percent}%`;
                     progressPercent.innerText = `${Math.floor(percent)}%`;
@@ -1317,7 +1472,6 @@
                     errorSpan.innerText = errors.length;
                     batchStatusDiv.innerHTML = `📋 Validated ${i + 1}/${totalRows} products...`;
                     
-                    // Allow UI to update
                     if ((i + 1) % 100 === 0) await new Promise(r => setTimeout(r, 10));
                 }
                 
@@ -1325,7 +1479,6 @@
                 progressFill.style.width = '15%';
                 progressPercent.innerText = '15%';
                 
-                // BATCH INSERT - 500 products per batch for speed
                 let insertedCount = 0;
                 const BATCH_SIZE = 500;
                 const totalBatches = Math.ceil(productsToInsert.length / BATCH_SIZE);
@@ -1357,7 +1510,6 @@
                 progressPercent.innerText = '100%';
                 batchStatusDiv.innerHTML = '✅ Upload complete!';
                 
-                // Show result summary
                 resultDiv.innerHTML = `
                     <div class="result-summary">
                         <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
@@ -1380,11 +1532,9 @@
                 
                 showToast(`✅ ${insertedCount} products uploaded successfully!`);
                 
-                // Reload products
                 await loadProducts();
                 await loadDashboard();
                 
-                // Hide progress after 5 seconds
                 setTimeout(() => {
                     progressContainer.classList.remove('active');
                 }, 5000);
@@ -1416,31 +1566,40 @@
                 'diamond_clarity': 'VS1',
                 'diamond_cut': 'Excellent',
                 'diamond_polish': 'Excellent',
-                'diamond_symmetry': 'Excellent'
+                'diamond_symmetry': 'Excellent',
+                'certification_lab': 'GIA',
+                'lab_report_no': 'GIA-123456789',
+                'certification_date': '2025-01-15',
+                'length_mm': 8.5,
+                'width_mm': 8.5,
+                'height_mm': 5.2,
+                'weight_gm': 3.5,
+                'metal_type': '18K Gold',
+                'metal_purity': '18K'
             }];
             const ws = XLSX.utils.json_to_sheet(sampleData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Sample Products');
-            ws['!cols'] = [{wch:12}, {wch:25}, {wch:12}, {wch:10}, {wch:6}, {wch:8}, {wch:40}, {wch:50}, {wch:50}, {wch:50}, {wch:50}, {wch:10}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:15}];
-            XLSX.writeFile(wb, `vendor_sample_products.xlsx`);
-            showToast('✅ Sample Excel downloaded');
+            ws['!cols'] = [{wch:12}, {wch:25}, {wch:12}, {wch:10}, {wch:6}, {wch:8}, {wch:40}, {wch:50}, {wch:50}, {wch:50}, {wch:50}, {wch:10}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:15}, {wch:18}, {wch:15}, {wch:12}, {wch:12}, {wch:12}, {wch:12}, {wch:15}, {wch:15}];
+            XLSX.writeFile(wb, `vendor_sample_products_with_lab_measurements.xlsx`);
+            showToast('✅ Sample Excel downloaded with Lab & Measurements columns');
         };
         
         window.downloadSampleCSV = function() {
-            const sampleData = [
-                ['sku', 'product_name', 'category', 'price', 'gst', 'stock', 'description', 'image1_url', 'image2_url', 'image3_url', 'video_url', 'carat', 'diamond_color', 'diamond_clarity', 'diamond_cut', 'diamond_polish', 'diamond_symmetry'],
-                ['RING-001', 'Diamond Solitaire Ring', 'Rings', '29999', '18', '10', 'Beautiful diamond ring', 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400', '', '', '', '1.00', 'D', 'VS1', 'Excellent', 'Excellent', 'Excellent'],
-                ['NECK-001', 'Gold Chain Necklace', 'Necklaces', '45999', '18', '25', 'Elegant gold necklace', 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400', '', '', '', '', '', '', '', '', '']
-            ];
-            let csvContent = sampleData.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+            const headers = ['sku', 'product_name', 'category', 'price', 'gst', 'stock', 'description', 'image1_url', 'image2_url', 'image3_url', 'video_url', 'carat', 'diamond_color', 'diamond_clarity', 'diamond_cut', 'diamond_polish', 'diamond_symmetry', 'certification_lab', 'lab_report_no', 'certification_date', 'length_mm', 'width_mm', 'height_mm', 'weight_gm', 'metal_type', 'metal_purity'];
+            const sampleRow = ['RING-001', 'Diamond Solitaire Ring', 'Rings', '29999', '18', '10', 'Beautiful diamond ring', 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400', '', '', '', '1.00', 'D', 'VS1', 'Excellent', 'Excellent', 'Excellent', 'GIA', 'GIA-123456789', '2025-01-15', '8.5', '8.5', '5.2', '3.5', '18K Gold', '18K'];
+            
+            let csvContent = headers.map(h => `"${h}"`).join(',') + '\n';
+            csvContent += sampleRow.map(cell => `"${cell}"`).join(',');
+            
             const blob = new Blob([csvContent], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'vendor_sample_products.csv';
+            a.download = 'vendor_sample_products_with_lab_measurements.csv';
             a.click();
             URL.revokeObjectURL(url);
-            showToast('✅ Sample CSV downloaded');
+            showToast('✅ Sample CSV downloaded with Lab & Measurements columns');
         };
         
         window.logout = function() { sessionStorage.clear(); supabase.auth.signOut(); window.location.href = 'login.html'; };
