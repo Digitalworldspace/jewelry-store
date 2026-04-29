@@ -59,7 +59,7 @@
         .logout-btn { background: rgba(239,68,68,0.15); border: 1px solid var(--danger); color: var(--danger); padding: 8px 20px; border-radius: 40px; cursor: pointer; font-weight: 500; }
         .logout-btn:hover { background: var(--danger); color: white; }
         
-        .admin-container { max-width: 1600px; margin: 30px auto; padding: 0 25px; }
+        .admin-container { max-width: 100%; margin: 30px auto; padding: 0 25px; overflow-x: auto; }
         .page-header { margin-bottom: 25px; }
         .page-title { font-size: 28px; font-weight: 700; color: var(--primary); display: inline-flex; align-items: center; gap: 12px; }
         
@@ -90,7 +90,6 @@
         .company-tag { background: var(--gray-100); padding: 6px 12px; border-radius: 20px; font-size: 12px; display: inline-flex; align-items: center; gap: 8px; }
         .company-tag strong { color: var(--primary); }
         
-        /* Price Comparison Styles */
         .price-comparison-section {
             background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02));
             border-radius: 20px;
@@ -202,9 +201,9 @@
         .btn-danger-outline { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.5); color: #ef4444; padding: 8px 20px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
         .btn-danger-outline:hover { background: rgba(239,68,68,0.3); transform: translateY(-2px); }
         
-        .list-view-container { background: white; border-radius: 20px; border: 1px solid var(--gray-200); overflow-x: auto; }
+        .list-view-container { background: white; border-radius: 20px; border: 1px solid var(--gray-200); overflow-x: auto; max-height: 70vh; overflow-y: auto; }
         .list-view-table { width: 100%; border-collapse: collapse; min-width: 1600px; }
-        .list-view-table th { background: var(--gray-100); padding: 14px 12px; text-align: left; font-size: 12px; font-weight: 600; color: var(--gray-600); border-bottom: 1px solid var(--gray-200); position: sticky; top: 0; }
+        .list-view-table th { background: var(--gray-100); padding: 14px 12px; text-align: left; font-size: 12px; font-weight: 600; color: var(--gray-600); border-bottom: 1px solid var(--gray-200); position: sticky; top: 0; z-index: 10; }
         .list-view-table td { padding: 12px; border-bottom: 1px solid var(--gray-200); vertical-align: middle; font-size: 13px; }
         .list-view-table tr:hover { background: rgba(212,175,55,0.03); }
         .list-view-table tr.selected { background: rgba(212,175,55,0.08); }
@@ -229,7 +228,7 @@
         .action-icon-btn.delete { color: #ef4444; }
         .action-icon-btn.delete:hover { background: rgba(239,68,68,0.15); }
         
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 25px; margin-top: 20px; display: none; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 25px; margin-top: 20px; display: none; max-height: 70vh; overflow-y: auto; padding: 5px; }
         .product-card { background: white; border-radius: 24px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; box-shadow: var(--shadow-sm); position: relative; }
         .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
         .product-card.selected { border: 2px solid var(--primary); background: rgba(212,175,55,0.02); }
@@ -268,37 +267,6 @@
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
         footer { background: var(--darker); color: white; text-align: center; padding: 25px; margin-top: 50px; }
-        
-        .pagination-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin: 30px 0;
-            flex-wrap: wrap;
-        }
-        .pagination-btn {
-            padding: 8px 16px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        .pagination-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(212,175,55,0.3);
-        }
-        .pagination-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .pagination-info {
-            font-size: 14px;
-            color: var(--gray-600);
-        }
         
         .auto-approve-section {
             background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.05));
@@ -345,7 +313,7 @@
                     <button class="view-btn" onclick="setView('grid')"><i class="fas fa-th"></i> Grid View</button>
                 </div>
             </div>
-            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Real-time price comparison across matching diamonds (Carat + Color + Clarity)</p>
+            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Real-time price comparison across matching diamonds (Carat Group + Color + Clarity) | Showing ALL products</p>
         </div>
 
         <!-- Price Comparison Summary Section -->
@@ -451,7 +419,7 @@
                 </select>
                 <label class="select-all-checkbox">
                     <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"> 
-                    Select All
+                    Select All ({{totalProducts}})
                 </label>
                 <span id="liveSelectionInfo" class="selection-info"></span>
                 <button class="btn-primary" onclick="refreshVendorProducts()"><i class="fas fa-sync-alt"></i> Refresh</button>
@@ -460,13 +428,6 @@
         </div>
 
         <div id="listView" class="list-view-container"><div class="loading"><div class="spinner"></div><p>Loading vendor products...</p></div></div>
-        
-        <div id="paginationControls" class="pagination-controls" style="display: none;">
-            <button class="pagination-btn" id="prevPageBtn" onclick="previousPage()"><i class="fas fa-chevron-left"></i> Previous</button>
-            <span class="pagination-info" id="pageInfo">Page 1 of 1</span>
-            <button class="pagination-btn" id="nextPageBtn" onclick="nextPage()">Next <i class="fas fa-chevron-right"></i></button>
-        </div>
-
         <div id="gridView" class="product-grid"><div class="loading"><div class="spinner"></div><p>Loading vendor products...</p></div></div>
     </div>
 
@@ -477,7 +438,7 @@
     <div id="confirmModal" class="modal"><div class="modal-content"><h3 style="color:var(--danger);">Confirm Deletion</h3><p id="modalMessage">Delete this vendor product? This cannot be undone.</p><div style="display:flex;gap:12px;margin-top:25px;"><button class="btn-primary" onclick="confirmDelete()">Yes, Delete</button><button class="btn-secondary" onclick="closeConfirmModal()">Cancel</button></div></div></div>
     <div id="bulkConfirmModal" class="modal"><div class="modal-content"><h3 id="bulkConfirmTitle">Confirm Bulk Action</h3><p id="bulkConfirmMessage"></p><div style="display:flex;gap:12px;margin-top:25px;"><button class="btn-primary" id="bulkConfirmYes">Yes, Proceed</button><button class="btn-secondary" onclick="closeBulkConfirmModal()">Cancel</button></div></div></div>
 
-    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management | Price comparison matches: Carat Group + Diamond Color + Diamond Clarity</p></footer>
+    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management | Price comparison matches: Carat Group + Diamond Color + Diamond Clarity | Showing ALL products</p></footer>
 
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     <script type="module">
@@ -495,14 +456,8 @@
         let autoApproveEnabled = localStorage.getItem('autoApproveEnabled') === 'true';
         
         // Price comparison data
-        let priceComparisonMap = new Map(); // key: "caratGroup|color|clarity" -> { products: [], minPrice, maxPrice, avgPrice }
-        let productComparison = new Map(); // productId -> { rank, percentage, status, groupTotal, groupAvg }
-        
-        // Pagination variables
-        let currentPage = 1;
-        let itemsPerPage = 100;
-        let totalProducts = 0;
-        let filteredProducts = [];
+        let priceComparisonMap = new Map();
+        let productComparison = new Map();
         
         // Carat groups for matching
         function getCaratGroup(carat) {
@@ -534,7 +489,6 @@
             priceComparisonMap.clear();
             productComparison.clear();
             
-            // First, group all diamond products by match key
             const diamondProducts = products.filter(p => p.carat && p.carat > 0 && p.diamond_color && p.diamond_clarity);
             
             for (const product of diamondProducts) {
@@ -557,11 +511,9 @@
                 if (product.price > group.maxPrice) group.maxPrice = product.price;
             }
             
-            // Calculate averages and store comparison data for each product
             for (const [key, group] of priceComparisonMap) {
                 group.avgPrice = group.totalPrice / group.products.length;
                 
-                // Sort products by price to determine ranks
                 const sortedProducts = [...group.products].sort((a, b) => a.price - b.price);
                 
                 for (let i = 0; i < sortedProducts.length; i++) {
@@ -617,19 +569,6 @@
             `;
         }
         
-        // Get comparison summary text
-        function getComparisonSummary(product) {
-            const comp = productComparison.get(product.id);
-            if (!comp) return 'No matching diamonds found';
-            
-            if (comp.isBest) return `🏆 Best price among ${comp.totalInGroup} matching diamonds (${comp.percentageDiff > 0 ? '+' : ''}${comp.percentageDiff.toFixed(1)}% vs avg)`;
-            if (comp.isWorst) return `⚠️ Highest price among ${comp.totalInGroup} matching diamonds (${comp.percentageDiff > 0 ? '+' : ''}${comp.percentageDiff.toFixed(1)}% vs avg)`;
-            if (comp.percentageDiff < -10) return `✅ Good value (${comp.percentageDiff.toFixed(1)}% below avg)`;
-            if (comp.percentageDiff > 10) return `⚠️ Premium price (${comp.percentageDiff.toFixed(1)}% above avg)`;
-            return `📊 Market price (${comp.percentageDiff > 0 ? '+' : ''}${comp.percentageDiff.toFixed(1)}% vs avg)`;
-        }
-        
-        // Update comparison stats in header
         function updateComparisonStats() {
             const totalGroups = priceComparisonMap.size;
             let bestValueCount = 0;
@@ -683,32 +622,15 @@
             try {
                 await loadCompanyNames();
                 
-                const { count, error: countError } = await supabase
+                const { data, error } = await supabase
                     .from('vendor_products')
-                    .select('*', { count: 'exact', head: true });
+                    .select('*')
+                    .order('id', { ascending: false });
                 
-                if (countError) throw countError;
-                totalProducts = count || 0;
+                if (error) throw error;
                 
-                let allData = [];
-                let from = 0;
-                const batchSize = 1000;
-                
-                while (from < totalProducts) {
-                    const { data, error } = await supabase
-                        .from('vendor_products')
-                        .select('*')
-                        .order('id', { ascending: false })
-                        .range(from, from + batchSize - 1);
-                    
-                    if (error) throw error;
-                    if (data && data.length) {
-                        allData = [...allData, ...data];
-                    }
-                    from += batchSize;
-                }
-                
-                vendorProducts = allData;
+                vendorProducts = data || [];
+                console.log(`✅ Loaded ${vendorProducts.length} vendor products`);
                 
                 // Build price comparison map
                 buildPriceComparisonMap(vendorProducts);
@@ -782,6 +704,12 @@
             document.getElementById('d360Count').innerText = d360;
             document.getElementById('companyCount').innerText = uniqueCompanies;
             document.getElementById('totalValue').innerHTML = `₹${(totalValue / 100000).toFixed(1)}L`;
+            
+            // Update select all label
+            const selectAllLabel = document.querySelector('.select-all-checkbox');
+            if (selectAllLabel) {
+                selectAllLabel.innerHTML = `<input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"> Select All (${total})`;
+            }
         }
         
         function updateCompanyAnalytics() {
@@ -863,7 +791,6 @@
             if (mediaFilter === 'd360') filtered = filtered.filter(p => isD360Url(p.video_url));
             else if (mediaFilter === 'video') filtered = filtered.filter(p => isVideoUrl(p.video_url));
             
-            // Filter by price comparison
             if (priceFilter !== 'all') {
                 filtered = filtered.filter(p => {
                     const comp = productComparison.get(p.id);
@@ -897,45 +824,41 @@
         }
         
         function applyFilters() {
-            filteredProducts = getFilteredProductsList();
-            currentPage = 1;
-            updatePagination();
-            updateLiveSelectionInfo();
-        }
-        
-        function updatePagination() {
-            const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-            const start = (currentPage - 1) * itemsPerPage;
-            const pageProducts = filteredProducts.slice(start, start + itemsPerPage);
+            const filtered = getFilteredProductsList();
             
             if (currentView === 'grid') {
-                renderGridView(pageProducts);
+                renderGridView(filtered);
             } else {
-                renderListView(pageProducts);
-            }
-            
-            const controls = document.getElementById('paginationControls');
-            if (totalPages > 1) {
-                controls.style.display = 'flex';
-                document.getElementById('pageInfo').innerHTML = `Page ${currentPage} of ${totalPages} (${filteredProducts.length} total filtered products)`;
-                document.getElementById('prevPageBtn').disabled = currentPage === 1;
-                document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
-            } else {
-                controls.style.display = 'none';
+                renderListView(filtered);
             }
             
             updateLiveSelectionInfo();
             updateBulkActionsBar();
         }
         
-        function previousPage() { if (currentPage > 1) { currentPage--; updatePagination(); } }
-        function nextPage() { const totalPages = Math.ceil(filteredProducts.length / itemsPerPage); if (currentPage < totalPages) { currentPage++; updatePagination(); } }
-        
         function renderListView(products) {
             const container = document.getElementById('listView');
             if (!products.length) { container.innerHTML = '<div class="empty-state"><i class="fas fa-store-slash"></i><p>No vendor products found.</p></div>'; return; }
             
-            let tableHtml = `<table class="list-view-table"><thead><tr><th style="width:40px"><input type="checkbox" id="listSelectAll" onchange="toggleSelectAllList()"></th><th style="width:60px">Image</th><th>Product</th><th>Company</th><th>SKU/Category</th><th>Price</th><th>Stock</th><th>Carat</th><th>Color</th><th>Clarity</th><th>Price Comparison</th><th>Media</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+            let tableHtml = `<table class="list-view-table"><thead>
+                <tr>
+                    <th style="width:40px"><input type="checkbox" id="listSelectAll" onchange="toggleSelectAllList()"></th>
+                    <th style="width:60px">Image</th>
+                    <th>Product</th>
+                    <th>Company</th>
+                    <th>SKU/Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Carat</th>
+                    <th>Color</th>
+                    <th>Clarity</th>
+                    <th>Price Comparison</th>
+                    <th>Media</th>
+                    <th>Status</th>
+                    <th style="width:140px">Actions</th>
+                </tr>
+            </thead><tbody>`;
+            
             for (const p of products) {
                 const imgUrl = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/50x50?text=No';
                 const isSelected = selectedProducts.has(p.id);
@@ -959,17 +882,28 @@
                     if (comp.isWorst) rowClass = 'worst-price';
                 }
                 
-                tableHtml += `<tr class="${isSelected ? 'selected' : ''} ${rowClass}"><td><input type="checkbox" class="list-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProductList(${p.id}, this.checked)"></td><td><img class="list-thumbnail" src="${imgUrl}" onerror="this.src='https://via.placeholder.com/50x50'"></td><td><strong>${escapeHtml(p.product_name)}</strong><br><span style="font-size:10px;color:var(--gray-500);">ID: ${p.id}</span></td>`;
-                tableHtml += `<td><i class="fas fa-building" style="color:var(--primary);"></i> ${escapeHtml(companyName)}</span></td><td>${p.sku || 'N/A'}<br><span style="font-size:10px;">${p.category || '-'}</span>`;
-                tableHtml += `<td style="font-weight:600;">₹${(p.price || 0).toLocaleString()}<br><span style="font-size:10px;">+${p.gst || 18}%</span>`;
-                tableHtml += `<td style="color:${stockColor}; font-weight:600;">${p.stock || 0}</td>`;
-                tableHtml += `<td>${p.carat ? p.carat + 'ct' : '-'}</td>`;
-                tableHtml += `<td>${p.diamond_color || '-'}</td>`;
-                tableHtml += `<td>${p.diamond_clarity || '-'}</td>`;
-                tableHtml += `<td style="min-width: 120px;">${comparisonHtml}</td>`;
-                tableHtml += `<td>${mediaIcon}</td>`;
-                tableHtml += `<td><span class="status-badge-sm ${statusClass}">${(p.status || 'pending').toUpperCase()}</span></td>`;
-                tableHtml += `<td class="action-icons">${hasD360 ? `<button class="action-icon-btn view360" onclick="openD360Viewer('${escapeHtml(p.video_url)}')" title="360° View"><i class="fas fa-cube"></i></button>` : ''}<button class="action-icon-btn edit" onclick="openEditModal(${p.id})" title="Edit"><i class="fas fa-edit"></i></button>${p.status !== 'approved' ? `<button class="action-icon-btn approve" onclick="approveProduct(${p.id})" title="Approve"><i class="fas fa-check"></i></button>` : ''}${p.status !== 'rejected' ? `<button class="action-icon-btn reject" onclick="rejectProduct(${p.id})" title="Reject"><i class="fas fa-times"></i></button>` : ''}<button class="action-icon-btn delete" onclick="deleteProduct(${p.id})" title="Delete"><i class="fas fa-trash-alt"></i></button></td></tr>`;
+                tableHtml += `<tr class="${isSelected ? 'selected' : ''} ${rowClass}">
+                    <td><input type="checkbox" class="list-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProductList(${p.id}, this.checked)"></td>
+                    <td><img class="list-thumbnail" src="${imgUrl}" onerror="this.src='https://via.placeholder.com/50x50'"></td>
+                    <td><strong>${escapeHtml(p.product_name)}</strong><br><span style="font-size:10px;color:var(--gray-500);">ID: ${p.id}</span></td>
+                    <td><i class="fas fa-building" style="color:var(--primary);"></i> ${escapeHtml(companyName)}</td>
+                    <td>${p.sku || 'N/A'}<br><span style="font-size:10px;">${p.category || '-'}</span></td>
+                    <td style="font-weight:600;">₹${(p.price || 0).toLocaleString()}<br><span style="font-size:10px;">+${p.gst || 18}%</span></td>
+                    <td style="color:${stockColor}; font-weight:600;">${p.stock || 0}</td>
+                    <td>${p.carat ? p.carat + 'ct' : '-'}</td>
+                    <td>${p.diamond_color || '-'}</td>
+                    <td>${p.diamond_clarity || '-'}</td>
+                    <td style="min-width: 120px;">${comparisonHtml}</td>
+                    <td>${mediaIcon}</td>
+                    <td><span class="status-badge-sm ${statusClass}">${(p.status || 'pending').toUpperCase()}</span></td>
+                    <td class="action-icons">
+                        ${hasD360 ? `<button class="action-icon-btn view360" onclick="openD360Viewer('${escapeHtml(p.video_url)}')" title="360° View"><i class="fas fa-cube"></i></button>` : ''}
+                        <button class="action-icon-btn edit" onclick="openEditModal(${p.id})" title="Edit"><i class="fas fa-edit"></i></button>
+                        ${p.status !== 'approved' ? `<button class="action-icon-btn approve" onclick="approveProduct(${p.id})" title="Approve"><i class="fas fa-check"></i></button>` : ''}
+                        ${p.status !== 'rejected' ? `<button class="action-icon-btn reject" onclick="rejectProduct(${p.id})" title="Reject"><i class="fas fa-times"></i></button>` : ''}
+                        <button class="action-icon-btn delete" onclick="deleteProduct(${p.id})" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </tr>`;
             }
             tableHtml += '</tbody></table>';
             container.innerHTML = tableHtml;
@@ -988,13 +922,11 @@
                 
                 let cardClass = '';
                 let comparisonHtml = '';
-                let comparisonSummary = '';
                 const comp = productComparison.get(p.id);
                 
                 if (comp) {
                     if (comp.isBest) cardClass = 'best-price';
                     if (comp.isWorst) cardClass = 'worst-price';
-                    comparisonSummary = getComparisonSummary(p);
                     const diffClass = comp.percentageDiff > 0 ? 'price-higher' : (comp.percentageDiff < 0 ? 'price-lower' : 'price-equal');
                     const diffIcon = comp.percentageDiff > 0 ? '📈' : (comp.percentageDiff < 0 ? '📉' : '📊');
                     comparisonHtml = `
@@ -1007,7 +939,7 @@
                 
                 html += `<div class="product-card ${isSelected ? 'selected' : ''} ${cardClass}">
                     <input type="checkbox" class="product-select-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProduct(${p.id}, this.checked)">
-                    <div style="position:relative;"><span class="product-badge">Vendor</span><img class="product-image" src="${imgUrl}" onerror="this.src='https://via.placeholder.com/400x200'"></div>
+                    <div style="position:relative;"><img class="product-image" src="${imgUrl}" onerror="this.src='https://via.placeholder.com/400x200'"></div>
                     <div class="product-info">
                         <div class="product-name">${escapeHtml(p.product_name)}</div>
                         <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
@@ -1046,22 +978,23 @@
             else selectedProducts.delete(id);
             updateBulkActionsBar();
             updateLiveSelectionInfo();
-            updatePagination();
+            applyFilters();
         };
         window.toggleSelectProductList = window.toggleSelectProduct;
         
         window.toggleSelectAll = function() {
             const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            const filtered = getFilteredProductsList();
             if (selectAllCheckbox.checked) {
-                filteredProducts.forEach(p => selectedProducts.add(p.id));
-                showToast(`✅ Selected all ${filteredProducts.length} products`);
+                filtered.forEach(p => selectedProducts.add(p.id));
+                showToast(`✅ Selected all ${filtered.length} products`);
             } else {
                 selectedProducts.clear();
                 showToast('Cleared all selections');
             }
             updateBulkActionsBar();
             updateLiveSelectionInfo();
-            updatePagination();
+            applyFilters();
         };
         window.toggleSelectAllList = window.toggleSelectAll;
         
@@ -1069,7 +1002,7 @@
             selectedProducts.clear(); 
             updateBulkActionsBar(); 
             updateLiveSelectionInfo(); 
-            updatePagination(); 
+            applyFilters(); 
             showToast('Selection cleared'); 
         };
         
@@ -1085,7 +1018,7 @@
                 document.getElementById('listView').style.display = 'none'; 
                 document.getElementById('gridView').style.display = 'grid'; 
             } 
-            updatePagination();
+            applyFilters();
         };
         
         window.openD360Viewer = function(url) {
