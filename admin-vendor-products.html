@@ -29,6 +29,7 @@
             --danger: #ef4444;
             --warning: #f59e0b;
             --info: #3b82f6;
+            --purple: #8b5cf6;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
@@ -89,15 +90,15 @@
         .company-tag { background: var(--gray-100); padding: 6px 12px; border-radius: 20px; font-size: 12px; display: inline-flex; align-items: center; gap: 8px; }
         .company-tag strong { color: var(--primary); }
         
-        /* Market Price Comparison Styles */
-        .market-comparison {
+        /* Price Comparison Styles */
+        .price-comparison-section {
             background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02));
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 25px;
             border: 1px solid rgba(212,175,55,0.2);
         }
-        .market-header {
+        .comparison-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -105,7 +106,7 @@
             gap: 15px;
             margin-bottom: 15px;
         }
-        .market-title {
+        .comparison-title {
             font-size: 18px;
             font-weight: 700;
             color: var(--primary);
@@ -113,29 +114,29 @@
             align-items: center;
             gap: 10px;
         }
-        .market-stats {
+        .comparison-stats {
             display: flex;
             gap: 20px;
             flex-wrap: wrap;
         }
-        .market-stat {
+        .comparison-stat {
             background: white;
             border-radius: 12px;
             padding: 8px 16px;
             text-align: center;
             border: 1px solid var(--gray-200);
         }
-        .market-stat-label {
+        .comparison-stat-label {
             font-size: 10px;
             color: var(--gray-500);
         }
-        .market-stat-value {
+        .comparison-stat-value {
             font-size: 18px;
             font-weight: 700;
             color: var(--primary);
         }
         
-        .price-comparison-badge {
+        .price-badge {
             display: inline-flex;
             align-items: center;
             gap: 4px;
@@ -144,9 +145,11 @@
             font-size: 11px;
             font-weight: 600;
         }
-        .price-above { background: rgba(239,68,68,0.15); color: #ef4444; }
-        .price-below { background: rgba(16,185,129,0.15); color: #10b981; }
+        .price-higher { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .price-lower { background: rgba(16,185,129,0.15); color: #10b981; }
         .price-equal { background: rgba(107,114,128,0.15); color: #6b7280; }
+        .price-best { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .price-worst { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
         
         .bulk-actions-bar {
             background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.05));
@@ -200,11 +203,13 @@
         .btn-danger-outline:hover { background: rgba(239,68,68,0.3); transform: translateY(-2px); }
         
         .list-view-container { background: white; border-radius: 20px; border: 1px solid var(--gray-200); overflow-x: auto; }
-        .list-view-table { width: 100%; border-collapse: collapse; min-width: 1400px; }
+        .list-view-table { width: 100%; border-collapse: collapse; min-width: 1600px; }
         .list-view-table th { background: var(--gray-100); padding: 14px 12px; text-align: left; font-size: 12px; font-weight: 600; color: var(--gray-600); border-bottom: 1px solid var(--gray-200); position: sticky; top: 0; }
         .list-view-table td { padding: 12px; border-bottom: 1px solid var(--gray-200); vertical-align: middle; font-size: 13px; }
         .list-view-table tr:hover { background: rgba(212,175,55,0.03); }
         .list-view-table tr.selected { background: rgba(212,175,55,0.08); }
+        .list-view-table tr.best-price { background: rgba(16,185,129,0.08); border-left: 3px solid #10b981; }
+        .list-view-table tr.worst-price { background: rgba(239,68,68,0.05); border-left: 3px solid #ef4444; }
         
         .list-thumbnail { width: 50px; height: 50px; object-fit: cover; border-radius: 10px; cursor: pointer; }
         .status-badge-sm { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; }
@@ -224,10 +229,12 @@
         .action-icon-btn.delete { color: #ef4444; }
         .action-icon-btn.delete:hover { background: rgba(239,68,68,0.15); }
         
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 25px; margin-top: 20px; display: none; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 25px; margin-top: 20px; display: none; }
         .product-card { background: white; border-radius: 24px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; box-shadow: var(--shadow-sm); position: relative; }
         .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
         .product-card.selected { border: 2px solid var(--primary); background: rgba(212,175,55,0.02); }
+        .product-card.best-price { border: 2px solid #10b981; }
+        .product-card.worst-price { border: 2px solid #ef4444; }
         .product-select-checkbox { position: absolute; top: 15px; left: 15px; z-index: 10; width: 22px; height: 22px; cursor: pointer; accent-color: var(--primary); }
         .product-image { width: 100%; height: 200px; object-fit: cover; background: var(--gray-100); cursor: pointer; }
         .product-info { padding: 18px; }
@@ -305,22 +312,6 @@
             flex-wrap: wrap;
             gap: 15px;
         }
-        .auto-approve-label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-        }
-        .auto-approve-label input {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            accent-color: #10b981;
-        }
-        .auto-approve-label span {
-            font-weight: 600;
-            color: #10b981;
-        }
         
         @media (max-width: 1024px) { .stats-row { grid-template-columns: repeat(4, 1fr); } }
         @media (max-width: 768px) {
@@ -354,46 +345,46 @@
                     <button class="view-btn" onclick="setView('grid')"><i class="fas fa-th"></i> Grid View</button>
                 </div>
             </div>
-            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Diamond price comparison against market rates</p>
+            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Real-time price comparison across matching diamonds (Carat + Color + Clarity)</p>
         </div>
 
-        <!-- Market Price Comparison Summary -->
-        <div class="market-comparison">
-            <div class="market-header">
-                <div class="market-title">
-                    <i class="fas fa-chart-line"></i> Diamond Market Price Comparison
-                    <span style="font-size: 12px; background: rgba(212,175,55,0.1); padding: 2px 8px; border-radius: 20px;">Real-time Market Reference</span>
+        <!-- Price Comparison Summary Section -->
+        <div class="price-comparison-section">
+            <div class="comparison-header">
+                <div class="comparison-title">
+                    <i class="fas fa-chart-line"></i> Diamond Price Comparison
+                    <span style="font-size: 12px; background: rgba(212,175,55,0.1); padding: 2px 8px; border-radius: 20px;">Matches by Carat Group + Color + Clarity</span>
                 </div>
-                <button class="btn-secondary" onclick="refreshMarketPrices()" style="padding: 6px 12px;">
-                    <i class="fas fa-sync-alt"></i> Refresh Market Data
+                <button class="btn-secondary" onclick="refreshComparison()" style="padding: 6px 12px;">
+                    <i class="fas fa-sync-alt"></i> Refresh Comparison
                 </button>
             </div>
-            <div class="market-stats" id="marketStats">
-                <div class="market-stat">
-                    <div class="market-stat-label">Avg Premium</div>
-                    <div class="market-stat-value" id="avgPremium">--</div>
+            <div class="comparison-stats" id="comparisonStats">
+                <div class="comparison-stat">
+                    <div class="comparison-stat-label">Total Matched Groups</div>
+                    <div class="comparison-stat-value" id="totalGroups">--</div>
                 </div>
-                <div class="market-stat">
-                    <div class="market-stat-label">Above Market</div>
-                    <div class="market-stat-value" id="aboveMarketCount">--</div>
+                <div class="comparison-stat">
+                    <div class="comparison-stat-label">Best Value Products</div>
+                    <div class="comparison-stat-value" id="bestValueCount">--</div>
                 </div>
-                <div class="market-stat">
-                    <div class="market-stat-label">Below Market</div>
-                    <div class="market-stat-value" id="belowMarketCount">--</div>
+                <div class="comparison-stat">
+                    <div class="comparison-stat-label">Overpriced Products</div>
+                    <div class="comparison-stat-value" id="overpricedCount">--</div>
                 </div>
-                <div class="market-stat">
-                    <div class="market-stat-label">At Market</div>
-                    <div class="market-stat-value" id="atMarketCount">--</div>
+                <div class="comparison-stat">
+                    <div class="comparison-stat-label">Avg Price Variance</div>
+                    <div class="comparison-stat-value" id="avgVariance">--</div>
                 </div>
             </div>
         </div>
 
         <div class="auto-approve-section">
-            <label class="auto-approve-label">
+            <label class="auto-approve-label" style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
                 <input type="checkbox" id="autoApproveToggle" onchange="toggleAutoApprove()">
                 <span><i class="fas fa-magic"></i> Auto-Approve on Stock Update</span>
             </label>
-            <div class="auto-approve-hint" style="font-size: 11px; color: var(--gray-500);">
+            <div style="font-size: 11px; color: var(--gray-500);">
                 <i class="fas fa-info-circle"></i> When enabled, products with stock > 0 are automatically approved
             </div>
         </div>
@@ -448,11 +439,10 @@
                     <option value="1-2">1 - 2 ct</option>
                     <option value="2+">2+ ct</option>
                 </select>
-                <select id="priceComparisonFilter" class="filter-select">
+                <select id="priceFilter" class="filter-select">
                     <option value="all">All Prices</option>
-                    <option value="above">Above Market</option>
-                    <option value="below">Below Market</option>
-                    <option value="at">At Market</option>
+                    <option value="best">Best Value (Lowest Price)</option>
+                    <option value="overpriced">Overpriced (Highest Price)</option>
                 </select>
                 <select id="mediaFilter" class="filter-select">
                     <option value="all">All Media</option>
@@ -487,7 +477,7 @@
     <div id="confirmModal" class="modal"><div class="modal-content"><h3 style="color:var(--danger);">Confirm Deletion</h3><p id="modalMessage">Delete this vendor product? This cannot be undone.</p><div style="display:flex;gap:12px;margin-top:25px;"><button class="btn-primary" onclick="confirmDelete()">Yes, Delete</button><button class="btn-secondary" onclick="closeConfirmModal()">Cancel</button></div></div></div>
     <div id="bulkConfirmModal" class="modal"><div class="modal-content"><h3 id="bulkConfirmTitle">Confirm Bulk Action</h3><p id="bulkConfirmMessage"></p><div style="display:flex;gap:12px;margin-top:25px;"><button class="btn-primary" id="bulkConfirmYes">Yes, Proceed</button><button class="btn-secondary" onclick="closeBulkConfirmModal()">Cancel</button></div></div></div>
 
-    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management | Diamond price comparison based on market data</p></footer>
+    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management | Price comparison matches: Carat Group + Diamond Color + Diamond Clarity</p></footer>
 
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     <script type="module">
@@ -504,126 +494,162 @@
         let pendingDelete = null;
         let autoApproveEnabled = localStorage.getItem('autoApproveEnabled') === 'true';
         
+        // Price comparison data
+        let priceComparisonMap = new Map(); // key: "caratGroup|color|clarity" -> { products: [], minPrice, maxPrice, avgPrice }
+        let productComparison = new Map(); // productId -> { rank, percentage, status, groupTotal, groupAvg }
+        
         // Pagination variables
         let currentPage = 1;
         let itemsPerPage = 100;
         let totalProducts = 0;
         let filteredProducts = [];
         
-        // Market price database for diamonds (per carat in INR)
-        // These are reference market prices for different diamond grades
-        const marketPrices = {
-            // Color vs Clarity matrix (price per carat in INR)
-            // Values are approximate market rates
-            'D': {
-                'FL': 450000, 'IF': 420000, 'VVS1': 380000, 'VVS2': 350000,
-                'VS1': 320000, 'VS2': 290000, 'SI1': 250000, 'SI2': 220000, 'I1': 180000
-            },
-            'E': {
-                'FL': 420000, 'IF': 390000, 'VVS1': 350000, 'VVS2': 320000,
-                'VS1': 290000, 'VS2': 260000, 'SI1': 230000, 'SI2': 200000, 'I1': 165000
-            },
-            'F': {
-                'FL': 390000, 'IF': 360000, 'VVS1': 320000, 'VVS2': 290000,
-                'VS1': 260000, 'VS2': 235000, 'SI1': 210000, 'SI2': 185000, 'I1': 150000
-            },
-            'G': {
-                'FL': 350000, 'IF': 325000, 'VVS1': 290000, 'VVS2': 265000,
-                'VS1': 240000, 'VS2': 215000, 'SI1': 190000, 'SI2': 170000, 'I1': 140000
-            },
-            'H': {
-                'FL': 310000, 'IF': 290000, 'VVS1': 260000, 'VVS2': 235000,
-                'VS1': 215000, 'VS2': 195000, 'SI1': 175000, 'SI2': 155000, 'I1': 130000
-            },
-            'I': {
-                'FL': 275000, 'IF': 255000, 'VVS1': 230000, 'VVS2': 210000,
-                'VS1': 190000, 'VS2': 175000, 'SI1': 155000, 'SI2': 140000, 'I1': 115000
-            },
-            'J': {
-                'FL': 245000, 'IF': 225000, 'VVS1': 205000, 'VVS2': 185000,
-                'VS1': 170000, 'VS2': 155000, 'SI1': 140000, 'SI2': 125000, 'I1': 105000
-            }
-        };
-        
-        // Diamond price per carat for non-diamond products (gold jewelry reference)
-        const goldMarketPrice = 5500; // per gram
-        
-        // Function to get market price for a diamond
-        function getMarketPriceForDiamond(carat, color, clarity) {
+        // Carat groups for matching
+        function getCaratGroup(carat) {
             if (!carat || carat <= 0) return null;
-            if (!color || !clarity) return null;
+            if (carat <= 0.25) return '0-0.25';
+            if (carat <= 0.5) return '0.26-0.50';
+            if (carat <= 0.75) return '0.51-0.75';
+            if (carat <= 1.0) return '0.76-1.00';
+            if (carat <= 1.5) return '1.01-1.50';
+            if (carat <= 2.0) return '1.51-2.00';
+            if (carat <= 2.5) return '2.01-2.50';
+            if (carat <= 3.0) return '2.51-3.00';
+            return '3.00+';
+        }
+        
+        // Get match key for a product
+        function getMatchKey(product) {
+            if (!product.carat || product.carat <= 0) return null;
+            if (!product.diamond_color || !product.diamond_clarity) return null;
             
-            const colorPrices = marketPrices[color.toUpperCase()];
-            if (!colorPrices) return null;
+            const caratGroup = getCaratGroup(product.carat);
+            if (!caratGroup) return null;
             
-            let pricePerCarat = colorPrices[clarity.toUpperCase()];
-            if (!pricePerCarat) {
-                // Try to find closest match
-                const clarities = Object.keys(colorPrices);
-                const closest = clarities.find(c => c.includes(clarity.toUpperCase().substring(0, 2))) || clarities[0];
-                pricePerCarat = colorPrices[closest];
+            return `${caratGroup}|${product.diamond_color.toUpperCase()}|${product.diamond_clarity.toUpperCase()}`;
+        }
+        
+        // Build price comparison map from all products
+        function buildPriceComparisonMap(products) {
+            priceComparisonMap.clear();
+            productComparison.clear();
+            
+            // First, group all diamond products by match key
+            const diamondProducts = products.filter(p => p.carat && p.carat > 0 && p.diamond_color && p.diamond_clarity);
+            
+            for (const product of diamondProducts) {
+                const key = getMatchKey(product);
+                if (!key) continue;
+                
+                if (!priceComparisonMap.has(key)) {
+                    priceComparisonMap.set(key, {
+                        products: [],
+                        minPrice: Infinity,
+                        maxPrice: -Infinity,
+                        totalPrice: 0
+                    });
+                }
+                
+                const group = priceComparisonMap.get(key);
+                group.products.push(product);
+                group.totalPrice += product.price;
+                if (product.price < group.minPrice) group.minPrice = product.price;
+                if (product.price > group.maxPrice) group.maxPrice = product.price;
             }
             
-            if (!pricePerCarat) return null;
-            
-            // Calculate total market price based on carat weight
-            // Larger diamonds have premium (price increases exponentially)
-            let multiplier = 1;
-            if (carat >= 2) multiplier = 1.4;
-            else if (carat >= 1.5) multiplier = 1.2;
-            else if (carat >= 1) multiplier = 1.0;
-            else if (carat >= 0.75) multiplier = 0.85;
-            else if (carat >= 0.5) multiplier = 0.7;
-            else multiplier = 0.6;
-            
-            return Math.round(pricePerCarat * carat * multiplier);
-        }
-        
-        // Calculate price comparison percentage
-        function calculatePriceComparison(productPrice, carat, color, clarity) {
-            const marketPrice = getMarketPriceForDiamond(carat, color, clarity);
-            if (!marketPrice || marketPrice <= 0) return null;
-            
-            const difference = productPrice - marketPrice;
-            const percentage = (difference / marketPrice) * 100;
-            
-            return {
-                marketPrice: marketPrice,
-                difference: difference,
-                percentage: percentage,
-                status: percentage > 5 ? 'above' : (percentage < -5 ? 'below' : 'at'),
-                display: percentage > 0 ? `+${percentage.toFixed(1)}%` : `${percentage.toFixed(1)}%`
-            };
-        }
-        
-        // Update market stats summary
-        function updateMarketStats() {
-            let totalPremium = 0;
-            let premiumCount = 0;
-            let aboveCount = 0;
-            let belowCount = 0;
-            let atCount = 0;
-            
-            vendorProducts.forEach(product => {
-                if (product.carat && product.carat > 0 && product.diamond_color && product.diamond_clarity) {
-                    const comparison = calculatePriceComparison(product.price, product.carat, product.diamond_color, product.diamond_clarity);
-                    if (comparison) {
-                        if (comparison.status === 'above') aboveCount++;
-                        else if (comparison.status === 'below') belowCount++;
-                        else atCount++;
-                        
-                        totalPremium += comparison.percentage;
-                        premiumCount++;
-                    }
+            // Calculate averages and store comparison data for each product
+            for (const [key, group] of priceComparisonMap) {
+                group.avgPrice = group.totalPrice / group.products.length;
+                
+                // Sort products by price to determine ranks
+                const sortedProducts = [...group.products].sort((a, b) => a.price - b.price);
+                
+                for (let i = 0; i < sortedProducts.length; i++) {
+                    const product = sortedProducts[i];
+                    const percentageDiff = ((product.price - group.avgPrice) / group.avgPrice) * 100;
+                    
+                    let status = 'average';
+                    if (product.price === group.minPrice) status = 'best';
+                    else if (product.price === group.maxPrice) status = 'worst';
+                    else if (percentageDiff < -10) status = 'good';
+                    else if (percentageDiff > 10) status = 'poor';
+                    
+                    productComparison.set(product.id, {
+                        rank: i + 1,
+                        totalInGroup: group.products.length,
+                        groupAvg: group.avgPrice,
+                        groupMin: group.minPrice,
+                        groupMax: group.maxPrice,
+                        percentageDiff: percentageDiff,
+                        status: status,
+                        isBest: product.price === group.minPrice,
+                        isWorst: product.price === group.maxPrice
+                    });
                 }
-            });
+            }
             
-            const avgPremium = premiumCount > 0 ? (totalPremium / premiumCount).toFixed(1) : '0';
+            return priceComparisonMap;
+        }
+        
+        // Get comparison HTML for a product
+        function getComparisonHtml(product) {
+            const comp = productComparison.get(product.id);
+            if (!comp) return '<span class="diamond-badge-sm">No match</span>';
             
-            document.getElementById('avgPremium').innerHTML = `${avgPremium}%`;
-            document.getElementById('aboveMarketCount').innerHTML = aboveCount;
-            document.getElementById('belowMarketCount').innerHTML = belowCount;
-            document.getElementById('atMarketCount').innerHTML = atCount;
+            const diffClass = comp.percentageDiff > 0 ? 'price-higher' : (comp.percentageDiff < 0 ? 'price-lower' : 'price-equal');
+            const diffIcon = comp.percentageDiff > 0 ? '📈' : (comp.percentageDiff < 0 ? '📉' : '📊');
+            const diffText = comp.percentageDiff > 0 ? `+${comp.percentageDiff.toFixed(1)}%` : `${comp.percentageDiff.toFixed(1)}%`;
+            
+            let rankBadge = '';
+            if (comp.isBest) {
+                rankBadge = '<span class="price-badge price-best"><i class="fas fa-trophy"></i> Best Price</span>';
+            } else if (comp.isWorst) {
+                rankBadge = '<span class="price-badge price-worst"><i class="fas fa-exclamation-triangle"></i> Highest Price</span>';
+            }
+            
+            return `
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    ${rankBadge}
+                    <span class="price-badge ${diffClass}" style="font-size: 10px;">${diffIcon} ${diffText} vs avg</span>
+                    <span class="diamond-badge-sm" style="font-size: 10px;">Rank: ${comp.rank}/${comp.totalInGroup}</span>
+                    <span class="diamond-badge-sm" style="font-size: 10px;">Avg: ₹${comp.groupAvg.toLocaleString()}</span>
+                </div>
+            `;
+        }
+        
+        // Get comparison summary text
+        function getComparisonSummary(product) {
+            const comp = productComparison.get(product.id);
+            if (!comp) return 'No matching diamonds found';
+            
+            if (comp.isBest) return `🏆 Best price among ${comp.totalInGroup} matching diamonds (${comp.percentageDiff > 0 ? '+' : ''}${comp.percentageDiff.toFixed(1)}% vs avg)`;
+            if (comp.isWorst) return `⚠️ Highest price among ${comp.totalInGroup} matching diamonds (${comp.percentageDiff > 0 ? '+' : ''}${comp.percentageDiff.toFixed(1)}% vs avg)`;
+            if (comp.percentageDiff < -10) return `✅ Good value (${comp.percentageDiff.toFixed(1)}% below avg)`;
+            if (comp.percentageDiff > 10) return `⚠️ Premium price (${comp.percentageDiff.toFixed(1)}% above avg)`;
+            return `📊 Market price (${comp.percentageDiff > 0 ? '+' : ''}${comp.percentageDiff.toFixed(1)}% vs avg)`;
+        }
+        
+        // Update comparison stats in header
+        function updateComparisonStats() {
+            const totalGroups = priceComparisonMap.size;
+            let bestValueCount = 0;
+            let overpricedCount = 0;
+            let totalVariance = 0;
+            let varianceCount = 0;
+            
+            for (const [_, comp] of productComparison) {
+                if (comp.isBest) bestValueCount++;
+                if (comp.isWorst) overpricedCount++;
+                totalVariance += Math.abs(comp.percentageDiff);
+                varianceCount++;
+            }
+            
+            const avgVariance = varianceCount > 0 ? totalVariance / varianceCount : 0;
+            
+            document.getElementById('totalGroups').innerText = totalGroups;
+            document.getElementById('bestValueCount').innerText = bestValueCount;
+            document.getElementById('overpricedCount').innerText = overpricedCount;
+            document.getElementById('avgVariance').innerHTML = `${avgVariance.toFixed(1)}%`;
         }
         
         function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com')); }
@@ -663,7 +689,6 @@
                 
                 if (countError) throw countError;
                 totalProducts = count || 0;
-                console.log(`✅ Total vendor products in database: ${totalProducts}`);
                 
                 let allData = [];
                 let from = 0;
@@ -681,11 +706,13 @@
                         allData = [...allData, ...data];
                     }
                     from += batchSize;
-                    console.log(`📦 Loaded ${allData.length} of ${totalProducts} products...`);
                 }
                 
                 vendorProducts = allData;
-                console.log(`✅ Successfully loaded all ${vendorProducts.length} vendor products`);
+                
+                // Build price comparison map
+                buildPriceComparisonMap(vendorProducts);
+                updateComparisonStats();
                 
                 if (autoApproveEnabled) {
                     await autoApproveProductsWithStock();
@@ -694,7 +721,6 @@
                 updateStats();
                 updateCompanyAnalytics();
                 populateFilterOptions();
-                updateMarketStats();
                 applyFilters();
                 
             } catch (err) {
@@ -733,10 +759,11 @@
             }
         };
         
-        window.refreshMarketPrices = function() {
-            updateMarketStats();
+        window.refreshComparison = function() {
+            buildPriceComparisonMap(vendorProducts);
+            updateComparisonStats();
             applyFilters();
-            showToast('Market prices refreshed');
+            showToast('Price comparison refreshed');
         };
         
         function updateStats() {
@@ -816,7 +843,7 @@
             const clarityFilter = document.getElementById('diamondClarityFilter').value;
             const caratFilter = document.getElementById('caratFilter').value;
             const mediaFilter = document.getElementById('mediaFilter').value;
-            const priceComparisonFilter = document.getElementById('priceComparisonFilter').value;
+            const priceFilter = document.getElementById('priceFilter').value;
             
             let filtered = [...vendorProducts];
             if (searchTerm) filtered = filtered.filter(p => (p.product_name || '').toLowerCase().includes(searchTerm) || (p.sku || '').toLowerCase().includes(searchTerm) || getCompanyName(p.vendor_id).toLowerCase().includes(searchTerm));
@@ -837,12 +864,13 @@
             else if (mediaFilter === 'video') filtered = filtered.filter(p => isVideoUrl(p.video_url));
             
             // Filter by price comparison
-            if (priceComparisonFilter !== 'all') {
+            if (priceFilter !== 'all') {
                 filtered = filtered.filter(p => {
-                    if (!p.carat || p.carat <= 0 || !p.diamond_color || !p.diamond_clarity) return priceComparisonFilter === 'all';
-                    const comparison = calculatePriceComparison(p.price, p.carat, p.diamond_color, p.diamond_clarity);
-                    if (!comparison) return priceComparisonFilter === 'all';
-                    return comparison.status === priceComparisonFilter;
+                    const comp = productComparison.get(p.id);
+                    if (!comp) return false;
+                    if (priceFilter === 'best') return comp.isBest;
+                    if (priceFilter === 'overpriced') return comp.isWorst;
+                    return true;
                 });
             }
             
@@ -907,7 +935,7 @@
             const container = document.getElementById('listView');
             if (!products.length) { container.innerHTML = '<div class="empty-state"><i class="fas fa-store-slash"></i><p>No vendor products found.</p></div>'; return; }
             
-            let tableHtml = `<table class="list-view-table"><thead><tr><th style="width:40px"><input type="checkbox" id="listSelectAll" onchange="toggleSelectAllList()"></th><th style="width:60px">Image</th><th>Product</th><th>Company</th><th>SKU/Category</th><th>Price</th><th>Stock</th><th>Carat</th><th>Diamond Color</th><th>Diamond Clarity</th><th>Market Price</th><th>Vs Market</th><th>Media</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+            let tableHtml = `<table class="list-view-table"><thead><tr><th style="width:40px"><input type="checkbox" id="listSelectAll" onchange="toggleSelectAllList()"></th><th style="width:60px">Image</th><th>Product</th><th>Company</th><th>SKU/Category</th><th>Price</th><th>Stock</th><th>Carat</th><th>Color</th><th>Clarity</th><th>Price Comparison</th><th>Media</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
             for (const p of products) {
                 const imgUrl = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/50x50?text=No';
                 const isSelected = selectedProducts.has(p.id);
@@ -921,25 +949,29 @@
                 else if (p.image1_url || p.image2_url) mediaIcon = '<span class="diamond-badge-sm"><i class="fas fa-image"></i> Img</span>';
                 
                 const stockColor = p.stock > 0 ? '#10b981' : '#ef4444';
-                
-                // Calculate market comparison
-                let marketHtml = '<span class="diamond-badge-sm">-</span>';
+                const comp = productComparison.get(p.id);
                 let comparisonHtml = '<span class="diamond-badge-sm">-</span>';
-                if (p.carat && p.carat > 0 && p.diamond_color && p.diamond_clarity) {
-                    const comparison = calculatePriceComparison(p.price, p.carat, p.diamond_color, p.diamond_clarity);
-                    if (comparison) {
-                        marketHtml = `<span class="diamond-badge-sm">₹${comparison.marketPrice.toLocaleString()}</span>`;
-                        const comparisonClass = comparison.status === 'above' ? 'price-above' : (comparison.status === 'below' ? 'price-below' : 'price-equal');
-                        const comparisonIcon = comparison.status === 'above' ? '📈' : (comparison.status === 'below' ? '📉' : '📊');
-                        comparisonHtml = `<span class="price-comparison-badge ${comparisonClass}">${comparisonIcon} ${comparison.display}</span>`;
-                    }
+                let rowClass = '';
+                
+                if (comp) {
+                    comparisonHtml = getComparisonHtml(p);
+                    if (comp.isBest) rowClass = 'best-price';
+                    if (comp.isWorst) rowClass = 'worst-price';
                 }
                 
-                tableHtml += `<tr class="${isSelected ? 'selected' : ''}"><td><input type="checkbox" class="list-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProductList(${p.id}, this.checked)"></td><td><img class="list-thumbnail" src="${imgUrl}" onerror="this.src='https://via.placeholder.com/50x50'"></td><td><strong>${escapeHtml(p.product_name)}</strong><br><span style="font-size:10px;color:var(--gray-500);">ID: ${p.id}</span></td><td><i class="fas fa-building" style="color:var(--primary);"></i> ${escapeHtml(companyName)}</span></td><td>${p.sku || 'N/A'}<br><span style="font-size:10px;">${p.category || '-'}</span></td><td>₹${(p.price || 0).toLocaleString()}<br><span style="font-size:10px;">+${p.gst || 18}%</span></td><td style="color:${stockColor}; font-weight:600;">${p.stock || 0}</td>`;
-                tableHtml += `<td>${p.carat ? p.carat + 'ct' : '-'}</td><td>${p.diamond_color || '-'}</td><td>${p.diamond_clarity || '-'}</td><td>${marketHtml}</td><td>${comparisonHtml}</td><td>${mediaIcon}</td><td><span class="status-badge-sm ${statusClass}">${(p.status || 'pending').toUpperCase()}</span></td>
-                <td class="action-icons">${hasD360 ? `<button class="action-icon-btn view360" onclick="openD360Viewer('${escapeHtml(p.video_url)}')" title="360° View"><i class="fas fa-cube"></i></button>` : ''}<button class="action-icon-btn edit" onclick="openEditModal(${p.id})" title="Edit"><i class="fas fa-edit"></i></button>${p.status !== 'approved' ? `<button class="action-icon-btn approve" onclick="approveProduct(${p.id})" title="Approve"><i class="fas fa-check"></i></button>` : ''}${p.status !== 'rejected' ? `<button class="action-icon-btn reject" onclick="rejectProduct(${p.id})" title="Reject"><i class="fas fa-times"></i></button>` : ''}<button class="action-icon-btn delete" onclick="deleteProduct(${p.id})" title="Delete"><i class="fas fa-trash-alt"></i></button></td></tr>`;
+                tableHtml += `<tr class="${isSelected ? 'selected' : ''} ${rowClass}"><td><input type="checkbox" class="list-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProductList(${p.id}, this.checked)"></td><td><img class="list-thumbnail" src="${imgUrl}" onerror="this.src='https://via.placeholder.com/50x50'"></td><td><strong>${escapeHtml(p.product_name)}</strong><br><span style="font-size:10px;color:var(--gray-500);">ID: ${p.id}</span></td>`;
+                tableHtml += `<td><i class="fas fa-building" style="color:var(--primary);"></i> ${escapeHtml(companyName)}</span></td><td>${p.sku || 'N/A'}<br><span style="font-size:10px;">${p.category || '-'}</span>`;
+                tableHtml += `<td style="font-weight:600;">₹${(p.price || 0).toLocaleString()}<br><span style="font-size:10px;">+${p.gst || 18}%</span>`;
+                tableHtml += `<td style="color:${stockColor}; font-weight:600;">${p.stock || 0}</td>`;
+                tableHtml += `<td>${p.carat ? p.carat + 'ct' : '-'}</td>`;
+                tableHtml += `<td>${p.diamond_color || '-'}</td>`;
+                tableHtml += `<td>${p.diamond_clarity || '-'}</td>`;
+                tableHtml += `<td style="min-width: 120px;">${comparisonHtml}</td>`;
+                tableHtml += `<td>${mediaIcon}</td>`;
+                tableHtml += `<td><span class="status-badge-sm ${statusClass}">${(p.status || 'pending').toUpperCase()}</span></td>`;
+                tableHtml += `<td class="action-icons">${hasD360 ? `<button class="action-icon-btn view360" onclick="openD360Viewer('${escapeHtml(p.video_url)}')" title="360° View"><i class="fas fa-cube"></i></button>` : ''}<button class="action-icon-btn edit" onclick="openEditModal(${p.id})" title="Edit"><i class="fas fa-edit"></i></button>${p.status !== 'approved' ? `<button class="action-icon-btn approve" onclick="approveProduct(${p.id})" title="Approve"><i class="fas fa-check"></i></button>` : ''}${p.status !== 'rejected' ? `<button class="action-icon-btn reject" onclick="rejectProduct(${p.id})" title="Reject"><i class="fas fa-times"></i></button>` : ''}<button class="action-icon-btn delete" onclick="deleteProduct(${p.id})" title="Delete"><i class="fas fa-trash-alt"></i></button></td></tr>`;
             }
-            tableHtml += '</tbody><td>';
+            tableHtml += '</tbody></table>';
             container.innerHTML = tableHtml;
         }
         
@@ -954,23 +986,26 @@
                 const statusClass = p.status === 'approved' ? 'status-approved' : (p.status === 'rejected' ? 'status-rejected' : 'status-pending');
                 const stockColor = p.stock > 0 ? '#10b981' : '#ef4444';
                 
-                // Calculate market comparison
+                let cardClass = '';
                 let comparisonHtml = '';
-                if (p.carat && p.carat > 0 && p.diamond_color && p.diamond_clarity) {
-                    const comparison = calculatePriceComparison(p.price, p.carat, p.diamond_color, p.diamond_clarity);
-                    if (comparison) {
-                        const comparisonClass = comparison.status === 'above' ? 'price-above' : (comparison.status === 'below' ? 'price-below' : 'price-equal');
-                        const comparisonIcon = comparison.status === 'above' ? '📈' : (comparison.status === 'below' ? '📉' : '📊');
-                        comparisonHtml = `
-                            <div style="margin: 8px 0; padding: 8px; background: var(--gray-100); border-radius: 12px;">
-                                <div style="font-size: 11px; color: var(--gray-500);">Market Price: ₹${comparison.marketPrice.toLocaleString()}</div>
-                                <div><span class="price-comparison-badge ${comparisonClass}" style="font-size: 13px;">${comparisonIcon} ${comparison.display} vs Market</span></div>
-                            </div>
-                        `;
-                    }
+                let comparisonSummary = '';
+                const comp = productComparison.get(p.id);
+                
+                if (comp) {
+                    if (comp.isBest) cardClass = 'best-price';
+                    if (comp.isWorst) cardClass = 'worst-price';
+                    comparisonSummary = getComparisonSummary(p);
+                    const diffClass = comp.percentageDiff > 0 ? 'price-higher' : (comp.percentageDiff < 0 ? 'price-lower' : 'price-equal');
+                    const diffIcon = comp.percentageDiff > 0 ? '📈' : (comp.percentageDiff < 0 ? '📉' : '📊');
+                    comparisonHtml = `
+                        <div style="margin: 8px 0; padding: 8px; background: var(--gray-100); border-radius: 12px;">
+                            <div><span class="price-badge ${diffClass}">${diffIcon} ${comp.percentageDiff > 0 ? '+' : ''}${comp.percentageDiff.toFixed(1)}% vs avg (₹${comp.groupAvg.toLocaleString()})</span></div>
+                            <div style="font-size: 10px; color: var(--gray-500); margin-top: 4px;">Rank: ${comp.rank}/${comp.totalInGroup} | ${comp.isBest ? '🏆 Best Price' : (comp.isWorst ? '⚠️ Highest Price' : '')}</div>
+                        </div>
+                    `;
                 }
                 
-                html += `<div class="product-card ${isSelected ? 'selected' : ''}">
+                html += `<div class="product-card ${isSelected ? 'selected' : ''} ${cardClass}">
                     <input type="checkbox" class="product-select-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProduct(${p.id}, this.checked)">
                     <div style="position:relative;"><span class="product-badge">Vendor</span><img class="product-image" src="${imgUrl}" onerror="this.src='https://via.placeholder.com/400x200'"></div>
                     <div class="product-info">
@@ -979,7 +1014,7 @@
                         <div class="vendor-name"><i class="fas fa-building"></i> ${escapeHtml(companyName)}</div>
                         <div class="product-price">₹${(p.price || 0).toLocaleString()} + ${p.gst || 18}% GST</div>
                         <div style="margin: 5px 0;"><strong>Stock:</strong> <span style="color:${stockColor};">${p.stock || 0} units</span></div>
-                        ${p.carat || p.diamond_color || p.diamond_clarity ? `<div class="diamond-specs" style="margin: 8px 0;">
+                        ${p.carat || p.diamond_color || p.diamond_clarity ? `<div class="diamond-specs" style="margin: 8px 0; display: flex; gap: 10px; flex-wrap: wrap;">
                             ${p.carat ? `<span class="diamond-spec"><i class="fas fa-gem"></i> ${p.carat}ct</span>` : ''}
                             ${p.diamond_color ? `<span class="diamond-spec">🎨 ${p.diamond_color}</span>` : ''}
                             ${p.diamond_clarity ? `<span class="diamond-spec">🔍 ${p.diamond_clarity}</span>` : ''}
@@ -1200,9 +1235,7 @@
         
         window.exportVendorCSV = function() {
             const exportData = vendorProducts.map(p => {
-                const comparison = (p.carat && p.carat > 0 && p.diamond_color && p.diamond_clarity) ? 
-                    calculatePriceComparison(p.price, p.carat, p.diamond_color, p.diamond_clarity) : null;
-                
+                const comp = productComparison.get(p.id);
                 return {
                     'ID': p.id,
                     'Product Name': p.product_name,
@@ -1217,8 +1250,11 @@
                     'Diamond Color': p.diamond_color || '',
                     'Diamond Clarity': p.diamond_clarity || '',
                     'Diamond Cut': p.diamond_cut || '',
-                    'Market Price': comparison ? comparison.marketPrice : '',
-                    'Price Difference %': comparison ? comparison.display : '',
+                    'Match Group': comp ? `${getCaratGroup(p.carat)}|${p.diamond_color}|${p.diamond_clarity}` : '',
+                    'Group Avg Price': comp ? comp.groupAvg : '',
+                    'Price vs Avg': comp ? `${comp.percentageDiff > 0 ? '+' : ''}${comp.percentageDiff?.toFixed(1)}%` : '',
+                    'Rank in Group': comp ? `${comp.rank}/${comp.totalInGroup}` : '',
+                    'Best in Group': comp?.isBest ? 'Yes' : 'No',
                     'Has D360': isD360Url(p.video_url) ? 'Yes' : 'No',
                     'Has Video': isVideoUrl(p.video_url) ? 'Yes' : 'No'
                 };
@@ -1242,7 +1278,7 @@
         document.getElementById('diamondClarityFilter').addEventListener('change', () => { applyFilters(); });
         document.getElementById('caratFilter').addEventListener('change', () => { applyFilters(); });
         document.getElementById('mediaFilter').addEventListener('change', () => { applyFilters(); });
-        document.getElementById('priceComparisonFilter').addEventListener('change', () => { applyFilters(); });
+        document.getElementById('priceFilter').addEventListener('change', () => { applyFilters(); });
         
         window.logout = function() { sessionStorage.removeItem('adminLoggedIn'); window.location.href = 'login.html'; };
         window.onclick = function(event) { if (event.target === document.getElementById('confirmModal')) closeConfirmModal(); if (event.target === document.getElementById('bulkConfirmModal')) closeBulkConfirmModal(); if (event.target === document.getElementById('editModal')) closeEditModal(); };
