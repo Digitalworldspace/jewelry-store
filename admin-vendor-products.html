@@ -133,10 +133,12 @@
         .search-box input { flex: 1; border: none; background: transparent; padding: 8px 0; font-size: 14px; outline: none; }
         .filter-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         .filter-select { padding: 8px 16px; border: 1px solid var(--gray-200); border-radius: 40px; background: white; font-size: 13px; cursor: pointer; }
-        .select-all-checkbox { display: flex; align-items: center; gap: 8px; margin-left: 10px; }
+        .select-all-checkbox { display: flex; align-items: center; gap: 8px; margin-left: 10px; background: var(--gray-100); padding: 5px 12px; border-radius: 30px; }
         .btn-primary { background: linear-gradient(135deg, var(--primary), #b8962e); border: none; padding: 8px 20px; border-radius: 40px; font-weight: 600; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(212,175,55,0.3); }
         .btn-secondary { background: var(--gray-200); border: none; padding: 8px 20px; border-radius: 40px; font-weight: 500; cursor: pointer; color: var(--gray-700); }
+        .btn-danger-outline { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.5); color: #ef4444; padding: 8px 20px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-danger-outline:hover { background: rgba(239,68,68,0.3); transform: translateY(-2px); }
         
         .list-view-container { background: white; border-radius: 20px; border: 1px solid var(--gray-200); overflow-x: auto; }
         .list-view-table { width: 100%; border-collapse: collapse; min-width: 1200px; }
@@ -232,6 +234,40 @@
             color: var(--gray-600);
         }
         
+        /* Auto-approve toggle styles */
+        .auto-approve-section {
+            background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.05));
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: 16px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .auto-approve-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+        .auto-approve-label input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #10b981;
+        }
+        .auto-approve-label span {
+            font-weight: 600;
+            color: #10b981;
+        }
+        .auto-approve-hint {
+            font-size: 11px;
+            color: var(--gray-500);
+        }
+        
         @media (max-width: 1024px) { .stats-row { grid-template-columns: repeat(4, 1fr); } }
         @media (max-width: 768px) {
             .admin-header { flex-direction: column; text-align: center; }
@@ -267,6 +303,17 @@
             <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Bulk Approve/Reject/Delete | "Select All" selects ALL filtered products</p>
         </div>
 
+        <!-- Auto-Approve Section -->
+        <div class="auto-approve-section">
+            <label class="auto-approve-label">
+                <input type="checkbox" id="autoApproveToggle" onchange="toggleAutoApprove()">
+                <span><i class="fas fa-magic"></i> Auto-Approve on Stock Update</span>
+            </label>
+            <div class="auto-approve-hint">
+                <i class="fas fa-info-circle"></i> When enabled, products with stock > 0 are automatically approved. Products with stock = 0 remain pending.
+            </div>
+        </div>
+
         <div class="stats-row">
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-boxes"></i></div><div class="stat-number" id="totalVendor">0</div><div class="stat-label">Total Products</div></div>
             <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-number" id="approvedCount">0</div><div class="stat-label">Approved</div></div>
@@ -293,8 +340,8 @@
             <div><i class="fas fa-check-square"></i> <span class="bulk-count" id="selectedCount">0</span> product(s) selected</div>
             <div class="bulk-buttons">
                 <button class="btn-primary" onclick="bulkApprove()"><i class="fas fa-check-circle"></i> Bulk Approve</button>
-                <button class="btn-danger" onclick="bulkReject()" style="background: rgba(239,68,68,0.15); color: #ef4444;"><i class="fas fa-times-circle"></i> Bulk Reject</button>
-                <button class="btn-danger" onclick="bulkDelete()" style="background: rgba(239,68,68,0.15); color: #ef4444;"><i class="fas fa-trash-alt"></i> Bulk Delete</button>
+                <button class="btn-danger-outline" onclick="bulkReject()"><i class="fas fa-times-circle"></i> Bulk Reject</button>
+                <button class="btn-danger-outline" onclick="bulkDelete()"><i class="fas fa-trash-alt"></i> Bulk Delete</button>
                 <button class="btn-secondary" onclick="clearSelection()"><i class="fas fa-times"></i> Clear</button>
             </div>
         </div>
@@ -322,7 +369,10 @@
                     <option value="d360">D360 Products</option>
                     <option value="video">Has Video</option>
                 </select>
-                <label class="select-all-checkbox"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"> Select All (All Filtered Products)</label>
+                <label class="select-all-checkbox">
+                    <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"> 
+                    Select All (All Filtered Products)
+                </label>
                 <span id="liveSelectionInfo" class="selection-info"></span>
                 <button class="btn-primary" onclick="refreshVendorProducts()"><i class="fas fa-sync-alt"></i> Refresh</button>
                 <button class="btn-secondary" onclick="exportVendorCSV()"><i class="fas fa-file-excel"></i> Export CSV</button>
@@ -341,11 +391,11 @@
     </div>
 
     <!-- Modals -->
-    <div id="editModal" class="modal"><div class="modal-content"><h3>Edit Vendor Product</h3><input type="hidden" id="editId"><div class="form-group"><label>Product Name</label><input type="text" id="editProductName"></div><div class="form-group"><label>SKU</label><input type="text" id="editSku"></div><div class="form-row"><div class="form-group"><label>Category</label><input type="text" id="editCategory"></div><div class="form-group"><label>Price (₹)</label><input type="number" id="editPrice" step="0.01"></div></div><div class="form-row"><div class="form-group"><label>GST (%)</label><input type="number" id="editGst" step="0.01"></div><div class="form-group"><label>Stock</label><input type="number" id="editStock"></div></div><div class="form-group"><label>Description</label><textarea id="editDescription" rows="3"></textarea></div><div class="form-row"><div class="form-group"><label>Image URL 1</label><input type="url" id="editImage1"></div><div class="form-group"><label>Image URL 2</label><input type="url" id="editImage2"></div></div><div class="form-row"><div class="form-group"><label>Image URL 3</label><input type="url" id="editImage3"></div><div class="form-group"><label>Video URL</label><input type="url" id="editVideo"></div></div><div class="form-row"><div class="form-group"><label>Carat</label><input type="number" id="editCarat" step="0.01"></div><div class="form-group"><label>Diamond Color</label><input type="text" id="editDiamondColor"></div></div><div class="form-row"><div class="form-group"><label>Diamond Clarity</label><input type="text" id="editDiamondClarity"></div><div class="form-group"><label>Diamond Cut</label><input type="text" id="editDiamondCut"></div></div><div class="modal-buttons" style="display:flex;gap:12px;margin-top:20px;"><button class="btn-primary" onclick="saveEditProduct()">Save Changes</button><button class="btn-secondary" onclick="closeEditModal()">Cancel</button></div></div></div>
+    <div id="editModal" class="modal"><div class="modal-content"><h3>Edit Vendor Product</h3><input type="hidden" id="editId"><div class="form-group"><label>Product Name</label><input type="text" id="editProductName"></div><div class="form-group"><label>SKU</label><input type="text" id="editSku"></div><div class="form-row"><div class="form-group"><label>Category</label><input type="text" id="editCategory"></div><div class="form-group"><label>Price (₹)</label><input type="number" id="editPrice" step="0.01"></div></div><div class="form-row"><div class="form-group"><label>GST (%)</label><input type="number" id="editGst" step="0.01"></div><div class="form-group"><label>Stock</label><input type="number" id="editStock" onchange="checkAutoApproveOnEdit()"></div></div><div class="form-group"><label>Description</label><textarea id="editDescription" rows="3"></textarea></div><div class="form-row"><div class="form-group"><label>Image URL 1</label><input type="url" id="editImage1"></div><div class="form-group"><label>Image URL 2</label><input type="url" id="editImage2"></div></div><div class="form-row"><div class="form-group"><label>Image URL 3</label><input type="url" id="editImage3"></div><div class="form-group"><label>Video URL</label><input type="url" id="editVideo"></div></div><div class="form-row"><div class="form-group"><label>Carat</label><input type="number" id="editCarat" step="0.01"></div><div class="form-group"><label>Diamond Color</label><input type="text" id="editDiamondColor"></div></div><div class="form-row"><div class="form-group"><label>Diamond Clarity</label><input type="text" id="editDiamondClarity"></div><div class="form-group"><label>Diamond Cut</label><input type="text" id="editDiamondCut"></div></div><div class="modal-buttons" style="display:flex;gap:12px;margin-top:20px;"><button class="btn-primary" onclick="saveEditProduct()">Save Changes</button><button class="btn-secondary" onclick="closeEditModal()">Cancel</button></div></div></div>
     <div id="confirmModal" class="modal"><div class="modal-content"><h3 style="color:var(--danger);">Confirm Deletion</h3><p id="modalMessage">Delete this vendor product? This cannot be undone.</p><div style="display:flex;gap:12px;margin-top:25px;"><button class="btn-primary" onclick="confirmDelete()">Yes, Delete</button><button class="btn-secondary" onclick="closeConfirmModal()">Cancel</button></div></div></div>
     <div id="bulkConfirmModal" class="modal"><div class="modal-content"><h3 id="bulkConfirmTitle">Confirm Bulk Action</h3><p id="bulkConfirmMessage"></p><div style="display:flex;gap:12px;margin-top:25px;"><button class="btn-primary" id="bulkConfirmYes">Yes, Proceed</button><button class="btn-secondary" onclick="closeBulkConfirmModal()">Cancel</button></div></div></div>
 
-    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management | "Select All" selects ALL filtered products</p></footer>
+    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management | "Select All" selects ALL filtered products | Auto-Approve on Stock &gt; 0</p></footer>
 
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     <script type="module">
@@ -360,12 +410,27 @@
         let currentView = 'list';
         let pendingBulkAction = null;
         let pendingDelete = null;
+        let autoApproveEnabled = localStorage.getItem('autoApproveEnabled') === 'true';
         
         // Pagination variables
         let currentPage = 1;
         let itemsPerPage = 100;
         let totalProducts = 0;
         let filteredProducts = [];
+        
+        // Initialize auto-approve toggle
+        function initAutoApprove() {
+            const toggle = document.getElementById('autoApproveToggle');
+            if (toggle) {
+                toggle.checked = autoApproveEnabled;
+            }
+        }
+        
+        window.toggleAutoApprove = function() {
+            autoApproveEnabled = document.getElementById('autoApproveToggle').checked;
+            localStorage.setItem('autoApproveEnabled', autoApproveEnabled);
+            showToast(autoApproveEnabled ? 'Auto-Approve Enabled: Products with stock > 0 will be auto-approved' : 'Auto-Approve Disabled');
+        };
         
         function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com')); }
         function isD360Url(url) { return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); }
@@ -394,12 +459,11 @@
             return vendorCompanies.get(vendorId) || `Vendor ${vendorId?.slice(0, 8)}...`;
         }
         
-        // Load ALL products (handles pagination to get all data)
+        // Load ALL products
         async function loadVendorProducts() {
             try {
                 await loadCompanyNames();
                 
-                // Get total count first
                 const { count, error: countError } = await supabase
                     .from('vendor_products')
                     .select('*', { count: 'exact', head: true });
@@ -408,7 +472,6 @@
                 totalProducts = count || 0;
                 console.log(`✅ Total vendor products in database: ${totalProducts}`);
                 
-                // Load all products with pagination
                 let allData = [];
                 let from = 0;
                 const batchSize = 1000;
@@ -431,6 +494,11 @@
                 vendorProducts = allData;
                 console.log(`✅ Successfully loaded all ${vendorProducts.length} vendor products`);
                 
+                // Auto-approve products with stock > 0 if enabled
+                if (autoApproveEnabled) {
+                    await autoApproveProductsWithStock();
+                }
+                
                 updateStats();
                 updateCompanyAnalytics();
                 populateFilterOptions();
@@ -442,6 +510,45 @@
                 document.getElementById('gridView').innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Error: ${err.message}</p></div>`;
             }
         }
+        
+        // Auto-approve products with stock > 0
+        async function autoApproveProductsWithStock() {
+            const productsToApprove = vendorProducts.filter(p => p.stock > 0 && p.status !== 'approved');
+            
+            if (productsToApprove.length === 0) return;
+            
+            console.log(`🔄 Auto-approving ${productsToApprove.length} products with stock > 0`);
+            
+            for (const product of productsToApprove) {
+                const { error } = await supabase
+                    .from('vendor_products')
+                    .update({ status: 'approved', updated_at: new Date() })
+                    .eq('id', product.id);
+                
+                if (!error) {
+                    product.status = 'approved';
+                }
+            }
+            
+            if (productsToApprove.length > 0) {
+                showToast(`✅ Auto-approved ${productsToApprove.length} products with stock > 0`);
+            }
+        }
+        
+        // Check auto-approve on edit
+        window.checkAutoApproveOnEdit = function() {
+            if (!autoApproveEnabled) return;
+            
+            const stock = parseInt(document.getElementById('editStock').value) || 0;
+            if (stock > 0) {
+                // Suggest auto-approve
+                const confirmAutoApprove = confirm(`Stock is set to ${stock}. Would you like to approve this product automatically?`);
+                if (confirmAutoApprove) {
+                    // Will be handled in saveEditProduct
+                    window._autoApproveThisEdit = true;
+                }
+            }
+        };
         
         function updateStats() {
             const total = vendorProducts.length;
@@ -553,6 +660,13 @@
                 infoSpan.innerHTML = '';
                 infoSpan.style.display = 'none';
             }
+            
+            // Update select all checkbox state
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            if (selectAllCheckbox && total > 0) {
+                selectAllCheckbox.checked = selected === total;
+                selectAllCheckbox.indeterminate = selected > 0 && selected < total;
+            }
         }
         
         function applyFilters() {
@@ -583,7 +697,7 @@
                 controls.style.display = 'none';
             }
             
-            updateSelectAllCheckbox();
+            updateLiveSelectionInfo();
             updateBulkActionsBar();
         }
         
@@ -594,7 +708,7 @@
             const container = document.getElementById('listView');
             if (!products.length) { container.innerHTML = '<div class="empty-state"><i class="fas fa-store-slash"></i><p>No vendor products found.</p></div>'; return; }
             
-            let tableHtml = `<table class="list-view-table"><thead><tr><th style="width:40px"><input type="checkbox" id="listSelectAll" onchange="toggleSelectAllList()"></th><th style="width:60px">Image</th><th>Product</th><th>Company</th><th>SKU/Category</th><th>Price</th><th>Stock</th><th>Carat</th><th>Diamond Color</th><th>Diamond Clarity</th><th>Media</th><th>Status</th><th style="width:140px">Actions</th></tr></thead><tbody>`;
+            let tableHtml = `<table class="list-view-table"><thead><tr><th style="width:40px"><input type="checkbox" id="listSelectAll" onchange="toggleSelectAllList()" ${selectedProducts.size === filteredProducts.length && filteredProducts.length > 0 ? 'checked' : ''}></th><th style="width:60px">Image</th><th>Product</th><th>Company</th><th>SKU/Category</th><th>Price</th><th>Stock</th><th>Carat</th><th>Diamond Color</th><th>Diamond Clarity</th><th>Media</th><th>Status</th><th style="width:140px">Actions</th></tr></thead><tbody>`;
             for (const p of products) {
                 const imgUrl = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/50x50?text=No';
                 const isSelected = selectedProducts.has(p.id);
@@ -607,7 +721,10 @@
                 else if (hasVideo) mediaIcon = '<span class="diamond-badge-sm"><i class="fas fa-video"></i> Video</span>';
                 else if (p.image1_url || p.image2_url) mediaIcon = '<span class="diamond-badge-sm"><i class="fas fa-image"></i> Img</span>';
                 
-                tableHtml += `<tr class="${isSelected ? 'selected' : ''}"><td><input type="checkbox" class="list-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProductList(${p.id}, this.checked)"></td><td><img class="list-thumbnail" src="${imgUrl}" onerror="this.src='https://via.placeholder.com/50x50'"></td><td><strong>${escapeHtml(p.product_name)}</strong><br><span style="font-size:10px;color:var(--gray-500);">ID: ${p.id}</span></td><td><i class="fas fa-building" style="color:var(--primary);"></i> ${escapeHtml(companyName)}</span></td><td>${p.sku || 'N/A'}<br><span style="font-size:10px;">${p.category || '-'}</span></td><td>₹${(p.price || 0).toLocaleString()}<br><span style="font-size:10px;">+${p.gst || 18}%</span></td><td>${p.stock || 0}</td><td>${p.carat ? p.carat + 'ct' : '-'}</td><td>${p.diamond_color || '-'}</td><td>${p.diamond_clarity || '-'}</td><td>${mediaIcon}</td><td><span class="status-badge-sm ${statusClass}">${(p.status || 'pending').toUpperCase()}</span></td>
+                const stockColor = p.stock > 0 ? '#10b981' : '#ef4444';
+                
+                tableHtml += `<tr class="${isSelected ? 'selected' : ''}"><td><input type="checkbox" class="list-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProductList(${p.id}, this.checked)"></td><td><img class="list-thumbnail" src="${imgUrl}" onerror="this.src='https://via.placeholder.com/50x50'"></td><td><strong>${escapeHtml(p.product_name)}</strong><br><span style="font-size:10px;color:var(--gray-500);">ID: ${p.id}</span></td><td><i class="fas fa-building" style="color:var(--primary);"></i> ${escapeHtml(companyName)}</span></td><td>${p.sku || 'N/A'}<br><span style="font-size:10px;">${p.category || '-'}</span></td><td>₹${(p.price || 0).toLocaleString()}<br><span style="font-size:10px;">+${p.gst || 18}%</span></td><td style="color:${stockColor}; font-weight:600;">${p.stock || 0}</td>`;
+                tableHtml += `<td>${p.carat ? p.carat + 'ct' : '-'}</td><td>${p.diamond_color || '-'}</td><td>${p.diamond_clarity || '-'}</td><td>${mediaIcon}</td><td><span class="status-badge-sm ${statusClass}">${(p.status || 'pending').toUpperCase()}</span></td>
                 <td class="action-icons">${hasD360 ? `<button class="action-icon-btn view360" onclick="openD360Viewer('${escapeHtml(p.video_url)}')" title="360° View"><i class="fas fa-cube"></i></button>` : ''}<button class="action-icon-btn edit" onclick="openEditModal(${p.id})" title="Edit"><i class="fas fa-edit"></i></button>${p.status !== 'approved' ? `<button class="action-icon-btn approve" onclick="approveProduct(${p.id})" title="Approve"><i class="fas fa-check"></i></button>` : ''}${p.status !== 'rejected' ? `<button class="action-icon-btn reject" onclick="rejectProduct(${p.id})" title="Reject"><i class="fas fa-times"></i></button>` : ''}<button class="action-icon-btn delete" onclick="deleteProduct(${p.id})" title="Delete"><i class="fas fa-trash-alt"></i></button></td></tr>`;
             }
             tableHtml += '</tbody></table>';
@@ -623,6 +740,8 @@
                 const isSelected = selectedProducts.has(p.id);
                 const companyName = getCompanyName(p.vendor_id);
                 const statusClass = p.status === 'approved' ? 'status-approved' : (p.status === 'rejected' ? 'status-rejected' : 'status-pending');
+                const stockColor = p.stock > 0 ? '#10b981' : '#ef4444';
+                
                 html += `<div class="product-card ${isSelected ? 'selected' : ''}">
                     <input type="checkbox" class="product-select-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProduct(${p.id}, this.checked)">
                     <div style="position:relative;"><span class="product-badge">Vendor</span><img class="product-image" src="${imgUrl}" onerror="this.src='https://via.placeholder.com/400x200'"></div>
@@ -631,6 +750,7 @@
                         <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
                         <div class="vendor-name"><i class="fas fa-building"></i> ${escapeHtml(companyName)}</div>
                         <div class="product-price">₹${(p.price || 0).toLocaleString()} + ${p.gst || 18}% GST</div>
+                        <div style="margin: 5px 0;"><strong>Stock:</strong> <span style="color:${stockColor};">${p.stock || 0} units</span></div>
                         ${p.carat || p.diamond_color || p.diamond_clarity ? `<div class="diamond-specs">${p.carat ? `<span class="diamond-spec"><i class="fas fa-gem"></i> ${p.carat}ct</span>` : ''}${p.diamond_color ? `<span class="diamond-spec">🎨 ${p.diamond_color}</span>` : ''}${p.diamond_clarity ? `<span class="diamond-spec">🔍 ${p.diamond_clarity}</span>` : ''}</div>` : ''}
                         <div class="status-badge ${statusClass}">${(p.status || 'pending').toUpperCase()}</div>
                         <div class="card-actions">
@@ -645,13 +765,6 @@
             container.innerHTML = html;
         }
         
-        function updateSelectAllCheckbox() {
-            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-            const listSelectAll = document.getElementById('listSelectAll');
-            if (selectAllCheckbox) selectAllCheckbox.checked = false;
-            if (listSelectAll) listSelectAll.checked = false;
-        }
-        
         function updateBulkActionsBar() {
             const bar = document.getElementById('bulkActionsBar');
             const count = selectedProducts.size;
@@ -660,16 +773,17 @@
             else bar.classList.remove('active');
         }
         
-        // IMPORTANT: toggleSelectProduct selects/deselects a single product
+        // Single product selection
         window.toggleSelectProduct = function(id, checked) {
             if (checked) selectedProducts.add(id);
             else selectedProducts.delete(id);
             updateBulkActionsBar();
             updateLiveSelectionInfo();
+            updatePagination(); // Refresh to show selection state
         };
         window.toggleSelectProductList = window.toggleSelectProduct;
         
-        // IMPORTANT: toggleSelectAll selects ALL filtered products (not just current page)
+        // Select ALL filtered products (not just current page)
         window.toggleSelectAll = function() {
             const selectAllCheckbox = document.getElementById('selectAllCheckbox');
             if (selectAllCheckbox.checked) {
@@ -683,8 +797,7 @@
             }
             updateBulkActionsBar();
             updateLiveSelectionInfo();
-            // Refresh the current page view to show checkboxes updated
-            updatePagination();
+            updatePagination(); // Refresh the current page view to show checkboxes updated
         };
         window.toggleSelectAllList = window.toggleSelectAll;
         
@@ -728,9 +841,9 @@
         function hideBulkProgress() { setTimeout(() => { document.getElementById('bulkProgressContainer').classList.remove('active'); document.getElementById('bulkProgressFill').style.width = '0%'; }, 1500); }
         function showBulkConfirm(title, message, action) { pendingBulkAction = action; document.getElementById('bulkConfirmTitle').innerHTML = title; document.getElementById('bulkConfirmMessage').innerHTML = message; document.getElementById('bulkConfirmModal').classList.add('active'); }
         window.closeBulkConfirmModal = function() { document.getElementById('bulkConfirmModal').classList.remove('active'); pendingBulkAction = null; };
-        window.bulkApprove = function() { if (selectedProducts.size === 0) { showToast('No products selected', true); return; } showBulkConfirm(' Bulk Approve', `Approve ${selectedProducts.size} product(s)?`, 'approve'); };
-        window.bulkReject = function() { if (selectedProducts.size === 0) { showToast('No products selected', true); return; } showBulkConfirm(' Bulk Reject', `Reject ${selectedProducts.size} product(s)?`, 'reject'); };
-        window.bulkDelete = function() { if (selectedProducts.size === 0) { showToast('No products selected', true); return; } showBulkConfirm(' Bulk Delete', `⚠️ DELETE ${selectedProducts.size} product(s)? This cannot be undone!`, 'delete'); };
+        window.bulkApprove = function() { if (selectedProducts.size === 0) { showToast('No products selected', true); return; } showBulkConfirm('Bulk Approve', `Approve ${selectedProducts.size} product(s)?`, 'approve'); };
+        window.bulkReject = function() { if (selectedProducts.size === 0) { showToast('No products selected', true); return; } showBulkConfirm('Bulk Reject', `Reject ${selectedProducts.size} product(s)?`, 'reject'); };
+        window.bulkDelete = function() { if (selectedProducts.size === 0) { showToast('No products selected', true); return; } showBulkConfirm('Bulk Delete', `⚠️ DELETE ${selectedProducts.size} product(s)? This cannot be undone!`, 'delete'); };
         
         async function executeBulkAction() {
             const action = pendingBulkAction;
@@ -757,10 +870,32 @@
         }
         document.getElementById('bulkConfirmYes').onclick = executeBulkAction;
         
-        window.approveProduct = async function(id) { if (!confirm('Approve this product?')) return; await supabase.from('vendor_products').update({ status: 'approved', updated_at: new Date() }).eq('id', id); showToast('✅ Product approved'); await loadVendorProducts(); };
-        window.rejectProduct = async function(id) { if (!confirm('Reject this product?')) return; await supabase.from('vendor_products').update({ status: 'rejected', updated_at: new Date() }).eq('id', id); showToast('❌ Product rejected'); await loadVendorProducts(); };
-        window.deleteProduct = function(id) { pendingDelete = id; const product = vendorProducts.find(p => p.id === id); document.getElementById('modalMessage').innerHTML = `⚠️ Delete "${escapeHtml(product?.product_name || 'this product')}"? This cannot be undone!`; document.getElementById('confirmModal').classList.add('active'); };
-        window.confirmDelete = async function() { if (!pendingDelete) return; await supabase.from('vendor_products').delete().eq('id', pendingDelete); showToast('✅ Product deleted'); await loadVendorProducts(); closeConfirmModal(); pendingDelete = null; };
+        window.approveProduct = async function(id) { 
+            if (!confirm('Approve this product?')) return; 
+            await supabase.from('vendor_products').update({ status: 'approved', updated_at: new Date() }).eq('id', id); 
+            showToast('✅ Product approved'); 
+            await loadVendorProducts(); 
+        };
+        window.rejectProduct = async function(id) { 
+            if (!confirm('Reject this product?')) return; 
+            await supabase.from('vendor_products').update({ status: 'rejected', updated_at: new Date() }).eq('id', id); 
+            showToast('❌ Product rejected'); 
+            await loadVendorProducts(); 
+        };
+        window.deleteProduct = function(id) { 
+            pendingDelete = id; 
+            const product = vendorProducts.find(p => p.id === id); 
+            document.getElementById('modalMessage').innerHTML = `⚠️ Delete "${escapeHtml(product?.product_name || 'this product')}"? This cannot be undone!`; 
+            document.getElementById('confirmModal').classList.add('active'); 
+        };
+        window.confirmDelete = async function() { 
+            if (!pendingDelete) return; 
+            await supabase.from('vendor_products').delete().eq('id', pendingDelete); 
+            showToast('✅ Product deleted'); 
+            await loadVendorProducts(); 
+            closeConfirmModal(); 
+            pendingDelete = null; 
+        };
         window.closeConfirmModal = function() { document.getElementById('confirmModal').classList.remove('active'); pendingDelete = null; };
         
         window.openEditModal = async function(id) {
@@ -787,13 +922,21 @@
         
         window.saveEditProduct = async function() {
             const id = document.getElementById('editId').value;
+            const newStock = parseInt(document.getElementById('editStock').value) || 0;
+            let newStatus = null;
+            
+            // Auto-approve logic
+            if (autoApproveEnabled && newStock > 0) {
+                newStatus = 'approved';
+            }
+            
             const updates = {
                 product_name: document.getElementById('editProductName').value,
                 sku: document.getElementById('editSku').value,
                 category: document.getElementById('editCategory').value,
                 price: parseFloat(document.getElementById('editPrice').value),
                 gst: parseFloat(document.getElementById('editGst').value) || 18,
-                stock: parseInt(document.getElementById('editStock').value) || 0,
+                stock: newStock,
                 description: document.getElementById('editDescription').value,
                 image1_url: document.getElementById('editImage1').value,
                 image2_url: document.getElementById('editImage2').value,
@@ -805,9 +948,21 @@
                 diamond_cut: document.getElementById('editDiamondCut').value || null,
                 updated_at: new Date()
             };
+            
+            if (newStatus) {
+                updates.status = newStatus;
+            }
+            
             if (!updates.product_name || !updates.sku) { showToast('Product name and SKU are required', true); return; }
+            
             await supabase.from('vendor_products').update(updates).eq('id', id);
-            showToast('✅ Product updated');
+            
+            if (newStatus) {
+                showToast(`✅ Product updated and auto-approved (stock: ${newStock})`);
+            } else {
+                showToast('✅ Product updated');
+            }
+            
             closeEditModal();
             await loadVendorProducts();
         };
@@ -839,6 +994,8 @@
         window.logout = function() { sessionStorage.removeItem('adminLoggedIn'); window.location.href = 'login.html'; };
         window.onclick = function(event) { if (event.target === document.getElementById('confirmModal')) closeConfirmModal(); if (event.target === document.getElementById('bulkConfirmModal')) closeBulkConfirmModal(); if (event.target === document.getElementById('editModal')) closeEditModal(); };
         
+        // Initialize
+        initAutoApprove();
         loadVendorProducts();
     </script>
 </body>
