@@ -185,7 +185,6 @@
             border: 1px solid var(--gray-200);
             display: none;
         }
-        .bulk-progress-container.active { display: block; }
         .bulk-progress-bar { height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; margin: 10px 0; }
         .bulk-progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #b8962e); width: 0%; transition: width 0.3s ease; }
         
@@ -201,14 +200,13 @@
         .btn-danger-outline { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.5); color: #ef4444; padding: 8px 20px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
         .btn-danger-outline:hover { background: rgba(239,68,68,0.3); transform: translateY(-2px); }
         
-        /* Virtual Scroll Container */
-        .virtual-scroll-container {
-            height: calc(100vh - 280px);
+        /* Scrollable Container */
+        .data-container {
+            height: calc(100vh - 320px);
             overflow-y: auto;
             background: white;
             border-radius: 20px;
             border: 1px solid var(--gray-200);
-            position: relative;
         }
         
         .list-view-table {
@@ -257,9 +255,9 @@
         .action-icon-btn.delete { color: #ef4444; }
         .action-icon-btn.delete:hover { background: rgba(239,68,68,0.15); }
         
-        /* Grid View with virtual scroll */
+        /* Grid View */
         .grid-view-container {
-            height: calc(100vh - 280px);
+            height: calc(100vh - 320px);
             overflow-y: auto;
             padding: 5px;
         }
@@ -293,22 +291,6 @@
         .action-btn.reject { background: #ef4444; color: white; }
         .action-btn.edit { background: #3b82f6; color: white; }
         .action-btn.delete { background: rgba(239,68,68,0.1); color: #ef4444; }
-        
-        .loading-more {
-            text-align: center;
-            padding: 20px;
-            color: var(--gray-500);
-        }
-        .loading-spinner-small {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--gray-200);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-            margin-right: 8px;
-        }
         
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
@@ -344,6 +326,16 @@
             gap: 15px;
         }
         
+        .product-count-badge {
+            background: var(--primary);
+            color: var(--darker);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 15px;
+        }
+        
         @media (max-width: 1024px) { .stats-row { grid-template-columns: repeat(4, 1fr); } }
         @media (max-width: 768px) {
             .admin-header { flex-direction: column; text-align: center; }
@@ -370,12 +362,13 @@
         <div class="page-header">
             <div class="page-title">
                 <i class="fas fa-store"></i> Vendor Product Management
+                <span class="product-count-badge" id="totalProductBadge">0 Products</span>
                 <div class="view-toggle">
                     <button class="view-btn" onclick="setView('list')"><i class="fas fa-list"></i> List View</button>
                     <button class="view-btn" onclick="setView('grid')"><i class="fas fa-th"></i> Grid View</button>
                 </div>
             </div>
-            <p style="color: var(--gray-600); margin-top: 5px;">Supports millions of products with virtual scrolling | Price comparison by Carat Group + Color + Clarity</p>
+            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Real-time price comparison across matching diamonds (Carat Group + Color + Clarity) | Showing ALL products</p>
         </div>
 
         <!-- Price Comparison Summary Section -->
@@ -489,14 +482,14 @@
             </div>
         </div>
 
-        <!-- List View with Virtual Scroll -->
-        <div id="listView" class="virtual-scroll-container" style="display: block;">
-            <div class="loading"><div class="spinner"></div><p>Loading vendor products...</p></div>
+        <!-- List View -->
+        <div id="listView" class="data-container" style="display: block;">
+            <div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p></div>
         </div>
         
-        <!-- Grid View with Virtual Scroll -->
+        <!-- Grid View -->
         <div id="gridView" class="grid-view-container" style="display: none;">
-            <div class="loading"><div class="spinner"></div><p>Loading vendor products...</p></div>
+            <div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p></div>
         </div>
     </div>
 
@@ -507,7 +500,7 @@
     <div id="confirmModal" class="modal"><div class="modal-content"><h3 style="color:var(--danger);">Confirm Deletion</h3><p id="modalMessage">Delete this vendor product? This cannot be undone.</p><div style="display:flex;gap:12px;margin-top:25px;"><button class="btn-primary" onclick="confirmDelete()">Yes, Delete</button><button class="btn-secondary" onclick="closeConfirmModal()">Cancel</button></div></div></div>
     <div id="bulkConfirmModal" class="modal"><div class="modal-content"><h3 id="bulkConfirmTitle">Confirm Bulk Action</h3><p id="bulkConfirmMessage"></p><div style="display:flex;gap:12px;margin-top:25px;"><button class="btn-primary" id="bulkConfirmYes">Yes, Proceed</button><button class="btn-secondary" onclick="closeBulkConfirmModal()">Cancel</button></div></div></div>
 
-    <footer><p>© 2026 STYLE OF LIFE | Supports millions of products with virtual scrolling | Price comparison matches: Carat Group + Diamond Color + Diamond Clarity</p></footer>
+    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management | Price comparison matches: Carat Group + Diamond Color + Diamond Clarity | Showing ALL ${totalProducts} products</p></footer>
 
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     <script type="module">
@@ -523,12 +516,8 @@
         let pendingBulkAction = null;
         let pendingDelete = null;
         let autoApproveEnabled = localStorage.getItem('autoApproveEnabled') === 'true';
-        let isLoading = false;
-        let hasMore = true;
-        let currentPage = 0;
-        const PAGE_SIZE = 500;
         
-        // Price comparison data (built from loaded products)
+        // Price comparison data
         let priceComparisonMap = new Map();
         let productComparison = new Map();
         
@@ -675,93 +664,47 @@
             return vendorCompanies.get(vendorId) || `Vendor ${vendorId?.slice(0, 8)}...`;
         }
         
-        // Load products in batches (virtual scrolling)
-        async function loadMoreProducts() {
-            if (isLoading || !hasMore) return;
-            
-            isLoading = true;
-            const start = currentPage * PAGE_SIZE;
-            
+        // Load ALL products at once (no pagination limit)
+        async function loadVendorProducts() {
             try {
+                await loadCompanyNames();
+                
+                // Show loading state
+                document.getElementById('listView').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p></div>';
+                document.getElementById('gridView').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p></div>';
+                
+                // Load ALL products without limit
                 const { data, error, count } = await supabase
                     .from('vendor_products')
                     .select('*', { count: 'exact' })
-                    .order('id', { ascending: false })
-                    .range(start, start + PAGE_SIZE - 1);
+                    .order('id', { ascending: false });
                 
                 if (error) throw error;
                 
-                if (data && data.length > 0) {
-                    allProducts.push(...data);
-                    currentPage++;
-                    
-                    if (data.length < PAGE_SIZE) {
-                        hasMore = false;
-                    }
-                    
-                    // Update stats and comparison
-                    updateStats();
-                    buildPriceComparisonMap(allProducts);
-                    updateComparisonStats();
-                    updateCompanyAnalytics();
-                    populateFilterOptions();
-                    
-                    // Render current view
-                    renderCurrentView();
-                } else {
-                    hasMore = false;
+                allProducts = data || [];
+                console.log(`✅ Loaded ${allProducts.length} vendor products`);
+                
+                // Update total badge
+                document.getElementById('totalProductBadge').innerHTML = `${allProducts.length} Products`;
+                
+                // Build price comparison map
+                buildPriceComparisonMap(allProducts);
+                updateComparisonStats();
+                
+                if (autoApproveEnabled) {
+                    await autoApproveProductsWithStock();
                 }
+                
+                updateStats();
+                updateCompanyAnalytics();
+                populateFilterOptions();
+                renderCurrentView();
+                
             } catch (err) {
                 console.error('Error loading products:', err);
-                hasMore = false;
-            } finally {
-                isLoading = false;
+                document.getElementById('listView').innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Error: ${err.message}</p></div>`;
+                document.getElementById('gridView').innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Error: ${err.message}</p></div>`;
             }
-        }
-        
-        // Initial load
-        async function loadVendorProducts() {
-            await loadCompanyNames();
-            currentPage = 0;
-            allProducts = [];
-            hasMore = true;
-            selectedProducts.clear();
-            
-            document.getElementById('listView').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading products...</p></div>';
-            document.getElementById('gridView').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading products...</p></div>';
-            
-            await loadMoreProducts();
-            
-            // Setup scroll listener for infinite scroll
-            setupScrollListener();
-        }
-        
-        function setupScrollListener() {
-            const container = currentView === 'list' ? document.getElementById('listView') : document.getElementById('gridView');
-            if (!container) return;
-            
-            const handleScroll = () => {
-                if (container.scrollTop + container.clientHeight >= container.scrollHeight - 200) {
-                    loadMoreProducts();
-                }
-            };
-            
-            container.removeEventListener('scroll', handleScroll);
-            container.addEventListener('scroll', handleScroll);
-        }
-        
-        function renderCurrentView() {
-            const filtered = getFilteredProductsList();
-            
-            if (currentView === 'grid') {
-                renderGridView(filtered);
-            } else {
-                renderListView(filtered);
-            }
-            
-            updateLiveSelectionInfo();
-            updateBulkActionsBar();
-            setupScrollListener();
         }
         
         async function autoApproveProductsWithStock() {
@@ -928,6 +871,19 @@
                 selectAllCheckbox.checked = selected === total;
                 selectAllCheckbox.indeterminate = selected > 0 && selected < total;
             }
+        }
+        
+        function renderCurrentView() {
+            const filtered = getFilteredProductsList();
+            
+            if (currentView === 'grid') {
+                renderGridView(filtered);
+            } else {
+                renderListView(filtered);
+            }
+            
+            updateLiveSelectionInfo();
+            updateBulkActionsBar();
         }
         
         function renderListView(products) {
@@ -1120,7 +1076,6 @@
                 document.getElementById('gridView').style.display = 'block'; 
             } 
             renderCurrentView();
-            setupScrollListener();
         };
         
         window.openD360Viewer = function(url) {
