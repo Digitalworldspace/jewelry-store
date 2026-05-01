@@ -36,7 +36,6 @@
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
         }
         
         body {
@@ -45,6 +44,21 @@
             color: var(--gray-800);
             min-height: 100vh;
             overflow-x: hidden;
+        }
+        
+        /* Loading Progress Indicator */
+        .loading-progress {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-size: 12px;
+            z-index: 1000;
+            display: none;
         }
         
         /* Main UI */
@@ -249,10 +263,6 @@
             border: 1px solid rgba(212,175,55,0.2);
         }
         .bulk-actions-bar.active { display: flex; }
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
         .bulk-info { display: flex; align-items: center; gap: 12px; }
         .bulk-count { background: var(--primary); color: white; padding: 4px 12px; border-radius: 30px; font-weight: 700; font-size: 14px; }
         .bulk-buttons { display: flex; gap: 12px; }
@@ -532,6 +542,11 @@
     </style>
 </head>
 <body>
+    <!-- Loading Progress Indicator -->
+    <div id="loadingProgress" class="loading-progress">
+        <span id="progressText">Loading products...</span>
+    </div>
+
     <div class="vendor-header">
         <div class="logo">
             <i class="fas fa-store"></i> STYLE OF LIFE <span>VENDOR PORTAL</span>
@@ -899,6 +914,76 @@
             }
         }
         
+        // ========== LOAD ALL PRODUCTS WITH BATCH FETCHING ==========
+        async function loadAllProductsBatch() {
+            const progressDiv = document.getElementById('loadingProgress');
+            const progressText = document.getElementById('progressText');
+            progressDiv.style.display = 'block';
+            
+            try {
+                // First, get total count for this vendor
+                const { count, error: countError } = await supabase
+                    .from('vendor_products')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('vendor_id', currentCompanyId);
+                
+                if (countError) throw countError;
+                
+                const totalRecords = count || 0;
+                console.log(`📊 Total products for this vendor: ${totalRecords}`);
+                
+                if (totalRecords === 0) {
+                    progressDiv.style.display = 'none';
+                    return [];
+                }
+                
+                // Calculate number of batches needed (batch size 1000)
+                const BATCH_SIZE = 1000;
+                const totalBatches = Math.ceil(totalRecords / BATCH_SIZE);
+                
+                let allData = [];
+                let loadedCount = 0;
+                
+                // Fetch all batches
+                for (let batch = 0; batch < totalBatches; batch++) {
+                    const from = batch * BATCH_SIZE;
+                    const to = from + BATCH_SIZE - 1;
+                    
+                    progressText.innerHTML = `Loading products... ${loadedCount} / ${totalRecords} (Batch ${batch + 1}/${totalBatches})`;
+                    
+                    const { data, error } = await supabase
+                        .from('vendor_products')
+                        .select('*')
+                        .eq('vendor_id', currentCompanyId)
+                        .order('id', { ascending: false })
+                        .range(from, to);
+                    
+                    if (error) throw error;
+                    
+                    if (data && data.length > 0) {
+                        allData.push(...data);
+                        loadedCount += data.length;
+                    }
+                    
+                    // Small delay to prevent rate limiting
+                    await new Promise(r => setTimeout(r, 100));
+                }
+                
+                console.log(`✅ Successfully loaded ${allData.length} products for vendor`);
+                progressText.innerHTML = `Loaded ${allData.length} products! Processing...`;
+                
+                return allData;
+                
+            } catch (err) {
+                console.error('Error loading products in batches:', err);
+                throw err;
+            } finally {
+                setTimeout(() => {
+                    progressDiv.style.display = 'none';
+                }, 500);
+            }
+        }
+        
         // ========== DUPLICATE CERTIFICATE CHECK ==========
         async function checkDuplicateCertificate() {
             const labReportNo = document.getElementById('lab_report_no')?.value.trim();
@@ -1008,12 +1093,9 @@
         }
         
         async function loadDashboard() {
-            const { data: products, error: productsError } = await supabase
-                .from('vendor_products')
-                .select('*')
-                .eq('vendor_id', currentCompanyId);
-            
-            if (productsError) console.error('Error loading products:', productsError);
+            // Use batch loading for dashboard products
+            const products = await loadAllProductsBatch();
+            allProducts = products || [];
             
             const { data: orders, error: ordersError } = await supabase
                 .from('vendor_orders')
@@ -1022,7 +1104,6 @@
             
             if (ordersError) console.error('Error loading orders:', ordersError);
             
-            allProducts = products || [];
             allOrders = orders || [];
             
             const totalProducts = allProducts.length;
@@ -1115,19 +1196,9 @@
         }
         
         async function loadProducts() {
-            const { data, error } = await supabase
-                .from('vendor_products')
-                .select('*')
-                .eq('vendor_id', currentCompanyId)
-                .order('id', { ascending: false });
-            
-            if (error) {
-                console.error('Error loading products:', error);
-                showToast('Error loading products', true);
-                return;
-            }
-            
-            allProducts = data || [];
+            // Use batch loading to get ALL products
+            const products = await loadAllProductsBatch();
+            allProducts = products || [];
             
             categoriesSet.clear();
             availableColors.clear();
@@ -1182,7 +1253,7 @@
                     <td>${new Date(o.created_at).toLocaleDateString()}</td>
                 </tr>`; 
             });
-            html += '</tbody></td></div>';
+            html += '</tbody></table></div>';
             container.innerHTML = html;
         }
         
