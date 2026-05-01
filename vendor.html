@@ -632,7 +632,7 @@
                 </div>
             </div>
             
-            <!-- PRODUCTS PAGE -->
+            <!-- PRODUCTS PAGE - FIXED: Only shows current vendor's products -->
             <div id="productsPage" style="display: none;">
                 <div class="page-header">
                     <div class="page-title">📦 My Ocean Treasures</div>
@@ -692,7 +692,7 @@
                     <div class="filter-stats" id="filterStats"></div>
                 </div>
                 
-                <div id="productsListContainer" class="products-list"><div class="loading"><div class="spinner"></div><p>Loading treasures...</p></div></div>
+                <div id="productsListContainer" class="products-list"><div class="loading"><div class="spinner"></div><p>Loading your treasures...</p></div></div>
             </div>
             
             <!-- ADD PRODUCT PAGE -->
@@ -1011,8 +1011,20 @@
         }
         
         async function loadDashboard() {
-            const { data: products } = await supabase.from('vendor_products').select('*').eq('vendor_id', currentCompanyId);
-            const { data: orders } = await supabase.from('vendor_orders').select('*').eq('vendor_id', currentCompanyId);
+            // IMPORTANT: Only get products for this vendor
+            const { data: products, error: productsError } = await supabase
+                .from('vendor_products')
+                .select('*')
+                .eq('vendor_id', currentCompanyId);
+            
+            if (productsError) console.error('Error loading products:', productsError);
+            
+            const { data: orders, error: ordersError } = await supabase
+                .from('vendor_orders')
+                .select('*')
+                .eq('vendor_id', currentCompanyId);
+            
+            if (ordersError) console.error('Error loading orders:', ordersError);
             
             allProducts = products || [];
             allOrders = orders || [];
@@ -1107,7 +1119,19 @@
         }
         
         async function loadProducts() {
-            const { data, error } = await supabase.from('vendor_products').select('*').eq('vendor_id', currentCompanyId).order('id', { ascending: false });
+            // IMPORTANT: Only get products for this vendor
+            const { data, error } = await supabase
+                .from('vendor_products')
+                .select('*')
+                .eq('vendor_id', currentCompanyId)
+                .order('id', { ascending: false });
+            
+            if (error) {
+                console.error('Error loading products:', error);
+                showToast('Error loading products', true);
+                return;
+            }
+            
             allProducts = data || [];
             
             categoriesSet.clear();
@@ -1132,16 +1156,38 @@
             claritySelect.innerHTML = '<option value="all">All Clarity</option>';
             Array.from(availableClarities).sort().forEach(clarity => { claritySelect.innerHTML += `<option value="${clarity}">${clarity}</option>`; });
             
+            // Update product count badge
+            document.getElementById('productCount').innerText = allProducts.length;
+            
             applyAllFilters();
         }
         
         async function loadOrders() {
             const container = document.getElementById('ordersList');
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading orders...</p></div>';
-            const { data, error } = await supabase.from('vendor_orders').select('*').eq('vendor_id', currentCompanyId).order('created_at', { ascending: false });
-            if (error || !data?.length) { container.innerHTML = '<div class="loading">📭 No orders yet</div>'; return; }
+            
+            const { data, error } = await supabase
+                .from('vendor_orders')
+                .select('*')
+                .eq('vendor_id', currentCompanyId)
+                .order('created_at', { ascending: false });
+            
+            if (error || !data?.length) { 
+                container.innerHTML = '<div class="loading">📭 No orders yet</div>'; 
+                return; 
+            }
+            
             let html = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;"><thead><tr style="background:rgba(0,212,255,0.1);"><th style="padding:12px;text-align:left;">Order ID</th><th>Product</th><th>Qty</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
-            data.forEach(o => { html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><td style="padding:12px;">${o.order_id}</td><td>${escapeHtml(o.product_name)}</td><td>${o.quantity}</td><td>₹${o.total_amount?.toLocaleString()}</td><td><span style="background:rgba(0,212,255,0.2);padding:4px 12px;border-radius:20px;">${o.order_status || 'Pending'}</span></td><td>${new Date(o.created_at).toLocaleDateString()}</td></tr>`; });
+            data.forEach(o => { 
+                html += `<tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <td style="padding:12px;">${o.order_id}</td>
+                    <td>${escapeHtml(o.product_name)}</td>
+                    <td>${o.quantity}</td>
+                    <td>₹${o.total_amount?.toLocaleString()}</td>
+                    <td><span style="background:rgba(0,212,255,0.2);padding:4px 12px;border-radius:20px;">${o.order_status || 'Pending'}</span></td>
+                    <td>${new Date(o.created_at).toLocaleDateString()}</td>
+                </tr>`; 
+            });
             html += '</tbody></table></div>';
             container.innerHTML = html;
         }
@@ -1187,12 +1233,11 @@
             const BATCH_SIZE = 100;
             for (let i = 0; i < selectedIds.length; i += BATCH_SIZE) {
                 const batch = selectedIds.slice(i, i + BATCH_SIZE);
-                const { error } = await supabase.from('vendor_products').delete().in('id', batch);
+                const { error } = await supabase.from('vendor_products').delete().in('id', batch).eq('vendor_id', currentCompanyId);
                 if (!error) success += batch.length;
                 await new Promise(r => setTimeout(r, 50));
             }
             
-            // Log bulk delete activity
             await logVendorActivity('delete_product', `Bulk deleted ${success} products`);
             
             showToast(`🗑️ ${success} product(s) deleted`);
@@ -1250,7 +1295,7 @@
         
         function renderProductList(products) {
             const container = document.getElementById('productsListContainer');
-            if (!products.length) { container.innerHTML = '<div class="loading">✨ No products match your filters</div>'; return; }
+            if (!products.length) { container.innerHTML = '<div class="loading">✨ No products found. Click "Add Product" to get started!</div>'; return; }
             let html = '';
             for (const p of products) {
                 const img = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/200x200?text=No+Image';
@@ -1354,6 +1399,7 @@
         
         window.editProduct = async function(id) {
             const { data } = await supabase.from('vendor_products').select('*').eq('id', id).single();
+            if (!data) return;
             document.getElementById('editProductId').value = data.id;
             document.getElementById('sku').value = data.sku;
             document.getElementById('product_name').value = data.product_name;
@@ -1386,7 +1432,7 @@
         window.deleteProduct = async function(id) { 
             if (confirm('Delete this product?')) { 
                 const product = allProducts.find(p => p.id === id);
-                await supabase.from('vendor_products').delete().eq('id', id); 
+                await supabase.from('vendor_products').delete().eq('id', id).eq('vendor_id', currentCompanyId); 
                 await logVendorActivity('delete_product', `Deleted product: ${product?.product_name || 'Unknown'} (ID: ${id})`);
                 showToast('✅ Product deleted'); 
                 selectedProductIds.delete(id);
@@ -1509,9 +1555,15 @@
                 progressFill.style.width = '5%';
                 progressPercent.innerText = '5%';
                 
-                const { data: existingVendorProducts } = await supabase.from('vendor_products').select('sku, lab_report_no').eq('vendor_id', currentCompanyId);
+                // Get existing SKUs for this vendor only
+                const { data: existingVendorProducts } = await supabase
+                    .from('vendor_products')
+                    .select('sku, lab_report_no')
+                    .eq('vendor_id', currentCompanyId);
+                
                 const existingSkus = new Set(existingVendorProducts?.map(p => p.sku) || []);
                 
+                // Get all certificates from ALL vendors for duplicate check
                 const { data: allCertificates } = await supabase.from('vendor_products').select('lab_report_no').not('lab_report_no', 'is', null);
                 const globalCertificates = new Set(allCertificates?.map(c => c.lab_report_no) || []);
                 
@@ -1622,7 +1674,6 @@
                 progressPercent.innerText = '100%';
                 batchStatusDiv.innerHTML = '✅ Upload complete!';
                 
-                // Log bulk upload activity
                 await logVendorActivity('bulk_upload', `Uploaded ${insertedCount} products in bulk (${totalRows} rows processed)`);
                 
                 resultDiv.innerHTML = `
