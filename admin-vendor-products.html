@@ -61,7 +61,7 @@
         
         .admin-container { max-width: 100%; margin: 30px auto; padding: 0 25px; overflow-x: auto; }
         .page-header { margin-bottom: 25px; }
-        .page-title { font-size: 28px; font-weight: 700; color: var(--primary); display: inline-flex; align-items: center; gap: 12px; }
+        .page-title { font-size: 28px; font-weight: 700; color: var(--primary); display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         
         .view-toggle { display: flex; gap: 10px; margin-left: 20px; }
         .view-btn { background: var(--gray-200); border: none; padding: 6px 15px; border-radius: 30px; cursor: pointer; font-size: 12px; transition: all 0.3s; color: var(--gray-700); }
@@ -336,6 +336,20 @@
             margin-left: 15px;
         }
         
+        .loading-progress {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-size: 12px;
+            z-index: 1000;
+            display: none;
+        }
+        
         @media (max-width: 1024px) { .stats-row { grid-template-columns: repeat(4, 1fr); } }
         @media (max-width: 768px) {
             .admin-header { flex-direction: column; text-align: center; }
@@ -368,7 +382,7 @@
                     <button class="view-btn" onclick="setView('grid')"><i class="fas fa-th"></i> Grid View</button>
                 </div>
             </div>
-            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Real-time price comparison across matching diamonds (Carat Group + Color + Clarity) | Showing ALL products</p>
+            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Real-time price comparison across matching diamonds (Carat Group + Color + Clarity) | Loading ALL products using batch fetching</p>
         </div>
 
         <!-- Price Comparison Summary Section -->
@@ -484,13 +498,18 @@
 
         <!-- List View -->
         <div id="listView" class="data-container" style="display: block;">
-            <div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p></div>
+            <div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p><p style="font-size: 12px; margin-top: 10px;">Fetching in batches of 1000 records</p></div>
         </div>
         
         <!-- Grid View -->
         <div id="gridView" class="grid-view-container" style="display: none;">
-            <div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p></div>
+            <div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p><p style="font-size: 12px; margin-top: 10px;">Fetching in batches of 1000 records</p></div>
         </div>
+    </div>
+
+    <!-- Loading Progress Indicator -->
+    <div id="loadingProgress" class="loading-progress">
+        <span id="progressText">Loading products...</span>
     </div>
 
     <!-- Edit Modal -->
@@ -500,7 +519,7 @@
     <div id="confirmModal" class="modal"><div class="modal-content"><h3 style="color:var(--danger);">Confirm Deletion</h3><p id="modalMessage">Delete this vendor product? This cannot be undone.</p><div style="display:flex;gap:12px;margin-top:25px;"><button class="btn-primary" onclick="confirmDelete()">Yes, Delete</button><button class="btn-secondary" onclick="closeConfirmModal()">Cancel</button></div></div></div>
     <div id="bulkConfirmModal" class="modal"><div class="modal-content"><h3 id="bulkConfirmTitle">Confirm Bulk Action</h3><p id="bulkConfirmMessage"></p><div style="display:flex;gap:12px;margin-top:25px;"><button class="btn-primary" id="bulkConfirmYes">Yes, Proceed</button><button class="btn-secondary" onclick="closeBulkConfirmModal()">Cancel</button></div></div></div>
 
-    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management | Price comparison matches: Carat Group + Diamond Color + Diamond Clarity | Showing ALL ${totalProducts} products</p></footer>
+    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management | Price comparison matches: Carat Group + Diamond Color + Diamond Clarity | Fetches ALL products using batch processing</p></footer>
 
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     <script type="module">
@@ -664,25 +683,79 @@
             return vendorCompanies.get(vendorId) || `Vendor ${vendorId?.slice(0, 8)}...`;
         }
         
-        // Load ALL products at once (no pagination limit)
+        // Load ALL products using batch fetching (overcomes Supabase 1000 limit)
+        async function loadAllProductsBatch() {
+            const progressDiv = document.getElementById('loadingProgress');
+            const progressText = document.getElementById('progressText');
+            progressDiv.style.display = 'block';
+            
+            try {
+                // First, get total count
+                const { count, error: countError } = await supabase
+                    .from('vendor_products')
+                    .select('*', { count: 'exact', head: true });
+                
+                if (countError) throw countError;
+                
+                const totalRecords = count || 0;
+                console.log(`📊 Total vendor products in database: ${totalRecords}`);
+                
+                // Calculate number of batches needed (batch size 1000)
+                const BATCH_SIZE = 1000;
+                const totalBatches = Math.ceil(totalRecords / BATCH_SIZE);
+                
+                let allData = [];
+                let loadedCount = 0;
+                
+                // Fetch all batches
+                for (let batch = 0; batch < totalBatches; batch++) {
+                    const from = batch * BATCH_SIZE;
+                    const to = from + BATCH_SIZE - 1;
+                    
+                    progressText.innerHTML = `Loading products... ${loadedCount} / ${totalRecords} (Batch ${batch + 1}/${totalBatches})`;
+                    
+                    const { data, error } = await supabase
+                        .from('vendor_products')
+                        .select('*')
+                        .order('id', { ascending: false })
+                        .range(from, to);
+                    
+                    if (error) throw error;
+                    
+                    if (data && data.length > 0) {
+                        allData.push(...data);
+                        loadedCount += data.length;
+                    }
+                    
+                    // Small delay to prevent rate limiting
+                    await new Promise(r => setTimeout(r, 100));
+                }
+                
+                console.log(`✅ Successfully loaded ${allData.length} vendor products`);
+                progressText.innerHTML = `Loaded ${allData.length} products! Processing...`;
+                
+                return allData;
+                
+            } catch (err) {
+                console.error('Error loading products in batches:', err);
+                throw err;
+            } finally {
+                setTimeout(() => {
+                    progressDiv.style.display = 'none';
+                }, 1000);
+            }
+        }
+        
         async function loadVendorProducts() {
             try {
                 await loadCompanyNames();
                 
                 // Show loading state
-                document.getElementById('listView').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p></div>';
-                document.getElementById('gridView').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p></div>';
+                document.getElementById('listView').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p><p style="font-size: 12px; margin-top: 10px;">Fetching in batches of 1000 records</p></div>';
+                document.getElementById('gridView').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p><p style="font-size: 12px; margin-top: 10px;">Fetching in batches of 1000 records</p></div>';
                 
-                // Load ALL products without limit
-                const { data, error, count } = await supabase
-                    .from('vendor_products')
-                    .select('*', { count: 'exact' })
-                    .order('id', { ascending: false });
-                
-                if (error) throw error;
-                
-                allProducts = data || [];
-                console.log(`✅ Loaded ${allProducts.length} vendor products`);
+                // Load ALL products using batch processing
+                allProducts = await loadAllProductsBatch();
                 
                 // Update total badge
                 document.getElementById('totalProductBadge').innerHTML = `${allProducts.length} Products`;
@@ -700,10 +773,13 @@
                 populateFilterOptions();
                 renderCurrentView();
                 
+                showToast(`✅ Loaded ${allProducts.length} products successfully!`);
+                
             } catch (err) {
                 console.error('Error loading products:', err);
-                document.getElementById('listView').innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Error: ${err.message}</p></div>`;
-                document.getElementById('gridView').innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Error: ${err.message}</p></div>`;
+                document.getElementById('listView').innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Error: ${err.message}</p><p>Please refresh and try again.</p></div>`;
+                document.getElementById('gridView').innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Error: ${err.message}</p><p>Please refresh and try again.</p></div>`;
+                showToast(`Error loading products: ${err.message}`, true);
             }
         }
         
@@ -958,7 +1034,7 @@
                     </td>
                 </tr>`;
             }
-            tableHtml += '</tbody></table>';
+            tableHtml += '</tbody></tr>';
             container.innerHTML = tableHtml;
         }
         
