@@ -2,20 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Vendor Products Management - Style Of Life Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#FFFFFF">
+    <title>Analytics - Style Of Life | Complete Vendor Insights</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="js/config.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         :root {
             --primary: #d4af37;
             --primary-dark: #b8962e;
+            --primary-light: #f5e6c6;
             --white: #ffffff;
-            --white-light: #f8f9fa;
+            --white-light: #faf7f2;
             --gray-100: #f1f3f5;
             --gray-200: #e9ecef;
             --gray-300: #dee2e6;
@@ -23,504 +25,692 @@
             --gray-600: #6c757d;
             --gray-700: #495057;
             --gray-800: #343a40;
-            --dark: #1a1a1a;
-            --darker: #0a0a0a;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
             --info: #3b82f6;
             --purple: #8b5cf6;
+            --cyan: #06b6d4;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
         }
         
-        body { font-family: 'Inter', sans-serif; background: var(--white-light); color: var(--gray-800); }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--white-light);
+            color: var(--gray-800);
+            overflow-x: hidden;
+            padding-bottom: 70px;
+        }
         
-        .admin-header {
-            background: var(--darker);
-            padding: 15px 30px;
+        /* Mobile Header */
+        .mobile-header {
+            background: var(--white);
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid rgba(212,175,55,0.2);
-            flex-wrap: wrap;
-            gap: 15px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo i { font-size: 24px; color: var(--primary); }
+        .logo span {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+        .logo small {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 2px 6px;
+            border-radius: 20px;
+            font-size: 8px;
+        }
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--gray-600);
+            cursor: pointer;
         }
         
-        .logo { font-size: 24px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
-        .logo span { background: var(--primary); color: var(--darker); padding: 4px 10px; border-radius: 30px; font-size: 12px; }
-        .nav-links { display: flex; gap: 12px; flex-wrap: wrap; }
-        .nav-links a { color: var(--gray-300); text-decoration: none; padding: 8px 18px; border-radius: 30px; transition: all 0.3s; font-weight: 500; font-size: 14px; }
-        .nav-links a:hover, .nav-links a.active { background: rgba(212,175,55,0.15); color: var(--primary); }
-        .logout-btn { background: rgba(239,68,68,0.15); border: 1px solid var(--danger); color: var(--danger); padding: 8px 20px; border-radius: 40px; cursor: pointer; font-weight: 500; }
-        .logout-btn:hover { background: var(--danger); color: white; }
+        /* Mobile Sidebar */
+        .mobile-sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: var(--white);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+        .mobile-sidebar.open { left: 0; }
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        .sidebar-overlay.open { display: block; }
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+        }
+        .sidebar-header h3 { font-size: 18px; color: var(--primary); }
+        .close-sidebar {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .sidebar-nav { padding: 15px; }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: var(--gray-700);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 5px;
+        }
+        .sidebar-nav a i { width: 22px; }
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background: rgba(212,175,55,0.1);
+            color: var(--primary);
+        }
         
-        .admin-container { max-width: 100%; margin: 30px auto; padding: 0 25px; overflow-x: auto; }
-        .page-header { margin-bottom: 25px; }
-        .page-title { font-size: 28px; font-weight: 700; color: var(--primary); display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        /* Desktop Layout */
+        @media (min-width: 769px) {
+            .mobile-header, .mobile-sidebar, .sidebar-overlay, .bottom-nav { display: none; }
+            body { padding-bottom: 0; }
+            .desktop-layout { display: flex; min-height: 100vh; }
+            .desktop-sidebar {
+                width: 280px;
+                background: var(--white);
+                border-right: 1px solid var(--gray-200);
+                position: fixed;
+                height: 100vh;
+                overflow-y: auto;
+            }
+            .desktop-content { flex: 1; margin-left: 280px; }
+            .desktop-sidebar .logo { padding: 25px 20px; border-bottom: 1px solid var(--gray-200); }
+            .desktop-nav { padding: 20px; }
+            .desktop-nav a {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 15px;
+                color: var(--gray-700);
+                text-decoration: none;
+                border-radius: 12px;
+                margin-bottom: 5px;
+            }
+            .desktop-nav a i { width: 22px; }
+            .desktop-nav a:hover, .desktop-nav a.active {
+                background: rgba(212,175,55,0.1);
+                color: var(--primary);
+            }
+            .logout-desktop {
+                position: absolute;
+                bottom: 20px;
+                left: 20px;
+                right: 20px;
+                border-top: 1px solid var(--gray-200);
+                padding-top: 20px;
+            }
+        }
         
-        .view-toggle { display: flex; gap: 10px; margin-left: 20px; }
-        .view-btn { background: var(--gray-200); border: none; padding: 6px 15px; border-radius: 30px; cursor: pointer; font-size: 12px; transition: all 0.3s; color: var(--gray-700); }
-        .view-btn.active { background: var(--primary); color: white; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
         
-        .stats-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; margin-bottom: 30px; }
-        .stat-card { background: white; border-radius: 20px; padding: 15px; border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm); transition: all 0.3s; }
-        .stat-card:hover { transform: translateY(-3px); border-color: var(--primary); }
-        .stat-icon { font-size: 24px; color: var(--primary); margin-bottom: 8px; }
-        .stat-number { font-size: 28px; font-weight: 800; color: var(--gray-800); }
-        .stat-label { font-size: 11px; color: var(--gray-500); text-transform: uppercase; }
+        /* Tabs */
+        .analytics-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: 10px;
+        }
+        .tab-btn {
+            padding: 10px 24px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray-600);
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+        .tab-btn:hover {
+            background: rgba(212,175,55,0.1);
+            color: var(--primary);
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         
-        .analytics-section {
-            background: white;
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        @media (min-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        }
+        .stat-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(212,175,55,0.1);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        .stat-icon i { font-size: 22px; color: var(--primary); }
+        .stat-info h3 { font-size: 12px; color: var(--gray-500); margin-bottom: 5px; text-transform: uppercase; }
+        .stat-number { font-size: 24px; font-weight: 700; color: var(--gray-800); }
+        .stat-trend { font-size: 10px; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+        .trend-up { color: var(--success); }
+        .trend-down { color: var(--danger); }
+        
+        /* Charts */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        @media (min-width: 768px) {
+            .charts-row { grid-template-columns: repeat(2, 1fr); gap: 25px; }
+        }
+        .chart-card {
+            background: var(--white);
             border-radius: 20px;
             padding: 20px;
-            margin-bottom: 30px;
             border: 1px solid var(--gray-200);
         }
-        .analytics-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: var(--primary); }
-        .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 20px; }
-        .analytics-card { background: var(--gray-100); border-radius: 16px; padding: 15px; text-align: center; }
-        .analytics-number { font-size: 24px; font-weight: 800; color: var(--primary); }
-        .analytics-label { font-size: 10px; color: var(--gray-500); }
-        .company-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; max-height: 150px; overflow-y: auto; }
-        .company-tag { background: var(--gray-100); padding: 6px 12px; border-radius: 20px; font-size: 12px; display: inline-flex; align-items: center; gap: 8px; }
-        .company-tag strong { color: var(--primary); }
-        
-        .price-comparison-section {
-            background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02));
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(212,175,55,0.2);
-        }
-        .comparison-header {
+        .chart-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
             margin-bottom: 15px;
-        }
-        .comparison-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
+            flex-wrap: wrap;
             gap: 10px;
         }
-        .comparison-stats {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
+        .chart-header h3 { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .chart-header select {
+            padding: 6px 12px;
+            border: 1px solid var(--gray-200);
+            border-radius: 20px;
+            background: var(--white);
+            font-size: 12px;
         }
-        .comparison-stat {
-            background: white;
-            border-radius: 12px;
-            padding: 8px 16px;
-            text-align: center;
+        canvas { max-height: 250px; width: 100%; }
+        
+        /* Data Cards */
+        .data-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
             border: 1px solid var(--gray-200);
         }
-        .comparison-stat-label {
-            font-size: 10px;
-            color: var(--gray-500);
+        .data-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-        .comparison-stat-value {
+        .data-header h3 {
             font-size: 18px;
-            font-weight: 700;
-            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+        .table-responsive { overflow-x: auto; }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        .admin-table th, .admin-table td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .admin-table th { font-size: 12px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; }
+        .admin-table tr:hover { background: rgba(212,175,55,0.03); }
         
-        .price-badge {
-            display: inline-flex;
+        .empty-state { text-align: center; padding: 60px; color: var(--gray-500); }
+        .loading { text-align: center; padding: 40px; }
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 20px 15px;
+            border-top: 1px solid var(--gray-200);
+            z-index: 100;
+        }
+        .bottom-nav a {
+            display: flex;
+            flex-direction: column;
             align-items: center;
             gap: 4px;
+            color: var(--gray-500);
+            text-decoration: none;
+            font-size: 10px;
+        }
+        .bottom-nav a i { font-size: 20px; }
+        .bottom-nav a.active { color: var(--primary); }
+        
+        .status-badge {
+            display: inline-block;
             padding: 4px 10px;
             border-radius: 20px;
             font-size: 11px;
             font-weight: 600;
         }
-        .price-higher { background: rgba(239,68,68,0.15); color: #ef4444; }
-        .price-lower { background: rgba(16,185,129,0.15); color: #10b981; }
-        .price-equal { background: rgba(107,114,128,0.15); color: #6b7280; }
-        .price-best { background: linear-gradient(135deg, #10b981, #059669); color: white; }
-        .price-worst { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+        .status-active { background: rgba(16,185,129,0.15); color: #10b981; }
+        .status-pending { background: rgba(245,158,11,0.15); color: #f59e0b; }
+        .status-inactive { background: rgba(239,68,68,0.15); color: #ef4444; }
         
-        .bulk-actions-bar {
-            background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(212,175,55,0.05));
-            border-radius: 16px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 15px;
-            border: 1px solid rgba(212,175,55,0.3);
-        }
-        .bulk-actions-bar.active { display: flex; }
-        .bulk-count { font-weight: 700; color: var(--primary); font-size: 18px; }
-        .bulk-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
-        
-        .selection-info {
-            font-size: 12px;
-            color: var(--primary);
-            background: rgba(212,175,55,0.1);
-            padding: 4px 12px;
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .bulk-progress-container {
-            background: var(--white);
-            border-radius: 16px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            border: 1px solid var(--gray-200);
-            display: none;
-        }
-        .bulk-progress-bar { height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; margin: 10px 0; }
-        .bulk-progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #b8962e); width: 0%; transition: width 0.3s ease; }
-        
-        .toolbar { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; background: white; padding: 15px 20px; border-radius: 20px; border: 1px solid var(--gray-200); position: sticky; top: 70px; z-index: 90; }
-        .search-box { flex: 1; min-width: 200px; display: flex; align-items: center; gap: 10px; background: var(--gray-100); padding: 8px 15px; border-radius: 40px; }
-        .search-box input { flex: 1; border: none; background: transparent; padding: 8px 0; font-size: 14px; outline: none; }
-        .filter-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-        .filter-select { padding: 8px 16px; border: 1px solid var(--gray-200); border-radius: 40px; background: white; font-size: 13px; cursor: pointer; }
-        .select-all-checkbox { display: flex; align-items: center; gap: 8px; margin-left: 10px; background: var(--gray-100); padding: 5px 12px; border-radius: 30px; }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), #b8962e); border: none; padding: 8px 20px; border-radius: 40px; font-weight: 600; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(212,175,55,0.3); }
-        .btn-secondary { background: var(--gray-200); border: none; padding: 8px 20px; border-radius: 40px; font-weight: 500; cursor: pointer; color: var(--gray-700); }
-        .btn-danger-outline { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.5); color: #ef4444; padding: 8px 20px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
-        .btn-danger-outline:hover { background: rgba(239,68,68,0.3); transform: translateY(-2px); }
-        
-        /* Scrollable Container */
-        .data-container {
-            height: calc(100vh - 320px);
-            overflow-y: auto;
-            background: white;
-            border-radius: 20px;
-            border: 1px solid var(--gray-200);
-        }
-        
-        .list-view-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 1600px;
-        }
-        .list-view-table th {
-            background: var(--gray-100);
-            padding: 14px 12px;
-            text-align: left;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--gray-600);
-            border-bottom: 1px solid var(--gray-200);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .list-view-table td {
-            padding: 12px;
-            border-bottom: 1px solid var(--gray-200);
-            vertical-align: middle;
-            font-size: 13px;
-        }
-        .list-view-table tr:hover { background: rgba(212,175,55,0.03); }
-        .list-view-table tr.selected { background: rgba(212,175,55,0.08); }
-        .list-view-table tr.best-price { background: rgba(16,185,129,0.08); border-left: 3px solid #10b981; }
-        .list-view-table tr.worst-price { background: rgba(239,68,68,0.05); border-left: 3px solid #ef4444; }
-        
-        .list-thumbnail { width: 50px; height: 50px; object-fit: cover; border-radius: 10px; cursor: pointer; }
-        .status-badge-sm { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; }
-        .status-approved-sm { background: rgba(16,185,129,0.15); color: #10b981; }
-        .status-pending-sm { background: rgba(245,158,11,0.15); color: #f59e0b; }
-        .status-rejected-sm { background: rgba(239,68,68,0.15); color: #ef4444; }
-        
-        .diamond-badge-sm { display: inline-block; padding: 2px 6px; border-radius: 12px; font-size: 10px; font-weight: 500; background: var(--gray-100); margin: 2px; }
-        .action-icons { display: flex; gap: 8px; flex-wrap: wrap; }
-        .action-icon-btn { background: none; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 14px; }
-        .action-icon-btn.approve { color: #10b981; }
-        .action-icon-btn.approve:hover { background: rgba(16,185,129,0.15); }
-        .action-icon-btn.reject { color: #ef4444; }
-        .action-icon-btn.reject:hover { background: rgba(239,68,68,0.15); }
-        .action-icon-btn.edit { color: #3b82f6; }
-        .action-icon-btn.edit:hover { background: rgba(59,130,246,0.15); }
-        .action-icon-btn.delete { color: #ef4444; }
-        .action-icon-btn.delete:hover { background: rgba(239,68,68,0.15); }
-        
-        /* Grid View */
-        .grid-view-container {
-            height: calc(100vh - 320px);
-            overflow-y: auto;
-            padding: 5px;
-        }
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            gap: 25px;
-        }
-        .product-card {
-            background: white;
-            border-radius: 24px;
-            overflow: hidden;
-            border: 1px solid var(--gray-200);
-            transition: all 0.3s;
-            box-shadow: var(--shadow-sm);
-            position: relative;
-        }
-        .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
-        .product-card.selected { border: 2px solid var(--primary); background: rgba(212,175,55,0.02); }
-        .product-card.best-price { border: 2px solid #10b981; }
-        .product-card.worst-price { border: 2px solid #ef4444; }
-        .product-select-checkbox { position: absolute; top: 15px; left: 15px; z-index: 10; width: 22px; height: 22px; cursor: pointer; accent-color: var(--primary); }
-        .product-image { width: 100%; height: 200px; object-fit: cover; background: var(--gray-100); cursor: pointer; }
-        .product-info { padding: 18px; }
-        .product-name { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
-        .product-price { font-size: 22px; font-weight: 700; color: var(--primary); margin: 10px 0; }
-        .status-badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; margin-top: 8px; }
-        .card-actions { display: flex; gap: 8px; margin-top: 15px; border-top: 1px solid var(--gray-200); padding-top: 15px; flex-wrap: wrap; }
-        .action-btn { flex: 1; padding: 8px; border-radius: 40px; border: none; font-weight: 500; font-size: 12px; cursor: pointer; transition: all 0.2s; text-align: center; }
-        .action-btn.approve { background: #10b981; color: white; }
-        .action-btn.reject { background: #ef4444; color: white; }
-        .action-btn.edit { background: #3b82f6; color: white; }
-        .action-btn.delete { background: rgba(239,68,68,0.1); color: #ef4444; }
-        
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; }
-        .modal.active { display: flex; }
-        .modal-content { background: white; border-radius: 28px; max-width: 800px; width: 90%; max-height: 85vh; overflow-y: auto; padding: 25px; }
-        .close-modal { background: none; border: none; font-size: 28px; cursor: pointer; }
-        
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 600; color: var(--gray-600); }
-        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--gray-200); border-radius: 12px; font-size: 14px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        
-        .empty-state { text-align: center; padding: 80px; background: white; border-radius: 24px; }
-        .loading { text-align: center; padding: 60px; }
-        .spinner { width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
-        .toast { position: fixed; bottom: 30px; right: 30px; background: #10b981; color: white; padding: 12px 24px; border-radius: 40px; z-index: 1100; font-weight: 600; animation: slideIn 0.3s ease; }
-        .toast-error { background: #ef4444; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
-        footer { background: var(--darker); color: white; text-align: center; padding: 25px; margin-top: 50px; }
-        
-        .auto-approve-section {
-            background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.05));
-            border: 1px solid rgba(16,185,129,0.3);
-            border-radius: 16px;
-            padding: 12px 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .product-count-badge {
-            background: var(--primary);
-            color: var(--darker);
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: 15px;
-        }
-        
-        .loading-progress {
+        .toast {
             position: fixed;
-            bottom: 20px;
+            bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
-            color: white;
+            background: var(--white);
+            color: var(--gray-800);
             padding: 10px 20px;
             border-radius: 40px;
-            font-size: 12px;
-            z-index: 1000;
-            display: none;
+            z-index: 9999;
+            animation: slideUp 0.3s ease;
+        }
+        .toast-success { background: var(--success); color: white; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
         
-        @media (max-width: 1024px) { .stats-row { grid-template-columns: repeat(4, 1fr); } }
-        @media (max-width: 768px) {
-            .admin-header { flex-direction: column; text-align: center; }
-            .stats-row { grid-template-columns: repeat(2, 1fr); }
-            .toolbar { flex-direction: column; }
-            .product-grid { grid-template-columns: 1fr; }
+        /* Vendor Detail Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
         }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--white);
+            border-radius: 24px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 25px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .modal-header h3 { color: var(--primary); }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray-500);
+        }
+        
+        .vendor-summary {
+            background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02));
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .vendor-summary-item {
+            flex: 1;
+            text-align: center;
+        }
+        .vendor-summary-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .vendor-summary-label {
+            font-size: 11px;
+            color: var(--gray-500);
+        }
+        
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-bar input, .filter-bar select {
+            padding: 10px 15px;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 13px;
+        }
+        .filter-bar input { flex: 1; min-width: 200px; }
+        .refresh-btn {
+            padding: 10px 18px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        
+        .action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .action-btn:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* Vendor Activity Timeline */
+        .activity-timeline {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-200);
+            align-items: flex-start;
+        }
+        .timeline-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        .timeline-icon.login { background: rgba(59,130,246,0.15); color: #3b82f6; }
+        .timeline-icon.logout { background: rgba(107,114,128,0.15); color: #6b7280; }
+        .timeline-icon.add_product { background: rgba(16,185,129,0.15); color: #10b981; }
+        .timeline-icon.edit_product { background: rgba(245,158,11,0.15); color: #f59e0b; }
+        .timeline-icon.delete_product { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .timeline-icon.bulk_upload { background: rgba(139,92,246,0.15); color: #8b5cf6; }
+        .timeline-content { flex: 1; }
+        .timeline-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+        .timeline-time { font-size: 11px; color: var(--gray-500); }
+        .timeline-details { font-size: 12px; color: var(--gray-600); margin-top: 4px; }
     </style>
 </head>
 <body>
-    <div class="admin-header">
-        <div class="logo"><i class="fas fa-store"></i> STYLE OF LIFE <span>VENDOR MGMT</span></div>
-        <div class="nav-links">
-            <a href="admin.html">Dashboard</a>
-            <a href="admin-products.html">Main Products</a>
-            <a href="admin-vendor-products.html" class="active">Vendor Products</a>
-            <a href="admin-orders.html">Orders</a>
-            <a href="admin-customers.html">Customers</a>
-        </div>
-        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    <div class="mobile-header">
+        <div class="logo"><i class="fas fa-chart-pie"></i><span>STYLE OF LIFE</span><small>ANALYTICS</small></div>
+        <button class="menu-btn" onclick="openSidebar()"><i class="fas fa-bars"></i></button>
     </div>
-
-    <div class="admin-container">
-        <div class="page-header">
-            <div class="page-title">
-                <i class="fas fa-store"></i> Vendor Product Management
-                <span class="product-count-badge" id="totalProductBadge">0 Products</span>
-                <div class="view-toggle">
-                    <button class="view-btn" onclick="setView('list')"><i class="fas fa-list"></i> List View</button>
-                    <button class="view-btn" onclick="setView('grid')"><i class="fas fa-th"></i> Grid View</button>
-                </div>
+    
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="sidebar-header"><h3><i class="fas fa-chart-pie"></i> Menu</h3><button class="close-sidebar" onclick="closeSidebar()">&times;</button></div>
+        <div class="sidebar-nav">
+            <a href="admin.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="admin-products.html"><i class="fas fa-box"></i> Products</a>
+            <a href="admin-orders.html"><i class="fas fa-shopping-cart"></i> Orders</a>
+            <a href="admin-customers.html"><i class="fas fa-users"></i> Customers</a>
+            <a href="admin-vendor-products.html"><i class="fas fa-store"></i> Vendor Products</a>
+            <a href="admin-analytics.html" class="active"><i class="fas fa-chart-pie"></i> Analytics</a>
+            <div class="logout-mobile"><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
+        </div>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    
+    <div class="desktop-layout">
+        <div class="desktop-sidebar">
+            <div class="logo"><i class="fas fa-chart-pie" style="font-size: 28px; color: var(--primary);"></i><span>STYLE OF LIFE</span><small>ANALYTICS</small></div>
+            <div class="desktop-nav">
+                <a href="admin.html"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="admin-products.html"><i class="fas fa-box"></i> Products</a>
+                <a href="admin-orders.html"><i class="fas fa-shopping-cart"></i> Orders</a>
+                <a href="admin-customers.html"><i class="fas fa-users"></i> Customers</a>
+                <a href="admin-vendor-products.html"><i class="fas fa-store"></i> Vendor Products</a>
+                <a href="admin-analytics.html" class="active"><i class="fas fa-chart-pie"></i> Analytics</a>
             </div>
-            <p style="color: var(--gray-600); margin-top: 5px;">Manage vendor submissions | Real-time price comparison across matching diamonds (Carat Group + Color + Clarity) | Loading ALL products using batch fetching</p>
-        </div>
-
-        <!-- Price Comparison Summary Section -->
-        <div class="price-comparison-section">
-            <div class="comparison-header">
-                <div class="comparison-title">
-                    <i class="fas fa-chart-line"></i> Diamond Price Comparison
-                    <span style="font-size: 12px; background: rgba(212,175,55,0.1); padding: 2px 8px; border-radius: 20px;">Matches by Carat Group + Color + Clarity</span>
-                </div>
-                <button class="btn-secondary" onclick="refreshComparison()" style="padding: 6px 12px;">
-                    <i class="fas fa-sync-alt"></i> Refresh Comparison
-                </button>
-            </div>
-            <div class="comparison-stats" id="comparisonStats">
-                <div class="comparison-stat">
-                    <div class="comparison-stat-label">Total Matched Groups</div>
-                    <div class="comparison-stat-value" id="totalGroups">--</div>
-                </div>
-                <div class="comparison-stat">
-                    <div class="comparison-stat-label">Best Value Products</div>
-                    <div class="comparison-stat-value" id="bestValueCount">--</div>
-                </div>
-                <div class="comparison-stat">
-                    <div class="comparison-stat-label">Overpriced Products</div>
-                    <div class="comparison-stat-value" id="overpricedCount">--</div>
-                </div>
-                <div class="comparison-stat">
-                    <div class="comparison-stat-label">Avg Price Variance</div>
-                    <div class="comparison-stat-value" id="avgVariance">--</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="auto-approve-section">
-            <label class="auto-approve-label" style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
-                <input type="checkbox" id="autoApproveToggle" onchange="toggleAutoApprove()">
-                <span><i class="fas fa-magic"></i> Auto-Approve on Stock Update</span>
-            </label>
-            <div style="font-size: 11px; color: var(--gray-500);">
-                <i class="fas fa-info-circle"></i> When enabled, products with stock > 0 are automatically approved
-            </div>
-        </div>
-
-        <div class="stats-row">
-            <div class="stat-card"><div class="stat-icon"><i class="fas fa-boxes"></i></div><div class="stat-number" id="totalVendor">0</div><div class="stat-label">Total Products</div></div>
-            <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-number" id="approvedCount">0</div><div class="stat-label">Approved</div></div>
-            <div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-number" id="pendingCount">0</div><div class="stat-label">Pending</div></div>
-            <div class="stat-card"><div class="stat-icon"><i class="fas fa-times-circle"></i></div><div class="stat-number" id="rejectedCount">0</div><div class="stat-label">Rejected</div></div>
-            <div class="stat-card"><div class="stat-icon"><i class="fas fa-cube"></i></div><div class="stat-number" id="d360Count">0</div><div class="stat-label">D360 Products</div></div>
-            <div class="stat-card"><div class="stat-icon"><i class="fas fa-building"></i></div><div class="stat-number" id="companyCount">0</div><div class="stat-label">Companies</div></div>
-            <div class="stat-card"><div class="stat-icon"><i class="fas fa-rupee-sign"></i></div><div class="stat-number" id="totalValue">₹0</div><div class="stat-label">Total Value</div></div>
-        </div>
-
-        <div class="analytics-section">
-            <div class="analytics-title"><i class="fas fa-chart-pie"></i> Company-wise Analytics</div>
-            <div class="analytics-grid" id="analyticsGrid"></div>
-            <div id="companyList" class="company-list"></div>
-        </div>
-
-        <div id="bulkProgressContainer" class="bulk-progress-container">
-            <div class="bulk-progress-text" id="bulkProgressText">Processing bulk action...</div>
-            <div class="bulk-progress-bar"><div class="bulk-progress-fill" id="bulkProgressFill"></div></div>
-            <div class="bulk-progress-text" id="bulkProgressCount">0 / 0 completed</div>
-        </div>
-
-        <div class="bulk-actions-bar" id="bulkActionsBar">
-            <div><i class="fas fa-check-square"></i> <span class="bulk-count" id="selectedCount">0</span> product(s) selected</div>
-            <div class="bulk-buttons">
-                <button class="btn-primary" onclick="bulkApprove()"><i class="fas fa-check-circle"></i> Bulk Approve</button>
-                <button class="btn-danger-outline" onclick="bulkReject()"><i class="fas fa-times-circle"></i> Bulk Reject</button>
-                <button class="btn-danger-outline" onclick="bulkDelete()"><i class="fas fa-trash-alt"></i> Bulk Delete</button>
-                <button class="btn-secondary" onclick="clearSelection()"><i class="fas fa-times"></i> Clear</button>
-            </div>
-        </div>
-
-        <div class="toolbar">
-            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Search by name, SKU, vendor, company..."></div>
-            <div class="filter-group">
-                <select id="statusFilter" class="filter-select">
-                    <option value="all">All Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
-                </select>
-                <select id="diamondColorFilter" class="filter-select"><option value="all">All Diamond Colors</option></select>
-                <select id="diamondClarityFilter" class="filter-select"><option value="all">All Diamond Clarities</option></select>
-                <select id="caratFilter" class="filter-select">
-                    <option value="all">All Carat</option>
-                    <option value="0-0.5">0 - 0.5 ct</option>
-                    <option value="0.5-1">0.5 - 1 ct</option>
-                    <option value="1-2">1 - 2 ct</option>
-                    <option value="2+">2+ ct</option>
-                </select>
-                <select id="priceFilter" class="filter-select">
-                    <option value="all">All Prices</option>
-                    <option value="best">Best Value (Lowest Price)</option>
-                    <option value="overpriced">Overpriced (Highest Price)</option>
-                </select>
-                <select id="mediaFilter" class="filter-select">
-                    <option value="all">All Media</option>
-                    <option value="d360">D360 Products</option>
-                    <option value="video">Has Video</option>
-                </select>
-                <label class="select-all-checkbox">
-                    <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"> 
-                    Select All
-                </label>
-                <span id="liveSelectionInfo" class="selection-info"></span>
-                <button class="btn-primary" onclick="refreshVendorProducts()"><i class="fas fa-sync-alt"></i> Refresh</button>
-                <button class="btn-secondary" onclick="exportVendorCSV()"><i class="fas fa-file-excel"></i> Export CSV</button>
-            </div>
-        </div>
-
-        <!-- List View -->
-        <div id="listView" class="data-container" style="display: block;">
-            <div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p><p style="font-size: 12px; margin-top: 10px;">Fetching in batches of 1000 records</p></div>
+            <div class="logout-desktop"><a href="#" onclick="logout()" style="display: flex; align-items: center; gap: 12px; padding: 12px 15px; color: var(--danger); text-decoration: none;"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
         </div>
         
-        <!-- Grid View -->
-        <div id="gridView" class="grid-view-container" style="display: none;">
-            <div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p><p style="font-size: 12px; margin-top: 10px;">Fetching in batches of 1000 records</p></div>
+        <div class="desktop-content">
+            <div class="container">
+                <!-- Tabs -->
+                <div class="analytics-tabs">
+                    <button class="tab-btn active" onclick="switchTab('overview')">📊 Overview</button>
+                    <button class="tab-btn" onclick="switchTab('vendors')">🏪 Vendor Analytics</button>
+                    <button class="tab-btn" onclick="switchTab('vendor-activity')">📈 Vendor Activity Logs</button>
+                    <button class="tab-btn" onclick="switchTab('vendor-performance')">⭐ Vendor Performance</button>
+                </div>
+                
+                <!-- Overview Tab -->
+                <div id="tab-overview" class="tab-content active">
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-shopping-cart"></i></div><div class="stat-info"><h3>Total Orders</h3><div class="stat-number" id="totalOrders">--</div></div></div>
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-rupee-sign"></i></div><div class="stat-info"><h3>Total Revenue</h3><div class="stat-number" id="totalRevenue">--</div></div></div>
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-info"><h3>Total Customers</h3><div class="stat-number" id="totalCustomers">--</div></div></div>
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-store"></i></div><div class="stat-info"><h3>Total Vendors</h3><div class="stat-number" id="totalVendors">--</div></div></div>
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-box"></i></div><div class="stat-info"><h3>Vendor Products</h3><div class="stat-number" id="vendorProducts">--</div></div></div>
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-info"><h3>Pending Approvals</h3><div class="stat-number" id="pendingApprovals">--</div></div></div>
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-sign-in-alt"></i></div><div class="stat-info"><h3>Total Vendor Logins</h3><div class="stat-number" id="totalLogins">--</div></div></div>
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-chart-line"></i></div><div class="stat-info"><h3>Active Vendors (30d)</h3><div class="stat-number" id="activeVendors">--</div></div></div>
+                    </div>
+                    
+                    <div class="charts-row">
+                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-line"></i> Revenue Trend</h3><select id="revenuePeriod" onchange="updateRevenueChart()"><option value="week">Last 7 Days</option><option value="month">Last 30 Days</option><option value="year">Last 12 Months</option></select></div><canvas id="revenueChart"></canvas></div>
+                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-pie"></i> Order Status</h3></div><canvas id="statusChart"></canvas></div>
+                    </div>
+                    
+                    <div class="charts-row">
+                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-bar"></i> Top Categories</h3></div><canvas id="categoryChart"></canvas></div>
+                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-line"></i> Daily Orders</h3></div><canvas id="dailyOrdersChart"></canvas></div>
+                    </div>
+                </div>
+                
+                <!-- Vendor Analytics Tab -->
+                <div id="tab-vendors" class="tab-content">
+                    <div class="stats-grid">
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-store"></i></div><div class="stat-info"><h3>Total Vendors</h3><div class="stat-number" id="vendorTotalCount">--</div></div></div>
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-info"><h3>Approved Vendors</h3><div class="stat-number" id="approvedVendors">--</div></div></div>
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-info"><h3>Pending Approval</h3><div class="stat-number" id="pendingVendors">--</div></div></div>
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-times-circle"></i></div><div class="stat-info"><h3>Rejected Vendors</h3><div class="stat-number" id="rejectedVendors">--</div></div></div>
+                    </div>
+                    
+                    <div class="charts-row">
+                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-bar"></i> Vendor Registration Trend</h3></div><canvas id="vendorRegChart"></canvas></div>
+                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-pie"></i> Vendor Status Distribution</h3></div><canvas id="vendorStatusChart"></canvas></div>
+                    </div>
+                    
+                    <!-- Vendor Login Activity Chart -->
+                    <div class="charts-row">
+                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-line"></i> Vendor Login Activity (Last 30 Days)</h3></div><canvas id="loginActivityChart"></canvas></div>
+                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-bar"></i> Top Active Vendors</h3></div><canvas id="topActiveVendorsChart"></canvas></div>
+                    </div>
+                    
+                    <div class="data-card">
+                        <div class="data-header">
+                            <h3><i class="fas fa-list"></i> All Vendors</h3>
+                            <div class="filter-bar" style="margin:0; padding:0;">
+                                <input type="text" id="vendorSearch" placeholder="Search by name or email..." onkeyup="filterVendors()">
+                                <select id="vendorStatusFilter" onchange="filterVendors()">
+                                    <option value="all">All Status</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <div id="vendorsList"><div class="loading"><div class="spinner"></div><p>Loading vendors...</p></div></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Vendor Activity Logs Tab -->
+                <div id="tab-vendor-activity" class="tab-content">
+                    <div class="data-card">
+                        <div class="data-header">
+                            <h3><i class="fas fa-history"></i> Vendor Activity Logs</h3>
+                            <button class="refresh-btn" onclick="loadActivityLogs()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                        </div>
+                        <div class="filter-bar">
+                            <input type="text" id="activitySearch" placeholder="Search by vendor or action..." onkeyup="filterActivities()">
+                            <select id="activityTypeFilter" onchange="filterActivities()">
+                                <option value="all">All Actions</option>
+                                <option value="login">🔐 Login</option>
+                                <option value="logout">🚪 Logout</option>
+                                <option value="add_product">➕ Add Product</option>
+                                <option value="edit_product">✏️ Edit Product</option>
+                                <option value="delete_product">🗑️ Delete Product</option>
+                                <option value="bulk_upload">📂 Bulk Upload</option>
+                                <option value="update_profile">👤 Update Profile</option>
+                            </select>
+                            <select id="activityDateFilter" onchange="filterActivities()">
+                                <option value="all">All Time</option>
+                                <option value="today">Today</option>
+                                <option value="week">Last 7 Days</option>
+                                <option value="month">Last 30 Days</option>
+                                <option value="year">Last 12 Months</option>
+                            </select>
+                        </div>
+                        <div class="activity-timeline" id="activityLogsList">
+                            <div class="loading"><div class="spinner"></div><p>Loading activity logs...</p></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Vendor Performance Tab -->
+                <div id="tab-vendor-performance" class="tab-content">
+                    <div class="charts-row">
+                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-trophy"></i> Top Vendors by Sales Value</h3></div><canvas id="topVendorsChart"></canvas></div>
+                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-box"></i> Top Vendors by Products</h3></div><canvas id="topVendorsProductsChart"></canvas></div>
+                    </div>
+                    
+                    <div class="charts-row">
+                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-line"></i> Top Vendors by Login Frequency</h3></div><canvas id="topVendorsLoginChart"></canvas></div>
+                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-bar"></i> Product Addition Rate</h3></div><canvas id="productAdditionChart"></canvas></div>
+                    </div>
+                    
+                    <div class="data-card">
+                        <div class="data-header">
+                            <h3><i class="fas fa-chart-line"></i> Vendor Performance Ranking</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <div id="vendorPerformanceList"><div class="loading"><div class="spinner"></div><p>Loading performance data...</p></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <!-- Loading Progress Indicator -->
-    <div id="loadingProgress" class="loading-progress">
-        <span id="progressText">Loading products...</span>
-    </div>
-
-    <!-- Edit Modal -->
-    <div id="editModal" class="modal"><div class="modal-content"><h3>Edit Vendor Product</h3><input type="hidden" id="editId"><div class="form-group"><label>Product Name</label><input type="text" id="editProductName"></div><div class="form-group"><label>SKU</label><input type="text" id="editSku"></div><div class="form-row"><div class="form-group"><label>Category</label><input type="text" id="editCategory"></div><div class="form-group"><label>Price (₹)</label><input type="number" id="editPrice" step="0.01"></div></div><div class="form-row"><div class="form-group"><label>GST (%)</label><input type="number" id="editGst" step="0.01"></div><div class="form-group"><label>Stock</label><input type="number" id="editStock" onchange="checkAutoApproveOnEdit()"></div></div><div class="form-group"><label>Description</label><textarea id="editDescription" rows="3"></textarea></div><div class="form-row"><div class="form-group"><label>Image URL 1</label><input type="url" id="editImage1"></div><div class="form-group"><label>Image URL 2</label><input type="url" id="editImage2"></div></div><div class="form-row"><div class="form-group"><label>Image URL 3</label><input type="url" id="editImage3"></div><div class="form-group"><label>Video URL</label><input type="url" id="editVideo"></div></div><div class="form-row"><div class="form-group"><label>Carat</label><input type="number" id="editCarat" step="0.01"></div><div class="form-group"><label>Diamond Color</label><input type="text" id="editDiamondColor"></div></div><div class="form-row"><div class="form-group"><label>Diamond Clarity</label><input type="text" id="editDiamondClarity"></div><div class="form-group"><label>Diamond Cut</label><input type="text" id="editDiamondCut"></div></div><div class="modal-buttons" style="display:flex;gap:12px;margin-top:20px;"><button class="btn-primary" onclick="saveEditProduct()">Save Changes</button><button class="btn-secondary" onclick="closeEditModal()">Cancel</button></div></div></div>
     
-    <!-- Confirm Modals -->
-    <div id="confirmModal" class="modal"><div class="modal-content"><h3 style="color:var(--danger);">Confirm Deletion</h3><p id="modalMessage">Delete this vendor product? This cannot be undone.</p><div style="display:flex;gap:12px;margin-top:25px;"><button class="btn-primary" onclick="confirmDelete()">Yes, Delete</button><button class="btn-secondary" onclick="closeConfirmModal()">Cancel</button></div></div></div>
-    <div id="bulkConfirmModal" class="modal"><div class="modal-content"><h3 id="bulkConfirmTitle">Confirm Bulk Action</h3><p id="bulkConfirmMessage"></p><div style="display:flex;gap:12px;margin-top:25px;"><button class="btn-primary" id="bulkConfirmYes">Yes, Proceed</button><button class="btn-secondary" onclick="closeBulkConfirmModal()">Cancel</button></div></div></div>
-
-    <footer><p>© 2026 STYLE OF LIFE | Vendor Product Management | Price comparison matches: Carat Group + Diamond Color + Diamond Clarity | Fetches ALL products using batch processing</p></footer>
-
+    <div class="bottom-nav">
+        <a href="admin.html"><i class="fas fa-chart-line"></i><span>Home</span></a>
+        <a href="admin-products.html"><i class="fas fa-box"></i><span>Products</span></a>
+        <a href="admin-orders.html"><i class="fas fa-shopping-cart"></i><span>Orders</span></a>
+        <a href="admin-customers.html"><i class="fas fa-users"></i><span>Customers</span></a>
+        <a href="admin-analytics.html" class="active"><i class="fas fa-chart-pie"></i><span>Analytics</span></a>
+    </div>
+    
+    <!-- Vendor Detail Modal -->
+    <div id="vendorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-store"></i> Vendor Details</h3>
+                <button class="close-modal" onclick="closeVendorModal()">&times;</button>
+            </div>
+            <div id="vendorModalContent"></div>
+        </div>
+    </div>
+    
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
@@ -528,830 +718,561 @@
         if (!sessionStorage.getItem('adminLoggedIn')) window.location.href = 'login.html';
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        let revenueChart, statusChart, categoryChart, dailyOrdersChart;
+        let vendorRegChart, vendorStatusChart, loginActivityChart, topActiveVendorsChart;
+        let topVendorsChart, topVendorsProductsChart, topVendorsLoginChart, productAdditionChart;
+        let allOrders = [];
+        let allVendors = [];
         let allProducts = [];
-        let vendorCompanies = new Map();
-        let selectedProducts = new Set();
-        let currentView = 'list';
-        let pendingBulkAction = null;
-        let pendingDelete = null;
-        let autoApproveEnabled = localStorage.getItem('autoApproveEnabled') === 'true';
+        let activityLogs = [];
+        let filteredActivities = [];
         
-        // Price comparison data
-        let priceComparisonMap = new Map();
-        let productComparison = new Map();
+        function showToast(msg) { const toast = document.createElement('div'); toast.className = 'toast toast-success'; toast.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`; document.body.appendChild(toast); setTimeout(() => toast.remove(), 3000); }
         
-        function getCaratGroup(carat) {
-            if (!carat || carat <= 0) return null;
-            if (carat <= 0.25) return '0-0.25';
-            if (carat <= 0.5) return '0.26-0.50';
-            if (carat <= 0.75) return '0.51-0.75';
-            if (carat <= 1.0) return '0.76-1.00';
-            if (carat <= 1.5) return '1.01-1.50';
-            if (carat <= 2.0) return '1.51-2.00';
-            if (carat <= 2.5) return '2.01-2.50';
-            if (carat <= 3.0) return '2.51-3.00';
-            return '3.00+';
-        }
-        
-        function getMatchKey(product) {
-            if (!product.carat || product.carat <= 0) return null;
-            if (!product.diamond_color || !product.diamond_clarity) return null;
-            const caratGroup = getCaratGroup(product.carat);
-            if (!caratGroup) return null;
-            return `${caratGroup}|${product.diamond_color.toUpperCase()}|${product.diamond_clarity.toUpperCase()}`;
-        }
-        
-        function buildPriceComparisonMap(products) {
-            priceComparisonMap.clear();
-            productComparison.clear();
-            
-            const diamondProducts = products.filter(p => p.carat && p.carat > 0 && p.diamond_color && p.diamond_clarity);
-            
-            for (const product of diamondProducts) {
-                const key = getMatchKey(product);
-                if (!key) continue;
-                
-                if (!priceComparisonMap.has(key)) {
-                    priceComparisonMap.set(key, {
-                        products: [],
-                        minPrice: Infinity,
-                        maxPrice: -Infinity,
-                        totalPrice: 0
-                    });
-                }
-                
-                const group = priceComparisonMap.get(key);
-                group.products.push(product);
-                group.totalPrice += product.price;
-                if (product.price < group.minPrice) group.minPrice = product.price;
-                if (product.price > group.maxPrice) group.maxPrice = product.price;
-            }
-            
-            for (const [key, group] of priceComparisonMap) {
-                group.avgPrice = group.totalPrice / group.products.length;
-                const sortedProducts = [...group.products].sort((a, b) => a.price - b.price);
-                
-                for (let i = 0; i < sortedProducts.length; i++) {
-                    const product = sortedProducts[i];
-                    const percentageDiff = ((product.price - group.avgPrice) / group.avgPrice) * 100;
-                    
-                    productComparison.set(product.id, {
-                        rank: i + 1,
-                        totalInGroup: group.products.length,
-                        groupAvg: group.avgPrice,
-                        groupMin: group.minPrice,
-                        groupMax: group.maxPrice,
-                        percentageDiff: percentageDiff,
-                        isBest: product.price === group.minPrice,
-                        isWorst: product.price === group.maxPrice
-                    });
-                }
-            }
-        }
-        
-        function getComparisonHtml(product) {
-            const comp = productComparison.get(product.id);
-            if (!comp) return '<span class="diamond-badge-sm">No match</span>';
-            
-            const diffClass = comp.percentageDiff > 0 ? 'price-higher' : (comp.percentageDiff < 0 ? 'price-lower' : 'price-equal');
-            const diffIcon = comp.percentageDiff > 0 ? '📈' : (comp.percentageDiff < 0 ? '📉' : '📊');
-            const diffText = comp.percentageDiff > 0 ? `+${comp.percentageDiff.toFixed(1)}%` : `${comp.percentageDiff.toFixed(1)}%`;
-            
-            let rankBadge = '';
-            if (comp.isBest) {
-                rankBadge = '<span class="price-badge price-best"><i class="fas fa-trophy"></i> Best Price</span>';
-            } else if (comp.isWorst) {
-                rankBadge = '<span class="price-badge price-worst"><i class="fas fa-exclamation-triangle"></i> Highest Price</span>';
-            }
-            
-            return `
-                <div style="display: flex; flex-direction: column; gap: 4px;">
-                    ${rankBadge}
-                    <span class="price-badge ${diffClass}" style="font-size: 10px;">${diffIcon} ${diffText} vs avg</span>
-                    <span class="diamond-badge-sm" style="font-size: 10px;">Rank: ${comp.rank}/${comp.totalInGroup}</span>
-                    <span class="diamond-badge-sm" style="font-size: 10px;">Avg: ₹${comp.groupAvg.toLocaleString()}</span>
-                </div>
-            `;
-        }
-        
-        function updateComparisonStats() {
-            const totalGroups = priceComparisonMap.size;
-            let bestValueCount = 0;
-            let overpricedCount = 0;
-            let totalVariance = 0;
-            let varianceCount = 0;
-            
-            for (const [_, comp] of productComparison) {
-                if (comp.isBest) bestValueCount++;
-                if (comp.isWorst) overpricedCount++;
-                totalVariance += Math.abs(comp.percentageDiff);
-                varianceCount++;
-            }
-            
-            const avgVariance = varianceCount > 0 ? totalVariance / varianceCount : 0;
-            
-            document.getElementById('totalGroups').innerText = totalGroups;
-            document.getElementById('bestValueCount').innerText = bestValueCount;
-            document.getElementById('overpricedCount').innerText = overpricedCount;
-            document.getElementById('avgVariance').innerHTML = `${avgVariance.toFixed(1)}%`;
-        }
-        
-        function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com')); }
-        function isD360Url(url) { return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); }
-        
-        function showToast(msg, isErr = false) {
-            const t = document.createElement('div');
-            t.className = 'toast' + (isErr ? ' toast-error' : '');
-            t.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`;
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 3000);
-        }
-        
-        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
-        
-        async function loadCompanyNames() {
+        // Load all data with batch processing to overcome 1000 limit
+        async function loadAllDataBatch(tableName, orderColumn = 'id', ascending = false) {
             try {
-                const { data, error } = await supabase.from('vendors').select('id, business_name');
-                if (!error && data) {
-                    vendorCompanies.clear();
-                    data.forEach(v => vendorCompanies.set(v.id, v.business_name || 'Unknown Company'));
-                }
-            } catch (err) { console.error('Error loading companies:', err); }
-        }
-        
-        function getCompanyName(vendorId) {
-            return vendorCompanies.get(vendorId) || `Vendor ${vendorId?.slice(0, 8)}...`;
-        }
-        
-        // Load ALL products using batch fetching (overcomes Supabase 1000 limit)
-        async function loadAllProductsBatch() {
-            const progressDiv = document.getElementById('loadingProgress');
-            const progressText = document.getElementById('progressText');
-            progressDiv.style.display = 'block';
-            
-            try {
-                // First, get total count
+                // Get total count first
                 const { count, error: countError } = await supabase
-                    .from('vendor_products')
+                    .from(tableName)
                     .select('*', { count: 'exact', head: true });
                 
                 if (countError) throw countError;
                 
                 const totalRecords = count || 0;
-                console.log(`📊 Total vendor products in database: ${totalRecords}`);
-                
-                // Calculate number of batches needed (batch size 1000)
                 const BATCH_SIZE = 1000;
                 const totalBatches = Math.ceil(totalRecords / BATCH_SIZE);
                 
                 let allData = [];
-                let loadedCount = 0;
                 
-                // Fetch all batches
                 for (let batch = 0; batch < totalBatches; batch++) {
                     const from = batch * BATCH_SIZE;
                     const to = from + BATCH_SIZE - 1;
                     
-                    progressText.innerHTML = `Loading products... ${loadedCount} / ${totalRecords} (Batch ${batch + 1}/${totalBatches})`;
-                    
                     const { data, error } = await supabase
-                        .from('vendor_products')
+                        .from(tableName)
                         .select('*')
-                        .order('id', { ascending: false })
+                        .order(orderColumn, { ascending: ascending })
                         .range(from, to);
                     
                     if (error) throw error;
                     
                     if (data && data.length > 0) {
                         allData.push(...data);
-                        loadedCount += data.length;
                     }
-                    
-                    // Small delay to prevent rate limiting
-                    await new Promise(r => setTimeout(r, 100));
                 }
-                
-                console.log(`✅ Successfully loaded ${allData.length} vendor products`);
-                progressText.innerHTML = `Loaded ${allData.length} products! Processing...`;
                 
                 return allData;
-                
             } catch (err) {
-                console.error('Error loading products in batches:', err);
-                throw err;
-            } finally {
-                setTimeout(() => {
-                    progressDiv.style.display = 'none';
-                }, 1000);
+                console.error(`Error loading ${tableName}:`, err);
+                return [];
             }
         }
         
-        async function loadVendorProducts() {
+        // Switch Tabs
+        window.switchTab = async function(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add('active');
+            
+            if (tab === 'vendors') await loadVendorsAnalytics();
+            if (tab === 'vendor-activity') await loadActivityLogs();
+            if (tab === 'vendor-performance') await loadVendorPerformance();
+        };
+        
+        // ========== OVERVIEW ANALYTICS ==========
+        async function loadOverviewAnalytics() {
             try {
-                await loadCompanyNames();
+                allOrders = await loadAllDataBatch('orders', 'created_at', false);
+                allVendors = await loadAllDataBatch('vendors', 'created_at', false);
+                allProducts = await loadAllDataBatch('vendor_products', 'id', false);
+                activityLogs = await loadAllDataBatch('vendor_activity_logs', 'created_at', false);
                 
-                // Show loading state
-                document.getElementById('listView').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p><p style="font-size: 12px; margin-top: 10px;">Fetching in batches of 1000 records</p></div>';
-                document.getElementById('gridView').innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading all vendor products...</p><p style="font-size: 12px; margin-top: 10px;">Fetching in batches of 1000 records</p></div>';
+                const totalOrders = allOrders.length;
+                const totalRevenue = allOrders.reduce((s, o) => s + (o.total || 0), 0);
+                const uniqueCustomers = [...new Set(allOrders.map(o => o.email || o.customer_email).filter(Boolean))];
+                const totalVendors = allVendors.length;
+                const vendorProductsCount = allProducts.length;
+                const pendingApprovals = allVendors.filter(v => v.status === 'pending').length;
+                const totalLogins = activityLogs.filter(log => log.action === 'login').length;
                 
-                // Load ALL products using batch processing
-                allProducts = await loadAllProductsBatch();
-                
-                // Update total badge
-                document.getElementById('totalProductBadge').innerHTML = `${allProducts.length} Products`;
-                
-                // Build price comparison map
-                buildPriceComparisonMap(allProducts);
-                updateComparisonStats();
-                
-                if (autoApproveEnabled) {
-                    await autoApproveProductsWithStock();
-                }
-                
-                updateStats();
-                updateCompanyAnalytics();
-                populateFilterOptions();
-                renderCurrentView();
-                
-                showToast(`✅ Loaded ${allProducts.length} products successfully!`);
-                
-            } catch (err) {
-                console.error('Error loading products:', err);
-                document.getElementById('listView').innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Error: ${err.message}</p><p>Please refresh and try again.</p></div>`;
-                document.getElementById('gridView').innerHTML = `<div class="empty-state"><i class="fas fa-database"></i><p>Error: ${err.message}</p><p>Please refresh and try again.</p></div>`;
-                showToast(`Error loading products: ${err.message}`, true);
-            }
-        }
-        
-        async function autoApproveProductsWithStock() {
-            const productsToApprove = allProducts.filter(p => p.stock > 0 && p.status !== 'approved');
-            if (productsToApprove.length === 0) return;
-            
-            for (const product of productsToApprove) {
-                const { error } = await supabase
-                    .from('vendor_products')
-                    .update({ status: 'approved', updated_at: new Date() })
-                    .eq('id', product.id);
-                
-                if (!error) {
-                    product.status = 'approved';
-                }
-            }
-            
-            if (productsToApprove.length > 0) {
-                showToast(`✅ Auto-approved ${productsToApprove.length} products with stock > 0`);
-                updateStats();
-                renderCurrentView();
-            }
-        }
-        
-        window.checkAutoApproveOnEdit = function() {
-            if (!autoApproveEnabled) return;
-            const stock = parseInt(document.getElementById('editStock').value) || 0;
-            if (stock > 0) {
-                window._autoApproveThisEdit = true;
-            }
-        };
-        
-        window.refreshComparison = function() {
-            buildPriceComparisonMap(allProducts);
-            updateComparisonStats();
-            renderCurrentView();
-            showToast('Price comparison refreshed');
-        };
-        
-        function updateStats() {
-            const total = allProducts.length;
-            const approved = allProducts.filter(p => p.status === 'approved').length;
-            const pending = allProducts.filter(p => p.status === 'pending').length;
-            const rejected = allProducts.filter(p => p.status === 'rejected').length;
-            const d360 = allProducts.filter(p => isD360Url(p.video_url)).length;
-            const uniqueCompanies = new Set(allProducts.map(p => p.vendor_id)).size;
-            const totalValue = allProducts.reduce((sum, p) => sum + (p.price || 0), 0);
-            
-            document.getElementById('totalVendor').innerText = total;
-            document.getElementById('approvedCount').innerText = approved;
-            document.getElementById('pendingCount').innerText = pending;
-            document.getElementById('rejectedCount').innerText = rejected;
-            document.getElementById('d360Count').innerText = d360;
-            document.getElementById('companyCount').innerText = uniqueCompanies;
-            document.getElementById('totalValue').innerHTML = `₹${(totalValue / 100000).toFixed(1)}L`;
-        }
-        
-        function updateCompanyAnalytics() {
-            const companyMap = new Map();
-            allProducts.forEach(p => {
-                const companyName = getCompanyName(p.vendor_id);
-                if (!companyMap.has(companyName)) {
-                    companyMap.set(companyName, { total: 0, approved: 0, pending: 0, rejected: 0, totalValue: 0 });
-                }
-                const stats = companyMap.get(companyName);
-                stats.total++;
-                stats.totalValue += p.price || 0;
-                if (p.status === 'approved') stats.approved++;
-                else if (p.status === 'pending') stats.pending++;
-                else if (p.status === 'rejected') stats.rejected++;
-            });
-            
-            const sortedCompanies = Array.from(companyMap.entries()).sort((a, b) => b[1].total - a[1].total);
-            const top5 = sortedCompanies.slice(0, 5);
-            
-            document.getElementById('analyticsGrid').innerHTML = top5.map(([name, stats]) => `
-                <div class="analytics-card">
-                    <div class="analytics-number">${stats.total}</div>
-                    <div class="analytics-label">${name.length > 20 ? name.substring(0, 20) + '...' : name}</div>
-                    <div style="font-size: 10px; margin-top: 5px;">✅ ${stats.approved} | ⏳ ${stats.pending} | ❌ ${stats.rejected}</div>
-                    <div style="font-size: 10px;">₹${(stats.totalValue / 1000).toFixed(0)}K</div>
-                </div>
-            `).join('');
-            
-            document.getElementById('companyList').innerHTML = sortedCompanies.map(([name, stats]) => `
-                <div class="company-tag">
-                    <i class="fas fa-building"></i> <strong>${escapeHtml(name)}</strong>
-                    <span style="color: #10b981;">${stats.approved}</span>/
-                    <span style="color: #f59e0b;">${stats.pending}</span>/
-                    <span style="color: #ef4444;">${stats.rejected}</span>
-                </div>
-            `).join('');
-        }
-        
-        function populateFilterOptions() {
-            const colors = new Set();
-            const clarities = new Set();
-            allProducts.forEach(p => {
-                if (p.diamond_color) colors.add(p.diamond_color);
-                if (p.diamond_clarity) clarities.add(p.diamond_clarity);
-            });
-            
-            const colorSelect = document.getElementById('diamondColorFilter');
-            const claritySelect = document.getElementById('diamondClarityFilter');
-            
-            colorSelect.innerHTML = '<option value="all">All Diamond Colors</option>' + Array.from(colors).sort().map(c => `<option value="${c}">${c}</option>`).join('');
-            claritySelect.innerHTML = '<option value="all">All Diamond Clarities</option>' + Array.from(clarities).sort().map(c => `<option value="${c}">${c}</option>`).join('');
-        }
-        
-        function getFilteredProductsList() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const statusFilter = document.getElementById('statusFilter').value;
-            const colorFilter = document.getElementById('diamondColorFilter').value;
-            const clarityFilter = document.getElementById('diamondClarityFilter').value;
-            const caratFilter = document.getElementById('caratFilter').value;
-            const mediaFilter = document.getElementById('mediaFilter').value;
-            const priceFilter = document.getElementById('priceFilter').value;
-            
-            let filtered = [...allProducts];
-            if (searchTerm) filtered = filtered.filter(p => (p.product_name || '').toLowerCase().includes(searchTerm) || (p.sku || '').toLowerCase().includes(searchTerm) || getCompanyName(p.vendor_id).toLowerCase().includes(searchTerm));
-            if (statusFilter !== 'all') filtered = filtered.filter(p => p.status === statusFilter);
-            if (colorFilter !== 'all') filtered = filtered.filter(p => p.diamond_color === colorFilter);
-            if (clarityFilter !== 'all') filtered = filtered.filter(p => p.diamond_clarity === clarityFilter);
-            if (caratFilter !== 'all') {
-                filtered = filtered.filter(p => {
-                    const carat = p.carat || 0;
-                    if (caratFilter === '0-0.5') return carat > 0 && carat <= 0.5;
-                    if (caratFilter === '0.5-1') return carat > 0.5 && carat <= 1;
-                    if (caratFilter === '1-2') return carat > 1 && carat <= 2;
-                    if (caratFilter === '2+') return carat > 2;
-                    return true;
+                // Active vendors in last 30 days
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                const activeVendorsList = new Set();
+                activityLogs.forEach(log => {
+                    if (log.action === 'login' && new Date(log.created_at) > thirtyDaysAgo) {
+                        activeVendorsList.add(log.vendor_id);
+                    }
                 });
-            }
-            if (mediaFilter === 'd360') filtered = filtered.filter(p => isD360Url(p.video_url));
-            else if (mediaFilter === 'video') filtered = filtered.filter(p => isVideoUrl(p.video_url));
-            
-            if (priceFilter !== 'all') {
-                filtered = filtered.filter(p => {
-                    const comp = productComparison.get(p.id);
-                    if (!comp) return false;
-                    if (priceFilter === 'best') return comp.isBest;
-                    if (priceFilter === 'overpriced') return comp.isWorst;
-                    return true;
-                });
-            }
-            
-            return filtered;
+                
+                document.getElementById('totalOrders').textContent = totalOrders;
+                document.getElementById('totalRevenue').textContent = `₹${(totalRevenue / 100000).toFixed(1)}L`;
+                document.getElementById('totalCustomers').textContent = uniqueCustomers.length;
+                document.getElementById('totalVendors').textContent = totalVendors;
+                document.getElementById('vendorProducts').textContent = vendorProductsCount;
+                document.getElementById('pendingApprovals').textContent = pendingApprovals;
+                document.getElementById('totalLogins').textContent = totalLogins;
+                document.getElementById('activeVendors').textContent = activeVendorsList.size;
+                
+                initRevenueChart(allOrders);
+                initStatusChart(allOrders);
+                initCategoryChart(allOrders);
+                initDailyOrdersChart(allOrders);
+                
+            } catch (error) { console.error('Error:', error); }
         }
         
-        function updateLiveSelectionInfo() {
-            const total = getFilteredProductsList().length;
-            const selected = selectedProducts.size;
-            const infoSpan = document.getElementById('liveSelectionInfo');
-            if (selected > 0) {
-                infoSpan.innerHTML = `<i class="fas fa-check-circle"></i> ${selected} selected / ${total} total`;
-                infoSpan.style.display = 'inline-flex';
-            } else {
-                infoSpan.innerHTML = '';
-                infoSpan.style.display = 'none';
-            }
-            
-            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-            if (selectAllCheckbox && total > 0) {
-                selectAllCheckbox.checked = selected === total;
-                selectAllCheckbox.indeterminate = selected > 0 && selected < total;
-            }
+        function getLastDays(days) { const daysArr = []; for (let i = days - 1; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); daysArr.push(d); } return daysArr; }
+        
+        function initRevenueChart(orders) {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            const last7Days = getLastDays(7);
+            const revenueData = last7Days.map(day => orders.filter(o => new Date(o.created_at).toDateString() === day.toDateString()).reduce((s, o) => s + (o.total || 0), 0));
+            if (revenueChart) revenueChart.destroy();
+            revenueChart = new Chart(ctx, { type: 'line', data: { labels: last7Days.map(d => d.toLocaleDateString('en-IN', { weekday: 'short' })), datasets: [{ label: 'Revenue (₹)', data: revenueData, borderColor: '#d4af37', backgroundColor: 'rgba(212,175,55,0.1)', borderWidth: 2, fill: true, tension: 0.4, pointBackgroundColor: '#d4af37', pointRadius: 3 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `₹${ctx.raw.toLocaleString()}` } } }, scales: { y: { grid: { color: '#e9ecef' }, ticks: { callback: (v) => `₹${v.toLocaleString()}` } }, x: { grid: { display: false } } } } });
         }
         
-        function renderCurrentView() {
-            const filtered = getFilteredProductsList();
-            
-            if (currentView === 'grid') {
-                renderGridView(filtered);
-            } else {
-                renderListView(filtered);
-            }
-            
-            updateLiveSelectionInfo();
-            updateBulkActionsBar();
+        function initStatusChart(orders) {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            const statuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+            const counts = statuses.map(s => orders.filter(o => o.status?.toLowerCase() === s).length);
+            if (statusChart) statusChart.destroy();
+            statusChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'], datasets: [{ data: counts, backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ef4444'], borderWidth: 0, hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } } });
         }
         
-        function renderListView(products) {
-            const container = document.getElementById('listView');
-            if (!products.length) { 
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-store-slash"></i><p>No vendor products found.</p></div>'; 
-                return; 
+        function initCategoryChart(orders) {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            const categoryMap = new Map();
+            orders.forEach(order => { order.items?.forEach(item => { categoryMap.set(item.category || 'Other', (categoryMap.get(item.category || 'Other') || 0) + (item.quantity || 1)); }); });
+            const categories = Array.from(categoryMap.keys()).slice(0, 5);
+            const counts = categories.map(c => categoryMap.get(c));
+            if (categoryChart) categoryChart.destroy();
+            categoryChart = new Chart(ctx, { type: 'bar', data: { labels: categories, datasets: [{ label: 'Units Sold', data: counts, backgroundColor: '#d4af37', borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#e9ecef' }, beginAtZero: true } } } });
+        }
+        
+        function initDailyOrdersChart(orders) {
+            const ctx = document.getElementById('dailyOrdersChart').getContext('2d');
+            const last7Days = getLastDays(7);
+            const dailyCounts = last7Days.map(day => orders.filter(o => new Date(o.created_at).toDateString() === day.toDateString()).length);
+            if (dailyOrdersChart) dailyOrdersChart.destroy();
+            dailyOrdersChart = new Chart(ctx, { type: 'line', data: { labels: last7Days.map(d => d.toLocaleDateString('en-IN', { weekday: 'short' })), datasets: [{ label: 'Orders', data: dailyCounts, borderColor: '#d4af37', backgroundColor: 'rgba(212,175,55,0.1)', borderWidth: 2, fill: true, tension: 0.4, pointBackgroundColor: '#d4af37', pointRadius: 3 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#e9ecef' }, beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: { display: false } } } } });
+        }
+        
+        // ========== VENDOR ANALYTICS ==========
+        async function loadVendorsAnalytics() {
+            try {
+                allVendors = await loadAllDataBatch('vendors', 'created_at', false);
+                allProducts = await loadAllDataBatch('vendor_products', 'id', false);
+                activityLogs = await loadAllDataBatch('vendor_activity_logs', 'created_at', false);
+                
+                const approved = allVendors.filter(v => v.status === 'approved').length;
+                const pending = allVendors.filter(v => v.status === 'pending').length;
+                const rejected = allVendors.filter(v => v.status === 'rejected').length;
+                
+                document.getElementById('vendorTotalCount').textContent = allVendors.length;
+                document.getElementById('approvedVendors').textContent = approved;
+                document.getElementById('pendingVendors').textContent = pending;
+                document.getElementById('rejectedVendors').textContent = rejected;
+                
+                initVendorRegistrationChart(allVendors);
+                initVendorStatusChart(allVendors);
+                initLoginActivityChart(activityLogs, allVendors);
+                initTopActiveVendorsChart(activityLogs, allVendors);
+                
+                renderVendorsTable(allVendors);
+                
+            } catch (error) { console.error('Error:', error); }
+        }
+        
+        function initVendorRegistrationChart(vendors) {
+            const ctx = document.getElementById('vendorRegChart').getContext('2d');
+            const last6Months = [];
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date();
+                d.setMonth(d.getMonth() - i);
+                last6Months.push(d);
             }
+            const counts = last6Months.map(month => vendors.filter(v => {
+                const created = new Date(v.created_at);
+                return created.getMonth() === month.getMonth() && created.getFullYear() === month.getFullYear();
+            }).length);
+            if (vendorRegChart) vendorRegChart.destroy();
+            vendorRegChart = new Chart(ctx, { type: 'bar', data: { labels: last6Months.map(d => d.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })), datasets: [{ label: 'New Vendors', data: counts, backgroundColor: '#d4af37', borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#e9ecef' }, beginAtZero: true, ticks: { stepSize: 1 } } } } });
+        }
+        
+        function initVendorStatusChart(vendors) {
+            const ctx = document.getElementById('vendorStatusChart').getContext('2d');
+            const approved = vendors.filter(v => v.status === 'approved').length;
+            const pending = vendors.filter(v => v.status === 'pending').length;
+            const rejected = vendors.filter(v => v.status === 'rejected').length;
+            if (vendorStatusChart) vendorStatusChart.destroy();
+            vendorStatusChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Approved', 'Pending', 'Rejected'], datasets: [{ data: [approved, pending, rejected], backgroundColor: ['#10b981', '#f59e0b', '#ef4444'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } } });
+        }
+        
+        function initLoginActivityChart(logs, vendors) {
+            const ctx = document.getElementById('loginActivityChart').getContext('2d');
+            const last30Days = [];
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                last30Days.push(d);
+            }
+            const loginCounts = last30Days.map(day => logs.filter(log => log.action === 'login' && new Date(log.created_at).toDateString() === day.toDateString()).length);
+            if (loginActivityChart) loginActivityChart.destroy();
+            loginActivityChart = new Chart(ctx, { type: 'line', data: { labels: last30Days.map(d => d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })), datasets: [{ label: 'Logins', data: loginCounts, borderColor: '#d4af37', backgroundColor: 'rgba(212,175,55,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } } });
+        }
+        
+        function initTopActiveVendorsChart(logs, vendors) {
+            const ctx = document.getElementById('topActiveVendorsChart').getContext('2d');
+            const loginCounts = new Map();
+            logs.filter(log => log.action === 'login').forEach(log => {
+                loginCounts.set(log.vendor_id, (loginCounts.get(log.vendor_id) || 0) + 1);
+            });
+            const topVendors = Array.from(loginCounts.entries())
+                .map(([id, count]) => ({ id, name: vendors.find(v => v.id === id)?.business_name || 'Unknown', count }))
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 5);
+            if (topActiveVendorsChart) topActiveVendorsChart.destroy();
+            topActiveVendorsChart = new Chart(ctx, { type: 'bar', data: { labels: topVendors.map(v => v.name.length > 15 ? v.name.substring(0, 15) + '...' : v.name), datasets: [{ label: 'Login Count', data: topVendors.map(v => v.count), backgroundColor: '#8b5cf6', borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } } });
+        }
+        
+        function renderVendorsTable(vendors) {
+            const container = document.getElementById('vendorsList');
+            if (!vendors.length) { container.innerHTML = '<div class="empty-state">No vendors found</div>'; return; }
             
-            let tableHtml = `<table class="list-view-table"><thead>
-                <tr>
-                    <th style="width:40px"><input type="checkbox" id="listSelectAll" onchange="toggleSelectAllList()"></th>
-                    <th style="width:60px">Image</th>
-                    <th>Product</th>
-                    <th>Company</th>
-                    <th>SKU/Category</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                    <th>Carat</th>
-                    <th>Color</th>
-                    <th>Clarity</th>
-                    <th>Price Comparison</th>
-                    <th>Media</th>
-                    <th>Status</th>
-                    <th style="width:140px">Actions</th>
-                </tr>
-            </thead><tbody>`;
+            let html = '<table class="admin-table"><thead><tr><th>Business Name</th><th>Owner</th><th>Email</th><th>Phone</th><th>Products</th><th>Logins</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead><tbody>';
             
-            for (const p of products) {
-                const imgUrl = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/50x50?text=No';
-                const isSelected = selectedProducts.has(p.id);
-                const companyName = getCompanyName(p.vendor_id);
-                const statusClass = p.status === 'approved' ? 'status-approved-sm' : (p.status === 'rejected' ? 'status-rejected-sm' : 'status-pending-sm');
-                const hasD360 = isD360Url(p.video_url);
-                const hasVideo = isVideoUrl(p.video_url);
-                let mediaIcon = '';
-                if (hasD360) mediaIcon = '<span class="diamond-badge-sm"><i class="fas fa-cube"></i> 360°</span>';
-                else if (hasVideo) mediaIcon = '<span class="diamond-badge-sm"><i class="fas fa-video"></i> Video</span>';
-                else if (p.image1_url || p.image2_url) mediaIcon = '<span class="diamond-badge-sm"><i class="fas fa-image"></i> Img</span>';
+            for (const v of vendors) {
+                const vendorProducts = allProducts.filter(p => p.vendor_id === v.id);
+                const vendorActivity = activityLogs.filter(log => log.vendor_id === v.id);
+                const logins = vendorActivity.filter(log => log.action === 'login').length;
                 
-                const stockColor = p.stock > 0 ? '#10b981' : '#ef4444';
-                const comp = productComparison.get(p.id);
-                let comparisonHtml = '<span class="diamond-badge-sm">-</span>';
-                let rowClass = '';
+                const statusClass = v.status === 'approved' ? 'status-active' : (v.status === 'pending' ? 'status-pending' : 'status-inactive');
+                const statusText = v.status === 'approved' ? '✓ Approved' : (v.status === 'pending' ? '⏳ Pending' : '✗ Rejected');
                 
-                if (comp) {
-                    comparisonHtml = getComparisonHtml(p);
-                    if (comp.isBest) rowClass = 'best-price';
-                    if (comp.isWorst) rowClass = 'worst-price';
-                }
-                
-                tableHtml += `<tr class="${isSelected ? 'selected' : ''} ${rowClass}">
-                    <td><input type="checkbox" class="list-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProductList(${p.id}, this.checked)"></td>
-                    <td><img class="list-thumbnail" src="${imgUrl}" onerror="this.src='https://via.placeholder.com/50x50'"></td>
-                    <td><strong>${escapeHtml(p.product_name)}</strong><br><span style="font-size:10px;color:var(--gray-500);">ID: ${p.id}</span></td>
-                    <td><i class="fas fa-building" style="color:var(--primary);"></i> ${escapeHtml(companyName)}</span></td>
-                    <td>${p.sku || 'N/A'}<br><span style="font-size:10px;">${p.category || '-'}</span></td>
-                    <td style="font-weight:600;">₹${(p.price || 0).toLocaleString()}<br><span style="font-size:10px;">+${p.gst || 18}%</span></td>
-                    <td style="color:${stockColor}; font-weight:600;">${p.stock || 0}</td>
-                    <td>${p.carat ? p.carat + 'ct' : '-'}</td>
-                    <td>${p.diamond_color || '-'}</td>
-                    <td>${p.diamond_clarity || '-'}</td>
-                    <td style="min-width: 120px;">${comparisonHtml}</td>
-                    <td>${mediaIcon}</td>
-                    <td><span class="status-badge-sm ${statusClass}">${(p.status || 'pending').toUpperCase()}</span></td>
-                    <td class="action-icons">
-                        ${hasD360 ? `<button class="action-icon-btn view360" onclick="openD360Viewer('${escapeHtml(p.video_url)}')" title="360° View"><i class="fas fa-cube"></i></button>` : ''}
-                        <button class="action-icon-btn edit" onclick="openEditModal(${p.id})" title="Edit"><i class="fas fa-edit"></i></button>
-                        ${p.status !== 'approved' ? `<button class="action-icon-btn approve" onclick="approveProduct(${p.id})" title="Approve"><i class="fas fa-check"></i></button>` : ''}
-                        ${p.status !== 'rejected' ? `<button class="action-icon-btn reject" onclick="rejectProduct(${p.id})" title="Reject"><i class="fas fa-times"></i></button>` : ''}
-                        <button class="action-icon-btn delete" onclick="deleteProduct(${p.id})" title="Delete"><i class="fas fa-trash-alt"></i></button>
-                    </td>
+                html += `<tr>
+                    <td><strong>${escapeHtml(v.business_name || 'N/A')}</strong></td>
+                    <td>${escapeHtml(v.owner_name || 'N/A')}</td>
+                    <td>${escapeHtml(v.email)}</td>
+                    <td>${v.phone || 'N/A'}</td>
+                    <td><span class="status-badge" style="background:rgba(212,175,55,0.1); color:var(--primary);">${vendorProducts.length}</span></td>
+                    <td><span class="status-badge" style="background:rgba(59,130,246,0.1); color:#3b82f6;">${logins}</span></td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${new Date(v.created_at).toLocaleDateString()}</td>
+                    <td><button class="action-btn" onclick="viewVendorDetails('${v.id}')"><i class="fas fa-eye"></i> Details</button></td>
                 </tr>`;
             }
-            tableHtml += '</tbody></tr>';
-            container.innerHTML = tableHtml;
-        }
-        
-        function renderGridView(products) {
-            const container = document.getElementById('gridView');
-            if (!products.length) { 
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-store-slash"></i><p>No vendor products found.</p></div>'; 
-                return; 
-            }
-            let html = '<div class="product-grid">';
-            for (const p of products) {
-                const imgUrl = p.image1_url || p.image2_url || p.image3_url || 'https://via.placeholder.com/400x200?text=No+Image';
-                const isSelected = selectedProducts.has(p.id);
-                const companyName = getCompanyName(p.vendor_id);
-                const statusClass = p.status === 'approved' ? 'status-approved' : (p.status === 'rejected' ? 'status-rejected' : 'status-pending');
-                const stockColor = p.stock > 0 ? '#10b981' : '#ef4444';
-                
-                let cardClass = '';
-                let comparisonHtml = '';
-                const comp = productComparison.get(p.id);
-                
-                if (comp) {
-                    if (comp.isBest) cardClass = 'best-price';
-                    if (comp.isWorst) cardClass = 'worst-price';
-                    const diffClass = comp.percentageDiff > 0 ? 'price-higher' : (comp.percentageDiff < 0 ? 'price-lower' : 'price-equal');
-                    const diffIcon = comp.percentageDiff > 0 ? '📈' : (comp.percentageDiff < 0 ? '📉' : '📊');
-                    comparisonHtml = `
-                        <div style="margin: 8px 0; padding: 8px; background: var(--gray-100); border-radius: 12px;">
-                            <div><span class="price-badge ${diffClass}">${diffIcon} ${comp.percentageDiff > 0 ? '+' : ''}${comp.percentageDiff.toFixed(1)}% vs avg (₹${comp.groupAvg.toLocaleString()})</span></div>
-                            <div style="font-size: 10px; color: var(--gray-500); margin-top: 4px;">Rank: ${comp.rank}/${comp.totalInGroup} | ${comp.isBest ? '🏆 Best Price' : (comp.isWorst ? '⚠️ Highest Price' : '')}</div>
-                        </div>
-                    `;
-                }
-                
-                html += `<div class="product-card ${isSelected ? 'selected' : ''} ${cardClass}">
-                    <input type="checkbox" class="product-select-checkbox" value="${p.id}" ${isSelected ? 'checked' : ''} onchange="toggleSelectProduct(${p.id}, this.checked)">
-                    <div style="position:relative;"><img class="product-image" src="${imgUrl}" onerror="this.src='https://via.placeholder.com/400x200'"></div>
-                    <div class="product-info">
-                        <div class="product-name">${escapeHtml(p.product_name)}</div>
-                        <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
-                        <div class="vendor-name"><i class="fas fa-building"></i> ${escapeHtml(companyName)}</div>
-                        <div class="product-price">₹${(p.price || 0).toLocaleString()} + ${p.gst || 18}% GST</div>
-                        <div style="margin: 5px 0;"><strong>Stock:</strong> <span style="color:${stockColor};">${p.stock || 0} units</span></div>
-                        ${p.carat || p.diamond_color || p.diamond_clarity ? `<div class="diamond-specs" style="margin: 8px 0; display: flex; gap: 10px; flex-wrap: wrap;">
-                            ${p.carat ? `<span class="diamond-spec"><i class="fas fa-gem"></i> ${p.carat}ct</span>` : ''}
-                            ${p.diamond_color ? `<span class="diamond-spec">🎨 ${p.diamond_color}</span>` : ''}
-                            ${p.diamond_clarity ? `<span class="diamond-spec">🔍 ${p.diamond_clarity}</span>` : ''}
-                        </div>` : ''}
-                        ${comparisonHtml}
-                        <div class="status-badge ${statusClass}">${(p.status || 'pending').toUpperCase()}</div>
-                        <div class="card-actions">
-                            <button class="action-btn edit" onclick="openEditModal(${p.id})">Edit</button>
-                            ${p.status !== 'approved' ? `<button class="action-btn approve" onclick="approveProduct(${p.id})">Approve</button>` : ''}
-                            ${p.status !== 'rejected' ? `<button class="action-btn reject" onclick="rejectProduct(${p.id})">Reject</button>` : ''}
-                            <button class="action-btn delete" onclick="deleteProduct(${p.id})">Delete</button>
-                        </div>
-                    </div>
-                </div>`;
-            }
-            html += '</div>';
+            html += '</tbody></table>';
             container.innerHTML = html;
         }
         
-        function updateBulkActionsBar() {
-            const bar = document.getElementById('bulkActionsBar');
-            const count = selectedProducts.size;
-            document.getElementById('selectedCount').innerText = count;
-            if (count > 0) bar.classList.add('active');
-            else bar.classList.remove('active');
-        }
-        
-        window.toggleSelectProduct = function(id, checked) {
-            if (checked) selectedProducts.add(id);
-            else selectedProducts.delete(id);
-            updateBulkActionsBar();
-            updateLiveSelectionInfo();
-            renderCurrentView();
-        };
-        window.toggleSelectProductList = window.toggleSelectProduct;
-        
-        window.toggleSelectAll = function() {
-            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-            const filtered = getFilteredProductsList();
-            if (selectAllCheckbox.checked) {
-                filtered.forEach(p => selectedProducts.add(p.id));
-                showToast(`✅ Selected all ${filtered.length} products`);
-            } else {
-                selectedProducts.clear();
-                showToast('Cleared all selections');
+        window.filterVendors = function() {
+            const searchTerm = document.getElementById('vendorSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('vendorStatusFilter').value;
+            
+            let filtered = [...allVendors];
+            if (searchTerm) {
+                filtered = filtered.filter(v => 
+                    (v.business_name || '').toLowerCase().includes(searchTerm) || 
+                    (v.email || '').toLowerCase().includes(searchTerm) ||
+                    (v.owner_name || '').toLowerCase().includes(searchTerm)
+                );
             }
-            updateBulkActionsBar();
-            updateLiveSelectionInfo();
-            renderCurrentView();
-        };
-        window.toggleSelectAllList = window.toggleSelectAll;
-        
-        window.clearSelection = function() { 
-            selectedProducts.clear(); 
-            updateBulkActionsBar(); 
-            updateLiveSelectionInfo(); 
-            renderCurrentView(); 
-            showToast('Selection cleared'); 
-        };
-        
-        window.setView = function(view) { 
-            currentView = view; 
-            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-            if (view === 'list') { 
-                document.querySelector('.view-btn:first-child').classList.add('active'); 
-                document.getElementById('listView').style.display = 'block'; 
-                document.getElementById('gridView').style.display = 'none'; 
-            } else { 
-                document.querySelector('.view-btn:last-child').classList.add('active'); 
-                document.getElementById('listView').style.display = 'none'; 
-                document.getElementById('gridView').style.display = 'block'; 
-            } 
-            renderCurrentView();
-        };
-        
-        window.openD360Viewer = function(url) {
-            if (!url) return;
-            const modalHtml = `<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:3000;display:flex;justify-content:center;align-items:center;" onclick="this.remove()"><div style="background:white;border-radius:20px;width:90%;height:80%;padding:20px;" onclick="event.stopPropagation()"><iframe src="${url}" style="width:100%;height:100%;border:none;border-radius:12px;" allowfullscreen></iframe><button style="position:absolute;top:20px;right:20px;background:black;color:white;border:none;width:36px;height:36px;border-radius:50%;cursor:pointer;" onclick="this.closest('div').remove()">×</button></div></div>`;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-        };
-        
-        function showBulkProgress(total, action) {
-            const container = document.getElementById('bulkProgressContainer');
-            document.getElementById('bulkProgressFill').style.width = '0%';
-            document.getElementById('bulkProgressText').innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${action} ${total} products...`;
-            document.getElementById('bulkProgressCount').innerHTML = `0 / ${total} completed`;
-            container.classList.add('active');
-        }
-        function updateBulkProgress(current, total) { const percent = (current / total) * 100; document.getElementById('bulkProgressFill').style.width = `${percent}%`; document.getElementById('bulkProgressCount').innerHTML = `${current} / ${total} completed`; }
-        function hideBulkProgress() { setTimeout(() => { document.getElementById('bulkProgressContainer').classList.remove('active'); document.getElementById('bulkProgressFill').style.width = '0%'; }, 1500); }
-        function showBulkConfirm(title, message, action) { pendingBulkAction = action; document.getElementById('bulkConfirmTitle').innerHTML = title; document.getElementById('bulkConfirmMessage').innerHTML = message; document.getElementById('bulkConfirmModal').classList.add('active'); }
-        window.closeBulkConfirmModal = function() { document.getElementById('bulkConfirmModal').classList.remove('active'); pendingBulkAction = null; };
-        window.bulkApprove = function() { if (selectedProducts.size === 0) { showToast('No products selected', true); return; } showBulkConfirm('Bulk Approve', `Approve ${selectedProducts.size} product(s)?`, 'approve'); };
-        window.bulkReject = function() { if (selectedProducts.size === 0) { showToast('No products selected', true); return; } showBulkConfirm('Bulk Reject', `Reject ${selectedProducts.size} product(s)?`, 'reject'); };
-        window.bulkDelete = function() { if (selectedProducts.size === 0) { showToast('No products selected', true); return; } showBulkConfirm('Bulk Delete', `⚠️ DELETE ${selectedProducts.size} product(s)? This cannot be undone!`, 'delete'); };
-        
-        async function executeBulkAction() {
-            const action = pendingBulkAction;
-            const ids = Array.from(selectedProducts);
-            const total = ids.length;
-            closeBulkConfirmModal();
-            showBulkProgress(total, action === 'approve' ? 'Approving' : (action === 'reject' ? 'Rejecting' : 'Deleting'));
-            let success = 0;
-            const BATCH_SIZE = 100;
-            for (let i = 0; i < ids.length; i += BATCH_SIZE) {
-                const batch = ids.slice(i, i + BATCH_SIZE);
-                try {
-                    if (action === 'approve') { const { error } = await supabase.from('vendor_products').update({ status: 'approved', updated_at: new Date() }).in('id', batch); if (!error) success += batch.length; }
-                    else if (action === 'reject') { const { error } = await supabase.from('vendor_products').update({ status: 'rejected', updated_at: new Date() }).in('id', batch); if (!error) success += batch.length; }
-                    else if (action === 'delete') { const { error } = await supabase.from('vendor_products').delete().in('id', batch); if (!error) success += batch.length; }
-                } catch (err) { console.error(err); }
-                updateBulkProgress(Math.min(i + BATCH_SIZE, total), total);
-                await new Promise(r => setTimeout(r, 50));
+            if (statusFilter !== 'all') {
+                filtered = filtered.filter(v => v.status === statusFilter);
             }
-            hideBulkProgress();
-            showToast(action === 'approve' ? `✅ ${success} products approved` : (action === 'reject' ? `❌ ${success} products rejected` : `🗑️ ${success} products deleted`));
-            selectedProducts.clear();
-            await loadVendorProducts();
-        }
-        document.getElementById('bulkConfirmYes').onclick = executeBulkAction;
-        
-        window.approveProduct = async function(id) { 
-            if (!confirm('Approve this product?')) return; 
-            await supabase.from('vendor_products').update({ status: 'approved', updated_at: new Date() }).eq('id', id); 
-            showToast('✅ Product approved'); 
-            await loadVendorProducts(); 
-        };
-        window.rejectProduct = async function(id) { 
-            if (!confirm('Reject this product?')) return; 
-            await supabase.from('vendor_products').update({ status: 'rejected', updated_at: new Date() }).eq('id', id); 
-            showToast('❌ Product rejected'); 
-            await loadVendorProducts(); 
-        };
-        window.deleteProduct = function(id) { 
-            pendingDelete = id; 
-            const product = allProducts.find(p => p.id === id); 
-            document.getElementById('modalMessage').innerHTML = `⚠️ Delete "${escapeHtml(product?.product_name || 'this product')}"? This cannot be undone!`; 
-            document.getElementById('confirmModal').classList.add('active'); 
-        };
-        window.confirmDelete = async function() { 
-            if (!pendingDelete) return; 
-            await supabase.from('vendor_products').delete().eq('id', pendingDelete); 
-            showToast('✅ Product deleted'); 
-            await loadVendorProducts(); 
-            closeConfirmModal(); 
-            pendingDelete = null; 
-        };
-        window.closeConfirmModal = function() { document.getElementById('confirmModal').classList.remove('active'); pendingDelete = null; };
-        
-        window.openEditModal = async function(id) {
-            const { data } = await supabase.from('vendor_products').select('*').eq('id', id).single();
-            if (!data) return;
-            document.getElementById('editId').value = data.id;
-            document.getElementById('editProductName').value = data.product_name || '';
-            document.getElementById('editSku').value = data.sku || '';
-            document.getElementById('editCategory').value = data.category || '';
-            document.getElementById('editPrice').value = data.price || '';
-            document.getElementById('editGst').value = data.gst || 18;
-            document.getElementById('editStock').value = data.stock || 0;
-            document.getElementById('editDescription').value = data.description || '';
-            document.getElementById('editImage1').value = data.image1_url || '';
-            document.getElementById('editImage2').value = data.image2_url || '';
-            document.getElementById('editImage3').value = data.image3_url || '';
-            document.getElementById('editVideo').value = data.video_url || '';
-            document.getElementById('editCarat').value = data.carat || '';
-            document.getElementById('editDiamondColor').value = data.diamond_color || '';
-            document.getElementById('editDiamondClarity').value = data.diamond_clarity || '';
-            document.getElementById('editDiamondCut').value = data.diamond_cut || '';
-            document.getElementById('editModal').classList.add('active');
+            renderVendorsTable(filtered);
         };
         
-        window.saveEditProduct = async function() {
-            const id = document.getElementById('editId').value;
-            const newStock = parseInt(document.getElementById('editStock').value) || 0;
-            let newStatus = null;
+        window.viewVendorDetails = async function(vendorId) {
+            const vendor = allVendors.find(v => v.id === vendorId);
+            if (!vendor) return;
             
-            if (autoApproveEnabled && newStock > 0) {
-                newStatus = 'approved';
-            }
+            const vendorProducts = allProducts.filter(p => p.vendor_id === vendorId);
+            const vendorActivity = activityLogs.filter(log => log.vendor_id === vendorId);
+            const logins = vendorActivity.filter(log => log.action === 'login').length;
+            const productAdds = vendorActivity.filter(log => log.action === 'add_product').length;
+            const edits = vendorActivity.filter(log => log.action === 'edit_product').length;
+            const deletes = vendorActivity.filter(log => log.action === 'delete_product').length;
+            const bulkUploads = vendorActivity.filter(log => log.action === 'bulk_upload').length;
             
-            const updates = {
-                product_name: document.getElementById('editProductName').value,
-                sku: document.getElementById('editSku').value,
-                category: document.getElementById('editCategory').value,
-                price: parseFloat(document.getElementById('editPrice').value),
-                gst: parseFloat(document.getElementById('editGst').value) || 18,
-                stock: newStock,
-                description: document.getElementById('editDescription').value,
-                image1_url: document.getElementById('editImage1').value,
-                image2_url: document.getElementById('editImage2').value,
-                image3_url: document.getElementById('editImage3').value,
-                video_url: document.getElementById('editVideo').value,
-                carat: document.getElementById('editCarat').value || null,
-                diamond_color: document.getElementById('editDiamondColor').value || null,
-                diamond_clarity: document.getElementById('editDiamondClarity').value || null,
-                diamond_cut: document.getElementById('editDiamondCut').value || null,
-                updated_at: new Date()
-            };
+            const lastLogin = vendorActivity.filter(log => log.action === 'login').sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
             
-            if (newStatus) {
-                updates.status = newStatus;
-            }
-            
-            if (!updates.product_name || !updates.sku) { showToast('Product name and SKU are required', true); return; }
-            
-            await supabase.from('vendor_products').update(updates).eq('id', id);
-            
-            if (newStatus) {
-                showToast(`✅ Product updated and auto-approved (stock: ${newStock})`);
-            } else {
-                showToast('✅ Product updated');
-            }
-            
-            closeEditModal();
-            await loadVendorProducts();
-        };
-        window.closeEditModal = function() { document.getElementById('editModal').classList.remove('active'); };
-        
-        window.refreshVendorProducts = function() { loadVendorProducts(); showToast('Refreshing...'); };
-        
-        window.exportVendorCSV = function() {
-            const exportData = allProducts.map(p => {
-                const comp = productComparison.get(p.id);
-                return {
-                    'ID': p.id,
-                    'Product Name': p.product_name,
-                    'Company Name': getCompanyName(p.vendor_id),
-                    'SKU': p.sku,
-                    'Category': p.category,
-                    'Price': p.price,
-                    'GST %': p.gst,
-                    'Stock': p.stock,
-                    'Status': p.status,
-                    'Carat': p.carat || '',
-                    'Diamond Color': p.diamond_color || '',
-                    'Diamond Clarity': p.diamond_clarity || '',
-                    'Diamond Cut': p.diamond_cut || '',
-                    'Match Group': comp ? `${getCaratGroup(p.carat)}|${p.diamond_color}|${p.diamond_clarity}` : '',
-                    'Group Avg Price': comp ? comp.groupAvg : '',
-                    'Price vs Avg': comp ? `${comp.percentageDiff > 0 ? '+' : ''}${comp.percentageDiff?.toFixed(1)}%` : '',
-                    'Rank in Group': comp ? `${comp.rank}/${comp.totalInGroup}` : '',
-                    'Best in Group': comp?.isBest ? 'Yes' : 'No',
-                    'Has D360': isD360Url(p.video_url) ? 'Yes' : 'No',
-                    'Has Video': isVideoUrl(p.video_url) ? 'Yes' : 'No'
-                };
+            // Group activity by date
+            const activityByDate = new Map();
+            vendorActivity.forEach(act => {
+                const date = new Date(act.created_at).toLocaleDateString();
+                if (!activityByDate.has(date)) activityByDate.set(date, []);
+                activityByDate.get(date).push(act);
             });
-            const ws = XLSX.utils.json_to_sheet(exportData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Vendor Products');
-            XLSX.writeFile(wb, `vendor_products_${new Date().toISOString().slice(0,19)}.xlsx`);
-            showToast('Export complete!');
+            
+            let activityHtml = '';
+            for (const [date, activities] of activityByDate) {
+                activityHtml += `<div style="margin-bottom: 15px;">
+                    <div style="font-weight: 600; color: var(--primary); margin-bottom: 8px;">📅 ${date}</div>
+                    <div style="padding-left: 10px; border-left: 2px solid var(--primary);">
+                        ${activities.slice(0, 5).map(act => `
+                            <div style="padding: 6px 0; border-bottom: 1px solid var(--gray-200);">
+                                <div><strong>${getActionIcon(act.action)} ${act.action_display || act.action}</strong> <span style="font-size: 11px; color: var(--gray-500);">${new Date(act.created_at).toLocaleTimeString()}</span></div>
+                                ${act.details ? `<div style="font-size: 12px; color: var(--gray-600);">${escapeHtml(act.details)}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+            }
+            
+            const modalContent = document.getElementById('vendorModalContent');
+            modalContent.innerHTML = `
+                <div class="vendor-summary">
+                    <div class="vendor-summary-item"><div class="vendor-summary-value">${vendorProducts.length}</div><div class="vendor-summary-label">Products</div></div>
+                    <div class="vendor-summary-item"><div class="vendor-summary-value">${logins}</div><div class="vendor-summary-label">Total Logins</div></div>
+                    <div class="vendor-summary-item"><div class="vendor-summary-value">${productAdds}</div><div class="vendor-summary-label">Products Added</div></div>
+                    <div class="vendor-summary-item"><div class="vendor-summary-value">${edits}</div><div class="vendor-summary-label">Edits</div></div>
+                    <div class="vendor-summary-item"><div class="vendor-summary-value">${bulkUploads}</div><div class="vendor-summary-label">Bulk Uploads</div></div>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <h4><i class="fas fa-building"></i> Business Information</h4>
+                    <p><strong>Business Name:</strong> ${escapeHtml(vendor.business_name || 'N/A')}</p>
+                    <p><strong>Owner Name:</strong> ${escapeHtml(vendor.owner_name || 'N/A')}</p>
+                    <p><strong>Email:</strong> ${escapeHtml(vendor.email)}</p>
+                    <p><strong>Phone:</strong> ${vendor.phone || 'N/A'}</p>
+                    <p><strong>GST Number:</strong> ${vendor.gst_number || 'N/A'}</p>
+                    <p><strong>Address:</strong> ${escapeHtml(vendor.address || 'N/A')}</p>
+                    <p><strong>Status:</strong> <span class="status-badge ${vendor.status === 'approved' ? 'status-active' : (vendor.status === 'pending' ? 'status-pending' : 'status-inactive')}">${vendor.status || 'pending'}</span></p>
+                    <p><strong>Joined:</strong> ${new Date(vendor.created_at).toLocaleString()}</p>
+                    ${lastLogin ? `<p><strong>Last Login:</strong> ${new Date(lastLogin.created_at).toLocaleString()}</p>` : ''}
+                </div>
+                <div>
+                    <h4><i class="fas fa-clock"></i> Activity Timeline</h4>
+                    <div style="max-height: 400px; overflow-y: auto;">
+                        ${activityHtml || '<div class="empty-state">No activity recorded</div>'}
+                    </div>
+                </div>
+            `;
+            document.getElementById('vendorModal').classList.add('active');
         };
         
-        window.toggleAutoApprove = function() {
-            autoApproveEnabled = document.getElementById('autoApproveToggle').checked;
-            localStorage.setItem('autoApproveEnabled', autoApproveEnabled);
-            showToast(autoApproveEnabled ? 'Auto-Approve Enabled' : 'Auto-Approve Disabled');
+        function getActionIcon(action) {
+            const icons = {
+                'login': '🔐',
+                'logout': '🚪',
+                'add_product': '➕',
+                'edit_product': '✏️',
+                'delete_product': '🗑️',
+                'bulk_upload': '📂',
+                'update_profile': '👤',
+                'order_received': '📦'
+            };
+            return icons[action] || '📌';
+        }
+        
+        // ========== ACTIVITY LOGS ==========
+        async function loadActivityLogs() {
+            const container = document.getElementById('activityLogsList');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading activity logs...</p></div>';
+            
+            try {
+                activityLogs = await loadAllDataBatch('vendor_activity_logs', 'created_at', false);
+                filteredActivities = [...activityLogs];
+                renderActivityLogs(filteredActivities);
+                
+            } catch (error) {
+                console.error('Error loading activity logs:', error);
+                container.innerHTML = '<div class="empty-state">Error loading activity logs</div>';
+            }
+        }
+        
+        function renderActivityLogs(logs) {
+            const container = document.getElementById('activityLogsList');
+            if (!logs.length) { container.innerHTML = '<div class="empty-state">No activity logs found</div>'; return; }
+            
+            let html = '';
+            for (const log of logs) {
+                const vendor = allVendors.find(v => v.id === log.vendor_id);
+                const vendorName = vendor?.business_name || log.vendor_email || 'Unknown Vendor';
+                const iconClass = getIconClassForAction(log.action);
+                const actionIcon = getActionIcon(log.action);
+                
+                html += `
+                    <div class="timeline-item">
+                        <div class="timeline-icon ${iconClass}">${actionIcon}</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">${log.action_display || log.action}</div>
+                            <div class="timeline-time">${new Date(log.created_at).toLocaleString()} • ${escapeHtml(vendorName)}</div>
+                            ${log.details ? `<div class="timeline-details">${escapeHtml(log.details)}</div>` : ''}
+                            ${log.ip_address ? `<div class="timeline-details" style="font-size: 10px;">IP: ${log.ip_address}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+        
+        function getIconClassForAction(action) {
+            const classes = {
+                'login': 'login',
+                'logout': 'logout',
+                'add_product': 'add_product',
+                'edit_product': 'edit_product',
+                'delete_product': 'delete_product',
+                'bulk_upload': 'bulk_upload',
+                'update_profile': 'edit_product'
+            };
+            return classes[action] || 'login';
+        }
+        
+        window.filterActivities = function() {
+            const searchTerm = document.getElementById('activitySearch').value.toLowerCase();
+            const actionFilter = document.getElementById('activityTypeFilter').value;
+            const dateFilter = document.getElementById('activityDateFilter').value;
+            
+            let filtered = [...activityLogs];
+            
+            if (searchTerm) {
+                filtered = filtered.filter(log => {
+                    const vendor = allVendors.find(v => v.id === log.vendor_id);
+                    const vendorName = vendor?.business_name || log.vendor_email || '';
+                    return vendorName.toLowerCase().includes(searchTerm) || 
+                           (log.details || '').toLowerCase().includes(searchTerm) ||
+                           (log.action || '').toLowerCase().includes(searchTerm);
+                });
+            }
+            
+            if (actionFilter !== 'all') {
+                filtered = filtered.filter(log => log.action === actionFilter);
+            }
+            
+            if (dateFilter !== 'all') {
+                const now = new Date();
+                let cutoff = new Date();
+                if (dateFilter === 'today') cutoff.setHours(0, 0, 0, 0);
+                else if (dateFilter === 'week') cutoff.setDate(now.getDate() - 7);
+                else if (dateFilter === 'month') cutoff.setMonth(now.getMonth() - 1);
+                else if (dateFilter === 'year') cutoff.setFullYear(now.getFullYear() - 1);
+                
+                filtered = filtered.filter(log => new Date(log.created_at) >= cutoff);
+            }
+            
+            renderActivityLogs(filtered);
         };
         
-        document.getElementById('searchInput').addEventListener('input', () => { renderCurrentView(); updateLiveSelectionInfo(); });
-        document.getElementById('statusFilter').addEventListener('change', () => { renderCurrentView(); updateLiveSelectionInfo(); });
-        document.getElementById('diamondColorFilter').addEventListener('change', () => { renderCurrentView(); updateLiveSelectionInfo(); });
-        document.getElementById('diamondClarityFilter').addEventListener('change', () => { renderCurrentView(); updateLiveSelectionInfo(); });
-        document.getElementById('caratFilter').addEventListener('change', () => { renderCurrentView(); updateLiveSelectionInfo(); });
-        document.getElementById('mediaFilter').addEventListener('change', () => { renderCurrentView(); updateLiveSelectionInfo(); });
-        document.getElementById('priceFilter').addEventListener('change', () => { renderCurrentView(); updateLiveSelectionInfo(); });
+        // ========== VENDOR PERFORMANCE ==========
+        async function loadVendorPerformance() {
+            try {
+                const vendorStats = [];
+                for (const vendor of allVendors) {
+                    const vendorProducts = allProducts.filter(p => p.vendor_id === vendor.id);
+                    const vendorActivity = activityLogs.filter(log => log.vendor_id === vendor.id);
+                    const totalProductsValue = vendorProducts.reduce((sum, p) => sum + (p.price || 0), 0);
+                    const logins = vendorActivity.filter(log => log.action === 'login').length;
+                    const productsAdded = vendorActivity.filter(log => log.action === 'add_product').length;
+                    
+                    vendorStats.push({
+                        id: vendor.id,
+                        business_name: vendor.business_name,
+                        email: vendor.email,
+                        status: vendor.status,
+                        productCount: vendorProducts.length,
+                        totalValue: totalProductsValue,
+                        logins: logins,
+                        productsAdded: productsAdded,
+                        joined: vendor.created_at
+                    });
+                }
+                
+                const topByProducts = [...vendorStats].sort((a, b) => b.productCount - a.productCount).slice(0, 5);
+                const topBySales = [...vendorStats].filter(v => v.status === 'approved').sort((a, b) => b.totalValue - a.totalValue).slice(0, 5);
+                const topByLogins = [...vendorStats].sort((a, b) => b.logins - a.logins).slice(0, 5);
+                const topByAdditions = [...vendorStats].sort((a, b) => b.productsAdded - a.productsAdded).slice(0, 5);
+                
+                initTopVendorsChart(topBySales);
+                initTopVendorsProductsChart(topByProducts);
+                initTopVendorsLoginChart(topByLogins);
+                initProductAdditionChart(topByAdditions);
+                
+                renderVendorPerformanceTable(vendorStats);
+                
+            } catch (error) { console.error('Error:', error); }
+        }
         
-        window.logout = function() { sessionStorage.removeItem('adminLoggedIn'); window.location.href = 'login.html'; };
-        window.onclick = function(event) { if (event.target === document.getElementById('confirmModal')) closeConfirmModal(); if (event.target === document.getElementById('bulkConfirmModal')) closeBulkConfirmModal(); if (event.target === document.getElementById('editModal')) closeEditModal(); };
+        function initTopVendorsChart(vendors) {
+            const ctx = document.getElementById('topVendorsChart').getContext('2d');
+            if (topVendorsChart) topVendorsChart.destroy();
+            topVendorsChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: vendors.map(v => v.business_name?.substring(0, 20) || 'Unknown'), datasets: [{ label: 'Inventory Value (₹)', data: vendors.map(v => v.totalValue), backgroundColor: '#d4af37', borderRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: (ctx) => `₹${ctx.raw.toLocaleString()}` } } }, scales: { y: { ticks: { callback: (v) => `₹${(v/1000).toFixed(0)}K` } } } }
+            });
+        }
         
-        // Initialize
-        document.getElementById('autoApproveToggle').checked = autoApproveEnabled;
-        loadVendorProducts();
+        function initTopVendorsProductsChart(vendors) {
+            const ctx = document.getElementById('topVendorsProductsChart').getContext('2d');
+            if (topVendorsProductsChart) topVendorsProductsChart.destroy();
+            topVendorsProductsChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: vendors.map(v => v.business_name?.substring(0, 20) || 'Unknown'), datasets: [{ label: 'Product Count', data: vendors.map(v => v.productCount), backgroundColor: '#8b5cf6', borderRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+            });
+        }
+        
+        function initTopVendorsLoginChart(vendors) {
+            const ctx = document.getElementById('topVendorsLoginChart').getContext('2d');
+            if (topVendorsLoginChart) topVendorsLoginChart.destroy();
+            topVendorsLoginChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: vendors.map(v => v.business_name?.substring(0, 20) || 'Unknown'), datasets: [{ label: 'Login Count', data: vendors.map(v => v.logins), backgroundColor: '#06b6d4', borderRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+            });
+        }
+        
+        function initProductAdditionChart(vendors) {
+            const ctx = document.getElementById('productAdditionChart').getContext('2d');
+            if (productAdditionChart) productAdditionChart.destroy();
+            productAdditionChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: vendors.map(v => v.business_name?.substring(0, 20) || 'Unknown'), datasets: [{ label: 'Products Added', data: vendors.map(v => v.productsAdded), backgroundColor: '#10b981', borderRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+            });
+        }
+        
+        function renderVendorPerformanceTable(vendors) {
+            const container = document.getElementById('vendorPerformanceList');
+            const sorted = [...vendors].sort((a, b) => b.productCount - a.productCount);
+            
+            let html = '<table class="admin-table"><thead><tr><th>Rank</th><th>Vendor</th><th>Products</th><th>Inventory Value</th><th>Logins</th><th>Products Added</th><th>Joined</th><th>Status</th></tr></thead><tbody>';
+            
+            sorted.forEach((v, idx) => {
+                const rankIcon = idx === 0 ? '🥇' : (idx === 1 ? '🥈' : (idx === 2 ? '🥉' : `${idx + 1}`));
+                html += `<tr>
+                    <td><strong>${rankIcon}</strong></td>
+                    <td><strong>${escapeHtml(v.business_name || 'N/A')}</strong><br><span style="font-size:10px;">${escapeHtml(v.email)}</span></td>
+                    <td><span class="status-badge" style="background:rgba(212,175,55,0.1);">${v.productCount}</span></td>
+                    <td>₹${v.totalValue.toLocaleString()}</td>
+                    <td>${v.logins}</td>
+                    <td>${v.productsAdded}</td>
+                    <td>${new Date(v.joined).toLocaleDateString()}</td>
+                    <td><span class="status-badge ${v.status === 'approved' ? 'status-active' : 'status-pending'}">${v.status || 'pending'}</span></td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+        
+        window.updateRevenueChart = function() { loadOverviewAnalytics(); };
+        window.closeVendorModal = function() { document.getElementById('vendorModal').classList.remove('active'); };
+        window.openSidebar = function() { document.getElementById('mobileSidebar').classList.add('open'); document.getElementById('sidebarOverlay').classList.add('open'); };
+        window.closeSidebar = function() { document.getElementById('mobileSidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open'); };
+        window.logout = function() { sessionStorage.removeItem('adminLoggedIn'); showToast('Logged out'); setTimeout(() => window.location.href = 'login.html', 500); };
+        
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+        
+        // Close modal on outside click
+        document.getElementById('vendorModal')?.addEventListener('click', function(e) { if (e.target === this) closeVendorModal(); });
+        
+        loadOverviewAnalytics();
+        setInterval(() => { if (document.getElementById('tab-overview').classList.contains('active')) loadOverviewAnalytics(); }, 30000);
     </script>
 </body>
 </html>
