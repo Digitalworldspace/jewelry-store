@@ -6,6 +6,7 @@
     <title>Style Of Life - Home | Luxury Jewelry</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -470,25 +471,23 @@
     <div class="featured-section"><div class="section-header"><h2 class="section-title">Editor's Pick</h2><div class="section-subtitle">Curated just for you</div></div><div class="featured-grid" id="featuredGrid"><div class="loading"><div class="spinner"></div></div></div></div>
     <div class="products-section"><div class="section-header"><h2 class="section-title">Our Collection</h2><div class="section-subtitle">Discover timeless masterpieces from our store and partner artisans</div></div><div class="products-grid" id="productsGrid"><div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div></div></div>
     <div class="features-section"><div class="features-grid"><div class="feature-item"><div class="feature-icon"><i class="fas fa-gem"></i></div><div class="feature-title">Premium Quality</div><div class="feature-desc">Certified diamonds and finest metals</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-truck"></i></div><div class="feature-title">Free Shipping</div><div class="feature-desc">On orders above ₹3000</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><div class="feature-title">Secure Payments</div><div class="feature-desc">100% secure transactions</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-headset"></i></div><div class="feature-title">24/7 Support</div><div class="feature-desc">Dedicated customer care</div></div></div></div>
-    <footer class="luxury-footer"><div class="footer-content"><div class="footer-brand"><div class="footer-logo">STYLE<span>OF</span>LIFE</div><p>Crafting timeless elegance since 2024.</p></div><div class="footer-links"><h4>Explore</h4><a data-page="home">Home</a><a data-page="shop">Shop All</a><a data-page="track">Track Order</a><a data-page="customer-portal">My Account</a></div><div class="footer-links"><h4>Support</h4><a data-page="shipping">Shipping Policy</a><a data-page="privacy">Privacy Policy</a><a data-page="terms">Terms & Conditions</a></div><div class="footer-links"><h4>Connect</h4><p><i class="fas fa-phone"></i> <a href="tel:+916352925472">+91-6352925472</a></p><p><i class="fas fa-envelope"></i> <a href="mailto:styleoflife987@gmail.com">styleoflife987@gmail.com</a></p></div></div><div class="footer-bottom"><p>© 2026 Style Of Life. All rights reserved.</p></div></footer>
+    <footer class="luxury-footer"><div class="footer-content"><div class="footer-brand"><div class="footer-logo">STYLE<span>OF</span>LIFE</div><p>Crafting timeless elegance since 2024.</p></div><div class="footer-links"><h4>Explore</h4><a data-page="home">Home</a><a data-page="shop">Shop All</a><a data-page="track">Track Order</a><a data-page="customer-portal">My Account</a></div><div class="footer-links"><h4>Support</h4><a data-page="shipping-policy">Shipping Policy</a><a data-page="privacy-policy">Privacy Policy</a><a data-page="terms-conditions">Terms & Conditions</a><a data-page="faq">FAQ</a></div><div class="footer-links"><h4>Connect</h4><p><i class="fas fa-phone"></i> <a href="tel:+916352925472">+91-6352925472</a></p><p><i class="fas fa-envelope"></i> <a href="mailto:styleoflife987@gmail.com">styleoflife987@gmail.com</a></p></div></div><div class="footer-bottom"><p>© 2026 Style Of Life. All rights reserved.</p></div></footer>
     <div class="bottom-nav"><a data-page="home" class="active"><i class="fas fa-home"></i><span>Home</span></a><a data-page="shop"><i class="fas fa-search"></i><span>Discover</span></a><a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Bag</span></a><a data-page="track"><i class="fas fa-truck"></i><span>Track</span></a><a data-page="customer-portal"><i class="fas fa-user"></i><span>Profile</span></a></div>
     
     <script type="importmap">{ "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }</script>
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
-        // Supabase configuration - Using the same config from the existing code
-        // The CONFIG object should be defined in js/config.js as per original code
-        // For safety, we'll create a fallback if CONFIG is not defined
-        const supabaseUrl = window.CONFIG?.SUPABASE_URL || 'https://your-project.supabase.co'; // Replace with your actual URL
-        const supabaseAnonKey = window.CONFIG?.SUPABASE_ANON_KEY || 'your-anon-key'; // Replace with your actual key
+        // Supabase configuration
+        const supabaseUrl = window.CONFIG?.SUPABASE_URL || "https://kkvgdagjboxhtuyqlomq.supabase.co";
+        const supabaseAnonKey = window.CONFIG?.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrdmdkYWdqYm94aHR1eXFsb21xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzgyMTksImV4cCI6MjA5MDA1NDIxOX0.5A4UUcvwAi5UM8K81mmrN3lOTmzUYq70qRouaVqpwDA";
         
         const supabase = createClient(supabaseUrl, supabaseAnonKey);
         let sessionId = localStorage.getItem('sessionId');
         if (!sessionId) { sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); localStorage.setItem('sessionId', sessionId); }
         
         let currentCart = [];
-        let usedProductIds = new Set(); // Track used product IDs across sections
+        let usedProductIds = new Set();
         
         function calculateGST(price, gstPercent) { const gst = (price * gstPercent) / 100; return { gstAmount: gst, total: price + gst }; }
         function navigateTo(page) { window.location.href = page + '.html'; }
@@ -553,7 +552,6 @@
                 if (isVideoUrl(product.video_url)) media.push({ url: product.video_url, type: 'video' });
                 else if (isD360Url(product.video_url)) media.push({ url: product.video_url, type: 'd360' });
             }
-            // Ensure we always have at least one media item
             if (media.length === 0 && product.image1_url) media.push({ url: product.image1_url, type: 'image' });
             return media;
         }
@@ -561,24 +559,18 @@
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
         
         async function loadAllProductsForAllSections() {
-            // Reset used IDs to ensure fresh selection per section
             usedProductIds.clear();
-            
-            // Fetch products from both tables
             const [mainRes, vendorRes] = await Promise.all([
                 supabase.from('products').select('*'),
                 supabase.from('vendor_products').select('*').eq('status', 'approved')
             ]);
             
-            const mainProducts = (mainRes.data || []).map(p => ({ ...p, source: 'main' }));
-            const vendorProducts = (vendorRes.data || []).map(p => ({ ...p, source: 'vendor', product_name: p.product_name || p.name, name: p.name }));
+            const mainProducts = (mainRes.data || []).map(p => ({ ...p, source: 'main', product_name: p.product_name || p.name }));
+            const vendorProducts = (vendorRes.data || []).map(p => ({ ...p, source: 'vendor', product_name: p.product_name }));
             
             let allProducts = [...mainProducts, ...vendorProducts];
-            
-            // Shuffle function for variety
             function shuffleArray(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
             allProducts = shuffleArray(allProducts);
-            
             return allProducts;
         }
         
@@ -604,7 +596,6 @@
                 }
                 container.innerHTML = html;
                 
-                // Auto-scroll logic
                 let autoScrollInterval = null;
                 function startAutoScroll() {
                     if (autoScrollInterval) clearInterval(autoScrollInterval);
@@ -632,16 +623,11 @@
             const container = document.getElementById('featuredGrid');
             try {
                 const allProducts = await loadAllProductsForAllSections();
-                // Filter out products already used in stories
                 let availableProducts = allProducts.filter(p => !usedProductIds.has(p.id));
                 let picks = availableProducts.slice(0, 4);
                 picks.forEach(p => usedProductIds.add(p.id));
                 
-                if (picks.length === 0) { 
-                    // Fallback: if no fresh products, just take first 4 from allProducts
-                    picks = allProducts.slice(0, 4);
-                    picks.forEach(p => usedProductIds.add(p.id));
-                }
+                if (picks.length === 0) { picks = allProducts.slice(0, 4); picks.forEach(p => usedProductIds.add(p.id)); }
                 
                 let html = '';
                 for (const p of picks) {
@@ -664,14 +650,11 @@
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div>';
             try {
                 const allProducts = await loadAllProductsForAllSections();
-                // Filter out products already used in stories and featured
                 let availableProducts = allProducts.filter(p => !usedProductIds.has(p.id));
-                // If we have fewer than 6 available, just take from all but deduplicate
                 let displayProducts;
                 if (availableProducts.length >= 8) {
                     displayProducts = availableProducts.slice(0, 12);
                 } else {
-                    // Combine but ensure no duplicates by ID
                     const combined = [...allProducts];
                     const uniqueMap = new Map();
                     combined.forEach(p => { if (!uniqueMap.has(p.id)) uniqueMap.set(p.id, p); });
@@ -750,7 +733,6 @@
                             </div>`;
             document.body.insertAdjacentHTML('beforeend', modalHtml);
             
-            // Auto-play video if present
             setTimeout(() => {
                 const modalGallery = document.getElementById('modalGallery');
                 if (modalGallery) {
