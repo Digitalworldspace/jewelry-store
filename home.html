@@ -478,6 +478,25 @@
         .footer-links a:hover { color: var(--gold); }
         .footer-bottom { text-align: center; padding-top: 40px; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; }
         
+        /* WhatsApp Button */
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #25D366;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+        .whatsapp-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37,211,102,0.3);
+        }
+        
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -495,7 +514,19 @@
         .bottom-nav a i { font-size: 22px; }
         .bottom-nav a.active, .bottom-nav a:hover { color: var(--gold); }
         
-        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: black; padding: 12px 24px; border-radius: 40px; z-index: 9999; font-weight: 700; animation: fadeUp 0.3s; }
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: black;
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 9999;
+            font-weight: 700;
+            animation: fadeUp 0.3s;
+        }
         .toast-error { background: #dc3545; color: white; }
         @keyframes fadeUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         
@@ -511,6 +542,26 @@
             height: 1px;
             overflow: hidden;
         }
+        
+        /* Pixel Test Button */
+        .pixel-test-btn {
+            position: fixed;
+            bottom: 140px;
+            right: 20px;
+            background: #1877F2;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        .pixel-test-btn:hover { opacity: 1; }
         
         @media (min-width: 768px) {
             .hero-title { font-size: 64px; }
@@ -549,6 +600,12 @@
             <div><span class="gemini-text">Style Of Life</span><span class="gemini-sub">LUXURY JEWELRY</span></div>
         </div>
     </div>
+    
+    <!-- Pixel Test Button -->
+    <div class="pixel-test-btn" onclick="testFacebookPixel()" title="Test Facebook Pixel">
+        <i class="fab fa-facebook-f"></i>
+    </div>
+    
     <div class="floating-cart" id="floatingCartBtn"><i class="fas fa-shopping-bag"></i><span class="floating-cart-badge" id="cartCount">0</span></div>
     <div id="swipeCartOverlay" class="swipe-cart-overlay"><div class="swipe-handle" id="swipeHandle"></div><div class="swipe-title"><i class="fas fa-shopping-bag" style="color: var(--gold);"></i> Your Cart</div><div id="cartPreviewContent" class="cart-preview"><div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);"><i class="fas fa-shopping-cart" style="font-size:48px;margin-bottom:15px;"></i><p>Your cart is empty</p></div></div><div style="text-align:center;"><div class="action-card" id="clearCartSwipeBtn"><i class="fas fa-trash-alt"></i><span>Clear Cart</span></div></div><div class="swipe-container" id="swipeContainer"><div class="swipe-track"><div class="swipe-progress" id="swipeProgress"></div><div class="swipe-thumb" id="swipeThumb"><i class="fas fa-chevron-right"></i><span>Slide</span></div><div class="swipe-text">→ Slide to checkout →</div></div></div></div>
     
@@ -557,8 +614,34 @@
     <div class="featured-section"><div class="section-header"><h2 class="section-title">Editor's Pick</h2><div class="section-subtitle">Curated just for you</div></div><div class="featured-grid" id="featuredGrid"><div class="loading"><div class="spinner"></div></div></div></div>
     <div class="products-section"><div class="section-header"><h2 class="section-title">Our Collection</h2><div class="section-subtitle">Discover timeless masterpieces from our store and partner artisans</div></div><div class="products-grid" id="productsGrid"><div class="loading"><div class="spinner"></div><p>Loading masterpieces...</p></div></div></div>
     <div class="features-section"><div class="features-grid"><div class="feature-item"><div class="feature-icon"><i class="fas fa-gem"></i></div><div class="feature-title">Premium Quality</div><div class="feature-desc">Certified diamonds and finest metals</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-truck"></i></div><div class="feature-title">Free Shipping</div><div class="feature-desc">On orders above ₹3000</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><div class="feature-title">Secure Payments</div><div class="feature-desc">100% secure transactions</div></div><div class="feature-item"><div class="feature-icon"><i class="fas fa-headset"></i></div><div class="feature-title">24/7 Support</div><div class="feature-desc">Dedicated customer care</div></div></div></div>
-    <footer class="luxury-footer"><div class="footer-content"><div class="footer-brand"><div class="footer-logo">STYLE<span>OF</span>LIFE</div><p>Crafting timeless elegance since 2024.</p></div><div class="footer-links"><h4>Explore</h4><a data-page="home">Home</a><a data-page="shop">Shop All</a><a data-page="track">Track Order</a><a data-page="customer-portal">My Account</a></div><div class="footer-links"><h4>Support</h4><a data-page="shipping-policy">Shipping Policy</a><a data-page="privacy-policy">Privacy Policy</a><a data-page="terms-conditions">Terms & Conditions</a><a data-page="faq">FAQ</a></div><div class="footer-links"><h4>Connect</h4><p><i class="fas fa-phone"></i> <a href="tel:+916352925472">+91-6352925472</a></p><p><i class="fas fa-envelope"></i> <a href="mailto:styleoflife987@gmail.com">styleoflife987@gmail.com</a></p></div></div><div class="footer-bottom"><p>© 2026 Style Of Life. All rights reserved.</p></div></footer>
-    <div class="bottom-nav"><a data-page="home" class="active"><i class="fas fa-home"></i><span>Home</span></a><a data-page="shop"><i class="fas fa-search"></i><span>Discover</span></a><a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Bag</span></a><a data-page="track"><i class="fas fa-truck"></i><span>Track</span></a><a data-page="customer-portal"><i class="fas fa-user"></i><span>Profile</span></a></div>
+    
+    <footer class="luxury-footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">STYLE<span>OF</span>LIFE</div>
+                <p>Crafting timeless elegance since 2024.</p>
+                <!-- WhatsApp Button with Facebook Contact Event -->
+                <a href="https://wa.me/916352925472" 
+                   onclick="fbq('track', 'Contact'); console.log('✅ Facebook Contact Event Tracked - WhatsApp Click');"
+                   target="_blank"
+                   class="whatsapp-btn">
+                    <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+                </a>
+            </div>
+            <div class="footer-links"><h4>Explore</h4><a data-page="home">Home</a><a data-page="shop">Shop All</a><a data-page="track">Track Order</a><a data-page="customer-portal">My Account</a></div>
+            <div class="footer-links"><h4>Support</h4><a data-page="shipping-policy">Shipping Policy</a><a data-page="privacy-policy">Privacy Policy</a><a data-page="terms-conditions">Terms & Conditions</a><a data-page="faq">FAQ</a></div>
+            <div class="footer-links"><h4>Connect</h4><p><i class="fas fa-phone"></i> <a href="tel:+916352925472">+91-6352925472</a></p><p><i class="fas fa-envelope"></i> <a href="mailto:styleoflife987@gmail.com">styleoflife987@gmail.com</a></p></div>
+        </div>
+        <div class="footer-bottom"><p>© 2026 Style Of Life. All rights reserved.</p></div>
+    </footer>
+    
+    <div class="bottom-nav">
+        <a data-page="home" class="active"><i class="fas fa-home"></i><span>Home</span></a>
+        <a data-page="shop"><i class="fas fa-search"></i><span>Discover</span></a>
+        <a data-page="cart"><i class="fas fa-shopping-bag"></i><span>Bag</span></a>
+        <a data-page="track"><i class="fas fa-truck"></i><span>Track</span></a>
+        <a data-page="customer-portal"><i class="fas fa-user"></i><span>Profile</span></a>
+    </div>
     
     <script type="importmap">
         { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
@@ -591,14 +674,6 @@
             const items = data?.items || []; currentCart = items;
             const total = items.reduce((s, i) => s + i.quantity, 0);
             document.getElementById('cartCount').textContent = total;
-            
-            // Facebook AddToCart event tracking for cart count
-            if (typeof fbq !== 'undefined') {
-                fbq('track', 'ViewContent', {
-                    content_name: 'Cart Page',
-                    content_type: 'product_group'
-                });
-            }
             return items;
         }
         
@@ -622,6 +697,7 @@
             container.innerHTML = html + `<div class="cart-preview-total"><div>Subtotal: ₹${subtotal.toLocaleString()}</div><div>GST: ₹${totalGST.toFixed(2)}</div><div>Shipping: ₹${shipping}</div><div style="font-size:18px;margin-top:10px;">Total: ₹${grand.toFixed(2)}</div></div>`;
         }
         
+        // ========== ADD TO CART WITH FACEBOOK EVENT ==========
         window.addToCart = async (id, name, price, sku, img, gst = 18) => {
             let { data: cart } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
             let items = cart?.items || [];
@@ -630,7 +706,7 @@
             else items.push({ id, sku, name, price, gst, quantity: 1, image: img });
             await supabase.from('carts').upsert({ session_id: sessionId, items, total: items.reduce((s, i) => s + (i.price * i.quantity), 0), updated_at: new Date() }, { onConflict: 'session_id' });
             
-            // Facebook AddToCart Event Tracking
+            // ========== FACEBOOK ADD TO CART EVENT ==========
             if (typeof fbq !== 'undefined') {
                 fbq('track', 'AddToCart', {
                     content_ids: [id],
@@ -639,6 +715,7 @@
                     value: price,
                     currency: 'INR'
                 });
+                console.log('✅ Facebook AddToCart Event Tracked:', name);
             }
             
             showToast(`✨ ${name} added to bag!`);
@@ -646,12 +723,16 @@
             updateCartCount();
         };
         
+        // ========== BUY NOW WITH INITIATE CHECKOUT ==========
         window.buyNow = async (id, name, price, sku, img, gst) => { 
             await addToCart(id, name, price, sku, img, gst); 
-            // Facebook InitiateCheckout Event
+            
+            // ========== FACEBOOK INITIATE CHECKOUT EVENT ==========
             if (typeof fbq !== 'undefined') {
                 fbq('track', 'InitiateCheckout');
+                console.log('✅ Facebook InitiateCheckout Event Tracked');
             }
+            
             setTimeout(() => navigateTo('checkout'), 600); 
         };
         
@@ -787,12 +868,13 @@
             } catch(e) { console.error(e); container.innerHTML = '<div class="empty-state">Unable to load collection</div>'; }
         }
         
+        // ========== OPEN PRODUCT MODAL WITH VIEWCONTENT EVENT ==========
         window.openProductModal = function(product) {
             const media = getProductMedia(product);
             const { total } = calculateGST(product.price || 0, product.gst || 18);
             const firstMediaUrl = media.length > 0 ? media[0].url : (product.image1_url || 'https://via.placeholder.com/400');
             
-            // Facebook ViewContent Event
+            // ========== FACEBOOK VIEW CONTENT EVENT ==========
             if (typeof fbq !== 'undefined') {
                 fbq('track', 'ViewContent', {
                     content_ids: [product.id],
@@ -802,6 +884,7 @@
                     value: product.price || 0,
                     currency: 'INR'
                 });
+                console.log('✅ Facebook ViewContent Event Tracked for:', product.product_name || product.name);
             }
             
             let galleryHtml = '';
@@ -856,6 +939,18 @@
         window.openD360Viewer = function(url) {
             const modalHtml = `<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:3000;display:flex;justify-content:center;align-items:center;" onclick="this.remove()"><div style="background:white;border-radius:20px;width:90%;height:80%;padding:20px;" onclick="event.stopPropagation()"><iframe src="${url}" style="width:100%;height:100%;border:none;border-radius:12px;" allowfullscreen></iframe><button style="position:absolute;top:30px;right:30px;background:black;color:white;border:none;width:40px;height:40px;border-radius:50%;cursor:pointer;" onclick="this.closest('div').remove()">×</button></div></div>`;
             document.body.insertAdjacentHTML('beforeend', modalHtml);
+        };
+        
+        // ========== FACEBOOK PIXEL TEST FUNCTION ==========
+        window.testFacebookPixel = function() {
+            if (typeof fbq !== 'undefined') {
+                console.log('✅ Facebook Pixel is loaded!');
+                fbq('track', 'CustomEvent', {event_name: 'PixelTest'});
+                alert('✅ Facebook Pixel is working! Check Meta Events Manager for test event.\n\nEvent sent: CustomEvent (PixelTest)');
+            } else {
+                console.log('❌ Facebook Pixel NOT loaded');
+                alert('❌ Facebook Pixel is NOT loaded.\n\nCheck your internet connection and make sure the Pixel script is not blocked.');
+            }
         };
         
         function initSwipeCart() {
@@ -929,11 +1024,26 @@
             lastScrollY = currentScrollY;
         });
         
+        // Auto-test pixel on page load
+        setTimeout(() => {
+            if (typeof fbq !== 'undefined') {
+                console.log('🎯 Facebook Pixel Status: LOADED - Pixel ID: 991714683377528');
+                console.log('✅ PageView event already sent on page load');
+            } else {
+                console.log('❌ Facebook Pixel Status: NOT LOADED');
+            }
+        }, 2000);
+        
         updateCartPreview();
         loadStories().then(() => { loadFeatured(); loadAllProducts(); });
         
-        // Facebook PageView already fired at top
-        console.log('Meta Pixel loaded - Pixel ID: 991714683377528');
+        console.log('🎯 Facebook Pixel Active - Events Tracked:');
+        console.log('   - PageView (auto on load)');
+        console.log('   - ViewContent (when product modal opens)');
+        console.log('   - AddToCart (when add to cart button clicked)');
+        console.log('   - InitiateCheckout (when buy now clicked)');
+        console.log('   - Purchase (on checkout success page)');
+        console.log('   - Contact (when WhatsApp button clicked)');
     </script>
 </body>
 </html>
