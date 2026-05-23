@@ -287,19 +287,11 @@
                         await supabase.from('orders').update({ payment_status: 'success', payment_id: response.razorpay_payment_id, status: 'Processing' }).eq('order_id', orderId);
                         await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
                         
-                        // ========== FACEBOOK PURCHASE EVENT - Most Important for Ads ==========
+                        // ========== FACEBOOK PURCHASE EVENT ==========
                         if (typeof fbq !== 'undefined') {
-                            const productIds = cart.map(item => item.id);
-                            const productNames = cart.map(item => item.name);
-                            const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-                            
                             fbq('track', 'Purchase', {
-                                content_ids: productIds,
-                                content_name: productNames.join(', '),
-                                content_type: 'product',
                                 value: total,
                                 currency: 'INR',
-                                num_items: totalQuantity,
                                 order_id: orderId
                             });
                             console.log('✅ Facebook Purchase Event Tracked:', { value: total, currency: 'INR', order_id: orderId });
@@ -324,7 +316,7 @@
         
         document.getElementById('phone')?.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10); });
         
-        // ========== FACEBOOK INITIATE CHECKOUT EVENT ==========
+        // Facebook InitiateCheckout Event
         if (typeof fbq !== 'undefined') {
             fbq('track', 'InitiateCheckout');
             console.log('✅ Facebook InitiateCheckout Event Tracked');
