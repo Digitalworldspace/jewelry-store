@@ -22,7 +22,6 @@
     /></noscript>
     <!-- End Meta Pixel Code -->
     
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Style Of Life - Buy Diamond Rings & Gold Jewelry Online India | Best Jewelry Store</title>
     <meta name="description" content="Buy certified diamond rings, gold necklaces, and bridal jewelry online at Style Of Life. ✓ Best Price Guarantee ✓ Free Shipping ✓ COD Available ✓ 15 Days Exchange. Shop now!">
     <meta name="keywords" content="buy diamond rings online India, gold necklace for women, artificial jewelry set, engagement rings under 50000, bridal jewelry set, solitaire ring price, gold plated jewelry, fashion jewelry online, Style Of Life, Surat jewelry store, best jewelry store India, online jewelry shopping">
@@ -32,7 +31,6 @@
     <meta name="geo.region" content="IN-GJ">
     <meta name="geo.placename" content="Surat">
     <link rel="canonical" href="https://styleoflife987-hub.github.io/jewelry-store/home.html">
-    <link rel="alternate" hreflang="en-in" href="https://styleoflife987-hub.github.io/jewelry-store/home.html">
     
     <!-- Open Graph -->
     <meta property="og:type" content="website">
@@ -51,7 +49,6 @@
     <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://kkvgdagjboxhtuyqlomq.supabase.co">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/config.js"></script>
@@ -597,7 +594,7 @@
                 <div class="footer-logo">STYLE<span>OF</span>LIFE</div>
                 <p>Crafting timeless elegance since 2024.</p>
                 <a href="https://wa.me/916352925472" 
-                   onclick="fbq('track', 'Contact'); logContactToDatabase();"
+                   onclick="fbq('track', 'Contact');"
                    target="_blank"
                    class="whatsapp-btn">
                     <i class="fab fa-whatsapp"></i> Chat on WhatsApp
@@ -644,40 +641,6 @@
         function isVideoUrl(url) { return url && (url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com')); }
         function isD360Url(url) { return url && (url.includes('d360.tech/view.html') || url.includes('/view.html?d=')); }
         
-        // Function to log activity to database
-        async function logActivity(action, actionDisplay, productId, productName, productSku, details) {
-            try {
-                const customerName = localStorage.getItem('customerName') || 'Guest User';
-                const customerEmail = localStorage.getItem('customerEmail') || 'guest@styleoflife.com';
-                
-                const { error } = await supabase.from('customer_activity_logs').insert([{
-                    customer_name: customerName,
-                    customer_email: customerEmail,
-                    session_id: sessionId,
-                    action: action,
-                    action_display: actionDisplay,
-                    product_id: productId,
-                    product_name: productName,
-                    product_sku: productSku,
-                    details: details,
-                    created_at: new Date().toISOString()
-                }]);
-                
-                if (error) {
-                    console.error('Error logging activity:', error);
-                } else {
-                    console.log(`✅ Activity logged: ${action} - ${productName}`);
-                }
-            } catch(err) {
-                console.error('Failed to log activity:', err);
-            }
-        }
-        
-        // Function to log contact (WhatsApp)
-        window.logContactToDatabase = async function() {
-            await logActivity('contact', 'WhatsApp Contact', null, 'WhatsApp', null, 'User clicked WhatsApp button');
-        };
-        
         async function updateCartCount() {
             const { data } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
             const items = data?.items || []; currentCart = items;
@@ -706,7 +669,6 @@
             container.innerHTML = html + `<div class="cart-preview-total"><div>Subtotal: ₹${subtotal.toLocaleString()}</div><div>GST: ₹${totalGST.toFixed(2)}</div><div>Shipping: ₹${shipping}</div><div style="font-size:18px;margin-top:10px;">Total: ₹${grand.toFixed(2)}</div></div>`;
         }
         
-        // ========== ADD TO CART WITH DATABASE LOGGING ==========
         window.addToCart = async (id, name, price, sku, img, gst = 18) => {
             let { data: cart } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
             let items = cart?.items || [];
@@ -715,10 +677,7 @@
             else items.push({ id, sku, name, price, gst, quantity: 1, image: img });
             await supabase.from('carts').upsert({ session_id: sessionId, items, total: items.reduce((s, i) => s + (i.price * i.quantity), 0), updated_at: new Date() }, { onConflict: 'session_id' });
             
-            // ========== LOG TO DATABASE ==========
-            await logActivity('add_to_cart', 'Added to Cart', id, name, sku, `${name} x 1 - ₹${price}`);
-            
-            // ========== FACEBOOK ADD TO CART EVENT ==========
+            // Facebook AddToCart Event
             if (typeof fbq !== 'undefined') {
                 fbq('track', 'AddToCart', {
                     content_ids: [id],
@@ -735,11 +694,9 @@
             updateCartCount();
         };
         
-        // ========== BUY NOW WITH DATABASE LOGGING ==========
         window.buyNow = async (id, name, price, sku, img, gst) => { 
             await addToCart(id, name, price, sku, img, gst); 
             
-            // ========== FACEBOOK INITIATE CHECKOUT EVENT ==========
             if (typeof fbq !== 'undefined') {
                 fbq('track', 'InitiateCheckout');
                 console.log('✅ Facebook InitiateCheckout Event Tracked');
@@ -877,16 +834,12 @@
             } catch(e) { console.error(e); container.innerHTML = '<div class="empty-state">Unable to load collection</div>'; }
         }
         
-        // ========== OPEN PRODUCT MODAL WITH VIEWCONTENT EVENT AND DATABASE LOGGING ==========
-        window.openProductModal = async function(product) {
+        window.openProductModal = function(product) {
             const media = getProductMedia(product);
             const { total } = calculateGST(product.price || 0, product.gst || 18);
             const firstMediaUrl = media.length > 0 ? media[0].url : (product.image1_url || 'https://via.placeholder.com/400');
             
-            // ========== LOG VIEW PRODUCT TO DATABASE ==========
-            await logActivity('view_product', 'Viewed Product', product.id, product.product_name || product.name, product.sku, `Viewed ${product.product_name || product.name}`);
-            
-            // ========== FACEBOOK VIEW CONTENT EVENT ==========
+            // Facebook ViewContent Event
             if (typeof fbq !== 'undefined') {
                 fbq('track', 'ViewContent', {
                     content_ids: [product.id],
@@ -953,15 +906,14 @@
             document.body.insertAdjacentHTML('beforeend', modalHtml);
         };
         
-        // ========== FACEBOOK PIXEL TEST FUNCTION ==========
         window.testFacebookPixel = function() {
             if (typeof fbq !== 'undefined') {
                 console.log('✅ Facebook Pixel is loaded!');
                 fbq('track', 'CustomEvent', {event_name: 'PixelTest'});
-                alert('✅ Facebook Pixel is working! Check Meta Events Manager for test event.\n\nEvent sent: CustomEvent (PixelTest)');
+                alert('✅ Facebook Pixel is working! Check Meta Events Manager for test event.');
             } else {
                 console.log('❌ Facebook Pixel NOT loaded');
-                alert('❌ Facebook Pixel is NOT loaded.\n\nCheck your internet connection and make sure the Pixel script is not blocked.');
+                alert('❌ Facebook Pixel is NOT loaded. Check your internet connection.');
             }
         };
         
@@ -1040,7 +992,6 @@
             if (typeof fbq !== 'undefined') {
                 console.log('🎯 Facebook Pixel Status: LOADED - Pixel ID: 991714683377528');
                 console.log('✅ PageView event already sent on page load');
-                console.log('📊 Database logging active for: ViewContent, AddToCart, Purchase, Contact');
             } else {
                 console.log('❌ Facebook Pixel Status: NOT LOADED');
             }
@@ -1049,9 +1000,13 @@
         updateCartPreview();
         loadStories().then(() => { loadFeatured(); loadAllProducts(); });
         
-        console.log('🎯 Tracking Active:');
-        console.log('   - Facebook Pixel: PageView, ViewContent, AddToCart, InitiateCheckout, Purchase, Contact');
-        console.log('   - Database Logs: view_product, add_to_cart, start_checkout, purchase, contact');
+        console.log('🎯 Facebook Pixel Active - Events Tracked:');
+        console.log('   - PageView (auto on load)');
+        console.log('   - ViewContent (when product modal opens)');
+        console.log('   - AddToCart (when add to cart button clicked)');
+        console.log('   - InitiateCheckout (when buy now clicked)');
+        console.log('   - Purchase (on checkout success page)');
+        console.log('   - Contact (when WhatsApp button clicked)');
     </script>
 </body>
 </html>
