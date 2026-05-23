@@ -38,7 +38,6 @@
     <script src="js/config.js"></script>
     
     <style>
-        /* Copy your existing shop.html CSS here - keeping it concise */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --gold: #D4AF37;
@@ -167,12 +166,35 @@
         .loading { text-align: center; padding: 60px; }
         .spinner { width: 40px; height: 40px; border: 3px solid #eee; border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .pixel-test-btn {
+            position: fixed;
+            bottom: 140px;
+            right: 20px;
+            background: #1877F2;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        .pixel-test-btn:hover { opacity: 1; }
     </style>
 </head>
 <body>
     <div class="shop-header">
         <h1>Our <span>Collection</span></h1>
         <p>Discover timeless masterpieces from Style Of Life and talented partner artisans.</p>
+    </div>
+    
+    <div class="pixel-test-btn" onclick="testFacebookPixel()" title="Test Facebook Pixel">
+        <i class="fab fa-facebook-f"></i>
     </div>
     
     <div class="floating-cart" id="floatingCartBtn"><i class="fas fa-shopping-bag"></i><span class="floating-cart-badge" id="cartCount">0</span></div>
@@ -231,6 +253,7 @@
                     value: price,
                     currency: 'INR'
                 });
+                console.log('✅ Facebook AddToCart Event Tracked:', name);
             }
             
             showToast(`✨ ${name} added to bag!`);
@@ -239,9 +262,12 @@
         
         window.buyNow = async (id, name, price, sku, img, gst) => {
             await addToCart(id, name, price, sku, img, gst);
+            
             if (typeof fbq !== 'undefined') {
                 fbq('track', 'InitiateCheckout');
+                console.log('✅ Facebook InitiateCheckout Event Tracked');
             }
+            
             setTimeout(() => navigateTo('checkout'), 600);
         };
         
@@ -268,7 +294,7 @@
                     const gstPercent = p.gst || 18;
                     const total = p.price + ((p.price * gstPercent) / 100);
                     
-                    html += `<div class="product-card">
+                    html += `<div class="product-card" onclick='openProductModal(${JSON.stringify(p)})'>
                                 <img class="product-image" src="${img}" alt="${escapeHtml(p.product_name || p.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x280'">
                                 <div class="product-info">
                                     <div class="product-name">${escapeHtml(p.product_name || p.name)}</div>
@@ -288,8 +314,68 @@
             }
         }
         
+        window.openProductModal = function(product) {
+            const gstPercent = product.gst || 18;
+            const total = product.price + ((product.price * gstPercent) / 100);
+            const img = product.image1_url || product.image2_url || product.image3_url || product.images_url_1 || 'https://via.placeholder.com/400';
+            
+            // Facebook ViewContent Event
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'ViewContent', {
+                    content_ids: [product.id],
+                    content_name: product.product_name || product.name,
+                    content_category: product.category || 'Jewelry',
+                    content_type: 'product',
+                    value: product.price || 0,
+                    currency: 'INR'
+                });
+                console.log('✅ Facebook ViewContent Event Tracked for:', product.product_name || product.name);
+            }
+            
+            const modalHtml = `<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:2000;display:flex;justify-content:center;align-items:center;" onclick="this.remove()">
+                                <div style="background:white;border-radius:28px;max-width:90%;width:450px;max-height:85vh;overflow-y:auto;padding:20px;" onclick="event.stopPropagation()">
+                                    <img src="${img}" style="width:100%; border-radius:16px; margin-bottom:15px;" onerror="this.src='https://via.placeholder.com/400'">
+                                    <h2 style="font-size:22px;">${escapeHtml(product.product_name || product.name)}</h2>
+                                    <div style="color:var(--gold);font-size:28px;font-weight:700;margin:10px 0;">₹${total.toLocaleString()}</div>
+                                    <p style="color:var(--gray); margin-bottom:15px;">${escapeHtml(product.description || 'Exquisite handcrafted piece.')}</p>
+                                    ${product.carat ? `<div style="background:var(--white-light); padding:10px; border-radius:12px; margin:10px 0;"><strong><i class="fas fa-gem"></i> Diamond:</strong> ${product.carat}ct | ${product.diamond_color || ''} | ${product.diamond_clarity || ''}</div>` : ''}
+                                    <div style="display:flex;gap:12px;margin-top:20px;">
+                                        <button class="btn-icon-buy" style="flex:1;border-radius:40px;" onclick="buyNow('${product.id}', '${escapeHtml(product.product_name || product.name).replace(/'/g, "\\'")}', ${product.price || 0}, '${product.sku || ''}', '${img}', ${gstPercent}); document.body.lastChild.remove();">Buy Now</button>
+                                        <button class="btn-icon-cart" style="flex:1;border-radius:40px;" onclick="addToCart('${product.id}', '${escapeHtml(product.product_name || product.name).replace(/'/g, "\\'")}', ${product.price || 0}, '${product.sku || ''}', '${img}', ${gstPercent}); document.body.lastChild.remove();">Add to Cart</button>
+                                    </div>
+                                </div>
+                            </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        };
+        
+        window.testFacebookPixel = function() {
+            if (typeof fbq !== 'undefined') {
+                console.log('✅ Facebook Pixel is loaded!');
+                fbq('track', 'CustomEvent', {event_name: 'PixelTest'});
+                alert('✅ Facebook Pixel is working! Check Meta Events Manager for test event.');
+            } else {
+                console.log('❌ Facebook Pixel NOT loaded');
+                alert('❌ Facebook Pixel is NOT loaded. Check your internet connection.');
+            }
+        };
+        
+        setTimeout(() => {
+            if (typeof fbq !== 'undefined') {
+                console.log('🎯 Facebook Pixel Status: LOADED - Pixel ID: 991714683377528');
+                console.log('✅ PageView event already sent on page load');
+            } else {
+                console.log('❌ Facebook Pixel Status: NOT LOADED');
+            }
+        }, 2000);
+        
         updateCartCount();
         loadProducts();
+        
+        console.log('🎯 Facebook Pixel Active - Events Tracked:');
+        console.log('   - PageView (auto on load)');
+        console.log('   - ViewContent (when product modal opens)');
+        console.log('   - AddToCart (when add to cart button clicked)');
+        console.log('   - InitiateCheckout (when buy now clicked)');
     </script>
 </body>
 </html>
