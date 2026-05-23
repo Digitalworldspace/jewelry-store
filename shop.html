@@ -54,14 +54,20 @@
         }
         body { font-family: 'Inter', sans-serif; background: var(--white-light); color: var(--black); overflow-x: hidden; padding-bottom: 70px; }
         
+        /* Text color fixes */
+        .text-white { color: white !important; }
+        .text-gold { color: var(--gold) !important; }
+        .text-dark { color: var(--black) !important; }
+        
         .shop-header {
             background: linear-gradient(135deg, var(--black) 0%, #1a1a2e 100%);
             padding: 60px 20px;
             text-align: center;
             color: white;
         }
-        .shop-header h1 { font-family: 'Playfair Display', serif; font-size: 48px; margin-bottom: 15px; }
-        .shop-header h1 span { color: var(--gold); }
+        .shop-header h1 { font-family: 'Playfair Display', serif; font-size: 48px; margin-bottom: 15px; color: white !important; }
+        .shop-header h1 span { color: var(--gold) !important; }
+        .shop-header p { color: rgba(255,255,255,0.8) !important; }
         
         .floating-cart {
             position: fixed;
@@ -77,7 +83,9 @@
             cursor: pointer;
             z-index: 1000;
             box-shadow: 0 5px 20px rgba(212,175,55,0.4);
+            transition: all 0.3s;
         }
+        .floating-cart:hover { transform: scale(1.1); }
         .floating-cart i { font-size: 24px; color: var(--black); }
         .floating-cart-badge {
             position: absolute;
@@ -94,6 +102,75 @@
             align-items: center;
             justify-content: center;
         }
+        
+        /* Swipe Cart Overlay - Fixed Text Colors */
+        .swipe-cart-overlay {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border-radius: 30px 30px 0 0;
+            padding: 20px;
+            padding-bottom: 30px;
+            touch-action: pan-y pinch-zoom;
+        }
+        .swipe-cart-overlay.active { transform: translateY(0); }
+        .swipe-handle {
+            width: 50px;
+            height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            margin: 0 auto 20px;
+            cursor: grab;
+            touch-action: pan-y;
+        }
+        .swipe-title {
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .cart-preview { flex: 1; overflow-y: auto; max-height: 45vh; margin-bottom: 15px; }
+        .cart-preview-item { display: flex; gap: 12px; background: rgba(255,255,255,0.1); border-radius: 16px; padding: 12px; margin-bottom: 10px; }
+        .cart-preview-item img { width: 55px; height: 55px; border-radius: 12px; object-fit: cover; }
+        .cart-preview-item-details { flex: 1; }
+        .cart-preview-item-name { color: white; font-weight: 600; }
+        .cart-preview-item-price { color: var(--gold); font-size: 12px; }
+        .cart-preview-total { text-align: center; padding: 15px; color: white; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 10px; }
+        .swipe-container {
+            background: rgba(255,255,255,0.1);
+            border-radius: 50px;
+            padding: 4px;
+            margin: 15px 0 10px;
+            position: relative;
+            cursor: grab;
+        }
+        .swipe-track { background: rgba(255,255,255,0.2); border-radius: 50px; position: relative; overflow: hidden; height: 52px; }
+        .swipe-thumb {
+            width: 75px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: grab;
+            position: relative;
+            z-index: 2;
+            color: var(--black);
+            font-weight: 600;
+        }
+        .swipe-progress { position: absolute; top: 0; left: 0; height: 100%; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); border-radius: 50px; width: 0%; z-index: 1; }
+        .swipe-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.7); font-size: 13px; white-space: nowrap; pointer-events: none; }
+        .action-card { background: rgba(255,255,255,0.1); border-radius: 50px; padding: 10px 20px; text-align: center; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; color: white; }
+        .action-card:hover { background: rgba(255,255,255,0.2); }
         
         .bottom-nav {
             position: fixed;
@@ -131,7 +208,8 @@
         .product-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); border-color: var(--gold); }
         .product-image { width: 100%; height: 280px; object-fit: cover; }
         .product-info { padding: 18px; }
-        .product-name { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
+        .product-name { font-size: 18px; font-weight: 700; margin-bottom: 5px; color: var(--black); }
+        .product-sku { font-size: 11px; color: var(--gray-light); margin-bottom: 5px; }
         .product-price { font-size: 22px; font-weight: 700; color: var(--gold); margin: 10px 0; }
         .btn-icon-buy, .btn-icon-cart {
             width: 44px;
@@ -146,6 +224,7 @@
         }
         .btn-icon-buy { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--black); }
         .btn-icon-cart { background: var(--white); border: 1.5px solid var(--gold); color: var(--gold); }
+        .btn-icon-buy:hover, .btn-icon-cart:hover { transform: translateY(-3px) scale(1.05); }
         
         .toast {
             position: fixed;
@@ -153,7 +232,7 @@
             left: 50%;
             transform: translateX(-50%);
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            color: black;
+            color: var(--black);
             padding: 12px 24px;
             border-radius: 40px;
             z-index: 9999;
@@ -185,6 +264,11 @@
             opacity: 0.7;
         }
         .pixel-test-btn:hover { opacity: 1; }
+        
+        @media (max-width: 768px) {
+            .products-grid { grid-template-columns: 1fr; padding: 20px; }
+            .product-image { height: 220px; }
+        }
     </style>
 </head>
 <body>
@@ -197,7 +281,33 @@
         <i class="fab fa-facebook-f"></i>
     </div>
     
-    <div class="floating-cart" id="floatingCartBtn"><i class="fas fa-shopping-bag"></i><span class="floating-cart-badge" id="cartCount">0</span></div>
+    <div class="floating-cart" id="floatingCartBtn" onclick="toggleSwipeCart()"><i class="fas fa-shopping-bag"></i><span class="floating-cart-badge" id="cartCount">0</span></div>
+    
+    <div id="swipeCartOverlay" class="swipe-cart-overlay">
+        <div class="swipe-handle" id="swipeHandle"></div>
+        <div class="swipe-title"><i class="fas fa-shopping-bag" style="color: var(--gold);"></i> Your Cart</div>
+        <div id="cartPreviewContent" class="cart-preview">
+            <div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);">
+                <i class="fas fa-shopping-cart" style="font-size:48px;margin-bottom:15px;"></i>
+                <p>Your cart is empty</p>
+            </div>
+        </div>
+        <div style="text-align:center;">
+            <div class="action-card" id="clearCartSwipeBtn" onclick="clearCartFromSwipe()">
+                <i class="fas fa-trash-alt"></i> <span>Clear Cart</span>
+            </div>
+        </div>
+        <div class="swipe-container" id="swipeContainer">
+            <div class="swipe-track">
+                <div class="swipe-progress" id="swipeProgress"></div>
+                <div class="swipe-thumb" id="swipeThumb">
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Slide</span>
+                </div>
+                <div class="swipe-text" id="swipeText">→ Slide to checkout →</div>
+            </div>
+        </div>
+    </div>
     
     <div id="productsGrid" class="products-grid"><div class="loading"><div class="spinner"></div><p>Loading exquisite pieces...</p></div></div>
     
@@ -227,13 +337,53 @@
         
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
         function navigateTo(page) { window.location.href = page + '.html'; }
-        function showToast(msg, isErr = false) { const t = document.createElement('div'); t.className = 'toast' + (isErr ? ' toast-error' : ''); t.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+        function showToast(msg, isErr = false) { 
+            const t = document.createElement('div'); 
+            t.className = 'toast' + (isErr ? ' toast-error' : ''); 
+            t.innerHTML = `<i class="fas ${isErr ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}`; 
+            document.body.appendChild(t); 
+            setTimeout(() => t.remove(), 3000); 
+        }
         
         async function updateCartCount() {
             const { data } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
             const items = data?.items || []; currentCart = items;
-            document.getElementById('cartCount').textContent = items.reduce((s, i) => s + i.quantity, 0);
+            const badge = document.getElementById('cartCount');
+            if (badge) badge.textContent = items.reduce((s, i) => s + i.quantity, 0);
             return items;
+        }
+        
+        async function updateCartPreview() {
+            const items = await updateCartCount();
+            const container = document.getElementById('cartPreviewContent');
+            if (!items.length) { 
+                container.innerHTML = `<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);"><i class="fas fa-shopping-cart" style="font-size:48px;margin-bottom:15px;"></i><p>Your cart is empty</p></div>`; 
+                return; 
+            }
+            let subtotal = 0, totalGST = 0, html = '';
+            for (const item of items) {
+                const gstPercent = item.gst || 18;
+                const gstAmount = (item.price * gstPercent) / 100;
+                subtotal += item.price * item.quantity;
+                totalGST += gstAmount * item.quantity;
+                html += `<div class="cart-preview-item">
+                            <img src="${item.image}" onerror="this.src='https://via.placeholder.com/55'">
+                            <div class="cart-preview-item-details">
+                                <div class="cart-preview-item-name">${escapeHtml(item.name)}</div>
+                                <div class="cart-preview-item-price">₹${item.price.toLocaleString()} × ${item.quantity}</div>
+                                <div class="cart-preview-item-price" style="font-size:10px;">GST: ₹${(gstAmount * item.quantity).toFixed(2)}</div>
+                            </div>
+                            <div style="color: var(--gold); font-weight: bold;">₹${((item.price + gstAmount) * item.quantity).toFixed(2)}</div>
+                        </div>`;
+            }
+            const shipping = subtotal >= 3000 ? 0 : 100;
+            const grand = subtotal + totalGST + shipping;
+            container.innerHTML = html + `<div class="cart-preview-total">
+                <div>Subtotal: ₹${subtotal.toLocaleString()}</div>
+                <div>GST: ₹${totalGST.toFixed(2)}</div>
+                <div>Shipping: ₹${shipping}</div>
+                <div style="font-size:18px;margin-top:10px;">Total: ₹${grand.toFixed(2)}</div>
+            </div>`;
         }
         
         window.addToCart = async (id, name, price, sku, img, gst = 18) => {
@@ -244,7 +394,6 @@
             else items.push({ id, sku, name, price, gst, quantity: 1, image: img });
             await supabase.from('carts').upsert({ session_id: sessionId, items, total: items.reduce((s, i) => s + (i.price * i.quantity), 0), updated_at: new Date() }, { onConflict: 'session_id' });
             
-            // Facebook AddToCart Event
             if (typeof fbq !== 'undefined') {
                 fbq('track', 'AddToCart', {
                     content_ids: [id],
@@ -257,18 +406,27 @@
             }
             
             showToast(`✨ ${name} added to bag!`);
+            await updateCartPreview();
             updateCartCount();
         };
         
         window.buyNow = async (id, name, price, sku, img, gst) => {
             await addToCart(id, name, price, sku, img, gst);
-            
             if (typeof fbq !== 'undefined') {
                 fbq('track', 'InitiateCheckout');
                 console.log('✅ Facebook InitiateCheckout Event Tracked');
             }
-            
             setTimeout(() => navigateTo('checkout'), 600);
+        };
+        
+        window.clearCartFromSwipe = async function() {
+            if (currentCart.length && confirm('Clear your bag?')) {
+                await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date() }, { onConflict: 'session_id' });
+                showToast('Bag cleared!');
+                await updateCartPreview();
+                closeSwipeCart();
+                updateCartCount();
+            }
         };
         
         async function loadProducts() {
@@ -319,7 +477,6 @@
             const total = product.price + ((product.price * gstPercent) / 100);
             const img = product.image1_url || product.image2_url || product.image3_url || product.images_url_1 || 'https://via.placeholder.com/400';
             
-            // Facebook ViewContent Event
             if (typeof fbq !== 'undefined') {
                 fbq('track', 'ViewContent', {
                     content_ids: [product.id],
@@ -335,7 +492,7 @@
             const modalHtml = `<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:2000;display:flex;justify-content:center;align-items:center;" onclick="this.remove()">
                                 <div style="background:white;border-radius:28px;max-width:90%;width:450px;max-height:85vh;overflow-y:auto;padding:20px;" onclick="event.stopPropagation()">
                                     <img src="${img}" style="width:100%; border-radius:16px; margin-bottom:15px;" onerror="this.src='https://via.placeholder.com/400'">
-                                    <h2 style="font-size:22px;">${escapeHtml(product.product_name || product.name)}</h2>
+                                    <h2 style="font-size:22px; color:var(--black);">${escapeHtml(product.product_name || product.name)}</h2>
                                     <div style="color:var(--gold);font-size:28px;font-weight:700;margin:10px 0;">₹${total.toLocaleString()}</div>
                                     <p style="color:var(--gray); margin-bottom:15px;">${escapeHtml(product.description || 'Exquisite handcrafted piece.')}</p>
                                     ${product.carat ? `<div style="background:var(--white-light); padding:10px; border-radius:12px; margin:10px 0;"><strong><i class="fas fa-gem"></i> Diamond:</strong> ${product.carat}ct | ${product.diamond_color || ''} | ${product.diamond_clarity || ''}</div>` : ''}
@@ -359,6 +516,163 @@
             }
         };
         
+        // ========== SWIPE CART FUNCTIONS - FIXED TOGGLE ==========
+        let swipeMaxProgress = 0;
+        let isSwipeDragging = false;
+        let swipeStartX = 0;
+        let swipeCurrentTranslate = 0;
+        let swipeThumb = null;
+        let swipeTrack = null;
+        
+        function initSwipeCart() {
+            swipeThumb = document.getElementById('swipeThumb');
+            swipeTrack = document.querySelector('.swipe-track');
+            if (!swipeThumb || !swipeTrack) return;
+            
+            const trackRect = swipeTrack.getBoundingClientRect();
+            swipeMaxProgress = trackRect.width - 75;
+            
+            swipeThumb.removeEventListener('mousedown', startDrag);
+            swipeThumb.removeEventListener('touchstart', startDrag);
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('touchmove', onDrag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('touchend', endDrag);
+            
+            swipeThumb.addEventListener('mousedown', startDrag);
+            swipeThumb.addEventListener('touchstart', startDrag);
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('touchmove', onDrag);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+        }
+        
+        function startDrag(e) {
+            isSwipeDragging = true;
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            swipeStartX = clientX - swipeCurrentTranslate;
+            if (swipeThumb) swipeThumb.style.transition = 'none';
+            const progress = document.getElementById('swipeProgress');
+            if (progress) progress.style.transition = 'none';
+            e.stopPropagation();
+        }
+        
+        function onDrag(e) {
+            if (!isSwipeDragging) return;
+            e.preventDefault();
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            let newTranslate = clientX - swipeStartX;
+            newTranslate = Math.max(0, Math.min(newTranslate, swipeMaxProgress));
+            swipeCurrentTranslate = newTranslate;
+            if (swipeThumb) swipeThumb.style.transform = `translateX(${swipeCurrentTranslate}px)`;
+            const progress = document.getElementById('swipeProgress');
+            if (progress) progress.style.width = `${(swipeCurrentTranslate / swipeMaxProgress) * 100}%`;
+            if ((swipeCurrentTranslate / swipeMaxProgress) >= 0.95) completeSwipe();
+        }
+        
+        function endDrag() {
+            isSwipeDragging = false;
+            if (swipeThumb) swipeThumb.style.transition = 'transform 0.3s ease';
+            const progress = document.getElementById('swipeProgress');
+            if (progress) progress.style.transition = 'width 0.3s ease';
+            if (swipeCurrentTranslate < swipeMaxProgress * 0.95) resetSwipe();
+        }
+        
+        function resetSwipe() {
+            swipeCurrentTranslate = 0;
+            if (swipeThumb) swipeThumb.style.transform = 'translateX(0px)';
+            const progress = document.getElementById('swipeProgress');
+            if (progress) progress.style.width = '0%';
+        }
+        
+        function completeSwipe() {
+            resetSwipe();
+            closeSwipeCart();
+            if (currentCart.length > 0) {
+                navigateTo('checkout');
+            } else {
+                showToast('Your bag is empty!', true);
+            }
+        }
+        
+        function openSwipeCart() {
+            const overlay = document.getElementById('swipeCartOverlay');
+            overlay.classList.add('active');
+            overlay.style.transform = '';
+            updateCartPreview();
+            setTimeout(initSwipeCart, 150);
+        }
+        
+        function closeSwipeCart() {
+            const overlay = document.getElementById('swipeCartOverlay');
+            overlay.classList.remove('active');
+            overlay.style.transform = '';
+            resetSwipe();
+        }
+        
+        window.toggleSwipeCart = function() {
+            const overlay = document.getElementById('swipeCartOverlay');
+            if (overlay.classList.contains('active')) {
+                closeSwipeCart();
+            } else {
+                openSwipeCart();
+            }
+        };
+        
+        // Swipe to close (drag down)
+        let touchStartY = 0;
+        let touchCurrentY = 0;
+        let isSwipingDown = false;
+        const overlay = document.getElementById('swipeCartOverlay');
+        const handle = document.getElementById('swipeHandle');
+        
+        if (overlay) {
+            overlay.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].clientY;
+                isSwipingDown = true;
+            });
+            
+            overlay.addEventListener('touchmove', (e) => {
+                if (!isSwipingDown) return;
+                touchCurrentY = e.touches[0].clientY;
+                let deltaY = touchCurrentY - touchStartY;
+                if (deltaY > 0) {
+                    let translateY = Math.min(deltaY, 300);
+                    overlay.style.transform = `translateY(${translateY}px)`;
+                    e.preventDefault();
+                }
+            });
+            
+            overlay.addEventListener('touchend', () => {
+                if (!isSwipingDown) return;
+                let deltaY = touchCurrentY - touchStartY;
+                if (deltaY > 100) closeSwipeCart();
+                else overlay.style.transform = '';
+                isSwipingDown = false;
+            });
+            
+            if (handle) {
+                let mouseStartY = 0;
+                let isMouseSwiping = false;
+                handle.addEventListener('mousedown', (e) => {
+                    mouseStartY = e.clientY;
+                    isMouseSwiping = true;
+                });
+                document.addEventListener('mousemove', (e) => {
+                    if (!isMouseSwiping) return;
+                    let deltaY = e.clientY - mouseStartY;
+                    if (deltaY > 0) overlay.style.transform = `translateY(${Math.min(deltaY, 300)}px)`;
+                });
+                document.addEventListener('mouseup', (e) => {
+                    if (!isMouseSwiping) return;
+                    let deltaY = e.clientY - mouseStartY;
+                    if (deltaY > 100) closeSwipeCart();
+                    else overlay.style.transform = '';
+                    isMouseSwiping = false;
+                });
+            }
+        }
+        
         setTimeout(() => {
             if (typeof fbq !== 'undefined') {
                 console.log('🎯 Facebook Pixel Status: LOADED - Pixel ID: 991714683377528');
@@ -368,7 +682,7 @@
             }
         }, 2000);
         
-        updateCartCount();
+        updateCartPreview();
         loadProducts();
         
         console.log('🎯 Facebook Pixel Active - Events Tracked:');
@@ -376,6 +690,7 @@
         console.log('   - ViewContent (when product modal opens)');
         console.log('   - AddToCart (when add to cart button clicked)');
         console.log('   - InitiateCheckout (when buy now clicked)');
+        console.log('   - Cart Toggle: Click cart icon to open/close');
     </script>
 </body>
 </html>
