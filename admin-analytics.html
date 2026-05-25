@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <meta name="theme-color" content="#FFFFFF">
-    <title>Analytics - Style Of Life | Customer Activity & Insights</title>
+    <meta name="theme-color" content="#d4af37">
+    <title>Business Analytics - Style Of Life Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -181,45 +181,6 @@
         
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
         
-        /* Tabs */
-        .analytics-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            border-bottom: 1px solid var(--gray-200);
-            padding-bottom: 10px;
-        }
-        .tab-btn {
-            padding: 10px 24px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--gray-600);
-            border-radius: 30px;
-            transition: all 0.3s;
-        }
-        .tab-btn:hover {
-            background: rgba(212,175,55,0.1);
-            color: var(--primary);
-        }
-        .tab-btn.active {
-            background: var(--primary);
-            color: var(--white);
-        }
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
         /* Stats Grid */
         .stats-grid {
             display: grid;
@@ -254,6 +215,9 @@
         .stat-icon i { font-size: 22px; color: var(--primary); }
         .stat-info h3 { font-size: 12px; color: var(--gray-500); margin-bottom: 5px; text-transform: uppercase; }
         .stat-number { font-size: 24px; font-weight: 700; color: var(--gray-800); }
+        .stat-trend { font-size: 11px; margin-top: 5px; }
+        .trend-up { color: var(--success); }
+        .trend-down { color: var(--danger); }
         
         /* Charts */
         .charts-row {
@@ -363,10 +327,11 @@
             font-size: 11px;
             font-weight: 600;
         }
-        .status-view { background: rgba(59,130,246,0.15); color: #3b82f6; }
-        .status-addcart { background: rgba(212,175,55,0.15); color: #d4af37; }
-        .status-purchase { background: rgba(16,185,129,0.15); color: #10b981; }
-        .status-checkout { background: rgba(139,92,246,0.15); color: #8b5cf6; }
+        .status-delivered { background: rgba(16,185,129,0.15); color: #10b981; }
+        .status-pending { background: rgba(245,158,11,0.15); color: #f59e0b; }
+        .status-processing { background: rgba(59,130,246,0.15); color: #3b82f6; }
+        .status-shipped { background: rgba(139,92,246,0.15); color: #8b5cf6; }
+        .status-cancelled { background: rgba(239,68,68,0.15); color: #ef4444; }
         
         .filter-bar {
             display: flex;
@@ -375,14 +340,13 @@
             flex-wrap: wrap;
             align-items: center;
         }
-        .filter-bar input, .filter-bar select {
+        .filter-bar select {
             padding: 10px 15px;
             border: 1px solid var(--gray-200);
             border-radius: 12px;
             font-size: 13px;
             background: var(--white);
         }
-        .filter-bar input { flex: 1; min-width: 200px; }
         .refresh-btn {
             padding: 10px 18px;
             background: var(--gray-100);
@@ -391,48 +355,24 @@
             cursor: pointer;
         }
         
-        .customer-highlight {
-            background: linear-gradient(135deg, rgba(212,175,55,0.05), rgba(212,175,55,0.02));
-            border-left: 3px solid var(--primary);
-            padding: 12px 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-        
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--white);
-            color: var(--gray-800);
-            padding: 10px 20px;
-            border-radius: 40px;
-            z-index: 9999;
-            animation: slideUp 0.3s ease;
-        }
-        .toast-success { background: var(--success); color: white; }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-        
         .last-updated {
             font-size: 11px;
             color: var(--gray-500);
             margin-top: 10px;
             text-align: right;
         }
+        
+        .amount { font-weight: 700; color: var(--primary-dark); }
     </style>
 </head>
 <body>
     <div class="mobile-header">
-        <div class="logo"><i class="fas fa-chart-pie"></i><span>STYLE OF LIFE</span><small>ANALYTICS</small></div>
+        <div class="logo"><i class="fas fa-chart-line"></i><span>STYLE OF LIFE</span><small>BUSINESS</small></div>
         <button class="menu-btn" onclick="openSidebar()"><i class="fas fa-bars"></i></button>
     </div>
     
     <div class="mobile-sidebar" id="mobileSidebar">
-        <div class="sidebar-header"><h3><i class="fas fa-chart-pie"></i> Menu</h3><button class="close-sidebar" onclick="closeSidebar()">&times;</button></div>
+        <div class="sidebar-header"><h3><i class="fas fa-chart-line"></i> Menu</h3><button class="close-sidebar" onclick="closeSidebar()">&times;</button></div>
         <div class="sidebar-nav">
             <a href="admin.html"><i class="fas fa-chart-line"></i> Dashboard</a>
             <a href="admin-products.html"><i class="fas fa-box"></i> Products</a>
@@ -447,7 +387,7 @@
     
     <div class="desktop-layout">
         <div class="desktop-sidebar">
-            <div class="logo"><i class="fas fa-chart-pie" style="font-size: 28px; color: var(--primary);"></i><span>STYLE OF LIFE</span><small>ANALYTICS</small></div>
+            <div class="logo"><i class="fas fa-chart-line" style="font-size: 28px; color: var(--primary);"></i><span>STYLE OF LIFE</span><small>BUSINESS</small></div>
             <div class="desktop-nav">
                 <a href="admin.html"><i class="fas fa-chart-line"></i> Dashboard</a>
                 <a href="admin-products.html"><i class="fas fa-box"></i> Products</a>
@@ -463,86 +403,97 @@
             <div class="container">
                 <div class="last-updated" id="lastUpdated">Last updated: --</div>
                 
-                <!-- Tabs -->
-                <div class="analytics-tabs">
-                    <button class="tab-btn active" onclick="switchTab('overview')">📊 Overview</button>
-                    <button class="tab-btn" onclick="switchTab('customer-activity')">👥 Customer Activity</button>
-                    <button class="tab-btn" onclick="switchTab('conversion-funnel')">🎯 Conversion Funnel</button>
+                <!-- Business Stats Overview -->
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Orders</h3>
+                            <div class="stat-number" id="totalOrders">--</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Revenue</h3>
+                            <div class="stat-number" id="totalRevenue">--</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Customers</h3>
+                            <div class="stat-number" id="totalCustomers">--</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-box"></i></div>
+                        <div class="stat-info">
+                            <h3>Products Sold</h3>
+                            <div class="stat-number" id="totalProductsSold">--</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-gem"></i></div>
+                        <div class="stat-info">
+                            <h3>Avg Order Value</h3>
+                            <div class="stat-number" id="avgOrderValue">--</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="stat-info">
+                            <h3>This Month Revenue</h3>
+                            <div class="stat-number" id="monthRevenue">--</div>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- Overview Tab -->
-                <div id="tab-overview" class="tab-content active">
-                    <div class="stats-grid" id="statsGrid">
-                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-info"><h3>Total Customers</h3><div class="stat-number" id="totalCustomers">--</div></div></div>
-                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-eye"></i></div><div class="stat-info"><h3>Product Views</h3><div class="stat-number" id="totalViews">--</div></div></div>
-                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-shopping-cart"></i></div><div class="stat-info"><h3>Add to Cart</h3><div class="stat-number" id="totalAddToCart">--</div></div></div>
-                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-credit-card"></i></div><div class="stat-info"><h3>Checkouts Started</h3><div class="stat-number" id="totalCheckouts">--</div></div></div>
-                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-info"><h3>Purchases</h3><div class="stat-number" id="totalPurchases">--</div></div></div>
-                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-chart-line"></i></div><div class="stat-info"><h3>Conversion Rate</h3><div class="stat-number" id="conversionRate">0%</div></div></div>
-                    </div>
-                    
-                    <div class="charts-row">
-                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-line"></i> Customer Activity Trend (Last 7 Days)</h3></div><canvas id="activityChart"></canvas></div>
-                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-chart-pie"></i> Activity Distribution</h3></div><canvas id="activityDistChart"></canvas></div>
-                    </div>
-                    
-                    <div class="data-card">
-                        <div class="data-header">
-                            <h3><i class="fas fa-star"></i> Top Products by Views</h3>
+                <!-- Charts Row -->
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-chart-line"></i> Revenue Trend (Last 30 Days)</h3>
                             <button class="refresh-btn" onclick="refreshAllData()"><i class="fas fa-sync-alt"></i> Refresh</button>
                         </div>
-                        <div class="table-responsive">
-                            <div id="topProductsList"><div class="loading"><div class="spinner"></div><p>Loading data...</p></div></div>
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-chart-pie"></i> Order Status Distribution</h3>
                         </div>
+                        <canvas id="statusChart"></canvas>
                     </div>
                 </div>
                 
-                <!-- Customer Activity Tab -->
-                <div id="tab-customer-activity" class="tab-content">
-                    <div class="data-card">
-                        <div class="data-header">
-                            <h3><i class="fas fa-history"></i> Customer Activity Log</h3>
-                            <button class="refresh-btn" onclick="loadCustomerActivityLogs()"><i class="fas fa-sync-alt"></i> Refresh</button>
-                        </div>
-                        <div class="filter-bar">
-                            <input type="text" id="activitySearch" placeholder="Search by customer name, email, or product..." onkeyup="filterActivities()">
-                            <select id="activityTypeFilter" onchange="filterActivities()">
-                                <option value="all">All Actions</option>
-                                <option value="view_product">👁️ Product View</option>
-                                <option value="add_to_cart">🛒 Add to Cart</option>
-                                <option value="remove_from_cart">🗑️ Remove from Cart</option>
-                                <option value="view_cart">📦 View Cart</option>
-                                <option value="start_checkout">💳 Started Checkout</option>
-                                <option value="purchase">✅ Purchase</option>
-                                <option value="search">🔍 Search</option>
-                            </select>
-                            <select id="activityDateFilter" onchange="filterActivities()">
-                                <option value="all">All Time</option>
-                                <option value="today">Today</option>
-                                <option value="week">Last 7 Days</option>
-                                <option value="month">Last 30 Days</option>
-                            </select>
-                        </div>
-                        <div class="table-responsive">
-                            <div id="activityLogsList"><div class="loading"><div class="spinner"></div><p>Loading customer activity...</p></div></div>
-                        </div>
+                <!-- Top Selling Products -->
+                <div class="data-card">
+                    <div class="data-header">
+                        <h3><i class="fas fa-trophy"></i> Top Selling Products</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <div id="topProductsList"><div class="loading"><div class="spinner"></div><p>Loading top products...</p></div></div>
                     </div>
                 </div>
                 
-                <!-- Conversion Funnel Tab -->
-                <div id="tab-conversion-funnel" class="tab-content">
-                    <div class="charts-row">
-                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-funnel-dollar"></i> Conversion Funnel</h3></div><canvas id="funnelChart"></canvas></div>
-                        <div class="chart-card"><div class="chart-header"><h3><i class="fas fa-clock"></i> Average Time to Purchase</h3></div><canvas id="timeToPurchaseChart"></canvas></div>
+                <!-- Recent Orders -->
+                <div class="data-card">
+                    <div class="data-header">
+                        <h3><i class="fas fa-clock"></i> Recent Orders</h3>
+                        <a href="admin-orders.html" class="refresh-btn" style="text-decoration: none;">View All →</a>
                     </div>
-                    
-                    <div class="data-card">
-                        <div class="data-header">
-                            <h3><i class="fas fa-chart-line"></i> Daily Funnel Metrics</h3>
-                        </div>
-                        <div class="table-responsive">
-                            <div id="dailyFunnelTable"><div class="loading"><div class="spinner"></div><p>Loading funnel data...</p></div></div>
-                        </div>
+                    <div class="table-responsive">
+                        <div id="recentOrdersList"><div class="loading"><div class="spinner"></div><p>Loading recent orders...</p></div></div>
+                    </div>
+                </div>
+                
+                <!-- Customer Stats -->
+                <div class="data-card">
+                    <div class="data-header">
+                        <h3><i class="fas fa-users"></i> Customer Insights</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <div id="customerInsights"><div class="loading"><div class="spinner"></div><p>Loading customer insights...</p></div></div>
                     </div>
                 </div>
             </div>
@@ -568,10 +519,8 @@
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         
-        let activityChart, activityDistChart, funnelChart, timeToPurchaseChart;
-        let allActivities = [];
-        let filteredActivities = [];
-        let productViewsMap = new Map();
+        let revenueChart = null;
+        let statusChart = null;
         
         function showToast(msg) {
             const toast = document.createElement('div');
@@ -583,432 +532,412 @@
         
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
         
-        function getActionIcon(action) {
-            const icons = {
-                'view_product': '👁️',
-                'add_to_cart': '🛒',
-                'remove_from_cart': '🗑️',
-                'view_cart': '📦',
-                'start_checkout': '💳',
-                'purchase': '✅',
-                'search': '🔍'
-            };
-            return icons[action] || '📌';
-        }
-        
-        function getActionClass(action) {
-            const classes = {
-                'view_product': 'status-view',
-                'add_to_cart': 'status-addcart',
-                'remove_from_cart': 'status-view',
-                'view_cart': 'status-view',
-                'start_checkout': 'status-checkout',
-                'purchase': 'status-purchase',
-                'search': 'status-view'
-            };
-            return classes[action] || 'status-view';
-        }
-        
         function updateLastUpdated() {
             const now = new Date();
             document.getElementById('lastUpdated').innerHTML = `Last updated: ${now.toLocaleString()}`;
         }
         
-        window.switchTab = function(tab) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(`tab-${tab}`).classList.add('active');
-            document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add('active');
-            
-            if (tab === 'customer-activity') loadCustomerActivityLogs();
-            if (tab === 'conversion-funnel') loadFunnelData();
-        };
+        // ========== BUSINESS ANALYTICS FUNCTIONS (REAL DATA FROM DATABASE) ==========
         
-        // ========== LOAD REAL DATA FROM DATABASE ==========
+        // Get total orders count
+        async function getTotalOrders() {
+            const { count, error } = await supabase.from('orders').select('*', { count: 'exact', head: true });
+            if (error) return 0;
+            return count || 0;
+        }
         
-        // Get total unique customers from orders
+        // Get total revenue
+        async function getTotalRevenue() {
+            const { data, error } = await supabase.from('orders').select('total');
+            if (error) return 0;
+            return data.reduce((sum, order) => sum + (order.total || 0), 0);
+        }
+        
+        // Get total unique customers
         async function getTotalCustomers() {
-            try {
-                const { data, error } = await supabase.from('orders').select('email');
-                if (error) throw error;
-                const uniqueEmails = new Set(data.map(o => o.email).filter(e => e));
-                return uniqueEmails.size;
-            } catch (error) {
-                console.error('Error getting customers:', error);
-                return 0;
-            }
+            const { data, error } = await supabase.from('orders').select('email');
+            if (error) return 0;
+            const uniqueEmails = new Set(data.map(o => o.email).filter(e => e));
+            return uniqueEmails.size;
         }
         
-        // Get counts from customer_activity_logs
-        async function getActivityCounts() {
-            try {
-                // Check if table exists
-                const { error: tableCheck } = await supabase.from('customer_activity_logs').select('id', { count: 'exact', head: true });
-                
-                if (tableCheck && tableCheck.code === 'PGRST116') {
-                    console.log('customer_activity_logs table not found');
-                    return { views: 0, addToCart: 0, checkouts: 0, purchases: 0 };
+        // Get total products sold (quantity sum from all orders)
+        async function getTotalProductsSold() {
+            const { data, error } = await supabase.from('orders').select('items');
+            if (error) return 0;
+            let total = 0;
+            data.forEach(order => {
+                if (order.items && Array.isArray(order.items)) {
+                    total += order.items.reduce((sum, item) => sum + (item.quantity || 0), 0);
                 }
-                
-                const [viewsRes, addToCartRes, checkoutsRes, purchasesRes] = await Promise.all([
-                    supabase.from('customer_activity_logs').select('id', { count: 'exact', head: true }).eq('action', 'view_product'),
-                    supabase.from('customer_activity_logs').select('id', { count: 'exact', head: true }).eq('action', 'add_to_cart'),
-                    supabase.from('customer_activity_logs').select('id', { count: 'exact', head: true }).eq('action', 'start_checkout'),
-                    supabase.from('customer_activity_logs').select('id', { count: 'exact', head: true }).eq('action', 'purchase')
-                ]);
-                
-                return {
-                    views: viewsRes.count || 0,
-                    addToCart: addToCartRes.count || 0,
-                    checkouts: checkoutsRes.count || 0,
-                    purchases: purchasesRes.count || 0
-                };
-            } catch (error) {
-                console.error('Error getting activity counts:', error);
-                return { views: 0, addToCart: 0, checkouts: 0, purchases: 0 };
-            }
+            });
+            return total;
         }
         
-        // Get top products from activity logs
-        async function getTopProducts() {
-            try {
-                const { data, error } = await supabase
-                    .from('customer_activity_logs')
-                    .select('product_name, product_id')
-                    .eq('action', 'view_product')
-                    .not('product_name', 'is', null);
-                
-                if (error) throw error;
-                
-                const productMap = new Map();
-                data.forEach(log => {
-                    const name = log.product_name;
-                    if (name) {
-                        productMap.set(name, (productMap.get(name) || 0) + 1);
+        // Get this month revenue
+        async function getThisMonthRevenue() {
+            const now = new Date();
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+            const { data, error } = await supabase
+                .from('orders')
+                .select('total, created_at')
+                .gte('created_at', startOfMonth);
+            if (error) return 0;
+            return data.reduce((sum, order) => sum + (order.total || 0), 0);
+        }
+        
+        // Get revenue trend for last 30 days
+        async function getRevenueTrend() {
+            const last30Days = [];
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                d.setHours(0, 0, 0, 0);
+                last30Days.push(d);
+            }
+            
+            const startDate = last30Days[0].toISOString();
+            const endDate = new Date();
+            endDate.setHours(23, 59, 59, 999);
+            
+            const { data, error } = await supabase
+                .from('orders')
+                .select('total, created_at')
+                .gte('created_at', startDate)
+                .lte('created_at', endDate.toISOString());
+            
+            if (error) return { labels: [], revenues: [] };
+            
+            const dailyRevenue = new Map();
+            last30Days.forEach(day => {
+                const dayStr = day.toISOString().split('T')[0];
+                dailyRevenue.set(dayStr, 0);
+            });
+            
+            data.forEach(order => {
+                const dayStr = new Date(order.created_at).toISOString().split('T')[0];
+                if (dailyRevenue.has(dayStr)) {
+                    dailyRevenue.set(dayStr, dailyRevenue.get(dayStr) + (order.total || 0));
+                }
+            });
+            
+            const labels = last30Days.map(d => d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }));
+            const revenues = Array.from(dailyRevenue.values());
+            
+            return { labels, revenues };
+        }
+        
+        // Get order status distribution
+        async function getStatusDistribution() {
+            const { data, error } = await supabase.from('orders').select('status');
+            if (error) return {};
+            
+            const statuses = {
+                'pending': 0,
+                'processing': 0,
+                'shipped': 0,
+                'delivered': 0,
+                'cancelled': 0
+            };
+            
+            data.forEach(order => {
+                const status = (order.status || 'pending').toLowerCase();
+                if (statuses[status] !== undefined) {
+                    statuses[status]++;
+                } else {
+                    statuses.pending++;
+                }
+            });
+            
+            return statuses;
+        }
+        
+        // Get top selling products
+        async function getTopSellingProducts() {
+            const { data, error } = await supabase.from('orders').select('items');
+            if (error) return [];
+            
+            const productSales = new Map();
+            
+            data.forEach(order => {
+                if (order.items && Array.isArray(order.items)) {
+                    order.items.forEach(item => {
+                        const name = item.name;
+                        const quantity = item.quantity || 1;
+                        const revenue = (item.price || 0) * quantity;
+                        
+                        if (productSales.has(name)) {
+                            const existing = productSales.get(name);
+                            existing.quantity += quantity;
+                            existing.revenue += revenue;
+                        } else {
+                            productSales.set(name, {
+                                name: name,
+                                sku: item.sku || 'N/A',
+                                quantity: quantity,
+                                revenue: revenue
+                            });
+                        }
+                    });
+                }
+            });
+            
+            return Array.from(productSales.values())
+                .sort((a, b) => b.quantity - a.quantity)
+                .slice(0, 10);
+        }
+        
+        // Get recent orders
+        async function getRecentOrders(limit = 10) {
+            const { data, error } = await supabase
+                .from('orders')
+                .select('order_id, customer_name, total, status, created_at')
+                .order('created_at', { ascending: false })
+                .limit(limit);
+            
+            if (error) return [];
+            return data || [];
+        }
+        
+        // Get customer insights (new vs returning, top spenders)
+        async function getCustomerInsights() {
+            const { data, error } = await supabase.from('orders').select('email, customer_name, total');
+            if (error) return { newCustomers: 0, returningCustomers: 0, topSpenders: [] };
+            
+            const customerOrders = new Map();
+            data.forEach(order => {
+                const email = order.email;
+                if (email) {
+                    if (customerOrders.has(email)) {
+                        const existing = customerOrders.get(email);
+                        existing.orderCount++;
+                        existing.totalSpent += order.total || 0;
+                    } else {
+                        customerOrders.set(email, {
+                            email: email,
+                            name: order.customer_name || email.split('@')[0],
+                            orderCount: 1,
+                            totalSpent: order.total || 0
+                        });
+                    }
+                }
+            });
+            
+            // New customers (only 1 order) vs returning (2+ orders)
+            let newCustomers = 0;
+            let returningCustomers = 0;
+            const topSpenders = [];
+            
+            for (const [email, data] of customerOrders) {
+                if (data.orderCount === 1) {
+                    newCustomers++;
+                } else {
+                    returningCustomers++;
+                }
+                topSpenders.push(data);
+            }
+            
+            topSpenders.sort((a, b) => b.totalSpent - a.totalSpent);
+            
+            return {
+                newCustomers,
+                returningCustomers,
+                totalCustomers: customerOrders.size,
+                topSpenders: topSpenders.slice(0, 5)
+            };
+        }
+        
+        // ========== RENDER FUNCTIONS ==========
+        
+        async function updateStats() {
+            const [totalOrders, totalRevenue, totalCustomers, totalProductsSold, monthRevenue] = await Promise.all([
+                getTotalOrders(),
+                getTotalRevenue(),
+                getTotalCustomers(),
+                getTotalProductsSold(),
+                getThisMonthRevenue()
+            ]);
+            
+            const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+            
+            document.getElementById('totalOrders').textContent = totalOrders.toLocaleString();
+            document.getElementById('totalRevenue').textContent = `₹${(totalRevenue / 100000).toFixed(1)}L`;
+            document.getElementById('totalCustomers').textContent = totalCustomers.toLocaleString();
+            document.getElementById('totalProductsSold').textContent = totalProductsSold.toLocaleString();
+            document.getElementById('avgOrderValue').textContent = `₹${avgOrderValue.toFixed(0)}`;
+            document.getElementById('monthRevenue').textContent = `₹${(monthRevenue / 100000).toFixed(1)}L`;
+        }
+        
+        async function updateCharts() {
+            // Revenue Chart
+            const revenueData = await getRevenueTrend();
+            const revenueCtx = document.getElementById('revenueChart')?.getContext('2d');
+            if (revenueCtx) {
+                if (revenueChart) revenueChart.destroy();
+                revenueChart = new Chart(revenueCtx, {
+                    type: 'line',
+                    data: {
+                        labels: revenueData.labels,
+                        datasets: [{
+                            label: 'Daily Revenue (₹)',
+                            data: revenueData.revenues,
+                            borderColor: '#d4af37',
+                            backgroundColor: 'rgba(212,175,55,0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: { callbacks: { label: (ctx) => `₹${ctx.raw.toLocaleString()}` } }
+                        }
                     }
                 });
-                
-                return Array.from(productMap.entries())
-                    .map(([name, count]) => ({ name, views: count }))
-                    .sort((a, b) => b.views - a.views)
-                    .slice(0, 10);
-            } catch (error) {
-                console.error('Error getting top products:', error);
-                return [];
             }
-        }
-        
-        // Get last 7 days activity data for chart
-        async function getLast7DaysActivity() {
-            try {
-                const last7Days = [];
-                for (let i = 6; i >= 0; i--) {
-                    const d = new Date();
-                    d.setDate(d.getDate() - i);
-                    d.setHours(0, 0, 0, 0);
-                    last7Days.push(d);
-                }
-                
-                const startDate = last7Days[0].toISOString();
-                const endDate = new Date();
-                endDate.setHours(23, 59, 59, 999);
-                
-                const { data, error } = await supabase
-                    .from('customer_activity_logs')
-                    .select('action, created_at')
-                    .gte('created_at', startDate)
-                    .lte('created_at', endDate.toISOString());
-                
-                if (error) throw error;
-                
-                const viewsData = [];
-                const cartData = [];
-                const purchaseData = [];
-                
-                for (const day of last7Days) {
-                    const dayStr = day.toISOString().split('T')[0];
-                    const views = data.filter(l => l.action === 'view_product' && l.created_at?.startsWith(dayStr)).length;
-                    const carts = data.filter(l => l.action === 'add_to_cart' && l.created_at?.startsWith(dayStr)).length;
-                    const purchases = data.filter(l => l.action === 'purchase' && l.created_at?.startsWith(dayStr)).length;
-                    
-                    viewsData.push(views);
-                    cartData.push(carts);
-                    purchaseData.push(purchases);
-                }
-                
-                return { labels: last7Days, viewsData, cartData, purchaseData };
-            } catch (error) {
-                console.error('Error getting last 7 days activity:', error);
-                return { labels: [], viewsData: [], cartData: [], purchaseData: [] };
-            }
-        }
-        
-        // Get activity distribution
-        async function getActivityDistribution() {
-            try {
-                const { data, error } = await supabase
-                    .from('customer_activity_logs')
-                    .select('action');
-                
-                if (error) throw error;
-                
-                const counts = {
-                    view_product: 0,
-                    add_to_cart: 0,
-                    start_checkout: 0,
-                    purchase: 0
-                };
-                
-                data.forEach(log => {
-                    if (counts[log.action] !== undefined) {
-                        counts[log.action]++;
+            
+            // Status Distribution Chart
+            const statusData = await getStatusDistribution();
+            const statusCtx = document.getElementById('statusChart')?.getContext('2d');
+            if (statusCtx) {
+                if (statusChart) statusChart.destroy();
+                statusChart = new Chart(statusCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+                        datasets: [{
+                            data: [
+                                statusData.pending || 0,
+                                statusData.processing || 0,
+                                statusData.shipped || 0,
+                                statusData.delivered || 0,
+                                statusData.cancelled || 0
+                            ],
+                            backgroundColor: ['#f59e0b', '#3b82f6', '#8b5cf6', '#10b981', '#ef4444'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: { legend: { position: 'bottom' } }
                     }
                 });
-                
-                return counts;
-            } catch (error) {
-                console.error('Error getting activity distribution:', error);
-                return { view_product: 0, add_to_cart: 0, start_checkout: 0, purchase: 0 };
             }
         }
         
-        // Load all customer activity logs
-        async function loadCustomerActivityLogs() {
-            const container = document.getElementById('activityLogsList');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading customer activity...</p></div>';
+        async function updateTopProducts() {
+            const topProducts = await getTopSellingProducts();
+            const container = document.getElementById('topProductsList');
             
-            try {
-                const { data, error } = await supabase
-                    .from('customer_activity_logs')
-                    .select('*')
-                    .order('created_at', { ascending: false })
-                    .limit(500);
-                
-                if (error && error.code === 'PGRST116') {
-                    container.innerHTML = '<div class="empty-state">📭 Customer activity logs table not found. Create the table first.</div>';
-                    return;
-                }
-                
-                if (error) throw error;
-                
-                allActivities = data || [];
-                filteredActivities = [...allActivities];
-                renderActivityLogs(filteredActivities);
-                
-            } catch (error) {
-                console.error('Error loading activity logs:', error);
-                container.innerHTML = '<div class="empty-state">Error loading customer activity. Please try again.</div>';
-            }
-        }
-        
-        function renderActivityLogs(logs) {
-            const container = document.getElementById('activityLogsList');
-            if (!logs.length) { 
-                container.innerHTML = '<div class="empty-state">📭 No customer activity recorded yet. Customer actions will appear here as users interact with your store.</div>'; 
-                return; 
+            if (topProducts.length === 0) {
+                container.innerHTML = '<div class="empty-state">No products sold yet</div>';
+                return;
             }
             
-            let html = '<table class="admin-table"><thead><tr><th>Timestamp</th><th>Customer</th><th>Action</th><th>Product / Details</th></tr></thead><tbody>';
-            
-            for (const log of logs.slice(0, 200)) {
-                const actionClass = getActionClass(log.action);
-                const actionIcon = getActionIcon(log.action);
-                const customerName = log.customer_name || 'Guest User';
-                const customerEmail = log.customer_email || 'guest@unknown.com';
-                
+            let html = '<table class="admin-table"><thead><tr><th>Rank</th><th>Product Name</th><th>SKU</th><th>Quantity Sold</th><th>Revenue</th></tr></thead><tbody>';
+            topProducts.forEach((p, idx) => {
                 html += `<tr>
-                    <td style="white-space: nowrap;">${new Date(log.created_at).toLocaleString()}</td>
-                    <td>
-                        <strong>${escapeHtml(customerName)}</strong><br>
-                        <span style="font-size: 10px; color: var(--gray-500);">${escapeHtml(customerEmail)}</span>
-                    </td>
-                    <td><span class="status-badge ${actionClass}">${actionIcon} ${log.action_display || log.action}</span></td>
-                    <td>
-                        ${log.product_name ? `<strong>${escapeHtml(log.product_name)}</strong><br>` : ''}
-                        <span style="font-size: 11px; color: var(--gray-500);">${escapeHtml(log.details || '-')}</span>
-                    </td>
+                    <td><strong>#${idx + 1}</strong></td>
+                    <td>${escapeHtml(p.name)}</td>
+                    <td>${escapeHtml(p.sku)}</td>
+                    <td>${p.quantity}</td>
+                    <td class="amount">₹${p.revenue.toLocaleString()}</td>
                 </tr>`;
-            }
+            });
             html += '</tbody></table>';
             container.innerHTML = html;
         }
         
+        async function updateRecentOrders() {
+            const orders = await getRecentOrders(10);
+            const container = document.getElementById('recentOrdersList');
+            
+            if (orders.length === 0) {
+                container.innerHTML = '<div class="empty-state">No orders yet</div>';
+                return;
+            }
+            
+            let html = '<table class="admin-table"><thead><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>';
+            orders.forEach(order => {
+                let statusClass = 'status-pending';
+                if (order.status === 'delivered') statusClass = 'status-delivered';
+                else if (order.status === 'processing') statusClass = 'status-processing';
+                else if (order.status === 'shipped') statusClass = 'status-shipped';
+                else if (order.status === 'cancelled') statusClass = 'status-cancelled';
+                
+                html += `<tr>
+                    <td><strong>${escapeHtml(order.order_id)}</strong></td>
+                    <td>${escapeHtml(order.customer_name)}</td>
+                    <td class="amount">₹${(order.total || 0).toLocaleString()}</td>
+                    <td><span class="status-badge ${statusClass}">${order.status || 'Pending'}</span></td>
+                    <td>${new Date(order.created_at).toLocaleDateString()}</td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+        
+        async function updateCustomerInsights() {
+            const insights = await getCustomerInsights();
+            const container = document.getElementById('customerInsights');
+            
+            let topSpendersHtml = '';
+            if (insights.topSpenders.length > 0) {
+                topSpendersHtml = '<div style="margin-top: 15px;"><strong>🏆 Top Spending Customers:</strong><br><br>';
+                topSpendersHtml += '<table class="admin-table"><thead><th>Customer</th><th>Orders</th><th>Total Spent</th></thead><tbody>';
+                insights.topSpenders.forEach(c => {
+                    topSpendersHtml += `<tr>
+                        <td>${escapeHtml(c.name)}<br><span style="font-size: 11px; color: var(--gray-500);">${escapeHtml(c.email)}</span></td>
+                        <td>${c.orderCount}</td>
+                        <td class="amount">₹${c.totalSpent.toLocaleString()}</td>
+                    </tr>`;
+                });
+                topSpendersHtml += '</tbody></table></div>';
+            } else {
+                topSpendersHtml = '<div class="empty-state">No customer data yet</div>';
+            }
+            
+            container.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: var(--gray-100); padding: 15px; border-radius: 16px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: 700; color: var(--primary);">${insights.totalCustomers}</div>
+                        <div style="font-size: 11px; color: var(--gray-500);">Total Customers</div>
+                    </div>
+                    <div style="background: var(--gray-100); padding: 15px; border-radius: 16px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: 700; color: var(--success);">${insights.newCustomers}</div>
+                        <div style="font-size: 11px; color: var(--gray-500);">New Customers</div>
+                    </div>
+                    <div style="background: var(--gray-100); padding: 15px; border-radius: 16px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: 700; color: var(--info);">${insights.returningCustomers}</div>
+                        <div style="font-size: 11px; color: var(--gray-500);">Returning Customers</div>
+                    </div>
+                    <div style="background: var(--gray-100); padding: 15px; border-radius: 16px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: 700; color: var(--warning);">${insights.totalCustomers > 0 ? Math.round((insights.returningCustomers / insights.totalCustomers) * 100) : 0}%</div>
+                        <div style="font-size: 11px; color: var(--gray-500);">Retention Rate</div>
+                    </div>
+                </div>
+                ${topSpendersHtml}
+            `;
+        }
+        
         async function refreshAllData() {
-            showToast('Refreshing analytics data...');
-            await updateStatsAndCharts();
-            if (document.getElementById('tab-customer-activity').classList.contains('active')) {
-                await loadCustomerActivityLogs();
-            }
-            if (document.getElementById('tab-conversion-funnel').classList.contains('active')) {
-                await loadFunnelData();
-            }
+            showToast('Refreshing business data...');
+            await Promise.all([
+                updateStats(),
+                updateCharts(),
+                updateTopProducts(),
+                updateRecentOrders(),
+                updateCustomerInsights()
+            ]);
             updateLastUpdated();
             showToast('Data refreshed!');
         }
         
-        async function updateStatsAndCharts() {
-            // Get real counts
-            const totalCustomers = await getTotalCustomers();
-            const activityCounts = await getActivityCounts();
-            const topProducts = await getTopProducts();
-            const last7Days = await getLast7DaysActivity();
-            const distribution = await getActivityDistribution();
-            
-            // Update stats numbers
-            document.getElementById('totalCustomers').textContent = totalCustomers;
-            document.getElementById('totalViews').textContent = activityCounts.views.toLocaleString();
-            document.getElementById('totalAddToCart').textContent = activityCounts.addToCart.toLocaleString();
-            document.getElementById('totalCheckouts').textContent = activityCounts.checkouts.toLocaleString();
-            document.getElementById('totalPurchases').textContent = activityCounts.purchases.toLocaleString();
-            
-            const conversionRate = activityCounts.views > 0 
-                ? ((activityCounts.purchases / activityCounts.views) * 100).toFixed(1) 
-                : 0;
-            document.getElementById('conversionRate').textContent = conversionRate + '%';
-            
-            // Update top products list
-            const topProductsContainer = document.getElementById('topProductsList');
-            if (topProducts.length === 0) {
-                topProductsContainer.innerHTML = '<div class="empty-state">No product view data yet</div>';
-            } else {
-                let html = '<table class="admin-table"><thead><tr><th>Rank</th><th>Product</th><th>Views</th></tr></thead><tbody>';
-                topProducts.forEach((p, idx) => {
-                    html += `<tr>
-                        <td><strong>#${idx + 1}</strong></td>
-                        <td>${escapeHtml(p.name)}</td>
-                        <td><span class="status-badge status-view">👁️ ${p.views} views</span></td>
-                    </tr>`;
-                });
-                html += '</tbody></table>';
-                topProductsContainer.innerHTML = html;
-            }
-            
-            // Update activity chart
-            const activityCtx = document.getElementById('activityChart')?.getContext('2d');
-            if (activityCtx && last7Days.labels.length) {
-                const labels = last7Days.labels.map(d => d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }));
-                if (activityChart) activityChart.destroy();
-                activityChart = new Chart(activityCtx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            { label: 'Product Views', data: last7Days.viewsData, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', borderWidth: 2, fill: true, tension: 0.3 },
-                            { label: 'Add to Cart', data: last7Days.cartData, borderColor: '#d4af37', backgroundColor: 'rgba(212,175,55,0.1)', borderWidth: 2, fill: true, tension: 0.3 },
-                            { label: 'Purchases', data: last7Days.purchaseData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', borderWidth: 2, fill: true, tension: 0.3 }
-                        ]
-                    },
-                    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
-                });
-            }
-            
-            // Update distribution chart
-            const distCtx = document.getElementById('activityDistChart')?.getContext('2d');
-            if (distCtx) {
-                if (activityDistChart) activityDistChart.destroy();
-                activityDistChart = new Chart(distCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Product Views', 'Add to Cart', 'Checkout Started', 'Purchases'],
-                        datasets: [{
-                            data: [distribution.view_product, distribution.add_to_cart, distribution.start_checkout, distribution.purchase],
-                            backgroundColor: ['#3b82f6', '#d4af37', '#8b5cf6', '#10b981'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
-                });
-            }
-        }
-        
-        async function loadFunnelData() {
-            const funnelContainer = document.getElementById('dailyFunnelTable');
-            
-            try {
-                const counts = await getActivityCounts();
-                const views = counts.views;
-                const addToCart = counts.addToCart;
-                const checkouts = counts.checkouts;
-                const purchases = counts.purchases;
-                
-                // Update funnel chart
-                const funnelCtx = document.getElementById('funnelChart')?.getContext('2d');
-                if (funnelCtx) {
-                    if (funnelChart) funnelChart.destroy();
-                    funnelChart = new Chart(funnelCtx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['Product Views', 'Add to Cart', 'Checkout', 'Purchase'],
-                            datasets: [{
-                                label: 'Users',
-                                data: [views, addToCart, checkouts, purchases],
-                                backgroundColor: ['#3b82f6', '#d4af37', '#8b5cf6', '#10b981'],
-                                borderRadius: 8
-                            }]
-                        },
-                        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-                    });
-                }
-                
-                // Calculate percentages
-                const viewToCartRate = views > 0 ? ((addToCart / views) * 100).toFixed(1) : 0;
-                const cartToCheckoutRate = addToCart > 0 ? ((checkouts / addToCart) * 100).toFixed(1) : 0;
-                const checkoutToPurchaseRate = checkouts > 0 ? ((purchases / checkouts) * 100).toFixed(1) : 0;
-                const overallRate = views > 0 ? ((purchases / views) * 100).toFixed(1) : 0;
-                
-                funnelContainer.innerHTML = `
-                    <div class="customer-highlight">
-                        <strong>📊 Funnel Summary (Real Data):</strong><br>
-                        • Total Views: ${views}<br>
-                        • Add to Cart: ${addToCart}<br>
-                        • Checkouts Started: ${checkouts}<br>
-                        • Purchases Completed: ${purchases}<br><br>
-                        <strong>Conversion Rates:</strong><br>
-                        • View → Cart: ${viewToCartRate}% (${views - addToCart} drop-off)<br>
-                        • Cart → Checkout: ${cartToCheckoutRate}% (${addToCart - checkouts} drop-off)<br>
-                        • Checkout → Purchase: ${checkoutToPurchaseRate}% (${checkouts - purchases} drop-off)<br>
-                        • <strong>Overall Conversion Rate: ${overallRate}%</strong>
-                    </div>
-                `;
-                
-            } catch (error) {
-                console.error('Error loading funnel data:', error);
-                funnelContainer.innerHTML = '<div class="empty-state">Error loading funnel data</div>';
-            }
-        }
-        
-        window.filterActivities = function() {
-            const searchTerm = document.getElementById('activitySearch').value.toLowerCase();
-            const actionFilter = document.getElementById('activityTypeFilter').value;
-            const dateFilter = document.getElementById('activityDateFilter').value;
-            
-            let filtered = [...allActivities];
-            
-            if (searchTerm) {
-                filtered = filtered.filter(log => 
-                    (log.customer_name || '').toLowerCase().includes(searchTerm) ||
-                    (log.product_name || '').toLowerCase().includes(searchTerm) ||
-                    (log.details || '').toLowerCase().includes(searchTerm)
-                );
-            }
-            
-            if (actionFilter !== 'all') {
-                filtered = filtered.filter(log => log.action === actionFilter);
-            }
-            
-            if (dateFilter !== 'all') {
-                const now = new Date();
-                let cutoff = new Date();
-                if (dateFilter === 'today') cutoff.setHours(0, 0, 0, 0);
-                else if (dateFilter === 'week') cutoff.setDate(now.getDate() - 7);
-                else if (dateFilter === 'month') cutoff.setMonth(now.getMonth() - 1);
-                
-                filtered = filtered.filter(log => new Date(log.created_at) >= cutoff);
-            }
-            
-            renderActivityLogs(filtered);
-        };
-        
+        // ========== SIDEBAR FUNCTIONS ==========
         window.openSidebar = function() {
             document.getElementById('mobileSidebar').classList.add('open');
             document.getElementById('sidebarOverlay').classList.add('open');
@@ -1027,21 +956,17 @@
         
         window.refreshAllData = refreshAllData;
         
-        // Initialize - load all real data
+        // ========== INITIALIZE ==========
         async function init() {
-            await updateStatsAndCharts();
-            await loadCustomerActivityLogs();
-            await loadFunnelData();
-            updateLastUpdated();
+            await refreshAllData();
         }
         
         init();
         
-        // Auto refresh every 30 seconds
+        // Auto refresh every 60 seconds
         setInterval(() => {
-            updateStatsAndCharts();
-            updateLastUpdated();
-        }, 30000);
+            refreshAllData();
+        }, 60000);
     </script>
 </body>
 </html>
