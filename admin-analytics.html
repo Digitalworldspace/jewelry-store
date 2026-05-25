@@ -368,8 +368,6 @@
         .status-purchase { background: rgba(16,185,129,0.15); color: #10b981; }
         .status-checkout { background: rgba(139,92,246,0.15); color: #8b5cf6; }
         
-        .action-icon { margin-right: 6px; }
-        
         .filter-bar {
             display: flex;
             gap: 12px;
@@ -418,6 +416,13 @@
             from { opacity: 0; transform: translateX(-50%) translateY(20px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
+        
+        .last-updated {
+            font-size: 11px;
+            color: var(--gray-500);
+            margin-top: 10px;
+            text-align: right;
+        }
     </style>
 </head>
 <body>
@@ -456,6 +461,8 @@
         
         <div class="desktop-content">
             <div class="container">
+                <div class="last-updated" id="lastUpdated">Last updated: --</div>
+                
                 <!-- Tabs -->
                 <div class="analytics-tabs">
                     <button class="tab-btn active" onclick="switchTab('overview')">📊 Overview</button>
@@ -482,6 +489,7 @@
                     <div class="data-card">
                         <div class="data-header">
                             <h3><i class="fas fa-star"></i> Top Products by Views</h3>
+                            <button class="refresh-btn" onclick="refreshAllData()"><i class="fas fa-sync-alt"></i> Refresh</button>
                         </div>
                         <div class="table-responsive">
                             <div id="topProductsList"><div class="loading"><div class="spinner"></div><p>Loading data...</p></div></div>
@@ -489,7 +497,7 @@
                     </div>
                 </div>
                 
-                <!-- Customer Activity Tab - What customers actually do -->
+                <!-- Customer Activity Tab -->
                 <div id="tab-customer-activity" class="tab-content">
                     <div class="data-card">
                         <div class="data-header">
@@ -601,7 +609,11 @@
             return classes[action] || 'status-view';
         }
         
-        // Switch Tabs
+        function updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('lastUpdated').innerHTML = `Last updated: ${now.toLocaleString()}`;
+        }
+        
         window.switchTab = function(tab) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -612,86 +624,181 @@
             if (tab === 'conversion-funnel') loadFunnelData();
         };
         
-        // ========== LOAD CUSTOMER ACTIVITY LOGS ==========
+        // ========== LOAD REAL DATA FROM DATABASE ==========
+        
+        // Get total unique customers from orders
+        async function getTotalCustomers() {
+            try {
+                const { data, error } = await supabase.from('orders').select('email');
+                if (error) throw error;
+                const uniqueEmails = new Set(data.map(o => o.email).filter(e => e));
+                return uniqueEmails.size;
+            } catch (error) {
+                console.error('Error getting customers:', error);
+                return 0;
+            }
+        }
+        
+        // Get counts from customer_activity_logs
+        async function getActivityCounts() {
+            try {
+                // Check if table exists
+                const { error: tableCheck } = await supabase.from('customer_activity_logs').select('id', { count: 'exact', head: true });
+                
+                if (tableCheck && tableCheck.code === 'PGRST116') {
+                    console.log('customer_activity_logs table not found');
+                    return { views: 0, addToCart: 0, checkouts: 0, purchases: 0 };
+                }
+                
+                const [viewsRes, addToCartRes, checkoutsRes, purchasesRes] = await Promise.all([
+                    supabase.from('customer_activity_logs').select('id', { count: 'exact', head: true }).eq('action', 'view_product'),
+                    supabase.from('customer_activity_logs').select('id', { count: 'exact', head: true }).eq('action', 'add_to_cart'),
+                    supabase.from('customer_activity_logs').select('id', { count: 'exact', head: true }).eq('action', 'start_checkout'),
+                    supabase.from('customer_activity_logs').select('id', { count: 'exact', head: true }).eq('action', 'purchase')
+                ]);
+                
+                return {
+                    views: viewsRes.count || 0,
+                    addToCart: addToCartRes.count || 0,
+                    checkouts: checkoutsRes.count || 0,
+                    purchases: purchasesRes.count || 0
+                };
+            } catch (error) {
+                console.error('Error getting activity counts:', error);
+                return { views: 0, addToCart: 0, checkouts: 0, purchases: 0 };
+            }
+        }
+        
+        // Get top products from activity logs
+        async function getTopProducts() {
+            try {
+                const { data, error } = await supabase
+                    .from('customer_activity_logs')
+                    .select('product_name, product_id')
+                    .eq('action', 'view_product')
+                    .not('product_name', 'is', null);
+                
+                if (error) throw error;
+                
+                const productMap = new Map();
+                data.forEach(log => {
+                    const name = log.product_name;
+                    if (name) {
+                        productMap.set(name, (productMap.get(name) || 0) + 1);
+                    }
+                });
+                
+                return Array.from(productMap.entries())
+                    .map(([name, count]) => ({ name, views: count }))
+                    .sort((a, b) => b.views - a.views)
+                    .slice(0, 10);
+            } catch (error) {
+                console.error('Error getting top products:', error);
+                return [];
+            }
+        }
+        
+        // Get last 7 days activity data for chart
+        async function getLast7DaysActivity() {
+            try {
+                const last7Days = [];
+                for (let i = 6; i >= 0; i--) {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    d.setHours(0, 0, 0, 0);
+                    last7Days.push(d);
+                }
+                
+                const startDate = last7Days[0].toISOString();
+                const endDate = new Date();
+                endDate.setHours(23, 59, 59, 999);
+                
+                const { data, error } = await supabase
+                    .from('customer_activity_logs')
+                    .select('action, created_at')
+                    .gte('created_at', startDate)
+                    .lte('created_at', endDate.toISOString());
+                
+                if (error) throw error;
+                
+                const viewsData = [];
+                const cartData = [];
+                const purchaseData = [];
+                
+                for (const day of last7Days) {
+                    const dayStr = day.toISOString().split('T')[0];
+                    const views = data.filter(l => l.action === 'view_product' && l.created_at?.startsWith(dayStr)).length;
+                    const carts = data.filter(l => l.action === 'add_to_cart' && l.created_at?.startsWith(dayStr)).length;
+                    const purchases = data.filter(l => l.action === 'purchase' && l.created_at?.startsWith(dayStr)).length;
+                    
+                    viewsData.push(views);
+                    cartData.push(carts);
+                    purchaseData.push(purchases);
+                }
+                
+                return { labels: last7Days, viewsData, cartData, purchaseData };
+            } catch (error) {
+                console.error('Error getting last 7 days activity:', error);
+                return { labels: [], viewsData: [], cartData: [], purchaseData: [] };
+            }
+        }
+        
+        // Get activity distribution
+        async function getActivityDistribution() {
+            try {
+                const { data, error } = await supabase
+                    .from('customer_activity_logs')
+                    .select('action');
+                
+                if (error) throw error;
+                
+                const counts = {
+                    view_product: 0,
+                    add_to_cart: 0,
+                    start_checkout: 0,
+                    purchase: 0
+                };
+                
+                data.forEach(log => {
+                    if (counts[log.action] !== undefined) {
+                        counts[log.action]++;
+                    }
+                });
+                
+                return counts;
+            } catch (error) {
+                console.error('Error getting activity distribution:', error);
+                return { view_product: 0, add_to_cart: 0, start_checkout: 0, purchase: 0 };
+            }
+        }
+        
+        // Load all customer activity logs
         async function loadCustomerActivityLogs() {
             const container = document.getElementById('activityLogsList');
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading customer activity...</p></div>';
             
             try {
-                // Try to get from customer_activity_logs table (create if not exists)
-                let { data, error } = await supabase
+                const { data, error } = await supabase
                     .from('customer_activity_logs')
                     .select('*')
                     .order('created_at', { ascending: false })
                     .limit(500);
                 
-                // If table doesn't exist, generate from orders and carts
                 if (error && error.code === 'PGRST116') {
-                    console.log('Customer activity logs table not found, generating from existing data...');
-                    data = await generateActivityFromExistingData();
+                    container.innerHTML = '<div class="empty-state">📭 Customer activity logs table not found. Create the table first.</div>';
+                    return;
                 }
+                
+                if (error) throw error;
                 
                 allActivities = data || [];
                 filteredActivities = [...allActivities];
                 renderActivityLogs(filteredActivities);
                 
-                // Update stats
-                updateActivityStats();
-                updateTopProducts();
-                
             } catch (error) {
                 console.error('Error loading activity logs:', error);
                 container.innerHTML = '<div class="empty-state">Error loading customer activity. Please try again.</div>';
             }
-        }
-        
-        // Generate activity from existing orders and cart data
-        async function generateActivityFromExistingData() {
-            const activities = [];
-            
-            // Get orders for purchase activities
-            const { data: orders } = await supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(200);
-            if (orders) {
-                orders.forEach(order => {
-                    activities.push({
-                        id: `purchase_${order.order_id}`,
-                        customer_name: order.customer_name,
-                        customer_email: order.email,
-                        action: 'purchase',
-                        action_display: 'Purchase Completed',
-                        details: `Order #${order.order_id} - ₹${order.total}`,
-                        product_name: order.items?.[0]?.name || 'Multiple items',
-                        product_id: order.items?.[0]?.id,
-                        created_at: order.created_at
-                    });
-                });
-            }
-            
-            // Get cart data for add_to_cart activities
-            const { data: carts } = await supabase.from('carts').select('*').limit(200);
-            if (carts) {
-                carts.forEach(cart => {
-                    if (cart.items && cart.items.length) {
-                        cart.items.forEach(item => {
-                            activities.push({
-                                id: `cart_${cart.session_id}_${item.id}`,
-                                customer_name: 'Guest User',
-                                customer_email: cart.session_id,
-                                action: 'add_to_cart',
-                                action_display: 'Added to Cart',
-                                details: `${item.name} x${item.quantity} - ₹${item.price * item.quantity}`,
-                                product_name: item.name,
-                                product_id: item.id,
-                                created_at: cart.updated_at || cart.created_at
-                            });
-                        });
-                    }
-                });
-            }
-            
-            // Sort by date
-            activities.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-            return activities;
         }
         
         function renderActivityLogs(logs) {
@@ -701,13 +808,13 @@
                 return; 
             }
             
-            let html = '<table class="admin-table"><thead><tr><th>Timestamp</th><th>Customer</th><th>Action</th><th>Product / Details</th><th>IP / Session</th></tr></thead><tbody>';
+            let html = '<table class="admin-table"><thead><tr><th>Timestamp</th><th>Customer</th><th>Action</th><th>Product / Details</th></tr></thead><tbody>';
             
             for (const log of logs.slice(0, 200)) {
                 const actionClass = getActionClass(log.action);
                 const actionIcon = getActionIcon(log.action);
                 const customerName = log.customer_name || 'Guest User';
-                const customerEmail = log.customer_email || (log.customer_name ? log.customer_name.replace(/\s/g, '').toLowerCase() + '@guest.com' : 'guest@unknown.com');
+                const customerEmail = log.customer_email || 'guest@unknown.com';
                 
                 html += `<tr>
                     <td style="white-space: nowrap;">${new Date(log.created_at).toLocaleString()}</td>
@@ -720,124 +827,109 @@
                         ${log.product_name ? `<strong>${escapeHtml(log.product_name)}</strong><br>` : ''}
                         <span style="font-size: 11px; color: var(--gray-500);">${escapeHtml(log.details || '-')}</span>
                     </td>
-                    <td style="font-size: 11px; font-family: monospace;">${log.session_id ? log.session_id.substring(0, 12) + '...' : '-'}</td>
                 </tr>`;
             }
             html += '</tbody></table>';
             container.innerHTML = html;
         }
         
-        function updateActivityStats() {
-            const views = allActivities.filter(a => a.action === 'view_product').length;
-            const addToCart = allActivities.filter(a => a.action === 'add_to_cart').length;
-            const checkouts = allActivities.filter(a => a.action === 'start_checkout').length;
-            const purchases = allActivities.filter(a => a.action === 'purchase').length;
-            const uniqueCustomers = new Set(allActivities.map(a => a.customer_email)).size;
+        async function refreshAllData() {
+            showToast('Refreshing analytics data...');
+            await updateStatsAndCharts();
+            if (document.getElementById('tab-customer-activity').classList.contains('active')) {
+                await loadCustomerActivityLogs();
+            }
+            if (document.getElementById('tab-conversion-funnel').classList.contains('active')) {
+                await loadFunnelData();
+            }
+            updateLastUpdated();
+            showToast('Data refreshed!');
+        }
+        
+        async function updateStatsAndCharts() {
+            // Get real counts
+            const totalCustomers = await getTotalCustomers();
+            const activityCounts = await getActivityCounts();
+            const topProducts = await getTopProducts();
+            const last7Days = await getLast7DaysActivity();
+            const distribution = await getActivityDistribution();
             
-            document.getElementById('totalViews').textContent = views;
-            document.getElementById('totalAddToCart').textContent = addToCart;
-            document.getElementById('totalCheckouts').textContent = checkouts;
-            document.getElementById('totalPurchases').textContent = purchases;
-            document.getElementById('totalCustomers').textContent = uniqueCustomers;
+            // Update stats numbers
+            document.getElementById('totalCustomers').textContent = totalCustomers;
+            document.getElementById('totalViews').textContent = activityCounts.views.toLocaleString();
+            document.getElementById('totalAddToCart').textContent = activityCounts.addToCart.toLocaleString();
+            document.getElementById('totalCheckouts').textContent = activityCounts.checkouts.toLocaleString();
+            document.getElementById('totalPurchases').textContent = activityCounts.purchases.toLocaleString();
             
-            const conversionRate = views > 0 ? ((purchases / views) * 100).toFixed(1) : 0;
+            const conversionRate = activityCounts.views > 0 
+                ? ((activityCounts.purchases / activityCounts.views) * 100).toFixed(1) 
+                : 0;
             document.getElementById('conversionRate').textContent = conversionRate + '%';
             
-            updateActivityChart();
-            updateActivityDistChart();
-        }
-        
-        function updateActivityChart() {
-            const ctx = document.getElementById('activityChart')?.getContext('2d');
-            if (!ctx) return;
-            
-            const last7Days = [];
-            for (let i = 6; i >= 0; i--) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
-                last7Days.push(d);
-            }
-            
-            const viewsData = last7Days.map(day => allActivities.filter(a => a.action === 'view_product' && new Date(a.created_at).toDateString() === day.toDateString()).length);
-            const cartData = last7Days.map(day => allActivities.filter(a => a.action === 'add_to_cart' && new Date(a.created_at).toDateString() === day.toDateString()).length);
-            const purchaseData = last7Days.map(day => allActivities.filter(a => a.action === 'purchase' && new Date(a.created_at).toDateString() === day.toDateString()).length);
-            
-            if (activityChart) activityChart.destroy();
-            activityChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: last7Days.map(d => d.toLocaleDateString('en-IN', { weekday: 'short' })),
-                    datasets: [
-                        { label: 'Product Views', data: viewsData, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', borderWidth: 2, fill: true, tension: 0.3 },
-                        { label: 'Add to Cart', data: cartData, borderColor: '#d4af37', backgroundColor: 'rgba(212,175,55,0.1)', borderWidth: 2, fill: true, tension: 0.3 },
-                        { label: 'Purchases', data: purchaseData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', borderWidth: 2, fill: true, tension: 0.3 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
-            });
-        }
-        
-        function updateActivityDistChart() {
-            const ctx = document.getElementById('activityDistChart')?.getContext('2d');
-            if (!ctx) return;
-            
-            const views = allActivities.filter(a => a.action === 'view_product').length;
-            const addToCart = allActivities.filter(a => a.action === 'add_to_cart').length;
-            const checkouts = allActivities.filter(a => a.action === 'start_checkout').length;
-            const purchases = allActivities.filter(a => a.action === 'purchase').length;
-            
-            if (activityDistChart) activityDistChart.destroy();
-            activityDistChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Product Views', 'Add to Cart', 'Checkout Started', 'Purchases'],
-                    datasets: [{ data: [views, addToCart, checkouts, purchases], backgroundColor: ['#3b82f6', '#d4af37', '#8b5cf6', '#10b981'], borderWidth: 0 }]
-                },
-                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
-            });
-        }
-        
-        function updateTopProducts() {
-            productViewsMap.clear();
-            allActivities.filter(a => a.action === 'view_product' && a.product_name).forEach(a => {
-                const key = a.product_id || a.product_name;
-                productViewsMap.set(key, {
-                    name: a.product_name,
-                    views: (productViewsMap.get(key)?.views || 0) + 1,
-                    id: a.product_id
+            // Update top products list
+            const topProductsContainer = document.getElementById('topProductsList');
+            if (topProducts.length === 0) {
+                topProductsContainer.innerHTML = '<div class="empty-state">No product view data yet</div>';
+            } else {
+                let html = '<table class="admin-table"><thead><tr><th>Rank</th><th>Product</th><th>Views</th></tr></thead><tbody>';
+                topProducts.forEach((p, idx) => {
+                    html += `<tr>
+                        <td><strong>#${idx + 1}</strong></td>
+                        <td>${escapeHtml(p.name)}</td>
+                        <td><span class="status-badge status-view">👁️ ${p.views} views</span></td>
+                    </tr>`;
                 });
-            });
-            
-            const topProducts = Array.from(productViewsMap.values()).sort((a, b) => b.views - a.views).slice(0, 10);
-            const container = document.getElementById('topProductsList');
-            
-            if (!topProducts.length) {
-                container.innerHTML = '<div class="empty-state">No product view data yet</div>';
-                return;
+                html += '</tbody></table>';
+                topProductsContainer.innerHTML = html;
             }
             
-            let html = '<table class="admin-table"><thead><tr><th>Rank</th><th>Product</th><th>Views</th><th>Action</th></tr></thead><tbody>';
-            topProducts.forEach((p, idx) => {
-                html += `<tr>
-                    <td><strong>#${idx + 1}</strong></td>
-                    <td>${escapeHtml(p.name)}</td>
-                    <td><span class="status-badge status-view">👁️ ${p.views} views</span></td>
-                    <td><a href="admin-products.html" style="color: var(--primary);">View Product →</a></td>
-                </tr>`;
-            });
-            html += '</tbody></table>';
-            container.innerHTML = html;
+            // Update activity chart
+            const activityCtx = document.getElementById('activityChart')?.getContext('2d');
+            if (activityCtx && last7Days.labels.length) {
+                const labels = last7Days.labels.map(d => d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }));
+                if (activityChart) activityChart.destroy();
+                activityChart = new Chart(activityCtx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Product Views', data: last7Days.viewsData, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', borderWidth: 2, fill: true, tension: 0.3 },
+                            { label: 'Add to Cart', data: last7Days.cartData, borderColor: '#d4af37', backgroundColor: 'rgba(212,175,55,0.1)', borderWidth: 2, fill: true, tension: 0.3 },
+                            { label: 'Purchases', data: last7Days.purchaseData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', borderWidth: 2, fill: true, tension: 0.3 }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
+                });
+            }
+            
+            // Update distribution chart
+            const distCtx = document.getElementById('activityDistChart')?.getContext('2d');
+            if (distCtx) {
+                if (activityDistChart) activityDistChart.destroy();
+                activityDistChart = new Chart(distCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Product Views', 'Add to Cart', 'Checkout Started', 'Purchases'],
+                        datasets: [{
+                            data: [distribution.view_product, distribution.add_to_cart, distribution.start_checkout, distribution.purchase],
+                            backgroundColor: ['#3b82f6', '#d4af37', '#8b5cf6', '#10b981'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
+                });
+            }
         }
         
-        // ========== CONVERSION FUNNEL ==========
         async function loadFunnelData() {
             const funnelContainer = document.getElementById('dailyFunnelTable');
             
             try {
-                const views = allActivities.filter(a => a.action === 'view_product').length;
-                const addToCart = allActivities.filter(a => a.action === 'add_to_cart').length;
-                const checkouts = allActivities.filter(a => a.action === 'start_checkout').length;
-                const purchases = allActivities.filter(a => a.action === 'purchase').length;
+                const counts = await getActivityCounts();
+                const views = counts.views;
+                const addToCart = counts.addToCart;
+                const checkouts = counts.checkouts;
+                const purchases = counts.purchases;
                 
                 // Update funnel chart
                 const funnelCtx = document.getElementById('funnelChart')?.getContext('2d');
@@ -847,70 +939,37 @@
                         type: 'bar',
                         data: {
                             labels: ['Product Views', 'Add to Cart', 'Checkout', 'Purchase'],
-                            datasets: [{ label: 'Users', data: [views, addToCart, checkouts, purchases], backgroundColor: ['#3b82f6', '#d4af37', '#8b5cf6', '#10b981'], borderRadius: 8 }]
+                            datasets: [{
+                                label: 'Users',
+                                data: [views, addToCart, checkouts, purchases],
+                                backgroundColor: ['#3b82f6', '#d4af37', '#8b5cf6', '#10b981'],
+                                borderRadius: 8
+                            }]
                         },
                         options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
                     });
                 }
                 
-                // Calculate drop-off percentages
+                // Calculate percentages
                 const viewToCartRate = views > 0 ? ((addToCart / views) * 100).toFixed(1) : 0;
                 const cartToCheckoutRate = addToCart > 0 ? ((checkouts / addToCart) * 100).toFixed(1) : 0;
                 const checkoutToPurchaseRate = checkouts > 0 ? ((purchases / checkouts) * 100).toFixed(1) : 0;
                 const overallRate = views > 0 ? ((purchases / views) * 100).toFixed(1) : 0;
                 
-                // Daily funnel table
-                const last7Days = [];
-                for (let i = 6; i >= 0; i--) {
-                    const d = new Date();
-                    d.setDate(d.getDate() - i);
-                    last7Days.push(d);
-                }
-                
-                let tableHtml = '<table class="admin-table"><thead><tr><th>Date</th><th>Views</th><th>Add to Cart</th><th>Checkouts</th><th>Purchases</th><th>Conversion Rate</th></tr></thead><tbody>';
-                
-                for (const day of last7Days) {
-                    const dayViews = allActivities.filter(a => a.action === 'view_product' && new Date(a.created_at).toDateString() === day.toDateString()).length;
-                    const dayAddToCart = allActivities.filter(a => a.action === 'add_to_cart' && new Date(a.created_at).toDateString() === day.toDateString()).length;
-                    const dayCheckouts = allActivities.filter(a => a.action === 'start_checkout' && new Date(a.created_at).toDateString() === day.toDateString()).length;
-                    const dayPurchases = allActivities.filter(a => a.action === 'purchase' && new Date(a.created_at).toDateString() === day.toDateString()).length;
-                    const dayRate = dayViews > 0 ? ((dayPurchases / dayViews) * 100).toFixed(1) : 0;
-                    
-                    tableHtml += `<tr>
-                        <td>${day.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}</td>
-                        <td><span class="status-badge status-view">👁️ ${dayViews}</span></td>
-                        <td><span class="status-badge status-addcart">🛒 ${dayAddToCart}</span></td>
-                        <td><span class="status-badge status-checkout">💳 ${dayCheckouts}</span></td>
-                        <td><span class="status-badge status-purchase">✅ ${dayPurchases}</span></td>
-                        <td><strong>${dayRate}%</strong></td>
-                    </tr>`;
-                }
-                tableHtml += '</tbody></table>';
-                
-                // Add summary row
-                tableHtml += `<div class="customer-highlight" style="margin-top: 15px;">
-                    <strong>📊 Funnel Summary:</strong><br>
-                    • View → Cart: ${viewToCartRate}% drop-off: ${views - addToCart} users<br>
-                    • Cart → Checkout: ${cartToCheckoutRate}% drop-off: ${addToCart - checkouts} users<br>
-                    • Checkout → Purchase: ${checkoutToPurchaseRate}% drop-off: ${checkouts - purchases} users<br>
-                    • <strong>Overall Conversion Rate: ${overallRate}%</strong>
-                </div>`;
-                
-                funnelContainer.innerHTML = tableHtml;
-                
-                // Time to purchase chart
-                const purchasesWithTime = allActivities.filter(a => a.action === 'purchase');
-                const timeToPurchaseCtx = document.getElementById('timeToPurchaseChart')?.getContext('2d');
-                if (timeToPurchaseCtx) {
-                    const timeRanges = { '0-5min': 0, '5-30min': 0, '30min-2hr': 0, '2hr-1day': 0, '1day+': 0 };
-                    // This would require tracking first view time per user - simplified for now
-                    if (timeToPurchaseChart) timeToPurchaseChart.destroy();
-                    timeToPurchaseChart = new Chart(timeToPurchaseCtx, {
-                        type: 'bar',
-                        data: { labels: Object.keys(timeRanges), datasets: [{ label: 'Purchases', data: [12, 25, 18, 30, 15], backgroundColor: '#d4af37', borderRadius: 8 }] },
-                        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } }
-                    });
-                }
+                funnelContainer.innerHTML = `
+                    <div class="customer-highlight">
+                        <strong>📊 Funnel Summary (Real Data):</strong><br>
+                        • Total Views: ${views}<br>
+                        • Add to Cart: ${addToCart}<br>
+                        • Checkouts Started: ${checkouts}<br>
+                        • Purchases Completed: ${purchases}<br><br>
+                        <strong>Conversion Rates:</strong><br>
+                        • View → Cart: ${viewToCartRate}% (${views - addToCart} drop-off)<br>
+                        • Cart → Checkout: ${cartToCheckoutRate}% (${addToCart - checkouts} drop-off)<br>
+                        • Checkout → Purchase: ${checkoutToPurchaseRate}% (${checkouts - purchases} drop-off)<br>
+                        • <strong>Overall Conversion Rate: ${overallRate}%</strong>
+                    </div>
+                `;
                 
             } catch (error) {
                 console.error('Error loading funnel data:', error);
@@ -966,12 +1025,22 @@
             setTimeout(() => window.location.href = 'login.html', 500);
         };
         
-        // Initialize
-        loadCustomerActivityLogs();
+        window.refreshAllData = refreshAllData;
+        
+        // Initialize - load all real data
+        async function init() {
+            await updateStatsAndCharts();
+            await loadCustomerActivityLogs();
+            await loadFunnelData();
+            updateLastUpdated();
+        }
+        
+        init();
+        
+        // Auto refresh every 30 seconds
         setInterval(() => {
-            if (document.getElementById('tab-customer-activity').classList.contains('active')) {
-                loadCustomerActivityLogs();
-            }
+            updateStatsAndCharts();
+            updateLastUpdated();
         }, 30000);
     </script>
 </body>
