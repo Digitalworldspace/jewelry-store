@@ -3,7 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    
+    <!-- ========== META PIXEL CODE - Facebook Ads Tracking ========== -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '939604622471127');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=939604622471127&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+    
     <title>Login - Style Of Life</title>
+    <meta name="description" content="Login to your Style Of Life account. Access your orders, track shipments, and manage your profile.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://styleoflife987-hub.github.io/jewelry-store/login.html">
+    
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/config.js"></script>
@@ -354,6 +377,27 @@
             border-color: var(--primary);
         }
         
+        /* Pixel Test Button */
+        .pixel-test-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            background: #1877F2;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 12px;
+            opacity: 0.7;
+            border: none;
+        }
+        .pixel-test-btn:hover { opacity: 1; }
+        
         /* Responsive */
         @media (max-width: 480px) {
             .login-card { padding: 30px 25px; }
@@ -364,6 +408,11 @@
     </style>
 </head>
 <body>
+    <!-- Pixel Test Button -->
+    <button class="pixel-test-btn" onclick="testFacebookPixel()" title="Test Facebook Pixel">
+        <i class="fab fa-facebook-f"></i>
+    </button>
+    
     <!-- Clear old sessions on login page load -->
     <script>
         console.log('🔐 Login page loaded - Clearing old sessions');
@@ -509,6 +558,18 @@
         const loginBtn = document.getElementById('loginBtn');
         const errorDiv = document.getElementById('errorMessage');
         
+        // ========== FACEBOOK PIXEL TEST FUNCTION ==========
+        window.testFacebookPixel = function() {
+            if (typeof fbq !== 'undefined') {
+                console.log('✅ Facebook Pixel is loaded!');
+                fbq('track', 'CustomEvent', {event_name: 'PixelTest'});
+                alert('✅ Facebook Pixel is working! Check Meta Events Manager for test event.');
+            } else {
+                console.log('❌ Facebook Pixel NOT loaded');
+                alert('❌ Facebook Pixel is NOT loaded. Check your internet connection.');
+            }
+        };
+        
         // ========== CHECK IF VENDOR EXISTS BY EMAIL ==========
         async function checkVendorExists(email) {
             try {
@@ -572,6 +633,16 @@
                         
                         console.log('✅ Admin session set');
                         showSuccess('Welcome Admin! Redirecting to Dashboard...');
+                        
+                        // Track Login event for Admin
+                        if (typeof fbq !== 'undefined') {
+                            fbq('track', 'Login', {
+                                method: 'email',
+                                role: 'admin'
+                            });
+                            console.log('✅ Facebook Login Event Tracked (Admin)');
+                        }
+                        
                         setTimeout(() => {
                             window.location.href = 'admin.html';
                         }, 800);
@@ -626,6 +697,16 @@
                     
                     console.log('✅ Vendor session set');
                     showSuccess('Welcome Vendor! Redirecting to Portal...');
+                    
+                    // Track Login event for Vendor
+                    if (typeof fbq !== 'undefined') {
+                        fbq('track', 'Login', {
+                            method: 'email',
+                            role: 'vendor'
+                        });
+                        console.log('✅ Facebook Login Event Tracked (Vendor)');
+                    }
+                    
                     setTimeout(() => {
                         window.location.href = 'vendor.html';
                     }, 800);
@@ -681,11 +762,16 @@
             }
         });
         
-        // ========== VENDOR REGISTRATION - FIXED DUPLICATE KEY ERROR ==========
+        // ========== VENDOR REGISTRATION ==========
         const registerModal = document.getElementById('registerModal');
         
         window.showRegisterModal = () => {
             registerModal.style.display = 'flex';
+            // Track Registration Start event
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'CustomEvent', {event_name: 'RegistrationStart'});
+                console.log('✅ Facebook RegistrationStart Event Tracked');
+            }
         };
         
         window.closeRegisterModal = () => {
@@ -773,10 +859,7 @@
                     return;
                 }
                 
-                // THIRD: Check if auth user already exists
-                const { data: existingAuthUser } = await supabase.auth.admin.getUserByEmail?.(email) || { data: null };
-                
-                // Create auth user - let Supabase generate the ID
+                // Create auth user
                 const { data: authData, error: authError } = await supabase.auth.signUp({
                     email: email,
                     password: password,
@@ -790,7 +873,6 @@
                 });
                 
                 if (authError) {
-                    // Check if user already exists
                     if (authError.message.includes('User already registered')) {
                         errorDiv.style.display = 'block';
                         errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> This email is already registered. Please login instead.';
@@ -802,20 +884,17 @@
                 }
                 
                 if (authData.user) {
-                    // Get the user ID from auth
                     const userId = authData.user.id;
                     
-                    // Check if vendor record already exists for this user ID
+                    // Check if vendor record already exists
                     const { data: existingVendorRecord } = await supabase
                         .from('vendors')
                         .select('id')
                         .eq('id', userId)
                         .maybeSingle();
                     
-                    let vendorError = null;
-                    
                     if (!existingVendorRecord) {
-                        // Create vendor record with the auth user's ID
+                        // Create vendor record
                         const { error: insertError } = await supabase.from('vendors').insert([{
                             id: userId,
                             business_name: businessName,
@@ -826,9 +905,12 @@
                             address: address || null,
                             status: 'pending'
                         }]);
-                        vendorError = insertError;
+                        
+                        if (insertError) {
+                            console.error('Vendor insert error:', insertError);
+                        }
                     } else {
-                        // Vendor record already exists, update it
+                        // Update existing vendor record
                         const { error: updateError } = await supabase.from('vendors')
                             .update({
                                 business_name: businessName,
@@ -839,12 +921,19 @@
                                 status: 'pending'
                             })
                             .eq('id', userId);
-                        vendorError = updateError;
+                        
+                        if (updateError) {
+                            console.error('Vendor update error:', updateError);
+                        }
                     }
                     
-                    if (vendorError) {
-                        console.error('Vendor insert/update error:', vendorError);
-                        // Don't throw, just log - the auth user is created
+                    // Track Registration event
+                    if (typeof fbq !== 'undefined') {
+                        fbq('track', 'CompleteRegistration', {
+                            method: 'email',
+                            role: 'vendor'
+                        });
+                        console.log('✅ Facebook CompleteRegistration Event Tracked');
                     }
                     
                     // Show success
@@ -892,6 +981,11 @@
         
         // Forgot password
         window.forgotPassword = () => {
+            // Track ForgotPassword event
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'CustomEvent', {event_name: 'ForgotPassword'});
+                console.log('✅ Facebook ForgotPassword Event Tracked');
+            }
             alert('Please contact support at styleoflife987@gmail.com to reset your password.');
         };
         
@@ -911,6 +1005,14 @@
                 window.location.href = 'vendor.html';
             }
         })();
+        
+        console.log('🎯 Facebook Pixel Active - Events Tracked:');
+        console.log('   - PageView (auto on load)');
+        console.log('   - Login (when user logs in)');
+        console.log('   - RegistrationStart (when registration modal opens)');
+        console.log('   - CompleteRegistration (when vendor registration completes)');
+        console.log('   - ForgotPassword (when forgot password clicked)');
+        console.log('   - Pixel Test Button: Click the blue Facebook icon to test');
     </script>
 </body>
 </html>
