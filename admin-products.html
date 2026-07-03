@@ -23,7 +23,7 @@
     <!-- End Meta Pixel Code -->
     
     <title>Product Management - Style Of Life Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/config.js"></script>
     <style>
@@ -49,6 +49,9 @@
             --warning: #f59e0b;
             --info: #3b82f6;
             --purple: #8b5cf6;
+            --pink: #ec4899;
+            --cyan: #06b6d4;
+            --indigo: #4f46e5;
         }
         
         body.dark {
@@ -216,6 +219,16 @@
             background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
             color: var(--gold);
             border-left: 3px solid var(--gold);
+        }
+        
+        .nav-item .badge {
+            margin-left: auto;
+            background: var(--gold);
+            color: #1a1a1a;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
         }
         
         .main-content {
@@ -413,7 +426,7 @@
         .modal-content {
             background: var(--bg-card);
             border-radius: 24px;
-            max-width: 650px;
+            max-width: 750px;
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
@@ -595,20 +608,31 @@
             display: none;
         }
         
+        .logout-btn {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: var(--danger);
+            color: white;
+        }
+        
         /* Image Upload Styles */
         .image-upload-container {
             display: flex;
             gap: 15px;
-            align-items: flex-start;
             flex-wrap: wrap;
+            margin-top: 10px;
         }
         
         .image-upload-box {
-            flex: 1;
-            min-width: 200px;
-        }
-        
-        .image-preview-box {
             width: 120px;
             height: 120px;
             border: 2px dashed var(--border);
@@ -619,66 +643,105 @@
             overflow: hidden;
             background: var(--bg-primary);
             position: relative;
+            transition: all 0.3s;
         }
         
-        .image-preview-box img {
+        .image-upload-box:hover {
+            border-color: var(--gold);
+        }
+        
+        .image-upload-box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
         
-        .image-preview-box .placeholder {
+        .image-upload-box .placeholder {
             color: var(--text-muted);
-            font-size: 12px;
+            font-size: 11px;
             text-align: center;
             padding: 10px;
         }
         
-        .image-preview-box .placeholder i {
-            font-size: 32px;
+        .image-upload-box .placeholder i {
+            font-size: 28px;
             display: block;
             margin-bottom: 5px;
         }
         
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-        
-        .file-input-wrapper input[type="file"] {
+        .image-upload-box .remove-image-btn {
             position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-        
-        .file-input-label {
-            display: inline-block;
-            padding: 8px 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            top: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(239,68,68,0.9);
+            color: white;
+            border: none;
             cursor: pointer;
             font-size: 12px;
-            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.3s;
         }
         
-        .file-input-label:hover {
+        .image-upload-box .remove-image-btn:hover {
+            background: var(--danger);
+            transform: scale(1.1);
+        }
+        
+        .image-upload-box .image-order {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+        }
+        
+        .add-image-box {
+            width: 120px;
+            height: 120px;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg-primary);
+            position: relative;
+        }
+        
+        .add-image-box:hover {
             border-color: var(--gold);
             background: rgba(212,175,55,0.05);
         }
         
-        .file-input-label i {
-            margin-right: 6px;
+        .add-image-box .placeholder {
+            color: var(--text-muted);
+            font-size: 11px;
+            text-align: center;
         }
         
-        .image-url-input {
-            margin-top: 8px;
+        .add-image-box .placeholder i {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .add-image-box input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
         }
         
         @media (max-width: 1024px) {
@@ -701,7 +764,7 @@
                 padding: 20px;
             }
             .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr 1fr;
             }
             .mobile-menu-btn {
                 display: block;
@@ -723,11 +786,7 @@
                 grid-template-columns: 1fr 1fr;
             }
             .image-upload-container {
-                flex-direction: column;
-            }
-            .image-preview-box {
-                width: 100%;
-                height: 150px;
+                justify-content: center;
             }
         }
         
@@ -785,7 +844,7 @@
                 <span class="theme-option active" data-theme="light">☀️ Light</span>
                 <span class="theme-option" data-theme="dark">🌙 Dark</span>
             </div>
-            <button class="logout-btn" onclick="logout()" style="background: rgba(239,68,68,0.1); border: 1px solid var(--danger); color: var(--danger); padding: 8px 16px; border-radius: 40px; cursor: pointer; font-weight: 500;">
+            <button class="logout-btn" onclick="logout()">
                 <i class="fas fa-sign-out-alt"></i> Exit
             </button>
         </div>
@@ -801,12 +860,24 @@
                 <i class="fas fa-box"></i>
                 <span>Products</span>
             </a>
+            <a href="admin-vendor-products.html" class="nav-item">
+                <i class="fas fa-store"></i>
+                <span>Vendor Products</span>
+            </a>
             <a href="admin-orders.html" class="nav-item">
                 <i class="fas fa-shopping-cart"></i>
                 <span>Orders</span>
             </a>
-            <a href="admin-customers.html" class="nav-item">
+            <a href="admin-vendor-orders.html" class="nav-item">
+                <i class="fas fa-truck"></i>
+                <span>Vendor Orders</span>
+            </a>
+            <a href="admin-vendors.html" class="nav-item">
                 <i class="fas fa-users"></i>
+                <span>Vendors</span>
+            </a>
+            <a href="admin-customers.html" class="nav-item">
+                <i class="fas fa-user"></i>
                 <span>Customers</span>
             </a>
             <a href="admin-analytics.html" class="nav-item">
@@ -819,7 +890,7 @@
     <div class="main-content">
         <div class="page-header">
             <div class="page-title">📦 Product Management</div>
-            <div class="page-subtitle">Manage your product catalog, add new items, and update inventory</div>
+            <div class="page-subtitle">Manage your product catalog with unlimited images. All fields are optional.</div>
         </div>
         
         <div class="stats-grid" id="statsGrid">
@@ -867,75 +938,57 @@
                 
                 <!-- Basic Information -->
                 <div class="form-group">
-                    <label>Product Name *</label>
-                    <input type="text" id="productName" required placeholder="Enter product name">
+                    <label>Product Name <span class="optional">(optional)</span></label>
+                    <input type="text" id="productName" placeholder="Enter product name">
                 </div>
                 <div class="form-group">
-                    <label>SKU *</label>
-                    <input type="text" id="productSku" required placeholder="Enter SKU (e.g., GOLD-001)">
+                    <label>SKU <span class="optional">(optional)</span></label>
+                    <input type="text" id="productSku" placeholder="Enter SKU (e.g., GOLD-001)">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Price (₹) *</label>
-                        <input type="number" id="productPrice" required step="0.01" placeholder="0.00">
+                        <label>Price (₹) <span class="optional">(optional)</span></label>
+                        <input type="number" id="productPrice" step="0.01" placeholder="0.00">
                     </div>
                     <div class="form-group">
-                        <label>GST % *</label>
-                        <input type="number" id="productGst" required step="0.01" placeholder="18" value="18">
+                        <label>GST % <span class="optional">(optional)</span></label>
+                        <input type="number" id="productGst" step="0.01" placeholder="18" value="18">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Stock *</label>
-                        <input type="number" id="productStock" required step="1" placeholder="0">
+                        <label>Stock <span class="optional">(optional)</span></label>
+                        <input type="number" id="productStock" step="1" placeholder="0">
                     </div>
                     <div class="form-group">
-                        <label>Category</label>
+                        <label>Category <span class="optional">(optional)</span></label>
                         <input type="text" id="productCategory" placeholder="e.g., Rings, Necklaces">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Description</label>
+                    <label>Description <span class="optional">(optional)</span></label>
                     <textarea id="productDescription" rows="3" placeholder="Product description"></textarea>
                 </div>
                 
-                <!-- Image Upload Section -->
+                <!-- Multiple Images Upload Section -->
                 <div class="section-divider">
-                    <div class="section-title">🖼️ Product Image</div>
+                    <div class="section-title">🖼️ Product Images <span class="optional">(Upload unlimited images)</span></div>
                 </div>
-                <div class="image-upload-container">
-                    <div class="image-upload-box">
-                        <div class="image-preview-box" id="imagePreviewBox">
-                            <div class="placeholder" id="imagePlaceholder">
-                                <i class="fas fa-image"></i>
-                                <span>No Image</span>
-                            </div>
-                            <img id="imagePreview" style="display: none;" alt="Product Image">
+                <div class="image-upload-container" id="imageUploadContainer">
+                    <!-- Images will be dynamically added here -->
+                    <div class="add-image-box" id="addImageBox">
+                        <div class="placeholder">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Add Image</span>
                         </div>
+                        <input type="file" id="imageFileInput" accept="image/*" multiple>
                     </div>
-                    <div class="image-upload-box" style="flex: 2;">
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                            <div class="file-input-wrapper">
-                                <button type="button" class="file-input-label">
-                                    <i class="fas fa-upload"></i> Upload Image
-                                </button>
-                                <input type="file" id="imageFileInput" accept="image/*">
-                            </div>
-                            <button type="button" class="file-input-label" onclick="clearImage()">
-                                <i class="fas fa-times"></i> Remove
-                            </button>
-                        </div>
-                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
-                            <i class="fas fa-info-circle"></i> Supports JPG, JPEG, PNG, GIF, WEBP, SVG, BMP
-                        </div>
-                        <div class="image-url-input">
-                            <label style="font-size: 12px; color: var(--text-muted);">Or enter image URL:</label>
-                            <input type="text" id="productImage" placeholder="https://example.com/image.jpg" style="margin-top: 4px;">
-                        </div>
-                    </div>
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">
+                    <i class="fas fa-info-circle"></i> Supports JPG, JPEG, PNG, GIF, WEBP, SVG, BMP. Drag to reorder.
                 </div>
                 
-                <!-- Diamond Information Section (Optional) -->
+                <!-- Diamond Information Section -->
                 <div class="section-divider">
                     <div class="section-title">💎 Diamond Information <span class="optional">(Optional - only for diamond products)</span></div>
                 </div>
@@ -979,9 +1032,10 @@
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         let allProducts = [];
         let isEditing = false;
-        let uploadedImageUrl = '';
+        let uploadedImages = [];
+        let imageOrderCounter = 0;
         
-        // Theme Toggle
+        // ========== THEME TOGGLE ==========
         function initTheme() {
             const savedTheme = localStorage.getItem('adminTheme') || 'light';
             if (savedTheme === 'dark') {
@@ -1010,7 +1064,7 @@
             });
         });
         
-        // Mobile Sidebar
+        // ========== MOBILE SIDEBAR ==========
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const sidebar = document.getElementById('sidebar');
         
@@ -1026,6 +1080,7 @@
             }
         });
         
+        // ========== TOAST ==========
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'toast';
@@ -1035,96 +1090,116 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
+        // ========== LOGOUT ==========
+        window.logout = function() {
+            sessionStorage.removeItem('adminLoggedIn');
+            showToast('Logged out successfully');
+            setTimeout(() => window.location.href = 'login.html', 500);
+        };
+        
         function escapeHtml(str) {
             if (!str) return '';
             return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
         }
         
         // ========== IMAGE UPLOAD FUNCTIONS ==========
-        function getImagePreviewElement() {
-            return document.getElementById('imagePreview');
+        function renderImageUploads() {
+            const container = document.getElementById('imageUploadContainer');
+            const addBox = document.getElementById('addImageBox');
+            
+            // Clear all images except the add box
+            const images = container.querySelectorAll('.image-upload-box');
+            images.forEach(img => img.remove());
+            
+            // Add uploaded images
+            uploadedImages.forEach((imgData, index) => {
+                const box = document.createElement('div');
+                box.className = 'image-upload-box';
+                box.draggable = true;
+                box.dataset.index = index;
+                
+                box.innerHTML = `
+                    <img src="${imgData.dataUrl}" alt="Product image ${index + 1}">
+                    <button class="remove-image-btn" onclick="removeImage(${index})" type="button">×</button>
+                    <span class="image-order">#${index + 1}</span>
+                `;
+                
+                // Drag events
+                box.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', index);
+                    box.style.opacity = '0.5';
+                });
+                
+                box.addEventListener('dragend', () => {
+                    box.style.opacity = '1';
+                });
+                
+                box.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+                
+                box.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                    const toIndex = index;
+                    if (fromIndex !== toIndex) {
+                        const item = uploadedImages.splice(fromIndex, 1)[0];
+                        uploadedImages.splice(toIndex, 0, item);
+                        renderImageUploads();
+                    }
+                });
+                
+                container.insertBefore(box, addBox);
+            });
         }
         
-        function getImagePlaceholderElement() {
-            return document.getElementById('imagePlaceholder');
-        }
-        
-        function updateImagePreview(imageUrl) {
-            const preview = getImagePreviewElement();
-            const placeholder = getImagePlaceholderElement();
-            const imageInput = document.getElementById('productImage');
-            
-            if (imageUrl) {
-                preview.src = imageUrl;
-                preview.style.display = 'block';
-                placeholder.style.display = 'none';
-                imageInput.value = imageUrl;
-                uploadedImageUrl = imageUrl;
-            } else {
-                preview.style.display = 'none';
-                placeholder.style.display = 'block';
-                imageInput.value = '';
-                uploadedImageUrl = '';
-            }
-        }
-        
-        // Handle file upload
-        document.getElementById('imageFileInput').addEventListener('change', function(e) {
-            const file = this.files[0];
-            if (!file) return;
-            
-            // Validate file type
-            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'image/bmp'];
-            if (!validTypes.includes(file.type)) {
-                showToast('❌ Please upload a valid image file (JPG, PNG, GIF, WEBP, SVG, BMP)', true);
-                this.value = '';
-                return;
-            }
-            
-            // Validate file size (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                showToast('❌ Image size should be less than 5MB', true);
-                this.value = '';
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const imageUrl = e.target.result;
-                updateImagePreview(imageUrl);
-                showToast('✅ Image loaded successfully');
-            };
-            reader.onerror = function() {
-                showToast('❌ Failed to read image file', true);
-            };
-            reader.readAsDataURL(file);
-            
-            // Clear the input so the same file can be re-uploaded
-            this.value = '';
-        });
-        
-        window.clearImage = function() {
-            updateImagePreview('');
-            document.getElementById('imageFileInput').value = '';
-            showToast('Image cleared');
+        window.removeImage = function(index) {
+            uploadedImages.splice(index, 1);
+            renderImageUploads();
+            showToast('Image removed');
         };
         
-        // Handle URL input for image
-        document.getElementById('productImage').addEventListener('input', function() {
-            const url = this.value.trim();
-            if (url) {
-                // Validate URL
-                try {
-                    new URL(url);
-                    updateImagePreview(url);
-                } catch(e) {
-                    // Invalid URL, but don't show error yet - user might still be typing
+        function handleImageUpload(files) {
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'image/bmp'];
+            
+            for (const file of files) {
+                if (!validTypes.includes(file.type)) {
+                    showToast(`❌ ${file.name} is not a valid image type`, true);
+                    continue;
                 }
-            } else {
-                updateImagePreview('');
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast(`❌ ${file.name} is too large (max 5MB)`, true);
+                    continue;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImages.push({
+                        name: file.name,
+                        dataUrl: e.target.result,
+                        file: file
+                    });
+                    renderImageUploads();
+                };
+                reader.onerror = function() {
+                    showToast(`❌ Failed to read ${file.name}`, true);
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            // Clear the input
+            document.getElementById('imageFileInput').value = '';
+        }
+        
+        // Handle file input
+        document.getElementById('imageFileInput').addEventListener('change', function(e) {
+            if (this.files && this.files.length > 0) {
+                handleImageUpload(this.files);
             }
         });
         
+        // ========== LOAD PRODUCTS ==========
         async function loadProducts() {
             const container = document.getElementById('productsContainer');
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading products...</p></div>';
@@ -1165,6 +1240,15 @@
             return `<span class="product-stock stock-in">✅ In Stock (${stock})</span>`;
         }
         
+        function getProductImages(product) {
+            const images = [];
+            for (let i = 1; i <= 10; i++) {
+                const url = product[`image${i}_url`] || product[`images_url_${i}`];
+                if (url) images.push(url);
+            }
+            return images;
+        }
+        
         function renderProducts() {
             const container = document.getElementById('productsContainer');
             
@@ -1182,16 +1266,20 @@
             let html = '<div class="product-grid">';
             
             for (const product of allProducts) {
-                const imageUrl = product.image1_url || product.image_url || 'https://placehold.co/400x220/e9ecef/666?text=No+Image';
+                const images = getProductImages(product);
+                const imageUrl = images.length > 0 ? images[0] : 'https://placehold.co/400x220/e9ecef/666?text=No+Image';
+                const imageCount = images.length;
+                
                 html += `
                     <div class="product-card">
                         <img class="product-image" src="${imageUrl}" alt="${escapeHtml(product.product_name || product.name)}" 
                              onerror="this.src='https://placehold.co/400x220/e9ecef/666?text=No+Image'">
                         <div class="product-info">
-                            <div class="product-name">${escapeHtml(product.product_name || product.name)}</div>
+                            <div class="product-name">${escapeHtml(product.product_name || product.name || 'Unnamed Product')}</div>
                             <div class="product-sku">SKU: ${escapeHtml(product.sku || 'N/A')} | ${escapeHtml(product.category || 'Uncategorized')}</div>
                             <div class="product-price">₹${(product.price || 0).toLocaleString()}</div>
                             ${getStockBadge(product.stock || 0)}
+                            ${imageCount > 0 ? `<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">📷 ${imageCount} image${imageCount > 1 ? 's' : ''}</div>` : ''}
                             ${product.carat ? `<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">💎 ${product.carat}ct | ${product.diamond_color || ''} ${product.diamond_clarity || ''}</div>` : ''}
                         </div>
                         <div class="product-actions">
@@ -1207,20 +1295,20 @@
             container.innerHTML = html;
         }
         
-        // ========== Open Add Modal ==========
+        // ========== OPEN ADD MODAL ==========
         window.openAddModal = function() {
             isEditing = false;
+            uploadedImages = [];
             document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Add New Product';
             document.getElementById('saveProductBtn').innerHTML = '<i class="fas fa-plus"></i> Add Product';
             document.getElementById('editProductId').value = '';
             document.getElementById('productForm').reset();
             document.getElementById('productGst').value = '18';
-            updateImagePreview('');
-            document.getElementById('imageFileInput').value = '';
+            renderImageUploads();
             document.getElementById('productModal').classList.add('active');
         };
         
-        // ========== Edit Product ==========
+        // ========== EDIT PRODUCT ==========
         window.editProduct = function(productId) {
             const product = allProducts.find(p => p.id === productId);
             if (!product) {
@@ -1229,6 +1317,19 @@
             }
             
             isEditing = true;
+            uploadedImages = [];
+            
+            // Load existing images
+            const images = getProductImages(product);
+            for (const img of images) {
+                uploadedImages.push({
+                    name: img.split('/').pop() || 'image.jpg',
+                    dataUrl: img,
+                    file: null,
+                    isExisting: true
+                });
+            }
+            
             document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Product';
             document.getElementById('saveProductBtn').innerHTML = '<i class="fas fa-save"></i> Update Product';
             document.getElementById('editProductId').value = productId;
@@ -1240,24 +1341,22 @@
             document.getElementById('productCategory').value = product.category || '';
             document.getElementById('productDescription').value = product.description || '';
             
-            // Image
-            const imageUrl = product.image1_url || product.image_url || '';
-            document.getElementById('productImage').value = imageUrl;
-            updateImagePreview(imageUrl);
-            
             // Diamond fields
             document.getElementById('productCarat').value = product.carat || '';
             document.getElementById('productColor').value = product.diamond_color || '';
             document.getElementById('productClarity').value = product.diamond_clarity || '';
             document.getElementById('productCut').value = product.diamond_cut || '';
+            
+            renderImageUploads();
             document.getElementById('productModal').classList.add('active');
         };
         
-        // ========== View Product ==========
+        // ========== VIEW PRODUCT ==========
         window.viewProduct = function(productId) {
             const product = allProducts.find(p => p.id === productId);
             if (!product) return;
             
+            const images = getProductImages(product);
             let diamondInfo = '';
             if (product.carat || product.diamond_color || product.diamond_clarity || product.diamond_cut) {
                 diamondInfo = `
@@ -1269,20 +1368,23 @@
                 `;
             }
             
+            let imagesHtml = images.length > 0 ? images.map(img => `<img src="${img}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;margin:4px;">`).join('') : 'No images';
+            
             const message = `
-                📦 Product: ${product.product_name || product.name}
+                📦 Product: ${product.product_name || product.name || 'Unnamed'}
                 🔖 SKU: ${product.sku || 'N/A'}
                 💰 Price: ₹${(product.price || 0).toLocaleString()}
                 📊 GST: ${product.gst || 18}%
                 📦 Stock: ${product.stock || 0}
                 📁 Category: ${product.category || 'Uncategorized'}
                 📝 Description: ${product.description || 'N/A'}
+                🖼️ Images: ${images.length}
                 ${diamondInfo ? '\n' + diamondInfo : ''}
             `;
             alert(message);
         };
         
-        // ========== Delete Product ==========
+        // ========== DELETE PRODUCT ==========
         window.deleteProduct = async function(productId) {
             if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) return;
             
@@ -1302,7 +1404,7 @@
             }
         };
         
-        // ========== Form Submit ==========
+        // ========== FORM SUBMIT ==========
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -1315,62 +1417,42 @@
             const category = document.getElementById('productCategory').value.trim();
             const description = document.getElementById('productDescription').value.trim();
             
-            // Get image URL - use the preview image URL (base64) or the URL input
-            const imageUrl = uploadedImageUrl || document.getElementById('productImage').value.trim() || null;
-            
             // Optional diamond fields
             const carat = document.getElementById('productCarat').value ? parseFloat(document.getElementById('productCarat').value) : null;
             const diamondColor = document.getElementById('productColor').value.trim() || null;
             const diamondClarity = document.getElementById('productClarity').value.trim() || null;
             const diamondCut = document.getElementById('productCut').value.trim() || null;
             
-            // Validate required fields
-            if (!name) {
-                showToast('❌ Please enter product name', true);
-                document.getElementById('productName').focus();
-                return;
-            }
-            if (!sku) {
-                showToast('❌ Please enter SKU', true);
-                document.getElementById('productSku').focus();
-                return;
-            }
-            if (isNaN(price) || price < 0) {
-                showToast('❌ Please enter a valid price', true);
-                document.getElementById('productPrice').focus();
-                return;
-            }
-            if (isNaN(stock) || stock < 0) {
-                showToast('❌ Please enter a valid stock quantity', true);
-                document.getElementById('productStock').focus();
-                return;
-            }
-            
-            // Build product data with all fields (including optional diamond fields)
+            // Build product data with all fields (all optional)
             const productData = {
-                product_name: name,
-                name: name,
-                sku: sku,
-                price: price,
-                gst: gst || 18,
-                stock: stock,
-                category: category || 'Uncategorized',
-                description: description || '',
-                image1_url: imageUrl,
-                image_url: imageUrl,
-                // Diamond fields (optional - only included if provided)
-                carat: carat,
-                diamond_color: diamondColor,
-                diamond_clarity: diamondClarity,
-                diamond_cut: diamondCut,
+                product_name: name || null,
+                name: name || null,
+                sku: sku || null,
+                price: isNaN(price) ? null : price,
+                gst: isNaN(gst) ? 18 : gst,
+                stock: isNaN(stock) ? 0 : stock,
+                category: category || null,
+                description: description || null,
                 updated_at: new Date().toISOString()
             };
             
-            // Remove null values for diamond fields (cleaner data)
-            if (productData.carat === null) delete productData.carat;
-            if (productData.diamond_color === null) delete productData.diamond_color;
-            if (productData.diamond_clarity === null) delete productData.diamond_clarity;
-            if (productData.diamond_cut === null) delete productData.diamond_cut;
+            // Add images (up to 10 images)
+            for (let i = 0; i < Math.min(uploadedImages.length, 10); i++) {
+                productData[`image${i + 1}_url`] = uploadedImages[i].dataUrl || uploadedImages[i].dataUrl;
+            }
+            
+            // Diamond fields (only if provided)
+            if (carat !== null) productData.carat = carat;
+            if (diamondColor) productData.diamond_color = diamondColor;
+            if (diamondClarity) productData.diamond_clarity = diamondClarity;
+            if (diamondCut) productData.diamond_cut = diamondCut;
+            
+            // Remove null values for cleaner data
+            Object.keys(productData).forEach(key => {
+                if (productData[key] === null || productData[key] === undefined) {
+                    delete productData[key];
+                }
+            });
             
             const saveBtn = document.getElementById('saveProductBtn');
             saveBtn.disabled = true;
@@ -1412,42 +1494,44 @@
             }
         });
         
-        // ========== Close Modal ==========
+        // ========== CLOSE MODAL ==========
         window.closeModal = function() {
             document.getElementById('productModal').classList.remove('active');
             document.getElementById('productForm').reset();
             document.getElementById('editProductId').value = '';
-            updateImagePreview('');
-            document.getElementById('imageFileInput').value = '';
+            uploadedImages = [];
+            renderImageUploads();
         };
         
-        // ========== Logout ==========
-        window.logout = function() {
-            sessionStorage.removeItem('adminLoggedIn');
-            showToast('Logged out successfully');
-            setTimeout(() => window.location.href = 'login.html', 500);
-        };
+        // ========== KEYBOARD SHORTCUTS ==========
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
         
-        // ========== Close modal on outside click ==========
+        // ========== CLOSE MODAL ON OUTSIDE CLICK ==========
         window.onclick = function(event) {
             const modal = document.getElementById('productModal');
             if (event.target === modal) closeModal();
         };
         
-        // ========== Keyboard shortcuts ==========
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
+        // ========== DRAG AND DROP FOR IMAGE UPLOAD ==========
+        document.addEventListener('dragover', (e) => {
+            e.preventDefault();
         });
         
-        // Initialize
+        document.addEventListener('drop', (e) => {
+            e.preventDefault();
+        });
+        
+        // ========== INIT ==========
         initTheme();
         loadProducts();
         
         console.log('✅ Product Management System Active');
-        console.log('   - Image Upload: Supports JPG, JPEG, PNG, GIF, WEBP, SVG, BMP');
-        console.log('   - Fields: product_name, sku, price, gst, stock, category, description, image1_url');
-        console.log('   - Optional Diamond Fields: carat, diamond_color, diamond_clarity, diamond_cut');
-        console.log('   - CRUD Operations: Create, Read, Update, Delete');
+        console.log('   - All fields are optional');
+        console.log('   - Unlimited image upload support');
+        console.log('   - Drag to reorder images');
+        console.log('   - Supported formats: JPG, JPEG, PNG, GIF, WEBP, SVG, BMP');
     </script>
 </body>
 </html>
