@@ -279,7 +279,7 @@
         
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
         }
         
@@ -413,7 +413,7 @@
         .modal-content {
             background: var(--bg-card);
             border-radius: 24px;
-            max-width: 600px;
+            max-width: 650px;
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
@@ -455,6 +455,12 @@
             font-size: 13px;
         }
         
+        .form-group label .optional {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+        
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -483,6 +489,25 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
+        }
+        
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .section-divider {
+            border-top: 1px solid var(--border);
+            margin: 20px 0 15px;
+            padding-top: 15px;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
         }
         
         .save-product-btn {
@@ -604,7 +629,8 @@
                 border-radius: 12px;
                 cursor: pointer;
             }
-            .form-row {
+            .form-row,
+            .form-row-3 {
                 grid-template-columns: 1fr;
             }
             .product-grid {
@@ -745,6 +771,8 @@
             </div>
             <form id="productForm">
                 <input type="hidden" id="editProductId" value="">
+                
+                <!-- Basic Information -->
                 <div class="form-group">
                     <label>Product Name *</label>
                     <input type="text" id="productName" required placeholder="Enter product name">
@@ -778,9 +806,33 @@
                     <textarea id="productDescription" rows="3" placeholder="Product description"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Image URL</label>
+                    <label>Image URL <span class="optional">(optional)</span></label>
                     <input type="text" id="productImage" placeholder="https://example.com/image.jpg">
                 </div>
+                
+                <!-- Diamond Information Section (Optional) -->
+                <div class="section-divider">
+                    <div class="section-title">💎 Diamond Information <span class="optional">(Optional - only for diamond products)</span></div>
+                </div>
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>Carat <span class="optional">(optional)</span></label>
+                        <input type="number" id="productCarat" step="0.01" placeholder="e.g., 1.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Diamond Color <span class="optional">(optional)</span></label>
+                        <input type="text" id="productColor" placeholder="e.g., D, E, F">
+                    </div>
+                    <div class="form-group">
+                        <label>Diamond Clarity <span class="optional">(optional)</span></label>
+                        <input type="text" id="productClarity" placeholder="e.g., VVS1, VS2">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Diamond Cut <span class="optional">(optional)</span></label>
+                    <input type="text" id="productCut" placeholder="e.g., Round, Princess, Emerald">
+                </div>
+                
                 <button type="submit" class="save-product-btn" id="saveProductBtn">
                     <i class="fas fa-save"></i> Save Product
                 </button>
@@ -929,6 +981,7 @@
                             <div class="product-sku">SKU: ${escapeHtml(product.sku || 'N/A')} | ${escapeHtml(product.category || 'Uncategorized')}</div>
                             <div class="product-price">₹${(product.price || 0).toLocaleString()}</div>
                             ${getStockBadge(product.stock || 0)}
+                            ${product.carat ? `<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">💎 ${product.carat}ct | ${product.diamond_color || ''} ${product.diamond_clarity || ''}</div>` : ''}
                         </div>
                         <div class="product-actions">
                             <button class="action-btn edit-btn" onclick="editProduct('${product.id}')"><i class="fas fa-edit"></i> Edit</button>
@@ -943,7 +996,7 @@
             container.innerHTML = html;
         }
         
-        // ========== FIXED: Open Add Modal ==========
+        // ========== Open Add Modal ==========
         window.openAddModal = function() {
             isEditing = false;
             document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Add New Product';
@@ -954,7 +1007,7 @@
             document.getElementById('productModal').classList.add('active');
         };
         
-        // ========== FIXED: Edit Product ==========
+        // ========== Edit Product ==========
         window.editProduct = function(productId) {
             const product = allProducts.find(p => p.id === productId);
             if (!product) {
@@ -974,13 +1027,29 @@
             document.getElementById('productCategory').value = product.category || '';
             document.getElementById('productDescription').value = product.description || '';
             document.getElementById('productImage').value = product.image1_url || product.image_url || '';
+            // Diamond fields
+            document.getElementById('productCarat').value = product.carat || '';
+            document.getElementById('productColor').value = product.diamond_color || '';
+            document.getElementById('productClarity').value = product.diamond_clarity || '';
+            document.getElementById('productCut').value = product.diamond_cut || '';
             document.getElementById('productModal').classList.add('active');
         };
         
-        // ========== FIXED: View Product ==========
+        // ========== View Product ==========
         window.viewProduct = function(productId) {
             const product = allProducts.find(p => p.id === productId);
             if (!product) return;
+            
+            let diamondInfo = '';
+            if (product.carat || product.diamond_color || product.diamond_clarity || product.diamond_cut) {
+                diamondInfo = `
+                    💎 Diamond Details:
+                    ${product.carat ? `Carat: ${product.carat}ct` : ''}
+                    ${product.diamond_color ? `Color: ${product.diamond_color}` : ''}
+                    ${product.diamond_clarity ? `Clarity: ${product.diamond_clarity}` : ''}
+                    ${product.diamond_cut ? `Cut: ${product.diamond_cut}` : ''}
+                `;
+            }
             
             const message = `
                 📦 Product: ${product.product_name || product.name}
@@ -990,11 +1059,12 @@
                 📦 Stock: ${product.stock || 0}
                 📁 Category: ${product.category || 'Uncategorized'}
                 📝 Description: ${product.description || 'N/A'}
+                ${diamondInfo ? '\n' + diamondInfo : ''}
             `;
             alert(message);
         };
         
-        // ========== FIXED: Delete Product ==========
+        // ========== Delete Product ==========
         window.deleteProduct = async function(productId) {
             if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) return;
             
@@ -1014,7 +1084,7 @@
             }
         };
         
-        // ========== FIXED: Form Submit with Correct Fields ==========
+        // ========== Form Submit ==========
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -1027,6 +1097,12 @@
             const category = document.getElementById('productCategory').value.trim();
             const description = document.getElementById('productDescription').value.trim();
             const image = document.getElementById('productImage').value.trim();
+            
+            // Optional diamond fields
+            const carat = document.getElementById('productCarat').value ? parseFloat(document.getElementById('productCarat').value) : null;
+            const diamondColor = document.getElementById('productColor').value.trim() || null;
+            const diamondClarity = document.getElementById('productClarity').value.trim() || null;
+            const diamondCut = document.getElementById('productCut').value.trim() || null;
             
             // Validate required fields
             if (!name) {
@@ -1050,7 +1126,7 @@
                 return;
             }
             
-            // Build product data with only existing columns
+            // Build product data with all fields (including optional diamond fields)
             const productData = {
                 product_name: name,
                 name: name,
@@ -1062,8 +1138,19 @@
                 description: description || '',
                 image1_url: image || null,
                 image_url: image || null,
+                // Diamond fields (optional - only included if provided)
+                carat: carat,
+                diamond_color: diamondColor,
+                diamond_clarity: diamondClarity,
+                diamond_cut: diamondCut,
                 updated_at: new Date().toISOString()
             };
+            
+            // Remove null values for diamond fields (cleaner data)
+            if (productData.carat === null) delete productData.carat;
+            if (productData.diamond_color === null) delete productData.diamond_color;
+            if (productData.diamond_clarity === null) delete productData.diamond_clarity;
+            if (productData.diamond_cut === null) delete productData.diamond_cut;
             
             const saveBtn = document.getElementById('saveProductBtn');
             saveBtn.disabled = true;
@@ -1105,27 +1192,27 @@
             }
         });
         
-        // ========== FIXED: Close Modal ==========
+        // ========== Close Modal ==========
         window.closeModal = function() {
             document.getElementById('productModal').classList.remove('active');
             document.getElementById('productForm').reset();
             document.getElementById('editProductId').value = '';
         };
         
-        // ========== FIXED: Logout ==========
+        // ========== Logout ==========
         window.logout = function() {
             sessionStorage.removeItem('adminLoggedIn');
             showToast('Logged out successfully');
             setTimeout(() => window.location.href = 'login.html', 500);
         };
         
-        // ========== FIXED: Close modal on outside click ==========
+        // ========== Close modal on outside click ==========
         window.onclick = function(event) {
             const modal = document.getElementById('productModal');
             if (event.target === modal) closeModal();
         };
         
-        // ========== FIXED: Keyboard shortcuts ==========
+        // ========== Keyboard shortcuts ==========
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
         });
@@ -1136,6 +1223,7 @@
         
         console.log('✅ Product Management System Active');
         console.log('   - Fields: product_name, sku, price, gst, stock, category, description, image1_url');
+        console.log('   - Optional Diamond Fields: carat, diamond_color, diamond_clarity, diamond_cut');
         console.log('   - CRUD Operations: Create, Read, Update, Delete');
     </script>
 </body>
