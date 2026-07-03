@@ -3,7 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    
+    <!-- ========== META PIXEL CODE - Facebook Ads Tracking ========== -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '939604622471127');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=939604622471127&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+    
     <title>Create Account - Style Of Life</title>
+    <meta name="description" content="Create your Style Of Life account. Join the exclusive jewelry community. Get welcome gifts, exclusive discounts, and free shipping.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://styleoflife987-hub.github.io/jewelry-store/register.html">
+    
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/config.js"></script>
@@ -29,6 +52,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
         }
         
         .register-container {
@@ -195,6 +219,27 @@
         .toast-success { background: var(--success); color: white; }
         .toast-error { background: var(--danger); color: white; }
         
+        /* Pixel Test Button */
+        .pixel-test-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: #1877F2;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 12px;
+            opacity: 0.7;
+            border: none;
+        }
+        .pixel-test-btn:hover { opacity: 1; }
+        
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -215,10 +260,19 @@
             .register-right {
                 padding: 30px;
             }
+            .pixel-test-btn {
+                bottom: 100px;
+                left: 20px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Pixel Test Button -->
+    <button class="pixel-test-btn" onclick="testFacebookPixel()" title="Test Facebook Pixel">
+        <i class="fab fa-facebook-f"></i>
+    </button>
+    
     <div class="register-container">
         <div class="register-left">
             <h1>Style <span>Of Life</span></h1>
@@ -287,6 +341,18 @@
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         
+        // ========== FACEBOOK PIXEL TEST FUNCTION ==========
+        window.testFacebookPixel = function() {
+            if (typeof fbq !== 'undefined') {
+                console.log('✅ Facebook Pixel is loaded!');
+                fbq('track', 'CustomEvent', {event_name: 'PixelTest'});
+                alert('✅ Facebook Pixel is working! Check Meta Events Manager for test event.');
+            } else {
+                console.log('❌ Facebook Pixel NOT loaded');
+                alert('❌ Facebook Pixel is NOT loaded. Check your internet connection.');
+            }
+        };
+        
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = `toast ${isError ? 'toast-error' : 'toast-success'}`;
@@ -347,6 +413,17 @@
                 
                 if (data.user) {
                     console.log('User created successfully:', data.user.id);
+                    
+                    // ========== FACEBOOK COMPLETE REGISTRATION EVENT ==========
+                    if (typeof fbq !== 'undefined') {
+                        fbq('track', 'CompleteRegistration', {
+                            method: 'email',
+                            value: 0,
+                            currency: 'INR'
+                        });
+                        console.log('✅ Facebook CompleteRegistration Event Tracked');
+                    }
+                    
                     showToast('Account created successfully!');
                     
                     // Auto login
@@ -383,6 +460,11 @@
         // Redirect to customer-portal.html
         document.getElementById('loginRedirectLink')?.addEventListener('click', (e) => {
             e.preventDefault();
+            // Track Login Start event
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'CustomEvent', {event_name: 'LoginStart'});
+                console.log('✅ Facebook LoginStart Event Tracked');
+            }
             window.location.href = 'customer-portal.html';
         });
         
@@ -409,6 +491,12 @@
         
         passwordInput.addEventListener('input', checkPasswordMatch);
         confirmInput.addEventListener('input', checkPasswordMatch);
+        
+        console.log('🎯 Facebook Pixel Active - Events Tracked:');
+        console.log('   - PageView (auto on load)');
+        console.log('   - CompleteRegistration (when registration completes)');
+        console.log('   - LoginStart (when sign in link clicked)');
+        console.log('   - Pixel Test Button: Click the blue Facebook icon to test');
     </script>
 </body>
 </html>
