@@ -3,399 +3,855 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    
+    <!-- ========== META PIXEL CODE - Facebook Ads Tracking ========== -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '939604622471127');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=939604622471127&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+    
     <title>Product Management - Style Of Life Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="js/config.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --primary: #d4af37; --primary-dark: #b8962e; --dark: #1a1a1a; --darker: #0a0a0a; --light: #ffffff; --gray-100: #f8f9fa; --gray-200: #e9ecef; --gray-600: #6c757d; --danger: #dc3545; --success: #28a745; --info: #17a2b8; --warning: #ffc107; }
-        body { font-family: 'Inter', sans-serif; background: var(--gray-100); }
-        header { background: var(--darker); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .logo { font-size: 24px; font-weight: 600; color: var(--primary); }
-        .logo span { background: var(--primary); color: var(--darker); padding: 4px 8px; border-radius: 4px; }
-        nav a { color: #aaa; text-decoration: none; margin-left: 20px; padding: 8px 15px; border-radius: 6px; transition: all 0.3s; }
-        nav a:hover, nav a.active { background: rgba(212,175,55,0.1); color: var(--primary); }
-        .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
-        h1 { color: var(--primary); margin-bottom: 30px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         
-        .status-bar { background: white; border-radius: 12px; padding: 15px 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border: 1px solid var(--gray-200); }
-        .status-stats { display: flex; gap: 30px; flex-wrap: wrap; }
-        .stat-item { text-align: center; }
-        .stat-number { font-size: 28px; font-weight: 700; color: var(--primary); }
-        .stat-label { font-size: 12px; color: var(--gray-600); }
-        .live-badge { background: var(--success); color: white; padding: 6px 14px; border-radius: 30px; font-size: 12px; display: inline-flex; align-items: center; gap: 8px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-        .admin-badge { background: var(--primary); color: var(--darker); padding: 6px 14px; border-radius: 30px; font-size: 12px; display: inline-flex; align-items: center; gap: 8px; }
+        :root {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #666666;
+            --text-muted: #999999;
+            --border: #e9ecef;
+            --sidebar-bg: #ffffff;
+            --header-bg: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.08);
+            --gold: #D4AF37;
+            --gold-dark: #B8962E;
+            --gold-light: #F5E6C6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --purple: #8b5cf6;
+        }
         
-        .toolbar { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; }
-        .toolbar-left, .toolbar-right { display: flex; gap: 15px; flex-wrap: wrap; }
-        .btn { background: var(--primary); color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
-        .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
-        .btn-secondary { background: var(--gray-600); }
-        .btn-success { background: var(--success); }
-        .btn-warning { background: var(--warning); color: var(--dark); }
+        body.dark {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-card: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+            --border: #2a2a2a;
+            --sidebar-bg: #0d0d0d;
+            --header-bg: #0d0d0d;
+            --shadow: 0 2px 10px rgba(0,0,0,0.3);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.5);
+        }
         
-        .form-card { background: white; border-radius: 16px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--gray-200); box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: none; }
-        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--gray-600); }
-        input, textarea, select { width: 100%; padding: 12px; border: 1px solid var(--gray-200); border-radius: 8px; font-size: 14px; }
-        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
+        }
         
-        /* Image Upload Styles */
-        .image-upload-area {
-            border: 2px dashed var(--gray-300);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
+        .theme-toggle {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
             cursor: pointer;
             transition: all 0.3s;
-            background: var(--gray-100);
-            margin-bottom: 15px;
         }
-        .image-upload-area:hover, .image-upload-area.drag-over {
-            border-color: var(--primary);
-            background: rgba(212,175,55,0.05);
-        }
-        .image-upload-area i { font-size: 40px; color: var(--primary); margin-bottom: 10px; }
-        .image-preview-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 15px;
-            margin-bottom: 15px;
-        }
-        .image-preview-item {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 2px solid var(--gray-200);
-            background: var(--gray-100);
-        }
-        .image-preview-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .image-preview-item .remove-image {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(0,0,0,0.6);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
+        
+        .theme-option {
+            padding: 8px 16px;
+            border-radius: 32px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
             cursor: pointer;
+            color: var(--text-secondary);
+        }
+        
+        .theme-option.active {
+            background: var(--gold);
+            color: #1a1a1a;
+        }
+        
+        .gemini-logo {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 12px;
+            gap: 12px;
+            cursor: pointer;
         }
-        .image-preview-item .remove-image:hover { background: var(--danger); }
-        .upload-progress {
-            height: 4px;
-            background: var(--gray-200);
-            border-radius: 2px;
+        
+        .gemini-star {
+            width: 36px;
+            height: 36px;
+            position: relative;
+        }
+        
+        .gemini-star svg {
+            width: 100%;
+            height: 100%;
+            animation: starPulse 2s ease-in-out infinite;
+        }
+        
+        .gemini-star svg .star-outline {
+            stroke: url(#geminiGradient);
+            stroke-width: 2;
+            fill: var(--bg-card);
+        }
+        
+        @keyframes starPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+        
+        .gemini-text {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #4285F4, #EA4335, #FBBC05, #34A853);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .gemini-sub {
+            font-size: 8px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-left: 5px;
+        }
+        
+        .admin-header {
+            background: var(--header-bg);
+            backdrop-filter: blur(10px);
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 260px;
+            height: calc(100vh - 60px);
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            transition: all 0.3s;
+            z-index: 99;
+        }
+        
+        .sidebar-nav {
+            padding: 20px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 6px;
+            transition: all 0.3s;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .nav-item i {
+            width: 22px;
+            font-size: 18px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(212,175,55,0.1);
+            color: var(--gold);
+        }
+        
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
+            color: var(--gold);
+            border-left: 3px solid var(--gold);
+        }
+        
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+            min-height: calc(100vh - 60px);
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+        }
+        
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--gold);
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--gold);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .product-card {
+            background: var(--bg-card);
+            border-radius: 20px;
             overflow: hidden;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--gold);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background: var(--bg-primary);
+        }
+        
+        .product-info {
+            padding: 16px;
+        }
+        
+        .product-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .product-sku {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        
+        .product-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        
+        .product-stock {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        .stock-in {
+            background: rgba(16,185,129,0.15);
+            color: var(--success);
+        }
+        
+        .stock-low {
+            background: rgba(245,158,11,0.15);
+            color: var(--warning);
+        }
+        
+        .stock-out {
+            background: rgba(239,68,68,0.15);
+            color: var(--danger);
+        }
+        
+        .product-actions {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .edit-btn { background: var(--info); color: white; }
+        .delete-btn { background: rgba(239,68,68,0.15); color: var(--danger); }
+        .delete-btn:hover { background: var(--danger); color: white; }
+        .view-btn { background: var(--purple); color: white; }
+        
+        .add-product-btn {
+            padding: 12px 24px;
+            background: var(--gold);
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .add-product-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212,175,55,0.3);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 25px;
+            border: 1px solid var(--border);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .modal-header h3 {
+            color: var(--gold);
+            font-size: 18px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .save-product-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--gold);
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
             margin-top: 10px;
+        }
+        
+        .save-product-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212,175,55,0.3);
+        }
+        
+        .save-product-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #1a1a1a;
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 1000;
+            font-size: 13px;
+            font-weight: 600;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .toast-error {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        .spinner-small {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-muted);
+        }
+        
+        .mobile-menu-btn {
             display: none;
         }
-        .upload-progress-bar {
-            height: 100%;
-            background: var(--primary);
-            width: 0%;
-            transition: width 0.3s;
+        
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
-        .bulk-upload-section { background: var(--gray-100); border-radius: 12px; padding: 20px; margin-bottom: 20px; display: none; }
-        .bulk-upload-area { border: 2px dashed var(--gray-300); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; }
-        .bulk-upload-area:hover { border-color: var(--primary); background: rgba(212,175,55,0.05); }
-        .bulk-upload-area.drag-over { border-color: var(--success); background: rgba(40,167,69,0.1); }
-        .bulk-progress { margin-top: 15px; display: none; }
-        .bulk-progress-bar { height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; }
-        .bulk-progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
-        .batch-info { font-size: 12px; color: var(--gray-600); margin-top: 8px; text-align: center; }
-        .error-log { max-height: 250px; overflow-y: auto; font-size: 12px; margin-top: 10px; background: white; border-radius: 8px; padding: 10px; }
-        .error-item { padding: 5px; border-bottom: 1px solid #eee; color: var(--danger); font-family: monospace; }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 200;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .mobile-menu-btn {
+                display: block;
+                position: fixed;
+                top: 15px;
+                left: 15px;
+                z-index: 101;
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                padding: 10px;
+                border-radius: 12px;
+                cursor: pointer;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .product-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
         
-        .diamond-section { background: var(--gray-100); border-radius: 12px; padding: 20px; margin-top: 20px; }
-        .diamond-title { font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        .diamond-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        @media (max-width: 480px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+        }
         
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; margin-top: 30px; }
-        .product-card { background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--gray-200); transition: all 0.3s; }
-        .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .product-image-container { height: 250px; overflow: hidden; background: #f5f5f5; position: relative; }
-        .product-image { width: 100%; height: 100%; object-fit: cover; }
-        .media-badge { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 20px; font-size: 10px; z-index: 5; }
-        .product-info { padding: 20px; }
-        .product-name { font-size: 18px; font-weight: 700; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; }
-        .gst-badge { background: rgba(212,175,55,0.15); color: var(--primary); padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
-        .diamond-badge { background: rgba(212,175,55,0.15); color: var(--primary); padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
-        .product-sku { font-size: 12px; color: var(--gray-600); margin-bottom: 5px; }
-        .product-price { font-size: 22px; font-weight: 700; color: var(--primary); margin: 8px 0; }
-        .product-price small { font-size: 11px; color: var(--gray-600); font-weight: normal; }
-        .product-stock { font-size: 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 5px; }
-        .in-stock { color: var(--success); }
-        .low-stock { color: #ff9800; }
-        .out-of-stock { color: var(--danger); }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
         
-        .diamond-details { background: var(--gray-100); border-radius: 8px; padding: 10px; margin: 10px 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; }
-        .diamond-detail-item { text-align: center; flex: 1; min-width: 60px; }
-        .diamond-detail-label { font-size: 9px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
-        .diamond-detail-value { font-size: 12px; font-weight: 600; color: var(--primary); }
+        ::-webkit-scrollbar-track {
+            background: var(--border);
+            border-radius: 3px;
+        }
         
-        .card-actions { display: flex; gap: 10px; margin-top: 12px; }
-        .edit-btn, .delete-btn { flex: 1; padding: 8px; border: none; border-radius: 30px; cursor: pointer; font-weight: 500; font-size: 12px; transition: all 0.3s; }
-        .edit-btn { background: var(--info); color: white; }
-        .delete-btn { background: rgba(220,53,69,0.15); color: var(--danger); }
-        .delete-btn:hover { background: var(--danger); color: white; }
-        .empty-state { text-align: center; padding: 60px; color: var(--gray-600); }
-        .loading-spinner { text-align: center; padding: 60px; }
-        .spinner { width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
-        .toast { position: fixed; bottom: 30px; right: 30px; background: var(--success); color: white; padding: 12px 24px; border-radius: 8px; z-index: 1000; animation: slideIn 0.3s ease; }
-        .toast-error { background: var(--danger); }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-        .modal.active { display: flex; }
-        .modal-content { background: white; border-radius: 16px; max-width: 500px; width: 90%; padding: 25px; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-header h3 { color: var(--primary); }
-        .close-modal { background: none; border: none; font-size: 24px; cursor: pointer; }
-        
-        footer { background: var(--darker); color: white; text-align: center; padding: 30px; margin-top: 60px; }
-        
-        .format-hint { background: #e8f4fd; padding: 12px; border-radius: 8px; margin-top: 15px; font-size: 12px; }
-        .format-hint code { background: #fff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-        
-        .media-preview { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-        .media-item { position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; background: #f5f5f5; border: 1px solid var(--gray-200); }
-        .media-item img, .media-item video { width: 100%; height: 100%; object-fit: cover; }
-        .remove-media { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: white; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; }
-        
-        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .status-stats { gap: 15px; } header { flex-direction: column; text-align: center; } .toolbar { flex-direction: column; } .toolbar-left, .toolbar-right { justify-content: center; } .diamond-grid { grid-template-columns: 1fr; } }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body>
-    <header>
-        <div class="logo">STYLE OF LIFE <span>ADMIN</span></div>
-        <nav>
-            <a href="admin.html">Dashboard</a>
-            <a href="admin-products.html" class="active">Products</a>
-            <a href="admin-orders.html">Orders</a>
-            <a href="#" onclick="logout()">Logout</a>
-        </nav>
-    </header>
-
-    <div class="container">
-        <h1>
-            ✨ Product Management 
-            <span class="live-badge"><i class="fas fa-database"></i> Supabase Connected</span>
-            <span class="admin-badge"><i class="fas fa-bolt"></i> Batch Processing</span>
-            <span class="admin-badge" style="background: var(--info);"><i class="fas fa-upload"></i> Image Upload</span>
-        </h1>
-        
-        <div class="status-bar" id="statusBar">
-            <div class="status-stats">
-                <div class="stat-item"><div class="stat-number" id="totalProducts">0</div><div class="stat-label">Total Products</div></div>
-                <div class="stat-item"><div class="stat-number" id="inStockCount">0</div><div class="stat-label">In Stock</div></div>
-                <div class="stat-item"><div class="stat-number" id="lowStockCount">0</div><div class="stat-label">Low Stock</div></div>
-                <div class="stat-item"><div class="stat-number" id="outOfStockCount">0</div><div class="stat-label">Out of Stock</div></div>
-            </div>
-        </div>
-        
-        <div class="toolbar">
-            <div class="toolbar-left">
-                <button class="btn" onclick="toggleForm()">➕ Add New Product</button>
-                <button class="btn btn-secondary" onclick="loadProducts()">🔄 Refresh</button>
-            </div>
-            <div class="toolbar-right">
-                <button class="btn btn-success" onclick="downloadSampleCSV()">📥 Download Sample CSV</button>
-                <label class="btn btn-warning" style="cursor: pointer;">
-                    📂 Upload CSV/Excel
-                    <input type="file" id="bulkFileInput" accept=".csv,.xlsx,.xls" style="display: none;" onchange="handleBulkUpload(this)">
-                </label>
-            </div>
-        </div>
-        
-        <!-- Bulk Upload Section -->
-        <div class="bulk-upload-section" id="bulkUploadSection">
-            <h3 style="margin-bottom: 15px; color: var(--primary);">📁 Batch Upload Products</h3>
-            <div class="bulk-upload-area" id="bulkUploadArea">
-                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--primary);"></i>
-                <p style="margin-top: 10px;">Click or drag & drop CSV / Excel file here</p>
-                <p style="font-size: 12px; color: var(--gray-600);">Supported: .csv, .xlsx, .xls | Batch size: 500 rows</p>
-            </div>
-            
-            <div class="format-hint">
-                <strong>📋 Excel Format Required:</strong><br>
-                <code>SKU</code> | <code>Product Name</code> | <code>Category</code> | <code>Price</code> | <code>GST</code> | <code>Stock</code> | <code>Carat</code> | <code>Diamond Color</code> | <code>Diamond Clarity</code> | <code>Diamond Cut</code> | <code>Diamond Polish</code> | <code>Diamond Symmetry</code> | <code>Images URL 1</code> | <code>Images URL 2</code> | <code>Images URL 3</code> | <code>Video URL</code>
-            </div>
-            
-            <div class="bulk-progress" id="bulkProgress">
-                <div class="bulk-progress-bar"><div class="bulk-progress-fill" id="bulkProgressFill"></div></div>
-                <p style="font-size: 12px; margin-top: 8px;" id="bulkProgressText">Processing...</p>
-                <div class="batch-info" id="batchInfo"></div>
-            </div>
-            <div id="bulkResult"></div>
-        </div>
-        
-        <!-- Add/Edit Product Form with Image Upload -->
-        <div id="productForm" class="form-card">
-            <h2 style="margin-bottom: 20px; color: var(--primary);" id="formTitle">Add New Product</h2>
-            <input type="hidden" id="productId">
-            
-            <div class="form-grid">
-                <div class="form-group"><label>SKU *</label><input type="text" id="sku" placeholder="e.g., RING-001"></div>
-                <div class="form-group"><label>Product Name *</label><input type="text" id="product_name" placeholder="e.g., Diamond Ring"></div>
-                <div class="form-group"><label>Category *</label><input type="text" id="category" placeholder="e.g., Rings, Necklaces"></div>
-                <div class="form-group"><label>Price (₹) *</label><input type="number" id="price" step="0.01" placeholder="0"></div>
-                <div class="form-group"><label>GST (%)</label><input type="number" id="gst" step="0.01" value="18"></div>
-                <div class="form-group"><label>Stock *</label><input type="number" id="stock" placeholder="0"></div>
-            </div>
-            
-            <div class="form-group"><label>Description</label><textarea id="description" rows="2" placeholder="Product description..."></textarea></div>
-            
-            <!-- Image Upload Section -->
-            <div class="diamond-section">
-                <div class="diamond-title"><i class="fas fa-image"></i> Upload Product Images (JPEG, PNG, GIF, WebP, SVG)</div>
-                <div class="image-upload-area" id="imageUploadArea">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <p>Click or drag & drop images here</p>
-                    <p style="font-size: 11px; color: var(--gray-600);">Supported formats: JPEG, PNG, GIF, WebP, SVG (Max 5MB each)</p>
-                    <input type="file" id="imageFileInput" multiple accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" style="display: none;">
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <div class="admin-header">
+        <div class="brand">
+            <div class="gemini-logo" onclick="window.location.href='admin.html'">
+                <div class="gemini-star">
+                    <svg viewBox="0 0 24 24" width="100%" height="100%">
+                        <defs>
+                            <linearGradient id="geminiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4285F4;stop-opacity:1" />
+                                <stop offset="33%" style="stop-color:#EA4335;stop-opacity:1" />
+                                <stop offset="66%" style="stop-color:#FBBC05;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#34A853;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <path class="star-outline" d="M12 2L15 9H22L16 14L19 21L12 16.5L5 21L8 14L2 9H9L12 2Z" fill="currentColor" stroke="url(#geminiGradient)" stroke-width="2" stroke-linejoin="round"/>
+                    </svg>
                 </div>
-                <div class="upload-progress" id="imageUploadProgress"><div class="upload-progress-bar" id="imageUploadProgressFill"></div></div>
-                <div id="imagePreviewContainer" class="image-preview-container"></div>
-                <p style="font-size: 11px; margin-top: 10px; color: var(--gray-600);">
-                    <i class="fas fa-info-circle"></i> Uploaded images will be stored in Supabase Storage. You can also use image URLs below.
-                </p>
-            </div>
-            
-            <!-- Images Section (URLs) -->
-            <div class="diamond-section" style="margin-top: 15px;">
-                <div class="diamond-title"><i class="fas fa-link"></i> Image URLs (Alternative)</div>
-                <div class="form-group"><label>Images URL 1 (Main Image)</label><input type="url" id="images_url_1" placeholder="https://images.unsplash.com/..."></div>
-                <div class="form-group"><label>Images URL 2</label><input type="url" id="images_url_2" placeholder="https://images.unsplash.com/..."></div>
-                <div class="form-group"><label>Images URL 3</label><input type="url" id="images_url_3" placeholder="https://images.unsplash.com/..."></div>
-                <div class="form-group"><label>Video URL</label><input type="url" id="video_url" placeholder="https://cdn.pixabay.com/video/...mp4"></div>
-            </div>
-            
-            <div id="mediaPreview" class="media-preview"></div>
-            
-            <!-- Diamond Specifications Section -->
-            <div class="diamond-section">
-                <div class="diamond-title"><i class="fas fa-gem"></i> Diamond Specifications (Optional)</div>
-                <div class="diamond-grid">
-                    <div class="form-group"><label>Carat</label><input type="number" id="carat" step="0.01" placeholder="e.g., 1.00"></div>
-                    <div class="form-group"><label>Diamond Color</label>
-                        <select id="diamond_color">
-                            <option value="">Select Color</option>
-                            <option value="D">D (Colorless)</option>
-                            <option value="E">E (Colorless)</option>
-                            <option value="F">F (Colorless)</option>
-                            <option value="G">G (Near Colorless)</option>
-                            <option value="H">H (Near Colorless)</option>
-                            <option value="I">I (Near Colorless)</option>
-                            <option value="J">J (Near Colorless)</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Diamond Clarity</label>
-                        <select id="diamond_clarity">
-                            <option value="">Select Clarity</option>
-                            <option value="FL">FL (Flawless)</option>
-                            <option value="IF">IF (Internally Flawless)</option>
-                            <option value="VVS1">VVS1</option>
-                            <option value="VVS2">VVS2</option>
-                            <option value="VS1">VS1</option>
-                            <option value="VS2">VS2</option>
-                            <option value="SI1">SI1</option>
-                            <option value="SI2">SI2</option>
-                            <option value="I1">I1</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Diamond Cut</label>
-                        <select id="diamond_cut">
-                            <option value="">Select Cut</option>
-                            <option value="Excellent">Excellent</option>
-                            <option value="Very Good">Very Good</option>
-                            <option value="Good">Good</option>
-                            <option value="Fair">Fair</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Diamond Polish</label>
-                        <select id="diamond_polish">
-                            <option value="">Select Polish</option>
-                            <option value="Excellent">Excellent</option>
-                            <option value="Very Good">Very Good</option>
-                            <option value="Good">Good</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Diamond Symmetry</label>
-                        <select id="diamond_symmetry">
-                            <option value="">Select Symmetry</option>
-                            <option value="Excellent">Excellent</option>
-                            <option value="Very Good">Very Good</option>
-                            <option value="Good">Good</option>
-                        </select>
-                    </div>
+                <div>
+                    <span class="gemini-text">Style Of Life</span>
+                    <span class="gemini-sub">BRAND PORTAL</span>
                 </div>
             </div>
-            
-            <div style="display: flex; gap: 15px; margin-top: 25px;">
-                <button class="btn" onclick="saveProduct()">💾 Save to Supabase</button>
-                <button class="btn btn-secondary" onclick="toggleForm()">❌ Cancel</button>
-            </div>
         </div>
-        
-        <div id="productsGrid" class="product-grid">
-            <div class="loading-spinner"><div class="spinner"></div><p>Loading products from Supabase...</p></div>
+        <div class="header-actions">
+            <div class="theme-toggle" id="themeToggle">
+                <span class="theme-option active" data-theme="light">☀️ Light</span>
+                <span class="theme-option" data-theme="dark">🌙 Dark</span>
+            </div>
+            <button class="logout-btn" onclick="logout()" style="background: rgba(239,68,68,0.1); border: 1px solid var(--danger); color: var(--danger); padding: 8px 16px; border-radius: 40px; cursor: pointer; font-weight: 500;">
+                <i class="fas fa-sign-out-alt"></i> Exit
+            </button>
         </div>
     </div>
-
-    <div id="confirmModal" class="modal">
+    
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-nav">
+            <a href="admin.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="admin-products.html" class="nav-item active">
+                <i class="fas fa-box"></i>
+                <span>Products</span>
+            </a>
+            <a href="admin-orders.html" class="nav-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Orders</span>
+            </a>
+            <a href="admin-customers.html" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>Customers</span>
+            </a>
+            <a href="admin-analytics.html" class="nav-item">
+                <i class="fas fa-chart-pie"></i>
+                <span>Analytics</span>
+            </a>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <div class="page-title">📦 Product Management</div>
+            <div class="page-subtitle">Manage your product catalog, add new items, and update inventory</div>
+        </div>
+        
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalProducts">--</div>
+                <div class="stat-label">Total Products</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="inStock">--</div>
+                <div class="stat-label">In Stock</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="lowStock">--</div>
+                <div class="stat-label">Low Stock (≤5)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="outOfStock">--</div>
+                <div class="stat-label">Out of Stock</div>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+            <button class="add-product-btn" onclick="openAddModal()">
+                <i class="fas fa-plus"></i> Add New Product
+            </button>
+            <button class="add-product-btn" style="background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-secondary);" onclick="loadProducts()">
+                <i class="fas fa-sync"></i> Refresh
+            </button>
+        </div>
+        
+        <div id="productsContainer">
+            <div class="loading"><div class="spinner"></div><p>Loading products...</p></div>
+        </div>
+    </div>
+    
+    <!-- Add/Edit Product Modal -->
+    <div id="productModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header"><h3>Confirm Action</h3><button class="close-modal" onclick="closeModal()">&times;</button></div>
-            <p id="modalMessage">Are you sure?</p>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn" onclick="confirmAction(true)">Yes</button>
-                <button class="btn btn-secondary" onclick="confirmAction(false)">No</button>
+            <div class="modal-header">
+                <h3 id="modalTitle"><i class="fas fa-plus-circle"></i> Add New Product</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
             </div>
+            <form id="productForm">
+                <input type="hidden" id="editProductId" value="">
+                <div class="form-group">
+                    <label>Product Name *</label>
+                    <input type="text" id="productName" required placeholder="Enter product name">
+                </div>
+                <div class="form-group">
+                    <label>SKU *</label>
+                    <input type="text" id="productSku" required placeholder="Enter SKU (e.g., GOLD-001)">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price (₹) *</label>
+                        <input type="number" id="productPrice" required step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>GST % *</label>
+                        <input type="number" id="productGst" required step="0.01" placeholder="18" value="18">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Stock *</label>
+                        <input type="number" id="productStock" required step="1" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <input type="text" id="productCategory" placeholder="e.g., Rings, Necklaces">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="productDescription" rows="3" placeholder="Product description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="text" id="productImage" placeholder="https://example.com/image.jpg">
+                </div>
+                <button type="submit" class="save-product-btn" id="saveProductBtn">
+                    <i class="fas fa-save"></i> Save Product
+                </button>
+            </form>
         </div>
     </div>
-
-    <footer><p>© 2026 STYLE OF LIFE | Timeless Elegance</p></footer>
-
+    
     <script type="importmap">
         { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2" } }
     </script>
+    
     <script type="module">
         import { createClient } from '@supabase/supabase-js';
         
-        if (!sessionStorage.getItem('adminLoggedIn')) window.location.href = 'login.html';
+        if (!sessionStorage.getItem('adminLoggedIn')) {
+            window.location.href = 'login.html';
+        }
         
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        let allProducts = [];
+        let isEditing = false;
         
-        // Supabase Storage bucket name (create this bucket in your Supabase Storage)
-        const STORAGE_BUCKET = 'product-images';
-        let pendingAction = null;
-        let allProductsData = [];
-        let uploadedImageUrls = [];
+        // Theme Toggle
+        function initTheme() {
+            const savedTheme = localStorage.getItem('adminTheme') || 'light';
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                document.querySelectorAll('.theme-option').forEach(opt => {
+                    opt.classList.toggle('active', opt.dataset.theme === 'dark');
+                });
+            }
+        }
         
-        const BATCH_SIZE = 500;
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark');
+            } else {
+                document.body.classList.remove('dark');
+            }
+            localStorage.setItem('adminTheme', theme);
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.theme === theme);
+            });
+        }
+        
+        document.querySelectorAll('.theme-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                setTheme(opt.dataset.theme);
+            });
+        });
+        
+        // Mobile Sidebar
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+        }
+        
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768 && !sidebar.contains(e.target) && e.target !== mobileMenuBtn) {
+                sidebar.classList.remove('open');
+            }
+        });
         
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
-            toast.className = 'toast' + (isError ? ' toast-error' : '');
+            toast.className = 'toast';
+            if (isError) toast.classList.add('toast-error');
             toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
@@ -406,666 +862,281 @@
             return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
         }
         
-        function calculateGST(price, gstPercent) {
-            const gstAmount = (price * gstPercent) / 100;
-            const total = price + gstAmount;
-            return { gstAmount, total };
-        }
-        
-        // ========== IMAGE UPLOAD FUNCTIONS ==========
-        async function uploadImageToSupabase(file) {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-            const filePath = `${fileName}`;
+        async function loadProducts() {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading products...</p></div>';
             
-            const { data, error } = await supabase.storage
-                .from(STORAGE_BUCKET)
-                .upload(filePath, file, {
-                    cacheControl: '3600',
-                    upsert: false
-                });
-            
-            if (error) throw error;
-            
-            const { data: publicUrlData } = supabase.storage
-                .from(STORAGE_BUCKET)
-                .getPublicUrl(filePath);
-            
-            return publicUrlData.publicUrl;
-        }
-        
-        async function uploadMultipleImages(files) {
-            const progressBar = document.getElementById('imageUploadProgress');
-            const progressFill = document.getElementById('imageUploadProgressFill');
-            progressBar.style.display = 'block';
-            
-            let uploaded = [];
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const percent = ((i + 1) / files.length) * 100;
-                progressFill.style.width = `${percent}%`;
+            try {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .order('created_at', { ascending: false });
                 
-                try {
-                    const url = await uploadImageToSupabase(file);
-                    uploaded.push(url);
-                    showToast(`Uploaded: ${file.name}`);
-                } catch (err) {
-                    console.error('Upload failed:', err);
-                    showToast(`Failed to upload ${file.name}`, true);
-                }
+                if (error) throw error;
+                
+                allProducts = data || [];
+                updateStats();
+                renderProducts();
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+                container.innerHTML = `<div class="empty-state">❌ Error loading products: ${error.message}</div>`;
             }
-            
-            progressBar.style.display = 'none';
-            progressFill.style.width = '0%';
-            return uploaded;
         }
         
-        function updateImagePreview(urls) {
-            const container = document.getElementById('imagePreviewContainer');
-            if (!urls.length) {
-                container.innerHTML = '';
-                return;
-            }
+        function updateStats() {
+            const total = allProducts.length;
+            const inStock = allProducts.filter(p => p.stock > 5).length;
+            const lowStock = allProducts.filter(p => p.stock > 0 && p.stock <= 5).length;
+            const outOfStock = allProducts.filter(p => p.stock === 0).length;
             
-            let html = '';
-            urls.forEach((url, index) => {
-                html += `
-                    <div class="image-preview-item">
-                        <img src="${url}" alt="Preview">
-                        <button class="remove-image" onclick="removeUploadedImage(${index})">×</button>
+            document.getElementById('totalProducts').textContent = total;
+            document.getElementById('inStock').textContent = inStock;
+            document.getElementById('lowStock').textContent = lowStock;
+            document.getElementById('outOfStock').textContent = outOfStock;
+        }
+        
+        function getStockBadge(stock) {
+            if (stock === 0) return '<span class="product-stock stock-out">❌ Out of Stock</span>';
+            if (stock <= 5) return `<span class="product-stock stock-low">⚠️ Low Stock (${stock})</span>`;
+            return `<span class="product-stock stock-in">✅ In Stock (${stock})</span>`;
+        }
+        
+        function renderProducts() {
+            const container = document.getElementById('productsContainer');
+            
+            if (allProducts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-box-open" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
+                        <h3>No Products Yet</h3>
+                        <p style="margin-top: 8px;">Click "Add New Product" to create your first product.</p>
                     </div>
                 `;
-            });
-            container.innerHTML = html;
-        }
-        
-        window.removeUploadedImage = function(index) {
-            uploadedImageUrls.splice(index, 1);
-            updateImagePreview(uploadedImageUrls);
-        };
-        
-        // Setup image upload handlers
-        const imageUploadArea = document.getElementById('imageUploadArea');
-        const imageFileInput = document.getElementById('imageFileInput');
-        
-        if (imageUploadArea) {
-            imageUploadArea.addEventListener('click', () => imageFileInput.click());
-            imageUploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                imageUploadArea.classList.add('drag-over');
-            });
-            imageUploadArea.addEventListener('dragleave', () => {
-                imageUploadArea.classList.remove('drag-over');
-            });
-            imageUploadArea.addEventListener('drop', async (e) => {
-                e.preventDefault();
-                imageUploadArea.classList.remove('drag-over');
-                const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-                if (files.length) {
-                    const newUrls = await uploadMultipleImages(files);
-                    uploadedImageUrls.push(...newUrls);
-                    updateImagePreview(uploadedImageUrls);
-                }
-            });
-            
-            imageFileInput.addEventListener('change', async (e) => {
-                const files = Array.from(e.target.files);
-                if (files.length) {
-                    const newUrls = await uploadMultipleImages(files);
-                    uploadedImageUrls.push(...newUrls);
-                    updateImagePreview(uploadedImageUrls);
-                }
-                imageFileInput.value = '';
-            });
-        }
-        
-        // Get images array from both uploaded and URL inputs
-        function getImagesData() {
-            // Start with uploaded images
-            let image1 = uploadedImageUrls[0] || null;
-            let image2 = uploadedImageUrls[1] || null;
-            let image3 = uploadedImageUrls[2] || null;
-            
-            // Override with URL inputs if they have values (URL inputs take priority for specific positions)
-            const url1 = document.getElementById('images_url_1').value.trim();
-            const url2 = document.getElementById('images_url_2').value.trim();
-            const url3 = document.getElementById('images_url_3').value.trim();
-            
-            if (url1) image1 = url1;
-            if (url2) image2 = url2;
-            if (url3) image3 = url3;
-            
-            return { image1, image2, image3 };
-        }
-        
-        function updateMediaPreview() {
-            const container = document.getElementById('mediaPreview');
-            const { image1, image2, image3 } = getImagesData();
-            const video = document.getElementById('video_url').value.trim();
-            
-            const media = [];
-            if (image1) media.push(image1);
-            if (image2) media.push(image2);
-            if (image3) media.push(image3);
-            if (video) media.push(video);
-            
-            if (media.length === 0) {
-                container.innerHTML = '';
                 return;
             }
             
-            let html = '';
-            media.forEach((url, index) => {
-                const isVideo = url.match(/\.(mp4|webm|mov|avi)$/i) || url.includes('youtube.com') || url.includes('vimeo.com');
-                html += `<div class="media-item">
-                    ${isVideo ? `<video src="${url}" style="width:100%;height:100%;object-fit:cover;"></video>` : `<img src="${url}" onerror="this.src='https://via.placeholder.com/80?text=Error'">`}
-                    <div class="remove-media" onclick="removeMedia(${index})">×</div>
-                </div>`;
-            });
+            let html = '<div class="product-grid">';
+            
+            for (const product of allProducts) {
+                const imageUrl = product.image1_url || product.image_url || 'https://placehold.co/400x220/e9ecef/666?text=No+Image';
+                html += `
+                    <div class="product-card">
+                        <img class="product-image" src="${imageUrl}" alt="${escapeHtml(product.product_name || product.name)}" 
+                             onerror="this.src='https://placehold.co/400x220/e9ecef/666?text=No+Image'">
+                        <div class="product-info">
+                            <div class="product-name">${escapeHtml(product.product_name || product.name)}</div>
+                            <div class="product-sku">SKU: ${escapeHtml(product.sku || 'N/A')} | ${escapeHtml(product.category || 'Uncategorized')}</div>
+                            <div class="product-price">₹${(product.price || 0).toLocaleString()}</div>
+                            ${getStockBadge(product.stock || 0)}
+                        </div>
+                        <div class="product-actions">
+                            <button class="action-btn edit-btn" onclick="editProduct('${product.id}')"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="action-btn view-btn" onclick="viewProduct('${product.id}')"><i class="fas fa-eye"></i> View</button>
+                            <button class="action-btn delete-btn" onclick="deleteProduct('${product.id}')"><i class="fas fa-trash-alt"></i> Delete</button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
             container.innerHTML = html;
         }
         
-        window.removeMedia = function(index) {
-            const { image1, image2, image3 } = getImagesData();
-            const video = document.getElementById('video_url').value.trim();
-            const mediaList = [];
-            if (image1) mediaList.push({ type: 'image1', val: image1 });
-            if (image2) mediaList.push({ type: 'image2', val: image2 });
-            if (image3) mediaList.push({ type: 'image3', val: image3 });
-            if (video) mediaList.push({ type: 'video', val: video });
-            
-            if (mediaList[index]) {
-                const item = mediaList[index];
-                if (item.type === 'image1') document.getElementById('images_url_1').value = '';
-                if (item.type === 'image2') document.getElementById('images_url_2').value = '';
-                if (item.type === 'image3') document.getElementById('images_url_3').value = '';
-                if (item.type === 'video') document.getElementById('video_url').value = '';
-                
-                // Also check if it was an uploaded image
-                if (index < uploadedImageUrls.length) {
-                    uploadedImageUrls.splice(index, 1);
-                    updateImagePreview(uploadedImageUrls);
-                }
-            }
-            updateMediaPreview();
+        // ========== FIXED: Open Add Modal ==========
+        window.openAddModal = function() {
+            isEditing = false;
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Add New Product';
+            document.getElementById('saveProductBtn').innerHTML = '<i class="fas fa-plus"></i> Add Product';
+            document.getElementById('editProductId').value = '';
+            document.getElementById('productForm').reset();
+            document.getElementById('productGst').value = '18';
+            document.getElementById('productModal').classList.add('active');
         };
         
-        async function updateStatusBar() {
-            try {
-                const { data, error } = await supabase.from('products').select('id, stock');
-                if (error) throw error;
-                const products = data || [];
-                document.getElementById('totalProducts').textContent = products.length;
-                document.getElementById('inStockCount').textContent = products.filter(p => p.stock > 10).length;
-                document.getElementById('lowStockCount').textContent = products.filter(p => p.stock > 0 && p.stock <= 10).length;
-                document.getElementById('outOfStockCount').textContent = products.filter(p => p.stock <= 0).length;
-            } catch (error) { console.error(error); }
-        }
-        
-        window.saveProduct = async function() {
-            const productId = document.getElementById('productId').value;
-            const { image1, image2, image3 } = getImagesData();
+        // ========== FIXED: Edit Product ==========
+        window.editProduct = function(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) {
+                showToast('❌ Product not found', true);
+                return;
+            }
             
+            isEditing = true;
+            document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Product';
+            document.getElementById('saveProductBtn').innerHTML = '<i class="fas fa-save"></i> Update Product';
+            document.getElementById('editProductId').value = productId;
+            document.getElementById('productName').value = product.product_name || product.name || '';
+            document.getElementById('productSku').value = product.sku || '';
+            document.getElementById('productPrice').value = product.price || '';
+            document.getElementById('productGst').value = product.gst || 18;
+            document.getElementById('productStock').value = product.stock || 0;
+            document.getElementById('productCategory').value = product.category || '';
+            document.getElementById('productDescription').value = product.description || '';
+            document.getElementById('productImage').value = product.image1_url || product.image_url || '';
+            document.getElementById('productModal').classList.add('active');
+        };
+        
+        // ========== FIXED: View Product ==========
+        window.viewProduct = function(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+            
+            const message = `
+                📦 Product: ${product.product_name || product.name}
+                🔖 SKU: ${product.sku || 'N/A'}
+                💰 Price: ₹${(product.price || 0).toLocaleString()}
+                📊 GST: ${product.gst || 18}%
+                📦 Stock: ${product.stock || 0}
+                📁 Category: ${product.category || 'Uncategorized'}
+                📝 Description: ${product.description || 'N/A'}
+            `;
+            alert(message);
+        };
+        
+        // ========== FIXED: Delete Product ==========
+        window.deleteProduct = async function(productId) {
+            if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('products')
+                    .delete()
+                    .eq('id', productId);
+                
+                if (error) throw error;
+                
+                showToast('✅ Product deleted successfully');
+                loadProducts();
+                
+            } catch (error) {
+                showToast('❌ Error deleting product: ' + error.message, true);
+            }
+        };
+        
+        // ========== FIXED: Form Submit with Correct Fields ==========
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const productId = document.getElementById('editProductId').value;
+            const name = document.getElementById('productName').value.trim();
+            const sku = document.getElementById('productSku').value.trim();
+            const price = parseFloat(document.getElementById('productPrice').value);
+            const gst = parseFloat(document.getElementById('productGst').value);
+            const stock = parseInt(document.getElementById('productStock').value);
+            const category = document.getElementById('productCategory').value.trim();
+            const description = document.getElementById('productDescription').value.trim();
+            const image = document.getElementById('productImage').value.trim();
+            
+            // Validate required fields
+            if (!name) {
+                showToast('❌ Please enter product name', true);
+                document.getElementById('productName').focus();
+                return;
+            }
+            if (!sku) {
+                showToast('❌ Please enter SKU', true);
+                document.getElementById('productSku').focus();
+                return;
+            }
+            if (isNaN(price) || price < 0) {
+                showToast('❌ Please enter a valid price', true);
+                document.getElementById('productPrice').focus();
+                return;
+            }
+            if (isNaN(stock) || stock < 0) {
+                showToast('❌ Please enter a valid stock quantity', true);
+                document.getElementById('productStock').focus();
+                return;
+            }
+            
+            // Build product data with only existing columns
             const productData = {
-                sku: document.getElementById('sku').value.trim(),
-                product_name: document.getElementById('product_name').value.trim(),
-                category: document.getElementById('category').value.trim(),
-                price: parseFloat(document.getElementById('price').value),
-                gst: parseFloat(document.getElementById('gst').value) || 18,
-                stock: parseInt(document.getElementById('stock').value),
-                description: document.getElementById('description').value.trim(),
-                carat: document.getElementById('carat').value ? parseFloat(document.getElementById('carat').value) : null,
-                diamond_color: document.getElementById('diamond_color').value || null,
-                diamond_clarity: document.getElementById('diamond_clarity').value || null,
-                diamond_cut: document.getElementById('diamond_cut').value || null,
-                diamond_polish: document.getElementById('diamond_polish').value || null,
-                diamond_symmetry: document.getElementById('diamond_symmetry').value || null,
-                images_url_1: image1,
-                images_url_2: image2,
-                images_url_3: image3,
-                video_url: document.getElementById('video_url').value.trim() || null
+                product_name: name,
+                name: name,
+                sku: sku,
+                price: price,
+                gst: gst || 18,
+                stock: stock,
+                category: category || 'Uncategorized',
+                description: description || '',
+                image1_url: image || null,
+                image_url: image || null,
+                updated_at: new Date().toISOString()
             };
             
-            if (!productData.sku || !productData.product_name || !productData.category || isNaN(productData.price) || isNaN(productData.stock)) {
-                showToast('Please fill all required fields (SKU, Product Name, Category, Price, Stock)', true);
-                return;
-            }
-            if (productData.price <= 0) { showToast('Price must be greater than 0', true); return; }
+            const saveBtn = document.getElementById('saveProductBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<div class="spinner-small"></div> Saving...';
             
             try {
                 let result;
-                if (productId) {
-                    result = await supabase.from('products').update(productData).eq('id', parseInt(productId));
-                    if (result.error) throw result.error;
-                    showToast(`✅ Product "${productData.product_name}" updated in Supabase!`);
+                
+                if (isEditing) {
+                    // Update existing product
+                    result = await supabase
+                        .from('products')
+                        .update(productData)
+                        .eq('id', productId);
                 } else {
-                    const { data: existing } = await supabase.from('products').select('id').eq('sku', productData.sku).maybeSingle();
-                    if (existing) { showToast(`SKU "${productData.sku}" already exists!`, true); return; }
-                    result = await supabase.from('products').insert([productData]);
-                    if (result.error) throw result.error;
-                    showToast(`✅ Product "${productData.product_name}" added to Supabase!`);
+                    // Insert new product with generated ID
+                    productData.id = 'prod_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+                    productData.created_at = new Date().toISOString();
+                    result = await supabase
+                        .from('products')
+                        .insert([productData]);
                 }
-                toggleForm();
+                
+                if (result.error) {
+                    console.error('Supabase error:', result.error);
+                    throw new Error(result.error.message);
+                }
+                
+                showToast(isEditing ? '✅ Product updated successfully' : '✅ Product added successfully');
+                closeModal();
                 loadProducts();
-                updateStatusBar();
-                resetForm();
-            } catch (error) {
-                showToast('Error saving product: ' + error.message, true);
-            }
-        };
-        
-        function resetForm() {
-            document.getElementById('productId').value = '';
-            document.getElementById('sku').value = '';
-            document.getElementById('product_name').value = '';
-            document.getElementById('category').value = '';
-            document.getElementById('price').value = '';
-            document.getElementById('gst').value = '18';
-            document.getElementById('stock').value = '';
-            document.getElementById('description').value = '';
-            document.getElementById('carat').value = '';
-            document.getElementById('diamond_color').value = '';
-            document.getElementById('diamond_clarity').value = '';
-            document.getElementById('diamond_cut').value = '';
-            document.getElementById('diamond_polish').value = '';
-            document.getElementById('diamond_symmetry').value = '';
-            document.getElementById('images_url_1').value = '';
-            document.getElementById('images_url_2').value = '';
-            document.getElementById('images_url_3').value = '';
-            document.getElementById('video_url').value = '';
-            uploadedImageUrls = [];
-            updateImagePreview([]);
-            updateMediaPreview();
-            document.getElementById('formTitle').textContent = 'Add New Product';
-        }
-        
-        window.deleteProduct = async function(id) {
-            pendingAction = async () => {
-                try {
-                    const { data: product } = await supabase.from('products').select('product_name').eq('id', id).single();
-                    const { error } = await supabase.from('products').delete().eq('id', id);
-                    if (error) throw error;
-                    showToast(`✅ Product "${product?.product_name}" deleted from Supabase!`);
-                    loadProducts();
-                    updateStatusBar();
-                    closeModal();
-                } catch (error) {
-                    showToast('Error deleting product: ' + error.message, true);
-                }
-            };
-            showModal('Delete this product? This action cannot be undone.');
-        };
-        
-        window.editProduct = async function(id) {
-            try {
-                const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
-                if (error) throw error;
-                document.getElementById('productId').value = data.id;
-                document.getElementById('sku').value = data.sku;
-                document.getElementById('product_name').value = data.product_name;
-                document.getElementById('category').value = data.category || '';
-                document.getElementById('price').value = data.price;
-                document.getElementById('gst').value = data.gst || 18;
-                document.getElementById('stock').value = data.stock;
-                document.getElementById('description').value = data.description || '';
-                document.getElementById('carat').value = data.carat || '';
-                document.getElementById('diamond_color').value = data.diamond_color || '';
-                document.getElementById('diamond_clarity').value = data.diamond_clarity || '';
-                document.getElementById('diamond_cut').value = data.diamond_cut || '';
-                document.getElementById('diamond_polish').value = data.diamond_polish || '';
-                document.getElementById('diamond_symmetry').value = data.diamond_symmetry || '';
-                document.getElementById('images_url_1').value = data.images_url_1 || '';
-                document.getElementById('images_url_2').value = data.images_url_2 || '';
-                document.getElementById('images_url_3').value = data.images_url_3 || '';
-                document.getElementById('video_url').value = data.video_url || '';
-                
-                // Try to extract uploaded images from URLs if they match storage pattern
-                uploadedImageUrls = [];
-                if (data.images_url_1 && data.images_url_1.includes('supabase.co/storage/v1/object/public/product-images/')) {
-                    uploadedImageUrls.push(data.images_url_1);
-                }
-                if (data.images_url_2 && data.images_url_2.includes('supabase.co/storage/v1/object/public/product-images/')) {
-                    uploadedImageUrls.push(data.images_url_2);
-                }
-                if (data.images_url_3 && data.images_url_3.includes('supabase.co/storage/v1/object/public/product-images/')) {
-                    uploadedImageUrls.push(data.images_url_3);
-                }
-                updateImagePreview(uploadedImageUrls);
-                updateMediaPreview();
-                
-                document.getElementById('formTitle').textContent = 'Edit Product';
-                document.getElementById('productForm').style.display = 'block';
-                document.getElementById('bulkUploadSection').style.display = 'none';
-                document.getElementById('productForm').scrollIntoView({ behavior: 'smooth' });
-            } catch (error) {
-                showToast('Error loading product details', true);
-            }
-        };
-        
-        async function loadProducts() {
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>Loading products from Supabase...</p></div>';
-            try {
-                const { data, error } = await supabase.from('products').select('*').order('id', { ascending: false });
-                if (error) throw error;
-                allProductsData = data || [];
-                await updateStatusBar();
-                if (!data || data.length === 0) {
-                    grid.innerHTML = '<div class="empty-state">✨ No products yet. Click "Add New Product" to get started.</div>';
-                    return;
-                }
-                let html = '';
-                for (const p of data) {
-                    const firstImage = p.images_url_1 || p.images_url_2 || p.video_url || 'https://via.placeholder.com/300x250?text=No+Image';
-                    const isVideo = firstImage && (firstImage.match(/\.(mp4|webm|mov|avi)$/i) || firstImage.includes('youtube.com') || firstImage.includes('vimeo.com'));
-                    const stockClass = p.stock <= 0 ? 'out-of-stock' : (p.stock < 10 ? 'low-stock' : 'in-stock');
-                    const stockText = p.stock <= 0 ? 'Out of Stock' : (p.stock < 10 ? `Low Stock (${p.stock})` : `In Stock (${p.stock})`);
-                    const { total } = calculateGST(p.price || 0, p.gst || 18);
-                    const hasDiamond = p.carat || p.diamond_color || p.diamond_clarity || p.diamond_cut;
-                    
-                    let diamondHtml = '';
-                    if (hasDiamond) {
-                        diamondHtml = `<div class="diamond-details">
-                            ${p.carat ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Carat</div><div class="diamond-detail-value">${p.carat}ct</div></div>` : ''}
-                            ${p.diamond_color ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Color</div><div class="diamond-detail-value">${p.diamond_color}</div></div>` : ''}
-                            ${p.diamond_clarity ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Clarity</div><div class="diamond-detail-value">${p.diamond_clarity}</div></div>` : ''}
-                            ${p.diamond_cut ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Cut</div><div class="diamond-detail-value">${p.diamond_cut}</div></div>` : ''}
-                            ${p.diamond_polish ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Polish</div><div class="diamond-detail-value">${p.diamond_polish}</div></div>` : ''}
-                            ${p.diamond_symmetry ? `<div class="diamond-detail-item"><div class="diamond-detail-label">Symmetry</div><div class="diamond-detail-value">${p.diamond_symmetry}</div></div>` : ''}
-                        </div>`;
-                    }
-                    
-                    let mediaCount = 0;
-                    if (p.images_url_1) mediaCount++;
-                    if (p.images_url_2) mediaCount++;
-                    if (p.images_url_3) mediaCount++;
-                    if (p.video_url) mediaCount++;
-                    
-                    html += `<div class="product-card">
-                        <div class="product-image-container">
-                            ${isVideo ? `<video class="product-image" src="${firstImage}" autoplay muted loop playsinline></video>` : `<img class="product-image" src="${firstImage}" alt="${escapeHtml(p.product_name)}" onerror="this.src='https://via.placeholder.com/300x250?text=No+Image'">`}
-                            ${mediaCount > 0 ? `<div class="media-badge">📸 ${mediaCount} media</div>` : ''}
-                        </div>
-                        <div class="product-info">
-                            <div class="product-name">
-                                ${escapeHtml(p.product_name)}
-                                <span class="gst-badge">GST ${p.gst || 18}%</span>
-                                ${hasDiamond ? '<span class="diamond-badge"><i class="fas fa-gem"></i> Diamond</span>' : ''}
-                            </div>
-                            <div class="product-sku">${p.sku} | ${p.category || 'Jewelry'}</div>
-                            ${diamondHtml}
-                            <div class="product-price">₹${total.toLocaleString()} <small>Incl. GST</small></div>
-                            <div class="product-stock ${stockClass}"><i class="fas ${p.stock <= 0 ? 'fa-times-circle' : (p.stock < 10 ? 'fa-exclamation-triangle' : 'fa-check-circle')}"></i> ${stockText}</div>
-                            <div class="card-actions"><button class="edit-btn" onclick="editProduct(${p.id})"><i class="fas fa-edit"></i> Edit</button><button class="delete-btn" onclick="deleteProduct(${p.id})"><i class="fas fa-trash-alt"></i> Delete</button></div>
-                        </div>
-                    </div>`;
-                }
-                grid.innerHTML = html;
-            } catch (error) {
-                console.error('Load error:', error);
-                grid.innerHTML = '<div class="empty-state">Error loading products. Please check your Supabase connection.</div>';
-            }
-        }
-        
-        // Download Sample CSV
-        window.downloadSampleCSV = function() {
-            const sampleData = [
-                { 
-                    'SKU': 'RING-001', 
-                    'Product Name': 'Diamond Solitaire Ring', 
-                    'Category': 'Rings', 
-                    'Price': 29999, 
-                    'GST': 18, 
-                    'Stock': 50, 
-                    'Carat': 1.00,
-                    'Diamond Color': 'D',
-                    'Diamond Clarity': 'VS1',
-                    'Diamond Cut': 'Excellent',
-                    'Diamond Polish': 'Excellent',
-                    'Diamond Symmetry': 'Excellent',
-                    'Images URL 1': 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400',
-                    'Images URL 2': 'https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=400',
-                    'Images URL 3': 'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=400',
-                    'Video URL': ''
-                },
-                { 
-                    'SKU': 'NECK-001', 
-                    'Product Name': 'Gold Chain Necklace', 
-                    'Category': 'Necklaces', 
-                    'Price': 45999, 
-                    'GST': 18, 
-                    'Stock': 30, 
-                    'Carat': '',
-                    'Diamond Color': '',
-                    'Diamond Clarity': '',
-                    'Diamond Cut': '',
-                    'Diamond Polish': '',
-                    'Diamond Symmetry': '',
-                    'Images URL 1': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400',
-                    'Images URL 2': '',
-                    'Images URL 3': '',
-                    'Video URL': ''
-                },
-                { 
-                    'SKU': 'VIDEO-001', 
-                    'Product Name': 'Diamond Necklace Video', 
-                    'Category': 'Necklaces', 
-                    'Price': 25999, 
-                    'GST': 18, 
-                    'Stock': 15, 
-                    'Carat': 0.75,
-                    'Diamond Color': 'G',
-                    'Diamond Clarity': 'VS2',
-                    'Diamond Cut': 'Excellent',
-                    'Diamond Polish': 'Excellent',
-                    'Diamond Symmetry': 'Excellent',
-                    'Images URL 1': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400',
-                    'Images URL 2': '',
-                    'Images URL 3': '',
-                    'Video URL': 'https://cdn.pixabay.com/video/2022/03/20/113134-693145691_large.mp4'
-                }
-            ];
-            const ws = XLSX.utils.json_to_sheet(sampleData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Sample Products');
-            ws['!cols'] = [{wch:12}, {wch:25}, {wch:12}, {wch:10}, {wch:6}, {wch:8}, {wch:8}, {wch:14}, {wch:14}, {wch:12}, {wch:12}, {wch:14}, {wch:50}, {wch:50}, {wch:50}, {wch:50}];
-            XLSX.writeFile(wb, `style_of_life_sample_products.xlsx`);
-            showToast('✅ Sample CSV downloaded!');
-        };
-        
-        // ========== BATCH PROCESSING ==========
-        window.handleBulkUpload = async function(input) {
-            const file = input.files[0];
-            if (!file) return;
-            
-            const bulkSection = document.getElementById('bulkUploadSection');
-            const progressDiv = document.getElementById('bulkProgress');
-            const progressFill = document.getElementById('bulkProgressFill');
-            const progressText = document.getElementById('bulkProgressText');
-            const batchInfo = document.getElementById('batchInfo');
-            const resultDiv = document.getElementById('bulkResult');
-            
-            bulkSection.style.display = 'block';
-            progressDiv.style.display = 'block';
-            progressFill.style.width = '5%';
-            progressText.textContent = 'Reading file...';
-            batchInfo.innerHTML = '';
-            resultDiv.innerHTML = '';
-            
-            const errors = [];
-            let insertedCount = 0, errorCount = 0, skipCount = 0;
-            
-            try {
-                const data = await file.arrayBuffer();
-                const workbook = XLSX.read(data);
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-                
-                if (!jsonData || jsonData.length === 0) throw new Error('No data found');
-                
-                const totalRows = jsonData.length;
-                progressFill.style.width = '10%';
-                progressText.textContent = `Processing ${totalRows} rows in batches of ${BATCH_SIZE}...`;
-                
-                const { data: existingProducts } = await supabase.from('products').select('sku');
-                const existingSkus = new Set(existingProducts?.map(p => p.sku) || []);
-                
-                const validProducts = [];
-                
-                for (let i = 0; i < jsonData.length; i++) {
-                    const row = jsonData[i];
-                    const sku = row['SKU'] || row['sku'] || '';
-                    const product_name = row['Product Name'] || row['product name'] || row['Product Name'] || '';
-                    const category = row['Category'] || row['category'] || '';
-                    const price = parseFloat(row['Price'] || row['price'] || 0);
-                    const gst = parseFloat(row['GST'] || row['gst'] || 18);
-                    const stock = parseInt(row['Stock'] || row['stock'] || 0);
-                    const description = row['Description'] || row['description'] || '';
-                    const carat = row['Carat'] || row['carat'] ? parseFloat(row['Carat'] || row['carat']) : null;
-                    const diamond_color = row['Diamond Color'] || row['diamond color'] || null;
-                    const diamond_clarity = row['Diamond Clarity'] || row['diamond clarity'] || null;
-                    const diamond_cut = row['Diamond Cut'] || row['diamond cut'] || null;
-                    const diamond_polish = row['Diamond Polish'] || row['diamond polish'] || null;
-                    const diamond_symmetry = row['Diamond Symmetry'] || row['diamond symmetry'] || null;
-                    const images_url_1 = row['Images URL 1'] || row['images url 1'] || null;
-                    const images_url_2 = row['Images URL 2'] || row['images url 2'] || null;
-                    const images_url_3 = row['Images URL 3'] || row['images url 3'] || null;
-                    const video_url = row['Video URL'] || row['video url'] || null;
-                    
-                    if (!sku || !product_name || !category || isNaN(price) || price <= 0) {
-                        errors.push(`Row ${i + 1}: Missing required fields (SKU, Product Name, Category, Price)`);
-                        errorCount++;
-                        continue;
-                    }
-                    
-                    if (existingSkus.has(sku)) {
-                        errors.push(`Row ${i + 1}: SKU "${sku}" already exists - skipped`);
-                        skipCount++;
-                        continue;
-                    }
-                    
-                    validProducts.push({ 
-                        sku, product_name, category, price, gst, stock, description,
-                        carat, diamond_color, diamond_clarity, diamond_cut, diamond_polish, diamond_symmetry,
-                        images_url_1, images_url_2, images_url_3, video_url
-                    });
-                    existingSkus.add(sku);
-                }
-                
-                const totalBatches = Math.ceil(validProducts.length / BATCH_SIZE);
-                
-                for (let i = 0; i < validProducts.length; i += BATCH_SIZE) {
-                    const batch = validProducts.slice(i, i + BATCH_SIZE);
-                    const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
-                    const percent = 10 + ((i + batch.length) / totalRows) * 85;
-                    progressFill.style.width = `${percent}%`;
-                    progressText.textContent = `Inserting batch ${currentBatch}/${totalBatches} (${batch.length} products)...`;
-                    batchInfo.innerHTML = `📦 Batch ${currentBatch}/${totalBatches}: ${batch.length} products`;
-                    
-                    const { error } = await supabase.from('products').insert(batch);
-                    if (error) {
-                        errors.push(`Batch ${currentBatch}: ${error.message}`);
-                        errorCount += batch.length;
-                    } else {
-                        insertedCount += batch.length;
-                    }
-                    
-                    await new Promise(r => setTimeout(r, 100));
-                }
-                
-                progressFill.style.width = '100%';
-                progressText.textContent = `✅ Complete! Inserted ${insertedCount} products in ${totalBatches} batches`;
-                batchInfo.innerHTML = `✨ Total batches: ${totalBatches} | Products per batch: ${BATCH_SIZE}`;
-                
-                let errorHtml = '';
-                if (errors.length > 0) {
-                    errorHtml = `<div class="error-log"><strong>⚠️ Issues (${errors.length}):</strong>${errors.slice(0, 15).map(e => `<div class="error-item">${escapeHtml(e)}</div>`).join('')}${errors.length > 15 ? `<div>... and ${errors.length - 15} more</div>` : ''}</div>`;
-                }
-                
-                resultDiv.innerHTML = `<div style="background: ${insertedCount > 0 ? '#d4edda' : '#f8d7da'}; padding: 15px; border-radius: 8px; margin-top: 10px;">
-                    <strong>📊 Batch Import Summary</strong><br>
-                    ✅ Successfully inserted: ${insertedCount} products<br>
-                    ❌ Failed: ${errorCount}<br>
-                    ⏭️ Duplicates skipped: ${skipCount}<br>
-                    📦 Total rows in file: ${totalRows}<br>
-                    ⚡ Processed in ${totalBatches} batches
-                    ${errorHtml}
-                </div>`;
-                
-                if (insertedCount > 0) {
-                    loadProducts();
-                    showToast(`✅ ${insertedCount} products added to Supabase!`);
-                }
-                
-                setTimeout(() => { progressDiv.style.display = 'none'; }, 5000);
                 
             } catch (error) {
-                progressText.textContent = 'Error processing file';
-                resultDiv.innerHTML = `<div style="background: #f8d7da; padding: 15px; border-radius: 8px;"><strong>❌ Error:</strong> ${escapeHtml(error.message)}</div>`;
-                showToast('Error processing file: ' + error.message, true);
+                console.error('Save error:', error);
+                showToast('❌ Error: ' + error.message, true);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = isEditing ? '<i class="fas fa-save"></i> Update Product' : '<i class="fas fa-plus"></i> Add Product';
             }
-            input.value = '';
-        };
+        });
         
-        const bulkArea = document.getElementById('bulkUploadArea');
-        if (bulkArea) {
-            bulkArea.addEventListener('click', () => document.getElementById('bulkFileInput').click());
-            bulkArea.addEventListener('dragover', (e) => { e.preventDefault(); bulkArea.classList.add('drag-over'); });
-            bulkArea.addEventListener('dragleave', () => { bulkArea.classList.remove('drag-over'); });
-            bulkArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                bulkArea.classList.remove('drag-over');
-                const file = e.dataTransfer.files[0];
-                if (file && (file.name.endsWith('.csv') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
-                    const input = document.getElementById('bulkFileInput');
-                    const dt = new DataTransfer();
-                    dt.items.add(file);
-                    input.files = dt.files;
-                    handleBulkUpload(input);
-                } else {
-                    showToast('Please upload an Excel or CSV file', true);
-                }
-            });
-        }
-        
-        document.getElementById('images_url_1')?.addEventListener('input', updateMediaPreview);
-        document.getElementById('images_url_2')?.addEventListener('input', updateMediaPreview);
-        document.getElementById('images_url_3')?.addEventListener('input', updateMediaPreview);
-        document.getElementById('video_url')?.addEventListener('input', updateMediaPreview);
-        
-        function showModal(message) {
-            document.getElementById('modalMessage').innerHTML = message;
-            document.getElementById('confirmModal').classList.add('active');
-        }
-        
+        // ========== FIXED: Close Modal ==========
         window.closeModal = function() {
-            document.getElementById('confirmModal').classList.remove('active');
-            pendingAction = null;
+            document.getElementById('productModal').classList.remove('active');
+            document.getElementById('productForm').reset();
+            document.getElementById('editProductId').value = '';
         };
         
-        window.confirmAction = function(confirmed) {
-            if (confirmed && pendingAction) pendingAction();
-            closeModal();
-        };
-        
-        window.toggleForm = function() {
-            const form = document.getElementById('productForm');
-            const bulk = document.getElementById('bulkUploadSection');
-            if (form.style.display === 'none' || form.style.display === '') {
-                resetForm();
-                form.style.display = 'block';
-                bulk.style.display = 'none';
-            } else {
-                form.style.display = 'none';
-            }
-        };
-        
+        // ========== FIXED: Logout ==========
         window.logout = function() {
             sessionStorage.removeItem('adminLoggedIn');
-            window.location.href = 'login.html';
+            showToast('Logged out successfully');
+            setTimeout(() => window.location.href = 'login.html', 500);
         };
         
+        // ========== FIXED: Close modal on outside click ==========
+        window.onclick = function(event) {
+            const modal = document.getElementById('productModal');
+            if (event.target === modal) closeModal();
+        };
+        
+        // ========== FIXED: Keyboard shortcuts ==========
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+        
+        // Initialize
+        initTheme();
         loadProducts();
+        
+        console.log('✅ Product Management System Active');
+        console.log('   - Fields: product_name, sku, price, gst, stock, category, description, image1_url');
+        console.log('   - CRUD Operations: Create, Read, Update, Delete');
     </script>
 </body>
 </html>
