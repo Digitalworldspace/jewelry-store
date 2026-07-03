@@ -3,7 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    
+    <!-- ========== META PIXEL CODE - Facebook Ads Tracking ========== -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '939604622471127');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=939604622471127&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+    
     <title>My Account - Style Of Life</title>
+    <meta name="description" content="Manage your Style Of Life account. View orders, track shipments, and update profile information.">
+    <meta name="robots" content="noindex, follow">
+    <link rel="canonical" href="https://styleoflife987-hub.github.io/jewelry-store/customer-portal.html">
+    
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="js/config.js"></script>
@@ -146,6 +169,53 @@
             color: var(--gray);
         }
         
+        .order-list {
+            text-align: left;
+            margin-top: 20px;
+        }
+        
+        .order-item {
+            background: var(--white-light);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .order-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .order-id {
+            font-weight: 600;
+            color: var(--black);
+        }
+        
+        .order-status {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 40px;
+        }
+        
+        .order-status.pending { background: #fff3cd; color: #856404; }
+        .order-status.processing { background: #cce5ff; color: #004085; }
+        .order-status.shipped { background: #d4edda; color: #155724; }
+        .order-status.delivered { background: var(--gold); color: var(--black); }
+        
+        .order-total {
+            font-weight: 700;
+            color: var(--gold);
+        }
+        
+        .order-date {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -193,6 +263,25 @@
             color: white;
         }
         
+        .pixel-test-btn {
+            position: fixed;
+            bottom: 140px;
+            right: 20px;
+            background: #1877F2;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        .pixel-test-btn:hover { opacity: 1; }
+        
         @keyframes slideUp {
             from { opacity: 0; transform: translateX(-50%) translateY(20px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -206,6 +295,11 @@
     </style>
 </head>
 <body>
+    <!-- Pixel Test Button -->
+    <div class="pixel-test-btn" onclick="testFacebookPixel()" title="Test Facebook Pixel">
+        <i class="fab fa-facebook-f"></i>
+    </div>
+    
     <div class="account-container">
         <div id="accountContent"></div>
     </div>
@@ -253,6 +347,18 @@
             setTimeout(() => toast.remove(), 3000);
         }
         
+        // ========== FACEBOOK PIXEL TEST FUNCTION ==========
+        window.testFacebookPixel = function() {
+            if (typeof fbq !== 'undefined') {
+                console.log('✅ Facebook Pixel is loaded!');
+                fbq('track', 'CustomEvent', {event_name: 'PixelTest'});
+                alert('✅ Facebook Pixel is working! Check Meta Events Manager for test event.');
+            } else {
+                console.log('❌ Facebook Pixel NOT loaded');
+                alert('❌ Facebook Pixel is NOT loaded. Check your internet connection.');
+            }
+        };
+        
         async function getProfile(userId) {
             try {
                 const { data, error } = await supabase
@@ -284,6 +390,14 @@
                 if (error) throw error;
                 
                 if (data.user) {
+                    // Track Login event
+                    if (typeof fbq !== 'undefined') {
+                        fbq('track', 'Login', {
+                            method: 'email'
+                        });
+                        console.log('✅ Facebook Login Event Tracked');
+                    }
+                    
                     const profile = await getProfile(data.user.id);
                     currentUser = { 
                         ...data.user, 
@@ -291,6 +405,7 @@
                     };
                     localStorage.setItem('customerUser', JSON.stringify(currentUser));
                     showToast('Login successful!');
+                    await renderDashboard();
                     return true;
                 }
                 return false;
@@ -301,6 +416,12 @@
         }
         
         async function handleLogout() {
+            // Track Logout event
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'Logout');
+                console.log('✅ Facebook Logout Event Tracked');
+            }
+            
             await supabase.auth.signOut();
             localStorage.removeItem('customerUser');
             currentUser = null;
@@ -318,6 +439,16 @@
                     .order('created_at', { ascending: false });
                 
                 if (error) throw error;
+                
+                // Track ViewOrders event
+                if (typeof fbq !== 'undefined' && data && data.length > 0) {
+                    fbq('track', 'CustomEvent', {
+                        event_name: 'ViewOrders',
+                        num_orders: data.length
+                    });
+                    console.log('✅ Facebook ViewOrders Event Tracked');
+                }
+                
                 return data || [];
             } catch (error) {
                 return [];
@@ -331,6 +462,35 @@
             const totalSpent = orders.reduce((sum, o) => sum + (o.total || 0), 0);
             const pendingOrders = orders.filter(o => o.status === 'pending' || o.status === 'Pending').length;
             
+            let ordersHtml = '';
+            if (orders.length > 0) {
+                ordersHtml = '<div class="order-list"><h4 style="text-align:left; margin-bottom:15px;">Recent Orders</h4>';
+                for (const order of orders.slice(0, 5)) {
+                    const statusClass = (order.status || 'pending').toLowerCase();
+                    ordersHtml += `
+                        <div class="order-item">
+                            <div class="order-item-header">
+                                <span class="order-id">#${order.order_id || order.id}</span>
+                                <span class="order-status ${statusClass}">${order.status || 'Pending'}</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between;">
+                                <span class="order-date">${new Date(order.created_at).toLocaleDateString()}</span>
+                                <span class="order-total">₹${(order.total || 0).toLocaleString()}</span>
+                            </div>
+                            <div style="font-size:12px; color:var(--gray); margin-top:4px;">
+                                ${order.items ? JSON.parse(order.items).length : 0} items
+                            </div>
+                        </div>
+                    `;
+                }
+                if (orders.length > 5) {
+                    ordersHtml += `<div style="text-align:center; margin-top:10px; font-size:13px; color:var(--gray);">+ ${orders.length - 5} more orders</div>`;
+                }
+                ordersHtml += '</div>';
+            } else {
+                ordersHtml = `<div style="text-align:center; padding:20px; color:var(--gray);"><i class="fas fa-box-open" style="font-size:40px; margin-bottom:10px; display:block;"></i>No orders yet. Start shopping!</div>`;
+            }
+            
             container.innerHTML = `
                 <div class="account-box">
                     <div class="dashboard-header">
@@ -342,6 +502,7 @@
                         <div class="stat-card"><div class="stat-number">₹${totalSpent.toLocaleString()}</div><div class="stat-label">Total Spent</div></div>
                         <div class="stat-card"><div class="stat-number">${pendingOrders}</div><div class="stat-label">Pending Orders</div></div>
                     </div>
+                    ${ordersHtml}
                     <div style="margin-top: 20px;">
                         <a data-page="shop" style="background: var(--gold); color: var(--black); padding: 12px 30px; border-radius: 40px; text-decoration: none; display: inline-block; font-weight: 600;">Continue Shopping →</a>
                     </div>
@@ -379,14 +540,18 @@
                 const btn = document.getElementById('loginBtn');
                 btn.disabled = true;
                 btn.textContent = 'Logging in...';
-                const success = await handleLogin(email, password);
-                if (success) await renderDashboard();
+                await handleLogin(email, password);
                 btn.disabled = false;
                 btn.textContent = 'Login →';
             });
             
             document.getElementById('showRegisterBtn')?.addEventListener('click', (e) => {
                 e.preventDefault();
+                // Track Registration Start event
+                if (typeof fbq !== 'undefined') {
+                    fbq('track', 'CustomEvent', {event_name: 'RegistrationStart'});
+                    console.log('✅ Facebook RegistrationStart Event Tracked');
+                }
                 window.location.href = 'register.html';
             });
             
@@ -395,14 +560,52 @@
             });
         }
         
+        // Check for existing session
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
             const profile = await getProfile(user.id);
             currentUser = { ...user, profile: profile || { full_name: user.email?.split('@')[0], phone: '' } };
+            localStorage.setItem('customerUser', JSON.stringify(currentUser));
             await renderDashboard();
+            
+            // Track Successful Login on page load if already logged in
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'CustomEvent', {event_name: 'LoggedIn'});
+                console.log('✅ Facebook LoggedIn Event Tracked');
+            }
         } else {
+            // Check localStorage for cached user
+            const cachedUser = localStorage.getItem('customerUser');
+            if (cachedUser) {
+                try {
+                    const parsed = JSON.parse(cachedUser);
+                    if (parsed && parsed.id) {
+                        currentUser = parsed;
+                        // Verify session is still valid
+                        const { data: { user: verifyUser } } = await supabase.auth.getUser();
+                        if (verifyUser) {
+                            await renderDashboard();
+                            return;
+                        } else {
+                            localStorage.removeItem('customerUser');
+                            currentUser = null;
+                        }
+                    }
+                } catch (e) {
+                    localStorage.removeItem('customerUser');
+                }
+            }
             renderLoginRegister();
         }
+        
+        console.log('🎯 Facebook Pixel Active - Events Tracked:');
+        console.log('   - PageView (auto on load)');
+        console.log('   - Login (when user logs in)');
+        console.log('   - Logout (when user logs out)');
+        console.log('   - LoggedIn (on page load if already logged in)');
+        console.log('   - RegistrationStart (when registration page clicked)');
+        console.log('   - ViewOrders (when orders are loaded)');
+        console.log('   - Pixel Test Button: Click the blue Facebook icon to test');
     </script>
 </body>
 </html>
