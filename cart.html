@@ -3,7 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    
+    <!-- ========== META PIXEL CODE - Facebook Ads Tracking ========== -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '939604622471127');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=939604622471127&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+    
     <title>Style Of Life - Cart | Shopping Bag</title>
+    <meta name="description" content="View your shopping cart at Style Of Life. Review your jewelry selection before checkout.">
+    <meta name="robots" content="noindex, follow">
+    <link rel="canonical" href="https://styleoflife987-hub.github.io/jewelry-store/cart.html">
+    
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
@@ -560,6 +583,26 @@
             from { opacity: 0; transform: translateX(-50%) translateY(20px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
+        
+        /* Pixel Test Button */
+        .pixel-test-btn {
+            position: fixed;
+            bottom: 140px;
+            right: 20px;
+            background: #1877F2;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        .pixel-test-btn:hover { opacity: 1; }
     </style>
 </head>
 <body>
@@ -582,6 +625,11 @@
             <span class="gemini-text">Style Of Life</span>
             <span class="gemini-sub">LUXURY JEWELRY</span>
         </div>
+    </div>
+    
+    <!-- Pixel Test Button -->
+    <div class="pixel-test-btn" onclick="testFacebookPixel()" title="Test Facebook Pixel">
+        <i class="fab fa-facebook-f"></i>
     </div>
     
     <!-- Cart Content -->
@@ -898,9 +946,22 @@
                 const { data, error } = await supabase.from('carts').select('items').eq('session_id', sessionId).maybeSingle();
                 if (error) throw error;
                 let items = data?.items || [];
+                const removedItem = items.find(i => i.id === id);
                 items = items.filter(i => i.id !== id);
                 const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
                 await supabase.from('carts').upsert({ session_id: sessionId, items: items, total: total, updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
+                
+                // Track RemoveFromCart event
+                if (typeof fbq !== 'undefined' && removedItem) {
+                    fbq('track', 'RemoveFromCart', {
+                        content_ids: [id],
+                        content_name: removedItem.name,
+                        value: removedItem.price,
+                        currency: 'INR'
+                    });
+                    console.log('✅ Facebook RemoveFromCart Event Tracked:', removedItem.name);
+                }
+                
                 showToast('Item removed');
                 await loadCart();
                 await updateCartPreview();
@@ -912,6 +973,17 @@
         window.clearCart = async function() {
             if (!confirm('Clear all items from cart?')) return;
             try {
+                // Track ClearCart event
+                if (typeof fbq !== 'undefined' && currentCart.length > 0) {
+                    fbq('track', 'CustomEvent', {
+                        event_name: 'ClearCart',
+                        content_ids: currentCart.map(i => i.id),
+                        value: currentCart.reduce((s, i) => s + (i.price * i.quantity), 0),
+                        currency: 'INR'
+                    });
+                    console.log('✅ Facebook ClearCart Event Tracked');
+                }
+                
                 await supabase.from('carts').upsert({ session_id: sessionId, items: [], total: 0, updated_at: new Date().toISOString() }, { onConflict: 'session_id' });
                 showToast('Cart cleared');
                 await loadCart();
@@ -922,6 +994,18 @@
         };
         
         window.proceedToCheckout = function() {
+            // Track InitiateCheckout event
+            if (typeof fbq !== 'undefined' && currentCart.length > 0) {
+                const totalValue = currentCart.reduce((s, i) => s + (i.price * i.quantity), 0);
+                fbq('track', 'InitiateCheckout', {
+                    content_ids: currentCart.map(i => i.id),
+                    content_type: 'product',
+                    value: totalValue,
+                    currency: 'INR',
+                    num_items: currentCart.reduce((s, i) => s + i.quantity, 0)
+                });
+                console.log('✅ Facebook InitiateCheckout Event Tracked');
+            }
             navigateTo('checkout');
         };
         
@@ -986,7 +1070,7 @@
         function completeSwipe() {
             resetSwipe();
             closeSwipeCart();
-            navigateTo('checkout');
+            proceedToCheckout();
         }
         
         let touchStartY = 0;
@@ -1066,9 +1150,40 @@
             return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : (m === '>' ? '&gt;' : m)));
         }
         
+        // ========== FACEBOOK PIXEL TEST FUNCTION ==========
+        window.testFacebookPixel = function() {
+            if (typeof fbq !== 'undefined') {
+                console.log('✅ Facebook Pixel is loaded!');
+                fbq('track', 'CustomEvent', {event_name: 'PixelTest'});
+                alert('✅ Facebook Pixel is working! Check Meta Events Manager for test event.');
+            } else {
+                console.log('❌ Facebook Pixel NOT loaded');
+                alert('❌ Facebook Pixel is NOT loaded. Check your internet connection.');
+            }
+        };
+        
+        // ========== VIEW CART EVENT TRACKING ==========
+        setTimeout(() => {
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'ViewCart');
+                console.log('✅ Facebook ViewCart Event Tracked');
+                console.log('🎯 Facebook Pixel Status: LOADED - Pixel ID: 939604622471127');
+            } else {
+                console.log('❌ Facebook Pixel Status: NOT LOADED');
+            }
+        }, 1000);
+        
         // Initialize
         updateCartPreview();
         loadCart();
+        
+        console.log('🎯 Facebook Pixel Active - Events Tracked:');
+        console.log('   - PageView (auto on load)');
+        console.log('   - ViewCart (when cart page loads)');
+        console.log('   - RemoveFromCart (when item removed)');
+        console.log('   - ClearCart (when cart cleared)');
+        console.log('   - InitiateCheckout (when checkout clicked)');
+        console.log('   - Cart Toggle: Click cart icon to open/close');
     </script>
 </body>
 </html>
