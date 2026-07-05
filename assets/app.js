@@ -133,7 +133,6 @@
 
     grid.querySelectorAll(".product-card").forEach((card) => {
       card.addEventListener("click", (e) => {
-        // Don't open modal if clicking the order button
         if (e.target.closest(".product-card-order-btn")) return;
         const p = allProducts.find((x) => String(x.id) === card.dataset.id);
         if (p) openModal(p);
@@ -214,7 +213,6 @@
     document.body.style.overflow = "";
   };
 
-  // Close order modal on backdrop click
   document.getElementById("orderModalBackdrop").addEventListener("click", function(e) {
     if (e.target === this) closeOrderModal();
   });
@@ -248,7 +246,7 @@
       product_price: productPrice,
       quantity: quantity,
       total_amount: productPrice * quantity,
-      payment_method: document.getElementById("paymentMethod").value,
+      payment_method: "prepaid",
       notes: document.getElementById("orderNotes").value.trim(),
       status: "pending"
     };
@@ -262,12 +260,10 @@
 
       if (error) throw error;
 
-      // Show success
       orderForm.style.display = "none";
       document.getElementById("orderSuccess").style.display = "block";
       document.getElementById("orderNumberDisplay").textContent = data.order_number;
 
-      // Send WhatsApp notification
       sendWhatsAppNotification(data);
 
     } catch (err) {
@@ -337,7 +333,6 @@
     console.warn("Realtime subscription error:", err);
   }
 
-  // Newsletter form
   const newsletterForm = document.getElementById("newsletterForm");
   if (newsletterForm) {
     newsletterForm.addEventListener("submit", (e) => {
