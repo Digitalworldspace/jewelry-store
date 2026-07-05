@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Products - Jewellery Store</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: Arial;
+    background: #fff;
+  }
+
+  header {
+    background: #111;
+    color: gold;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .layout {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .filters {
+    width: 250px;
+    border: 1px solid #eee;
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  .products {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+  }
+
+  .card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+
+  .card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .price {
+    color: green;
+    font-weight: bold;
+  }
+
+  button {
+    background: gold;
+    border: none;
+    padding: 6px 10px;
+    margin-top: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  .filter-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  input, select {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 6px;
+  }
+
+  footer {
+    background: #111;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+  }
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <div>Jewellery Store</div>
+  <div>Cart</div>
+</header>
+
+<div class="layout">
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <div class="filter-title">Filters</div>
+
+    <input type="text" placeholder="Search..." id="searchBox">
+
+    <select id="category">
+      <option>All</option>
+      <option>Necklace</option>
+      <option>Earrings</option>
+      <option>Ring</option>
+      <option>Bangles</option>
+    </select>
+
+    <input type="number" placeholder="Min Price" id="minPrice">
+    <input type="number" placeholder="Max Price" id="maxPrice">
+
+    <button onclick="applyFilter()">Apply</button>
+  </div>
+
+  <!-- PRODUCTS -->
+  <div class="products" id="productList"></div>
+
+</div>
+
+<footer>
+  © 2026 Jewellery Store
+</footer>
+
+<script>
+
+const API_URL = "https://your-backend.com/api/products";
+
+let allProducts = [];
+
+async function loadProducts() {
+
+  // Dummy backend data
+  allProducts = [
+    {name:"Gold Necklace", price:1200, image:"https://via.placeholder.com/300", category:"Necklace"},
+    {name:"Diamond Earrings", price:800, image:"https://via.placeholder.com/300", category:"Earrings"},
+    {name:"Bridal Ring", price:500, image:"https://via.placeholder.com/300", category:"Ring"},
+    {name:"Gold Bangles", price:1500, image:"https://via.placeholder.com/300", category:"Bangles"}
+  ];
+
+  render(allProducts);
+}
+
+function render(products) {
+  const container = document.getElementById("productList");
+  container.innerHTML = "";
+
+  products.forEach(p => {
+    container.innerHTML += `
+      <div class="card">
+        <img src="${p.image}" />
+        <h4>${p.name}</h4>
+        <div class="price">₹${p.price}</div>
+        <button onclick="openProduct()">View</button>
+        <button>Add</button>
+      </div>
+    `;
+  });
+}
+
+function applyFilter() {
+  let search = document.getElementById("searchBox").value.toLowerCase();
+  let category = document.getElementById("category").value;
+  let min = document.getElementById("minPrice").value;
+  let max = document.getElementById("maxPrice").value;
+
+  let filtered = allProducts.filter(p => {
+
+    let matchSearch = p.name.toLowerCase().includes(search);
+    let matchCategory = category === "All" || p.category === category;
+    let matchMin = !min || p.price >= min;
+    let matchMax = !max || p.price <= max;
+
+    return matchSearch && matchCategory && matchMin && matchMax;
+  });
+
+  render(filtered);
+}
+
+function openProduct() {
+  window.location.href = "product.html";
+}
+
+loadProducts();
+
+</script>
+
+</body>
+</html>

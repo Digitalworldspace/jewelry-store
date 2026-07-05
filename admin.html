@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel - Jewellery Store</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: Arial;
+    display: flex;
+    background: #f4f4f4;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 220px;
+    background: #111;
+    color: gold;
+    height: 100vh;
+    padding: 20px;
+  }
+
+  .sidebar h2 {
+    text-align: center;
+  }
+
+  .sidebar a {
+    display: block;
+    color: #fff;
+    text-decoration: none;
+    margin: 10px 0;
+    padding: 8px;
+    border-radius: 5px;
+  }
+
+  .sidebar a:hover {
+    background: gold;
+    color: #111;
+  }
+
+  /* MAIN */
+  .main {
+    flex: 1;
+    padding: 20px;
+  }
+
+  .card {
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+
+  input, textarea, select {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+
+  button {
+    padding: 10px;
+    background: gold;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 5px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+  }
+
+  table th, table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+
+  table th {
+    background: #111;
+    color: gold;
+  }
+
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>Admin</h2>
+  <a onclick="showSection('dashboard')">Dashboard</a>
+  <a onclick="showSection('products')">Products</a>
+  <a onclick="showSection('orders')">Orders</a>
+  <a onclick="showSection('add')">Add Product</a>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+    <div class="card">
+      <h3>Welcome Admin</h3>
+      <p>Manage your Jewellery Store here</p>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <div id="products" class="card" style="display:none;">
+    <h3>Products List</h3>
+
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Category</th>
+        <th>Action</th>
+      </tr>
+
+      <tr>
+        <td>Gold Necklace</td>
+        <td>₹1200</td>
+        <td>Necklace</td>
+        <td><button>Delete</button></td>
+      </tr>
+
+    </table>
+  </div>
+
+  <!-- ORDERS -->
+  <div id="orders" class="card" style="display:none;">
+    <h3>Orders</h3>
+
+    <table>
+      <tr>
+        <th>Order ID</th>
+        <th>Customer</th>
+        <th>Total</th>
+        <th>Status</th>
+      </tr>
+
+      <tr>
+        <td>#101</td>
+        <td>John</td>
+        <td>₹2000</td>
+        <td>Pending</td>
+      </tr>
+
+    </table>
+  </div>
+
+  <!-- ADD PRODUCT -->
+  <div id="add" class="card" style="display:none;">
+    <h3>Add Product</h3>
+
+    <input type="text" placeholder="Product Name">
+    <input type="number" placeholder="Price">
+    <input type="text" placeholder="Category">
+    <textarea placeholder="Description"></textarea>
+    <input type="text" placeholder="Image URL">
+
+    <button onclick="addProduct()">Add Product</button>
+  </div>
+
+</div>
+
+<script>
+
+function showSection(id) {
+  document.querySelectorAll('.main > div').forEach(div => {
+    div.style.display = "none";
+  });
+
+  document.getElementById(id).style.display = "block";
+}
+
+function addProduct() {
+  alert("Product added (API call here)");
+
+  /*
+  fetch("https://your-backend.com/api/products", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      name, price, category, description, image
+    })
+  });
+  */
+}
+
+</script>
+
+</body>
+</html>
