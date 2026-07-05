@@ -45,6 +45,7 @@
   let allProducts = [];
   let allOrders = [];
   let currentUser = null;
+  let isInitialized = false;
 
   // ===== TOAST SYSTEM =====
   function showToast(title, message, type = "success") {
@@ -73,9 +74,11 @@
         reader.onload = function(e) {
           previewImage.src = e.target.result;
           filePreview.style.display = "block";
-          fileUploadWrapper.querySelector(".upload-text").textContent = file.name;
-          fileUploadWrapper.querySelector(".upload-hint").textContent = 
-            `${(file.size / 1024).toFixed(1)} KB · ${file.type.split('/')[1].toUpperCase()}`;
+          if (fileUploadWrapper) {
+            fileUploadWrapper.querySelector(".upload-text").textContent = file.name;
+            fileUploadWrapper.querySelector(".upload-hint").textContent = 
+              `${(file.size / 1024).toFixed(1)} KB · ${file.type.split('/')[1].toUpperCase()}`;
+          }
         };
         reader.readAsDataURL(file);
       }
@@ -130,7 +133,7 @@
       document.querySelectorAll(".admin-panel").forEach(el => el.style.display = "block");
     }
 
-    if (tabId === "orders" && loadOrders) {
+    if (tabId === "orders" && typeof loadOrders === 'function') {
       loadOrders();
     }
 
@@ -147,7 +150,7 @@
         this.classList.add("active");
         return;
       }
-      switchTab(tab);
+      window.switchTab(tab);
     });
   });
 
@@ -158,23 +161,13 @@
       
       if (error) {
         console.error("Session error:", error);
-        showSessionError();
+        showLoginScreen();
         return;
       }
 
       if (session) {
         currentUser = session.user;
-        loginScreen.style.display = "none";
-        dashboardContent.style.display = "block";
-        logoutBtn.style.display = "inline-block";
-        userBadge.style.display = "flex";
-        userEmail.textContent = session.user.email;
-        userAvatar.textContent = session.user.email.charAt(0).toUpperCase();
-        
-        // Load data
-        if (typeof loadProducts === 'function') loadProducts();
-        if (typeof loadOrders === 'function') loadOrders();
-        if (typeof updateStats === 'function') updateStats();
+        showDashboard();
       } else {
         showLoginScreen();
       }
@@ -182,6 +175,22 @@
       console.error("Session refresh error:", err);
       showLoginScreen();
     }
+  }
+
+  function showDashboard() {
+    loginScreen.style.display = "none";
+    dashboardContent.style.display = "block";
+    logoutBtn.style.display = "inline-block";
+    userBadge.style.display = "flex";
+    userEmail.textContent = currentUser.email;
+    userAvatar.textContent = currentUser.email.charAt(0).toUpperCase();
+    
+    // Load data
+    loadProducts();
+    loadOrders();
+    updateStats();
+    
+    isInitialized = true;
   }
 
   function showLoginScreen() {
@@ -194,53 +203,25 @@
     loginMsg.style.display = "none";
     loginBtn.disabled = false;
     loginBtn.textContent = "Sign In";
-    loginForm.reset();
-  }
-
-  function showSessionError() {
-    loginScreen.style.display = "flex";
-    dashboardContent.style.display = "none";
-    logoutBtn.style.display = "none";
-    userBadge.style.display = "none";
-    loginMsg.textContent = "Session error. Please sign in again.";
-    loginMsg.className = "login-msg error";
-    loginMsg.style.display = "block";
-    loginBtn.disabled = false;
-    loginBtn.textContent = "Sign In";
+    if (loginForm) loginForm.reset();
+    isInitialized = false;
   }
 
   // ===== LOGIN =====
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    
-    loginMsg.className = "login-msg";
-    loginMsg.style.display = "none";
-    loginBtn.disabled = true;
-    loginBtn.textContent = "Signing in…";
-
-    const email = loginEmail.value.trim();
-    const password = loginPassword.value;
-
-    if (!email || !password) {
-      loginMsg.textContent = "Please enter both email and password.";
-      loginMsg.className = "login-msg error";
-      loginMsg.style.display = "block";
-      loginBtn.disabled = false;
-      loginBtn.textContent = "Sign In";
-      return;
-    }
-
-    try {
-      console.log("Attempting login for:", email);
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
       
-      const { data, error } = await window.supabaseClient.auth.signInWithPassword({ 
-        email, 
-        password 
-      });
+      loginMsg.className = "login-msg";
+      loginMsg.style.display = "none";
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Signing in…";
 
-      if (error) {
-        console.error("Login error:", error);
-        loginMsg.textContent = error.message || "Invalid email or password. Please try again.";
+      const email = loginEmail.value.trim();
+      const password = loginPassword.value;
+
+      if (!email || !password) {
+        loginMsg.textContent = "Please enter both email and password.";
         loginMsg.className = "login-msg error";
         loginMsg.style.display = "block";
         loginBtn.disabled = false;
@@ -248,43 +229,67 @@
         return;
       }
 
-      if (data && data.session) {
-        console.log("Login successful:", data.session.user.email);
-        loginMsg.textContent = "✓ Signed in successfully!";
-        loginMsg.className = "login-msg success";
-        loginMsg.style.display = "block";
-        loginForm.reset();
-        showToast("Welcome!", "Signed in successfully.");
-        setTimeout(() => refreshSessionUI(), 500);
-      } else {
-        loginMsg.textContent = "Login failed. Please try again.";
+      try {
+        console.log("Attempting login for:", email);
+        
+        const { data, error } = await window.supabaseClient.auth.signInWithPassword({ 
+          email, 
+          password 
+        });
+
+        if (error) {
+          console.error("Login error:", error);
+          loginMsg.textContent = error.message || "Invalid email or password. Please try again.";
+          loginMsg.className = "login-msg error";
+          loginMsg.style.display = "block";
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Sign In";
+          return;
+        }
+
+        if (data && data.session) {
+          console.log("Login successful:", data.session.user.email);
+          currentUser = data.session.user;
+          loginMsg.textContent = "✓ Signed in successfully!";
+          loginMsg.className = "login-msg success";
+          loginMsg.style.display = "block";
+          loginForm.reset();
+          showToast("Welcome!", "Signed in successfully.");
+          setTimeout(() => {
+            showDashboard();
+          }, 500);
+        } else {
+          loginMsg.textContent = "Login failed. Please try again.";
+          loginMsg.className = "login-msg error";
+          loginMsg.style.display = "block";
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Sign In";
+        }
+      } catch (err) {
+        console.error("Login exception:", err);
+        loginMsg.textContent = "Connection error. Please check your internet and try again.";
         loginMsg.className = "login-msg error";
         loginMsg.style.display = "block";
         loginBtn.disabled = false;
         loginBtn.textContent = "Sign In";
       }
-    } catch (err) {
-      console.error("Login exception:", err);
-      loginMsg.textContent = "Connection error. Please check your internet and try again.";
-      loginMsg.className = "login-msg error";
-      loginMsg.style.display = "block";
-      loginBtn.disabled = false;
-      loginBtn.textContent = "Sign In";
-    }
-  });
+    });
+  }
 
   // ===== LOGOUT =====
-  logoutBtn.addEventListener("click", async () => {
-    try {
-      const { error } = await window.supabaseClient.auth.signOut();
-      if (error) throw error;
-      showToast("👋 Logged Out", "You have been signed out successfully.");
-      showLoginScreen();
-    } catch (err) {
-      console.error("Logout error:", err);
-      showToast("Error", err.message, "error");
-    }
-  });
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+      try {
+        const { error } = await window.supabaseClient.auth.signOut();
+        if (error) throw error;
+        showToast("👋 Logged Out", "You have been signed out successfully.");
+        showLoginScreen();
+      } catch (err) {
+        console.error("Logout error:", err);
+        showToast("Error", err.message, "error");
+      }
+    });
+  }
 
   // ===== PRODUCT FUNCTIONS =====
   function escapeHtml(str) {
@@ -308,7 +313,7 @@
       const badge = document.getElementById("pBadge").value || null;
       const category = document.getElementById("pCategory").value.trim();
       const description = document.getElementById("pDesc").value.trim();
-      const file = fileInput.files[0];
+      const file = fileInput ? fileInput.files[0] : null;
 
       if (!name || !price || !file) {
         uploadMsg.textContent = "Name, price and an image are required.";
@@ -373,14 +378,16 @@
         uploadMsg.textContent = `✨ "${name}" is now live on the storefront.`;
         uploadMsg.className = "form-msg success show";
         uploadForm.reset();
-        filePreview.style.display = "none";
-        fileUploadWrapper.querySelector(".upload-text").textContent = "Click or drag to upload image";
-        fileUploadWrapper.querySelector(".upload-hint").textContent = "JPEG, PNG or WEBP · Max 5MB";
-        fileUploadWrapper.style.borderColor = "var(--admin-border)";
+        if (filePreview) filePreview.style.display = "none";
+        if (fileUploadWrapper) {
+          fileUploadWrapper.querySelector(".upload-text").textContent = "Click or drag to upload image";
+          fileUploadWrapper.querySelector(".upload-hint").textContent = "JPEG, PNG or WEBP · Max 5MB";
+          fileUploadWrapper.style.borderColor = "var(--admin-border)";
+        }
 
         loadProducts();
         updateStats();
-        setTimeout(() => switchTab("manage-products"), 800);
+        setTimeout(() => window.switchTab("manage-products"), 800);
       } catch (err) {
         uploadMsg.textContent = "Upload failed: " + err.message;
         uploadMsg.className = "form-msg error show";
@@ -412,17 +419,21 @@
       updateStats();
     } catch (err) {
       console.error("Error loading products:", err);
-      adminList.innerHTML = `
-        <div class="empty-state">
-          <span class="empty-icon">⚠️</span>
-          <h3>Error loading products</h3>
-          <p>${escapeHtml(err.message)}</p>
-        </div>
-      `;
+      if (adminList) {
+        adminList.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-icon">⚠️</span>
+            <h3>Error loading products</h3>
+            <p>${escapeHtml(err.message)}</p>
+          </div>
+        `;
+      }
     }
   }
 
   function renderProductList(products) {
+    if (!adminList) return;
+    
     if (!products || !products.length) {
       adminList.innerHTML = `
         <div class="empty-state">
@@ -431,7 +442,7 @@
           <p>${allProducts.length ? "Try adjusting your search." : "Add your first piece using the form above."}</p>
         </div>
       `;
-      listCount.textContent = "0";
+      if (listCount) listCount.textContent = "0";
       return;
     }
 
@@ -449,13 +460,13 @@
         </div>
         <div class="product-date">${new Date(p.created_at).toLocaleDateString("en-IN")}</div>
         <div class="product-actions">
-          <button class="btn-edit" onclick="editProduct('${p.id}')" title="Edit">✏️</button>
-          <button class="btn-delete" onclick="deleteProduct('${p.id}', '${escapeHtml(p.name)}', '${escapeHtml(p.storage_path || "")}')" title="Delete">🗑️</button>
+          <button class="btn-edit" onclick="window.editProduct('${p.id}')" title="Edit">✏️</button>
+          <button class="btn-delete" onclick="window.deleteProduct('${p.id}', '${escapeHtml(p.name)}', '${escapeHtml(p.storage_path || "")}')" title="Delete">🗑️</button>
         </div>
       </div>
     `).join("");
 
-    listCount.textContent = products.length;
+    if (listCount) listCount.textContent = products.length;
   }
 
   window.deleteProduct = async function(id, name, path) {
@@ -481,29 +492,41 @@
       return;
     }
 
-    document.getElementById("pName").value = product.name || "";
-    document.getElementById("pCategory").value = product.category || "";
-    document.getElementById("pPrice").value = product.price || "";
-    document.getElementById("pOriginalPrice").value = product.original_price || "";
-    document.getElementById("pBadge").value = product.badge || "";
-    document.getElementById("pDesc").value = product.description || "";
+    const nameInput = document.getElementById("pName");
+    const categoryInput = document.getElementById("pCategory");
+    const priceInput = document.getElementById("pPrice");
+    const originalPriceInput = document.getElementById("pOriginalPrice");
+    const badgeSelect = document.getElementById("pBadge");
+    const descTextarea = document.getElementById("pDesc");
 
-    if (product.image_url) {
+    if (nameInput) nameInput.value = product.name || "";
+    if (categoryInput) categoryInput.value = product.category || "";
+    if (priceInput) priceInput.value = product.price || "";
+    if (originalPriceInput) originalPriceInput.value = product.original_price || "";
+    if (badgeSelect) badgeSelect.value = product.badge || "";
+    if (descTextarea) descTextarea.value = product.description || "";
+
+    if (product.image_url && previewImage) {
       previewImage.src = product.image_url;
-      filePreview.style.display = "block";
-      fileUploadWrapper.querySelector(".upload-text").textContent = "Current image selected";
-      fileUploadWrapper.querySelector(".upload-hint").textContent = "Upload a new image to replace it";
+      if (filePreview) filePreview.style.display = "block";
+      if (fileUploadWrapper) {
+        fileUploadWrapper.querySelector(".upload-text").textContent = "Current image selected";
+        fileUploadWrapper.querySelector(".upload-hint").textContent = "Upload a new image to replace it";
+      }
     }
 
-    switchTab("add-product");
-    document.querySelector("#addProductPanel .admin-panel-header h2").textContent = "✏️ Edit Product";
-    uploadBtn.innerHTML = "<span>💾</span> Update Product";
-    uploadBtn.dataset.editId = id;
+    window.switchTab("add-product");
+    const panelHeader = document.querySelector("#addProductPanel .admin-panel-header h2");
+    if (panelHeader) panelHeader.textContent = "✏️ Edit Product";
+    if (uploadBtn) uploadBtn.innerHTML = "<span>💾</span> Update Product";
+    if (uploadBtn) uploadBtn.dataset.editId = id;
 
-    uploadForm.onsubmit = async function(e) {
-      e.preventDefault();
-      showToast("Info", "Edit functionality coming soon!", "success");
-    };
+    if (uploadForm) {
+      uploadForm.onsubmit = async function(e) {
+        e.preventDefault();
+        showToast("Info", "Edit functionality coming soon!", "success");
+      };
+    }
   };
 
   window.refreshProducts = function() {
@@ -603,7 +626,7 @@
             ${order.parcel_printed ? '<span style="font-size:0.6rem;background:#D4EDDA;color:#155724;padding:2px 10px;border-radius:12px;">📦 Sticker Printed</span>' : ''}
           </div>
           <div class="order-status-actions">
-            <select class="status-select" data-id="${order.id}" onchange="updateOrderStatus('${order.id}', this.value)">
+            <select class="status-select" data-id="${order.id}" onchange="window.updateOrderStatus('${order.id}', this.value)">
               <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
               <option value="confirmed" ${order.status === 'confirmed' ? 'selected' : ''}>✅ Confirmed</option>
               <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>🔧 Processing</option>
@@ -611,8 +634,8 @@
               <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>📦 Delivered</option>
               <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>❌ Cancelled</option>
             </select>
-            <button class="btn-sticker" onclick="printParcelSticker('${order.id}')" title="Print Parcel Sticker">🏷️</button>
-            <button class="btn-delete-order" onclick="deleteOrder('${order.id}')" title="Delete Order">🗑️</button>
+            <button class="btn-sticker" onclick="window.printParcelSticker('${order.id}')" title="Print Parcel Sticker">🏷️</button>
+            <button class="btn-delete-order" onclick="window.deleteOrder('${order.id}')" title="Delete Order">🗑️</button>
           </div>
         </div>
         <div class="order-body">
@@ -809,23 +832,30 @@
   // ===== SETTINGS =====
   window.saveSettings = function() {
     const msg = document.getElementById("settingsMsg");
-    const whatsapp = document.getElementById("settingsWhatsApp").value.trim();
-    const storeName = document.getElementById("settingsStoreName").value.trim();
+    const whatsapp = document.getElementById("settingsWhatsApp");
+    const storeName = document.getElementById("settingsStoreName");
 
-    if (whatsapp) {
-      window.WHATSAPP_NUMBER = whatsapp;
-      localStorage.setItem("sol_whatsapp", whatsapp);
+    if (!whatsapp || !storeName) return;
+
+    const whatsappVal = whatsapp.value.trim();
+    const storeNameVal = storeName.value.trim();
+
+    if (whatsappVal) {
+      window.WHATSAPP_NUMBER = whatsappVal;
+      localStorage.setItem("sol_whatsapp", whatsappVal);
     }
-    if (storeName) {
-      localStorage.setItem("sol_store_name", storeName);
+    if (storeNameVal) {
+      localStorage.setItem("sol_store_name", storeNameVal);
     }
 
-    msg.textContent = "✅ Settings saved successfully!";
-    msg.className = "form-msg success show";
-    setTimeout(() => {
-      msg.className = "form-msg";
-      msg.style.display = "none";
-    }, 3000);
+    if (msg) {
+      msg.textContent = "✅ Settings saved successfully!";
+      msg.className = "form-msg success show";
+      setTimeout(() => {
+        msg.className = "form-msg";
+        msg.style.display = "none";
+      }, 3000);
+    }
 
     showToast("💾 Settings Saved", "Your changes have been applied.");
   };
@@ -849,7 +879,7 @@
 
   // ===== REALTIME SUBSCRIPTIONS =====
   try {
-    window.supabaseClient
+    const channelProducts = window.supabaseClient
       .channel("public:products")
       .on("postgres_changes", { event: "*", schema: "public", table: "products" }, () => {
         if (currentUser) {
@@ -859,7 +889,7 @@
       })
       .subscribe();
 
-    window.supabaseClient
+    const channelOrders = window.supabaseClient
       .channel("public:orders")
       .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => {
         if (currentUser) {
@@ -873,11 +903,24 @@
   }
 
   // ===== INIT =====
-  window.supabaseClient.auth.onAuthStateChange(() => {
-    refreshSessionUI();
+  // Listen for auth state changes
+  window.supabaseClient.auth.onAuthStateChange((event, session) => {
+    console.log("Auth state changed:", event);
+    if (event === 'SIGNED_IN' && session) {
+      currentUser = session.user;
+      showDashboard();
+    } else if (event === 'SIGNED_OUT') {
+      showLoginScreen();
+    } else {
+      refreshSessionUI();
+    }
   });
   
+  // Load settings and check session
   loadSettings();
+  
+  // Initial session check
   refreshSessionUI();
 
+  console.log("Admin panel initialized. Current user:", currentUser);
 })();
