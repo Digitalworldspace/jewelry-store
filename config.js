@@ -20,4 +20,4 @@ window.supabaseClient = supabase.createClient(
 
 /* Change this to your own WhatsApp business number (with country
    code, no + or spaces) to receive product enquiries from the site. */
-window.WHATSAPP_NUMBER = "919999999999";
+window.WHATSAPP_NUMBER = "916352925472";
