@@ -1,5 +1,6 @@
 /* ============================================================
    Supabase connection config
+   Only the PUBLIC keys belong here
    ============================================================ */
 window.SUPABASE_URL = "https://fdzcgnxmgyyaoxnrvxdg.supabase.co";
 window.SUPABASE_ANON_KEY = "sb_publishable_65knhSU2PTVflAqXhF_X4g_aKVp9LdO";
