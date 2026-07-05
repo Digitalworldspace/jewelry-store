@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Panel</title>
+<style>
+body{font-family:Arial;text-align:center}
+input{padding:10px;margin:5px}
+.btn{border:2px solid #111;background:#fff;padding:8px;cursor:pointer}
+.btn:hover{background:#111;color:#fff}
+</style>
+</head>
+
+<body>
+
+<h1>ADMIN 💎</h1>
+
+<input id="user" placeholder="User">
+<input id="pass" type="password" placeholder="Pass">
+<button class="btn" onclick="login()">Login</button>
+
+<div id="panel"></div>
+
+<script>
+const API = "http://localhost:3000";
+
+async function login(){
+
+    const res = await fetch(API+"/admin/login",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            user:document.getElementById("user").value,
+            pass:document.getElementById("pass").value
+        })
+    });
+
+    const data = await res.json();
+
+    if(data.success){
+        loadPanel();
+    }else{
+        alert("Wrong login");
+    }
+}
+
+async function loadPanel(){
+
+    let html = `
+    <h2>Add Product</h2>
+    <input id="name" placeholder="Name">
+    <input id="price" placeholder="Price">
+    <button class="btn" onclick="add()">Add</button>
+
+    <h2>Orders</h2>
+    <div id="orders"></div>
+    `;
+
+    document.getElementById("panel").innerHTML = html;
+
+    loadOrders();
+}
+
+async function add(){
+
+    await fetch(API+"/admin/add-product",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            name:document.getElementById("name").value,
+            price:document.getElementById("price").value
+        })
+    });
+
+    alert("Added");
+}
+
+async function loadOrders(){
+
+    const res = await fetch(API+"/orders");
+    const data = await res.json();
+
+    document.getElementById("orders").innerHTML =
+        data.map(o=>`
+            <div class="card">
+                Order #${o.id} - ₹${o.total}
+            </div>
+        `).join("");
+}
+</script>
+
+</body>
+</html>
