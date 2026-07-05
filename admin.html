@@ -768,7 +768,226 @@
   margin: 0;
 }
 
-/* ===== TOAST NOTIFICATION ===== */
+/* ===== ORDER STYLES ===== */
+.order-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-card.mini {
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.stat-card.mini .stat-number {
+  font-size: 1.4rem;
+}
+
+.stat-card.mini.highlight {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.stat-card.mini.highlight .stat-number {
+  color: var(--color-secondary);
+}
+
+.order-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-select,
+.filter-search {
+  padding: 8px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  background: var(--color-white);
+}
+
+.filter-select:focus,
+.filter-search:focus {
+  outline: none;
+  border-color: var(--color-black);
+}
+
+.order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.order-item {
+  background: var(--color-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  transition: all var(--transition-fast);
+}
+
+.order-item:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 10px;
+}
+
+.order-number {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.order-number strong {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.order-date {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.order-status-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.status-select {
+  padding: 4px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-family: var(--font-body);
+  background: var(--color-white);
+}
+
+.status-select:focus {
+  outline: none;
+  border-color: var(--color-black);
+}
+
+.btn-delete-order {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  opacity: 0.5;
+  transition: opacity var(--transition-fast);
+}
+
+.btn-delete-order:hover {
+  opacity: 1;
+}
+
+.order-body {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+}
+
+.order-customer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.85rem;
+}
+
+.order-customer strong {
+  font-size: 0.95rem;
+}
+
+.order-product {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  padding: 4px 12px;
+  background: var(--color-cream);
+  border-radius: var(--radius-sm);
+}
+
+.order-product .product-price {
+  font-weight: 600;
+}
+
+.order-notes {
+  grid-column: 1 / -1;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  padding: 6px 10px;
+  background: var(--color-cream);
+  border-radius: var(--radius-sm);
+}
+
+.order-meta {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-light);
+  margin-top: 4px;
+}
+
+.payment-method {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.status-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 12px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-badge.pending {
+  background: #FFF3CD;
+  color: #856404;
+}
+.status-badge.confirmed {
+  background: #D1ECF1;
+  color: #0C5460;
+}
+.status-badge.processing {
+  background: #CCE5FF;
+  color: #004085;
+}
+.status-badge.shipped {
+  background: #D4EDDA;
+  color: #155724;
+}
+.status-badge.delivered {
+  background: #D4EDDA;
+  color: #155724;
+}
+.status-badge.cancelled {
+  background: #F8D7DA;
+  color: #721C24;
+}
+
+/* ===== TOAST ===== */
 .toast-container {
   position: fixed;
   top: 88px;
@@ -881,6 +1100,23 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .order-body {
+    grid-template-columns: 1fr;
+  }
+
+  .order-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .order-filters {
+    flex-direction: column;
+  }
+
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 @media (max-width: 480px) {
@@ -903,6 +1139,10 @@
 
   .admin-login-box h2 {
     font-size: 1.3rem;
+  }
+
+  .order-stats-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }
 </style>
@@ -942,6 +1182,10 @@
     <button class="admin-nav-item" data-tab="manage-products">
       <span class="nav-icon">📦</span> Manage Products
       <span class="nav-badge" id="productCount">0</span>
+    </button>
+    <button class="admin-nav-item" data-tab="orders">
+      <span class="nav-icon">🛍️</span> Orders
+      <span class="nav-badge" id="orderBadge">0</span>
     </button>
     <button class="admin-nav-item" data-tab="settings">
       <span class="nav-icon">⚙️</span> Settings
@@ -1106,6 +1350,68 @@
             <span class="empty-icon">📭</span>
             <h3>No products yet</h3>
             <p>Add your first piece using the form above.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders Panel -->
+      <div class="admin-panel" id="ordersPanel" style="display:none;">
+        <div class="admin-panel-header">
+          <div>
+            <h2>🛍️ Order Management</h2>
+            <span class="panel-sub">View and manage all customer orders</span>
+          </div>
+          <div>
+            <button class="btn-secondary" onclick="refreshOrders()">
+              🔄 Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Order Stats -->
+        <div class="order-stats-grid">
+          <div class="stat-card mini">
+            <div class="stat-number" id="ordersCount">0</div>
+            <div class="stat-label">Total Orders</div>
+          </div>
+          <div class="stat-card mini">
+            <div class="stat-number" id="pendingCount">0</div>
+            <div class="stat-label">Pending</div>
+          </div>
+          <div class="stat-card mini">
+            <div class="stat-number" id="shippedCount">0</div>
+            <div class="stat-label">In Transit</div>
+          </div>
+          <div class="stat-card mini">
+            <div class="stat-number" id="deliveredCount">0</div>
+            <div class="stat-label">Delivered</div>
+          </div>
+          <div class="stat-card mini highlight">
+            <div class="stat-number" id="totalRevenue">₹0</div>
+            <div class="stat-label">Total Revenue</div>
+          </div>
+        </div>
+
+        <!-- Order Filters -->
+        <div class="order-filters">
+          <select id="orderStatusFilter" class="filter-select">
+            <option value="all">All Status</option>
+            <option value="pending">⏳ Pending</option>
+            <option value="confirmed">✅ Confirmed</option>
+            <option value="processing">🔧 Processing</option>
+            <option value="shipped">🚚 Shipped</option>
+            <option value="delivered">📦 Delivered</option>
+            <option value="cancelled">❌ Cancelled</option>
+          </select>
+          <input type="text" id="orderSearch" placeholder="🔍 Search orders…" class="filter-search">
+        </div>
+
+        <!-- Order List -->
+        <div class="order-list" id="orderList">
+          <div class="empty-state">
+            <span class="empty-icon">📭</span>
+            <h3>No orders yet</h3>
+            <p>Orders will appear here when customers place them.</p>
           </div>
         </div>
       </div>
