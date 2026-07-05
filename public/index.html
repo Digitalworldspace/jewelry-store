@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Style OF Life - Jewelry</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #ffffff;
+    color: #111;
+}
+
+/* Header */
+header {
+    padding: 20px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+/* Hero */
+.hero {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.hero h1 {
+    font-size: 40px;
+}
+
+.hero p {
+    color: #555;
+}
+
+/* Button */
+.btn {
+    background: #fff;
+    border: 2px solid #111;
+    padding: 12px 25px;
+    margin-top: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: #111;
+    color: #fff;
+}
+
+/* Products */
+.products {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 40px;
+}
+
+.card {
+    border: 1px solid #eee;
+    padding: 20px;
+    width: 220px;
+    text-align: center;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+}
+</style>
+</head>
+
+<body>
+
+<header>Style OF Life</header>
+
+<div class="hero">
+    <h1>Elegant Imitation Jewelry</h1>
+    <p>Minimal. Luxury. Affordable Beauty.</p>
+    <button class="btn" onclick="loadProducts()">Explore Collection</button>
+</div>
+
+<div class="products" id="products"></div>
+
+<footer>© 2026 Style OF Life</footer>
+
+<script>
+async function loadProducts() {
+    const res = await fetch('/products');
+    const data = await res.json();
+
+    let html = "";
+    data.forEach(p => {
+        html += `
+        <div class="card">
+            <h3>${p.name}</h3>
+            <p>₹${p.price}</p>
+            <button class="btn">Buy Now</button>
+        </div>`;
+    });
+
+    document.getElementById("products").innerHTML = html;
+}
+</script>
+
+</body>
+</html>
