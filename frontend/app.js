@@ -2,9 +2,7 @@ const API = "http://localhost:3000";
 
 let cart = [];
 
-/* ======================
-   LOAD LIVE PRODUCTS
-====================== */
+/* LOAD PRODUCTS */
 async function loadProducts(){
 
     const res = await fetch(API + "/products");
@@ -17,8 +15,8 @@ async function loadProducts(){
         <div class="card">
             <h3>${p.name}</h3>
             <p>₹${p.price}</p>
-            <button class="btn" onclick='addToCart(${JSON.stringify(p)})'>
-                Add to Cart
+            <button class="btn" onclick='add(${JSON.stringify(p)})'>
+                Add
             </button>
         </div>`;
     });
@@ -26,67 +24,44 @@ async function loadProducts(){
     document.getElementById("products").innerHTML = html;
 }
 
-/* ======================
-   ADD TO CART
-====================== */
-function addToCart(p){
+/* ADD TO CART */
+function add(p){
     cart.push(p);
     renderCart();
 }
 
-/* ======================
-   CART UI
-====================== */
+/* CART */
 function renderCart(){
 
     let total = 0;
-    let html = "<h2 style='text-align:center;'>Cart 🛍️</h2>";
+    let html = "";
 
-    cart.forEach((c,i)=>{
+    cart.forEach(c=>{
         total += c.price;
-
-        html += `
-        <div class="card">
-            <p>${c.name}</p>
-            <p>₹${c.price}</p>
-            <button class="btn" onclick="removeItem(${i})">Remove</button>
-        </div>`;
+        html += `<div class="card">${c.name} - ₹${c.price}</div>`;
     });
 
-    html += `<h3 style="text-align:center;">Total: ₹${total}</h3>`;
-    html += `<div style="text-align:center;">
-                <button class="btn" onclick="checkout(${total})">Checkout</button>
-             </div>`;
+    html += `<h3>Total: ₹${total}</h3>`;
+    html += `<button class="btn" onclick="order(${total})">Buy Now</button>`;
 
     document.getElementById("cart").innerHTML = html;
 }
 
-/* ======================
-   REMOVE ITEM
-====================== */
-function removeItem(i){
-    cart.splice(i,1);
-    renderCart();
-}
+/* ORDER */
+async function order(total){
 
-/* ======================
-   CHECKOUT (LIVE API)
-====================== */
-async function checkout(total){
-
-    const res = await fetch(API + "/checkout",{
+    const res = await fetch(API + "/order",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({total, cart})
+        body:JSON.stringify({items:cart,total})
     });
 
     const data = await res.json();
 
-    alert(data.message + "\nOrder ID: " + data.orderId);
+    alert("Order Placed 💎 ID: " + data.orderId);
 
     cart = [];
     renderCart();
 }
 
-/* INIT */
 loadProducts();
