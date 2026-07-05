@@ -64,5 +64,16 @@ The homepage includes a top banner, a trust bar, and a "Why shop with us" sectio
 ## Customising
 
 - Store name: edit the `<a class="brand">` text in `index.html` and `admin.html`.
-- WhatsApp enquiry number: edit `WHATSAPP_NUMBER` in `assets/config.js`.
+- WhatsApp enquiry number: edit `WHATSAPP_NUMBER` in `assets/config.js` (remove spaces and + sign).
 - Colours/fonts: edit the `:root` variables at the top of `assets/style.css`.
+
+## Design enhancements
+
+The store features:
+- ✨ Smooth animations and transitions throughout
+- 🎨 Rich colour palette inspired by antique jewellery
+- 📱 Fully responsive for all device sizes
+- 💬 Integrated WhatsApp business chat
+- 🔄 Real-time product updates without page refresh
+- 🏷️ Product badges for promotions
+- 📸 Image modal for product details
