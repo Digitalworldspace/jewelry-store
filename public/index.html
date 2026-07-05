@@ -2,30 +2,27 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Style OF Life - Jewelry</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Style OF Life</title>
 
 <style>
 body {
     margin: 0;
     font-family: Arial;
-    background: #ffffff;
+    background: #fff;
     color: #111;
 }
 
-/* Header */
 header {
-    padding: 20px;
     text-align: center;
+    padding: 20px;
     font-size: 28px;
     font-weight: bold;
     letter-spacing: 2px;
 }
 
-/* Hero */
 .hero {
     text-align: center;
-    padding: 60px 20px;
+    padding: 50px 20px;
 }
 
 .hero h1 {
@@ -36,12 +33,11 @@ header {
     color: #555;
 }
 
-/* Button */
 .btn {
     background: #fff;
     border: 2px solid #111;
-    padding: 12px 25px;
-    margin-top: 20px;
+    padding: 10px 20px;
+    margin: 10px;
     cursor: pointer;
     font-weight: bold;
     transition: 0.3s;
@@ -52,28 +48,25 @@ header {
     color: #fff;
 }
 
-/* Products */
-.products {
+.container {
     display: flex;
-    justify-content: center;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 20px;
-    padding: 40px;
+    padding: 20px;
 }
 
 .card {
-    border: 1px solid #eee;
-    padding: 20px;
     width: 220px;
+    border: 1px solid #eee;
+    padding: 15px;
     text-align: center;
-    background: #fff;
     box-shadow: 0 0 10px rgba(0,0,0,0.05);
 }
 
-footer {
-    text-align: center;
-    padding: 20px;
-    color: #777;
+#cart {
+    padding: 30px;
+    border-top: 1px solid #ddd;
 }
 </style>
 </head>
@@ -84,30 +77,85 @@ footer {
 
 <div class="hero">
     <h1>Elegant Imitation Jewelry</h1>
-    <p>Minimal. Luxury. Affordable Beauty.</p>
+    <p>Luxury Feel • Affordable Price</p>
     <button class="btn" onclick="loadProducts()">Explore Collection</button>
 </div>
 
-<div class="products" id="products"></div>
+<div class="container" id="products"></div>
 
-<footer>© 2026 Style OF Life</footer>
+<div id="cart"></div>
 
 <script>
+let cart = [];
+
+// LOAD PRODUCTS
 async function loadProducts() {
-    const res = await fetch('/products');
+    const res = await fetch("/products");
     const data = await res.json();
 
     let html = "";
+
     data.forEach(p => {
         html += `
         <div class="card">
             <h3>${p.name}</h3>
             <p>₹${p.price}</p>
-            <button class="btn">Buy Now</button>
+            <button class="btn" onclick='addToCart(${JSON.stringify(p)})'>
+                Add to Cart
+            </button>
         </div>`;
     });
 
     document.getElementById("products").innerHTML = html;
+}
+
+// ADD TO CART
+function addToCart(product) {
+    cart.push(product);
+    renderCart();
+}
+
+// RENDER CART
+function renderCart() {
+    let total = 0;
+    let html = "<h2>Your Cart 🛍️</h2>";
+
+    cart.forEach((c, i) => {
+        total += c.price;
+        html += `
+        <div class="card">
+            <p>${c.name}</p>
+            <p>₹${c.price}</p>
+            <button class="btn" onclick="removeItem(${i})">Remove</button>
+        </div>`;
+    });
+
+    html += `<h3>Total: ₹${total}</h3>`;
+    html += `<button class="btn" onclick="checkout()">Checkout</button>`;
+
+    document.getElementById("cart").innerHTML = html;
+}
+
+// REMOVE ITEM
+function removeItem(index) {
+    cart.splice(index, 1);
+    renderCart();
+}
+
+// CHECKOUT
+async function checkout() {
+    const res = await fetch("/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart })
+    });
+
+    const data = await res.json();
+
+    alert(data.message + " | Total: ₹" + data.total);
+
+    cart = [];
+    renderCart();
 }
 </script>
 
