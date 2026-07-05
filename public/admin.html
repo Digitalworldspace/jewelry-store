@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin - Style OF Life</title>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    padding: 40px;
+}
+
+input {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    width: 200px;
+}
+
+.btn {
+    background: #fff;
+    border: 2px solid #111;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #111;
+    color: #fff;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Admin Panel</h2>
+
+<input id="name" placeholder="Product Name">
+<input id="price" placeholder="Price">
+
+<button class="btn" onclick="addProduct()">Add Product</button>
+
+<script>
+async function addProduct() {
+    const name = document.getElementById("name").value;
+    const price = document.getElementById("price").value;
+
+    const res = await fetch("/admin/add-product", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, price })
+    });
+
+    const data = await res.json();
+    alert(data.message);
+}
+</script>
+
+</body>
+</html>
