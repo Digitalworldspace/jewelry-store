@@ -30,8 +30,20 @@
   const previewImage = document.getElementById("previewImage");
   const fileUploadWrapper = document.getElementById("fileUploadWrapper");
 
+  // Order elements
+  const orderList = document.getElementById("orderList");
+  const orderStatusFilter = document.getElementById("orderStatusFilter");
+  const orderSearch = document.getElementById("orderSearch");
+  const ordersCount = document.getElementById("ordersCount");
+  const pendingCount = document.getElementById("pendingCount");
+  const shippedCount = document.getElementById("shippedCount");
+  const deliveredCount = document.getElementById("deliveredCount");
+  const totalRevenue = document.getElementById("totalRevenue");
+  const orderBadge = document.getElementById("orderBadge");
+
   const BUCKET = "product-images";
   let allProducts = [];
+  let allOrders = [];
   let currentUser = null;
 
   // ===== TOAST SYSTEM =====
@@ -101,6 +113,7 @@
     const panels = {
       "add-product": "addProductPanel",
       "manage-products": "manageProductsPanel",
+      "orders": "ordersPanel",
       "settings": "settingsPanel",
       "dashboard": null
     };
@@ -112,7 +125,10 @@
       document.querySelectorAll(".admin-panel").forEach(el => el.style.display = "block");
     }
 
-    // Scroll to top
+    if (tabId === "orders") {
+      loadOrders();
+    }
+
     document.querySelector(".admin-main").scrollTop = 0;
   };
 
@@ -141,7 +157,8 @@
         userBadge.style.display = "flex";
         userEmail.textContent = session.user.email;
         userAvatar.textContent = session.user.email.charAt(0).toUpperCase();
-        loadAdminProducts();
+        loadProducts();
+        loadOrders();
         updateStats();
       } else {
         currentUser = null;
@@ -153,7 +170,14 @@
           <div class="empty-state">
             <span class="empty-icon">🔐</span>
             <h3>Please sign in</h3>
-            <p>Sign in to manage your products.</p>
+            <p>Sign in to manage your products and orders.</p>
+          </div>
+        `;
+        orderList.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-icon">🔐</span>
+            <h3>Please sign in</h3>
+            <p>Sign in to manage orders.</p>
           </div>
         `;
       }
@@ -206,7 +230,13 @@
     }
   });
 
-  // ===== PRODUCT CRUD =====
+  // ===== PRODUCT FUNCTIONS =====
+  function escapeHtml(str) {
+    return String(str || "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
   uploadForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     uploadMsg.className = "form-msg";
@@ -222,7 +252,6 @@
     const description = document.getElementById("pDesc").value.trim();
     const file = fileInput.files[0];
 
-    // Validation
     if (!name || !price || !file) {
       uploadMsg.textContent = "Name, price and an image are required.";
       uploadMsg.className = "form-msg error show";
@@ -260,7 +289,6 @@
       const ext = file.name.split(".").pop();
       const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
-      // Upload image
       const { error: upErr } = await window.supabaseClient
         .storage.from(BUCKET)
         .upload(path, file, { cacheControl: "3600", upsert: false });
@@ -269,7 +297,6 @@
       const { data: pub } = window.supabaseClient.storage.from(BUCKET).getPublicUrl(path);
       const image_url = pub.publicUrl;
 
-      // Insert product
       const { error: insErr } = await window.supabaseClient
         .from("products")
         .insert([{
@@ -293,10 +320,8 @@
       fileUploadWrapper.querySelector(".upload-hint").textContent = "JPEG, PNG or WEBP · Max 5MB";
       fileUploadWrapper.style.borderColor = "var(--admin-border)";
 
-      loadAdminProducts();
+      loadProducts();
       updateStats();
-
-      // Switch to manage products tab
       setTimeout(() => switchTab("manage-products"), 800);
     } catch (err) {
       uploadMsg.textContent = "Upload failed: " + err.message;
@@ -307,7 +332,7 @@
     uploadBtn.innerHTML = "<span>📤</span> Publish to Store";
   });
 
-  async function loadAdminProducts() {
+  async function loadProducts() {
     try {
       const { data, error } = await window.supabaseClient
         .from("products")
@@ -381,7 +406,7 @@
         await window.supabaseClient.storage.from(BUCKET).remove([path]);
       }
       showToast("🗑️ Product Removed", `"${name}" has been deleted.`);
-      loadAdminProducts();
+      loadProducts();
       updateStats();
     } catch (err) {
       showToast("Error", err.message, "error");
@@ -395,7 +420,6 @@
       return;
     }
 
-    // Pre-fill form with product data
     document.getElementById("pName").value = product.name || "";
     document.getElementById("pCategory").value = product.category || "";
     document.getElementById("pPrice").value = product.price || "";
@@ -412,39 +436,38 @@
 
     switchTab("add-product");
     document.querySelector("#addProductPanel .admin-panel-header h2").textContent = "✏️ Edit Product";
-
-    // Change submit button text
     uploadBtn.innerHTML = "<span>💾</span> Update Product";
     uploadBtn.dataset.editId = id;
 
-    // Override submit handler for edit
     uploadForm.onsubmit = async function(e) {
       e.preventDefault();
-      // Implementation for edit would go here
-      // For now, we'll show a message
       showToast("Info", "Edit functionality coming soon!", "success");
     };
   };
 
-  // ===== STATS =====
+  window.refreshProducts = function() {
+    loadProducts();
+    showToast("🔄 Refreshed", "Product list updated.");
+  };
+
+  if (productSearch) {
+    productSearch.addEventListener("input", loadProducts);
+  }
+
   function updateStats() {
     const products = allProducts || [];
     const count = products.length;
-
     totalProducts.textContent = count;
     productCount.textContent = count;
 
-    // New this week (7 days)
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
     const newCount = products.filter(p => new Date(p.created_at) > weekAgo).length;
     newProducts.textContent = newCount;
 
-    // Categories
     const cats = new Set(products.map(p => p.category).filter(Boolean));
     categoriesCount.textContent = cats.size;
 
-    // Average price
     if (count) {
       const avg = products.reduce((sum, p) => sum + Number(p.price), 0) / count;
       avgPrice.textContent = "₹" + Math.round(avg).toLocaleString("en-IN");
@@ -453,14 +476,185 @@
     }
   }
 
-  window.refreshProducts = function() {
-    loadAdminProducts();
-    showToast("🔄 Refreshed", "Product list updated.");
+  // ===== ORDER FUNCTIONS =====
+  async function loadOrders() {
+    try {
+      const { data, error } = await window.supabaseClient
+        .from("orders")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      allOrders = data || [];
+      renderOrders();
+      updateOrderStats();
+    } catch (err) {
+      console.error("Error loading orders:", err);
+      orderList.innerHTML = `
+        <div class="empty-state">
+          <span class="empty-icon">⚠️</span>
+          <h3>Error loading orders</h3>
+          <p>${escapeHtml(err.message)}</p>
+        </div>
+      `;
+    }
+  }
+
+  function renderOrders() {
+    let filtered = allOrders || [];
+
+    if (orderStatusFilter && orderStatusFilter.value !== "all") {
+      filtered = filtered.filter(o => o.status === orderStatusFilter.value);
+    }
+
+    if (orderSearch && orderSearch.value.trim()) {
+      const term = orderSearch.value.toLowerCase();
+      filtered = filtered.filter(o => 
+        o.order_number.toLowerCase().includes(term) ||
+        o.customer_name.toLowerCase().includes(term) ||
+        o.customer_email.toLowerCase().includes(term) ||
+        o.customer_phone.includes(term)
+      );
+    }
+
+    if (!filtered.length) {
+      orderList.innerHTML = `
+        <div class="empty-state">
+          <span class="empty-icon">📭</span>
+          <h3>No orders found</h3>
+          <p>${allOrders.length ? "Try adjusting your filters." : "No orders have been placed yet."}</p>
+        </div>
+      `;
+      return;
+    }
+
+    orderList.innerHTML = filtered.map(order => `
+      <div class="order-item" data-id="${order.id}">
+        <div class="order-header">
+          <div class="order-number">
+            <strong>${escapeHtml(order.order_number)}</strong>
+            <span class="order-date">${new Date(order.created_at).toLocaleDateString("en-IN", { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+          </div>
+          <div class="order-status-actions">
+            <select class="status-select" data-id="${order.id}" onchange="updateOrderStatus('${order.id}', this.value)">
+              <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+              <option value="confirmed" ${order.status === 'confirmed' ? 'selected' : ''}>✅ Confirmed</option>
+              <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>🔧 Processing</option>
+              <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>🚚 Shipped</option>
+              <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>📦 Delivered</option>
+              <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>❌ Cancelled</option>
+            </select>
+            <button class="btn-delete-order" onclick="deleteOrder('${order.id}')" title="Delete Order">🗑️</button>
+          </div>
+        </div>
+        <div class="order-body">
+          <div class="order-customer">
+            <strong>${escapeHtml(order.customer_name)}</strong>
+            <span>📞 ${escapeHtml(order.customer_phone)}</span>
+            <span>📧 ${escapeHtml(order.customer_email)}</span>
+            <span>📍 ${escapeHtml(order.customer_address)}, ${escapeHtml(order.city)}, ${escapeHtml(order.state)} - ${escapeHtml(order.pincode)}</span>
+          </div>
+          <div class="order-product">
+            <span class="product-name">${escapeHtml(order.product_name)}</span>
+            <span class="product-qty">× ${order.quantity}</span>
+            <span class="product-price">₹${Number(order.total_amount).toLocaleString("en-IN")}</span>
+          </div>
+          ${order.notes ? `<div class="order-notes">📝 ${escapeHtml(order.notes)}</div>` : ''}
+          <div class="order-meta">
+            <span class="payment-method">${order.payment_method === 'cod' ? '💳 Cash on Delivery' : '💳 Prepaid'}</span>
+            <span class="status-badge ${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
+          </div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function updateOrderStats() {
+    const orders = allOrders || [];
+    const total = orders.length;
+    const pending = orders.filter(o => o.status === 'pending' || o.status === 'confirmed').length;
+    const shipped = orders.filter(o => o.status === 'shipped' || o.status === 'processing').length;
+    const delivered = orders.filter(o => o.status === 'delivered').length;
+    const revenue = orders
+      .filter(o => o.status !== 'cancelled')
+      .reduce((sum, o) => sum + Number(o.total_amount), 0);
+
+    if (ordersCount) ordersCount.textContent = total;
+    if (pendingCount) pendingCount.textContent = pending;
+    if (shippedCount) shippedCount.textContent = shipped;
+    if (deliveredCount) deliveredCount.textContent = delivered;
+    if (totalRevenue) totalRevenue.textContent = "₹" + revenue.toLocaleString("en-IN");
+    if (orderBadge) orderBadge.textContent = pending > 0 ? pending : "0";
+  }
+
+  window.updateOrderStatus = async function(orderId, newStatus) {
+    try {
+      const { error } = await window.supabaseClient
+        .from("orders")
+        .update({ status: newStatus })
+        .eq("id", orderId);
+
+      if (error) throw error;
+
+      showToast("✅ Order Updated", `Order status changed to ${newStatus}`);
+      loadOrders();
+    } catch (err) {
+      showToast("❌ Error", err.message, "error");
+      loadOrders();
+    }
   };
 
-  // ===== PRODUCT SEARCH =====
-  if (productSearch) {
-    productSearch.addEventListener("input", loadAdminProducts);
+  window.deleteOrder = async function(orderId) {
+    const order = allOrders.find(o => o.id === orderId);
+    if (!confirm(`Delete order ${order?.order_number || ''}? This cannot be undone.`)) return;
+
+    try {
+      const { error } = await window.supabaseClient
+        .from("orders")
+        .delete()
+        .eq("id", orderId);
+
+      if (error) throw error;
+
+      showToast("🗑️ Order Deleted", "Order has been removed.");
+      loadOrders();
+    } catch (err) {
+      showToast("❌ Error", err.message, "error");
+    }
+  };
+
+  window.refreshOrders = function() {
+    loadOrders();
+    showToast("🔄 Refreshed", "Orders updated.");
+  };
+
+  if (orderStatusFilter) {
+    orderStatusFilter.addEventListener("change", renderOrders);
+  }
+  if (orderSearch) {
+    orderSearch.addEventListener("input", renderOrders);
+  }
+
+  // ===== REALTIME SUBSCRIPTIONS =====
+  try {
+    window.supabaseClient
+      .channel("public:products")
+      .on("postgres_changes", { event: "*", schema: "public", table: "products" }, () => {
+        loadProducts();
+        updateStats();
+      })
+      .subscribe();
+
+    window.supabaseClient
+      .channel("public:orders")
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => {
+        loadOrders();
+        updateOrderStats();
+      })
+      .subscribe();
+  } catch (err) {
+    console.warn("Realtime subscription error:", err);
   }
 
   // ===== SETTINGS =====
@@ -487,19 +681,11 @@
     showToast("💾 Settings Saved", "Your changes have been applied.");
   };
 
-  // Load saved settings
   function loadSettings() {
     const savedWhatsApp = localStorage.getItem("sol_whatsapp");
     const savedStoreName = localStorage.getItem("sol_store_name");
     if (savedWhatsApp) document.getElementById("settingsWhatsApp").value = savedWhatsApp;
     if (savedStoreName) document.getElementById("settingsStoreName").value = savedStoreName;
-  }
-
-  // ===== HELPERS =====
-  function escapeHtml(str) {
-    return String(str || "").replace(/[&<>"']/g, (c) => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    }[c]));
   }
 
   // ===== INIT =====
