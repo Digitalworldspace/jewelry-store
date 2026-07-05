@@ -3,427 +3,1509 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Style OF Life — Imitation Jewellery</title>
-<meta name="description" content="Style OF Life — handpicked imitation jewellery: kundan, meenakari and temple-style pieces. Browse the live collection.">
+<title>Admin Dashboard — Style OF Life</title>
+<meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600&family=Jost:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Jost:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
+<style>
+/* ===== ADMIN SPECIFIC STYLES ===== */
+:root {
+  --admin-bg: #F8F5F0;
+  --admin-card: #FFFFFF;
+  --admin-border: #E8E0D6;
+  --admin-shadow: 0 2px 12px rgba(27,18,14,0.06);
+  --admin-shadow-hover: 0 8px 30px rgba(27,18,14,0.12);
+  --admin-primary: #7E2130;
+  --admin-primary-light: #A03347;
+  --admin-success: #2F5D4E;
+  --admin-warning: #C79A56;
+  --admin-text: #2B211C;
+  --admin-text-light: #7A6A57;
+  --admin-text-lighter: #B7A488;
+}
+
+.admin-body {
+  background: var(--admin-bg);
+  font-family: 'Inter', 'Jost', sans-serif;
+}
+
+/* ===== ADMIN HEADER ===== */
+.admin-header {
+  background: var(--color-primary);
+  padding: 0 32px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.admin-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-cream-light);
+  text-decoration: none;
+}
+
+.admin-header-brand-icon {
+  color: var(--color-secondary);
+  font-size: 1.3rem;
+}
+
+.admin-header-brand small {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted-light);
+  display: block;
+  margin-top: 1px;
+}
+
+.admin-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.admin-header-actions .header-link {
+  color: rgba(255,253,249,0.7);
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+
+.admin-header-actions .header-link:hover {
+  color: var(--color-cream-light);
+}
+
+.admin-user-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 10px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 30px;
+  font-size: 0.8rem;
+  color: var(--color-cream-light);
+}
+
+.admin-user-badge .avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-secondary);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.btn-logout {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--color-cream-light);
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-mono);
+}
+
+.btn-logout:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: var(--color-secondary);
+}
+
+/* ===== ADMIN LAYOUT ===== */
+.admin-layout {
+  display: flex;
+  min-height: calc(100vh - 72px);
+}
+
+/* ===== SIDEBAR ===== */
+.admin-sidebar {
+  width: 240px;
+  background: var(--color-cream-light);
+  border-right: 1px solid var(--admin-border);
+  padding: 24px 0;
+  flex-shrink: 0;
+  position: sticky;
+  top: 72px;
+  height: calc(100vh - 72px);
+  overflow-y: auto;
+}
+
+.admin-sidebar-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--admin-text-lighter);
+  padding: 0 24px 12px;
+}
+
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  color: var(--admin-text-light);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  background: none;
+  border-right: none;
+  border-top: none;
+  border-bottom: none;
+  width: 100%;
+  text-align: left;
+  font-family: 'Inter', 'Jost', sans-serif;
+}
+
+.admin-nav-item:hover {
+  background: rgba(126,33,48,0.04);
+  color: var(--admin-text);
+}
+
+.admin-nav-item.active {
+  background: rgba(126,33,48,0.06);
+  color: var(--admin-primary);
+  border-left-color: var(--admin-primary);
+  font-weight: 600;
+}
+
+.admin-nav-item .nav-icon {
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+}
+
+.admin-nav-item .nav-badge {
+  margin-left: auto;
+  background: var(--admin-primary);
+  color: white;
+  font-size: 0.6rem;
+  padding: 2px 10px;
+  border-radius: 30px;
+  font-weight: 600;
+}
+
+/* ===== MAIN CONTENT ===== */
+.admin-main {
+  flex: 1;
+  padding: 32px 40px 60px;
+  overflow-y: auto;
+}
+
+/* ===== LOGIN SCREEN ===== */
+.admin-login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 40px 20px;
+}
+
+.admin-login-box {
+  background: var(--admin-card);
+  border-radius: 16px;
+  padding: 48px 40px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: var(--admin-shadow-hover);
+  border: 1px solid var(--admin-border);
+}
+
+.admin-login-box .login-icon {
+  font-size: 2.8rem;
+  margin-bottom: 8px;
+}
+
+.admin-login-box h2 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--admin-text);
+}
+
+.admin-login-box .login-sub {
+  color: var(--admin-text-light);
+  font-size: 0.85rem;
+  margin-bottom: 28px;
+}
+
+.admin-login-box .field {
+  margin-bottom: 18px;
+}
+
+.admin-login-box .field label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--admin-text-light);
+  margin-bottom: 4px;
+}
+
+.admin-login-box .field input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--admin-border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: 'Inter', 'Jost', sans-serif;
+  transition: all 0.2s;
+  background: var(--admin-bg);
+}
+
+.admin-login-box .field input:focus {
+  outline: none;
+  border-color: var(--admin-primary);
+  box-shadow: 0 0 0 3px rgba(126,33,48,0.1);
+}
+
+.btn-login {
+  width: 100%;
+  padding: 12px;
+  background: var(--admin-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', 'Jost', sans-serif;
+}
+
+.btn-login:hover {
+  background: var(--admin-primary-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(126,33,48,0.3);
+}
+
+.btn-login:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.login-msg {
+  margin-top: 14px;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 10px;
+  border-radius: 6px;
+  display: none;
+}
+
+.login-msg.error {
+  display: block;
+  background: rgba(126,33,48,0.08);
+  color: var(--admin-primary);
+}
+
+.login-msg.success {
+  display: block;
+  background: rgba(47,93,78,0.08);
+  color: var(--admin-success);
+}
+
+/* ===== DASHBOARD HEADER ===== */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.dashboard-header h1 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--admin-text);
+}
+
+.dashboard-header .subtitle {
+  color: var(--admin-text-light);
+  font-size: 0.9rem;
+  margin: 4px 0 0;
+}
+
+.dashboard-header .header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* ===== STATS GRID ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--admin-card);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  transition: all 0.2s;
+}
+
+.stat-card:hover {
+  box-shadow: var(--admin-shadow-hover);
+  transform: translateY(-2px);
+}
+
+.stat-card .stat-number {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--admin-text);
+  line-height: 1.2;
+}
+
+.stat-card .stat-label {
+  font-size: 0.75rem;
+  color: var(--admin-text-light);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stat-card .stat-icon {
+  font-size: 1.4rem;
+  margin-bottom: 4px;
+}
+
+/* ===== PANELS ===== */
+.admin-panel {
+  background: var(--admin-card);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin-bottom: 32px;
+  transition: all 0.2s;
+}
+
+.admin-panel:hover {
+  box-shadow: var(--admin-shadow-hover);
+}
+
+.admin-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-panel-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--admin-text);
+}
+
+.admin-panel-header .panel-sub {
+  color: var(--admin-text-light);
+  font-size: 0.8rem;
+}
+
+/* ===== FORM STYLES ===== */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.form-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 18px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--admin-text-light);
+  margin-bottom: 4px;
+}
+
+.form-group label .required {
+  color: var(--admin-primary);
+  margin-left: 2px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--admin-border);
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-family: 'Inter', 'Jost', sans-serif;
+  transition: all 0.2s;
+  background: var(--admin-bg);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--admin-primary);
+  box-shadow: 0 0 0 3px rgba(126,33,48,0.08);
+}
+
+.form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-group .file-upload-wrapper {
+  position: relative;
+  border: 2px dashed var(--admin-border);
+  border-radius: 8px;
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--admin-bg);
+}
+
+.form-group .file-upload-wrapper:hover {
+  border-color: var(--admin-primary);
+  background: rgba(126,33,48,0.02);
+}
+
+.form-group .file-upload-wrapper .upload-icon {
+  font-size: 2.4rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.form-group .file-upload-wrapper .upload-text {
+  color: var(--admin-text-light);
+  font-size: 0.85rem;
+}
+
+.form-group .file-upload-wrapper .upload-hint {
+  color: var(--admin-text-lighter);
+  font-size: 0.7rem;
+  margin-top: 4px;
+}
+
+.form-group .file-upload-wrapper input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.form-group .file-preview {
+  margin-top: 12px;
+  display: none;
+}
+
+.form-group .file-preview img {
+  max-width: 120px;
+  max-height: 120px;
+  border-radius: 6px;
+  border: 1px solid var(--admin-border);
+}
+
+.btn-submit {
+  padding: 12px 32px;
+  background: var(--admin-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', 'Jost', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-submit:hover {
+  background: var(--admin-primary-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(126,33,48,0.25);
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  padding: 12px 32px;
+  background: transparent;
+  color: var(--admin-text);
+  border: 1.5px solid var(--admin-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', 'Jost', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-secondary:hover {
+  background: var(--admin-bg);
+  border-color: var(--admin-text-light);
+}
+
+.form-msg {
+  margin-top: 14px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  display: none;
+}
+
+.form-msg.show {
+  display: block;
+}
+
+.form-msg.success {
+  background: rgba(47,93,78,0.08);
+  color: var(--admin-success);
+  border: 1px solid rgba(47,93,78,0.15);
+}
+
+.form-msg.error {
+  background: rgba(126,33,48,0.08);
+  color: var(--admin-primary);
+  border: 1px solid rgba(126,33,48,0.15);
+}
+
+/* ===== PRODUCT LIST ===== */
+.product-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.product-list-header .list-info {
+  font-size: 0.85rem;
+  color: var(--admin-text-light);
+}
+
+.product-list-header .list-info strong {
+  color: var(--admin-text);
+}
+
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--admin-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.product-list-item {
+  background: var(--admin-card);
+  display: grid;
+  grid-template-columns: 56px 1fr 120px 80px;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 18px;
+  transition: background 0.2s;
+}
+
+.product-list-item:hover {
+  background: rgba(126,33,48,0.02);
+}
+
+.product-list-item .product-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+}
+
+.product-list-item .product-info .product-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--admin-text);
+}
+
+.product-list-item .product-info .product-meta {
+  font-size: 0.75rem;
+  color: var(--admin-text-light);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.product-list-item .product-info .product-meta .badge-tag {
+  background: var(--admin-bg);
+  padding: 1px 10px;
+  border-radius: 12px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.product-list-item .product-date {
+  font-size: 0.7rem;
+  color: var(--admin-text-light);
+  font-family: var(--font-mono);
+}
+
+.product-list-item .product-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  color: var(--admin-text-light);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  font-family: 'Inter', 'Jost', sans-serif;
+}
+
+.btn-delete:hover {
+  background: rgba(126,33,48,0.08);
+  color: var(--admin-primary);
+}
+
+.btn-edit {
+  background: none;
+  border: none;
+  color: var(--admin-text-light);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  font-family: 'Inter', 'Jost', sans-serif;
+}
+
+.btn-edit:hover {
+  background: rgba(199,154,86,0.08);
+  color: var(--admin-warning);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--admin-text-light);
+}
+
+.empty-state .empty-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.empty-state h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin: 0 0 4px;
+  color: var(--admin-text);
+}
+
+.empty-state p {
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* ===== ORDER STYLES ===== */
+.order-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-card.mini {
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.stat-card.mini .stat-number {
+  font-size: 1.4rem;
+}
+
+.stat-card.mini.highlight {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.stat-card.mini.highlight .stat-number {
+  color: var(--color-secondary);
+}
+
+.order-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-select,
+.filter-search {
+  padding: 8px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  background: var(--color-white);
+}
+
+.filter-select:focus,
+.filter-search:focus {
+  outline: none;
+  border-color: var(--color-black);
+}
+
+.order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.order-item {
+  background: var(--color-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  transition: all var(--transition-fast);
+}
+
+.order-item:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 10px;
+}
+
+.order-number {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.order-number strong {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.order-date {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.order-status-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.status-select {
+  padding: 4px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-family: var(--font-body);
+  background: var(--color-white);
+}
+
+.status-select:focus {
+  outline: none;
+  border-color: var(--color-black);
+}
+
+.btn-delete-order {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  opacity: 0.5;
+  transition: opacity var(--transition-fast);
+}
+
+.btn-delete-order:hover {
+  opacity: 1;
+}
+
+.btn-sticker {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+}
+
+.btn-sticker:hover {
+  background: rgba(199,154,86,0.15);
+  transform: scale(1.1);
+}
+
+.order-body {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+}
+
+.order-customer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.85rem;
+}
+
+.order-customer strong {
+  font-size: 0.95rem;
+}
+
+.order-product {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  padding: 4px 12px;
+  background: var(--color-cream);
+  border-radius: var(--radius-sm);
+}
+
+.order-product .product-price {
+  font-weight: 600;
+}
+
+.order-notes {
+  grid-column: 1 / -1;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  padding: 6px 10px;
+  background: var(--color-cream);
+  border-radius: var(--radius-sm);
+}
+
+.order-meta {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-light);
+  margin-top: 4px;
+}
+
+.payment-method {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.status-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 12px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-badge.pending {
+  background: #FFF3CD;
+  color: #856404;
+}
+.status-badge.confirmed {
+  background: #D1ECF1;
+  color: #0C5460;
+}
+.status-badge.processing {
+  background: #CCE5FF;
+  color: #004085;
+}
+.status-badge.shipped {
+  background: #D4EDDA;
+  color: #155724;
+}
+.status-badge.delivered {
+  background: #D4EDDA;
+  color: #155724;
+}
+.status-badge.cancelled {
+  background: #F8D7DA;
+  color: #721C24;
+}
+
+/* ===== TOAST ===== */
+.toast-container {
+  position: fixed;
+  top: 88px;
+  right: 24px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.toast {
+  background: var(--admin-card);
+  border-radius: 12px;
+  padding: 16px 24px;
+  box-shadow: var(--admin-shadow-hover);
+  border-left: 4px solid var(--admin-success);
+  animation: slideIn 0.3s ease;
+  min-width: 280px;
+  max-width: 420px;
+}
+
+.toast.error {
+  border-left-color: var(--admin-primary);
+}
+
+.toast .toast-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.toast .toast-message {
+  font-size: 0.85rem;
+  color: var(--admin-text-light);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .form-row-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-sidebar {
+    display: none;
+  }
+
+  .admin-main {
+    padding: 20px;
+  }
+
+  .admin-header {
+    padding: 0 16px;
+  }
+
+  .admin-header-brand {
+    font-size: 1rem;
+  }
+
+  .admin-header-actions .header-link {
+    display: none;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .product-list-item {
+    grid-template-columns: 48px 1fr auto;
+    gap: 12px;
+    padding: 10px 14px;
+  }
+
+  .product-list-item .product-date {
+    display: none;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-login-box {
+    padding: 32px 24px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .admin-panel {
+    padding: 20px 16px;
+  }
+
+  .admin-panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .order-body {
+    grid-template-columns: 1fr;
+  }
+
+  .order-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .order-filters {
+    flex-direction: column;
+  }
+
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 14px 16px;
+  }
+
+  .stat-card .stat-number {
+    font-size: 1.4rem;
+  }
+
+  .admin-login-box .login-icon {
+    font-size: 2rem;
+  }
+
+  .admin-login-box h2 {
+    font-size: 1.3rem;
+  }
+
+  .order-stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ===== TRACKING INPUT ===== */
+.tracking-input-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.tracking-input-group input {
+  flex: 1;
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+}
+
+.tracking-input-group button {
+  padding: 6px 16px;
+  background: var(--color-black);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.tracking-input-group button:hover {
+  background: var(--color-primary-light);
+}
+</style>
 </head>
-<body>
+<body class="admin-body">
 
-<!-- ===== TOP BAR ===== -->
-<div class="top-bar">
-  <div class="top-bar-inner">
-    <span class="top-bar-text">✦ Free shipping on orders above ₹999</span>
-    <span class="top-bar-divider">·</span>
-    <span class="top-bar-text">✨ Exclusive handpicked designs</span>
-    <span class="top-bar-divider">·</span>
-    <span class="top-bar-text">❤️ Handcrafted with love</span>
-  </div>
-</div>
-
-<!-- ===== HEADER ===== -->
-<header class="site-header">
-  <div class="header-inner">
-    <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-    
-    <a class="brand" href="index.html">
-      <span class="brand-icon">✦</span>
-      Style OF Life
-      <small>Imitation Jewellery</small>
-    </a>
-    
-    <nav class="header-nav" id="mainNav">
-      <a href="#collection" class="nav-link">Collection</a>
-      <a href="#why-us" class="nav-link">Why Us</a>
-      <a href="#testimonials" class="nav-link">Testimonials</a>
-      <a href="#" id="headerWa" class="nav-cta" target="_blank" rel="noopener">
-        <span class="cta-icon">💬</span> WhatsApp
-      </a>
-    </nav>
+<!-- ===== ADMIN HEADER ===== -->
+<header class="admin-header">
+  <a class="admin-header-brand" href="index.html">
+    <span class="admin-header-brand-icon">✦</span>
+    Style OF Life
+    <small>Admin Dashboard</small>
+  </a>
+  <div class="admin-header-actions">
+    <a href="index.html" class="header-link" target="_blank">👁️ View Store</a>
+    <div class="admin-user-badge" id="userBadge" style="display:none;">
+      <span class="avatar" id="userAvatar">A</span>
+      <span id="userEmail">admin@styleoflife.com</span>
+    </div>
+    <button class="btn-logout" id="logoutBtn" style="display:none;">Log Out</button>
   </div>
 </header>
 
-<!-- ===== HERO ===== -->
-<section class="hero">
-  <div class="hero-background">
-    <div class="hero-glow hero-glow-1"></div>
-    <div class="hero-glow hero-glow-2"></div>
-  </div>
-  
-  <div class="hero-pattern">
-    <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="500" cy="300" r="250" fill="none" stroke="rgba(0,0,0,0.04)" stroke-width="1.5"/>
-      <circle cx="500" cy="300" r="180" fill="none" stroke="rgba(0,0,0,0.03)" stroke-width="1"/>
-      <circle cx="500" cy="300" r="110" fill="none" stroke="rgba(0,0,0,0.02)" stroke-width="1"/>
-      <path d="M100 550 Q300 700 500 600 Q700 500 900 650" fill="none" stroke="rgba(0,0,0,0.03)" stroke-width="1.5"/>
-      <path d="M50 700 Q300 850 500 750 Q700 650 950 800" fill="none" stroke="rgba(0,0,0,0.02)" stroke-width="1"/>
-      <circle cx="500" cy="450" r="8" fill="rgba(0,0,0,0.05)"/>
-      <circle cx="380" cy="480" r="5" fill="rgba(0,0,0,0.03)"/>
-      <circle cx="620" cy="480" r="5" fill="rgba(0,0,0,0.03)"/>
-    </svg>
-  </div>
-  
-  <div class="hero-content">
-    <div class="hero-badge">
-      <span class="badge-dot"></span>
-      New arrivals, live every week
-    </div>
-    
-    <h1 class="hero-title">
-      Jewellery that<br>
-      <span class="hero-title-highlight">catches the light,</span><br>
-      <span class="hero-title-italic">not the price.</span>
-    </h1>
-    
-    <p class="hero-description">
-      Handpicked kundan, meenakari and temple-style pieces — photographed and listed 
-      the moment they arrive, so what you see is exactly what's in stock today.
-    </p>
-    
-    <div class="hero-actions">
-      <a href="#collection" class="btn btn-primary">
-        <span class="btn-icon">✨</span> Explore Collection
-      </a>
-      <a href="#why-us" class="btn btn-secondary">
-        <span class="btn-icon">→</span> Learn More
-      </a>
-    </div>
-    
-    <div class="hero-stats">
-      <div class="hero-stat">
-        <span class="stat-number">500+</span>
-        <span class="stat-label">Exclusive Designs</span>
-      </div>
-      <div class="hero-stat">
-        <span class="stat-number">❤️</span>
-        <span class="stat-label">Handcrafted with Love</span>
-      </div>
-      <div class="hero-stat">
-        <span class="stat-number">Pan-India</span>
-        <span class="stat-label">Fast Delivery</span>
+<!-- ===== ADMIN LAYOUT ===== -->
+<div class="admin-layout">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="admin-sidebar" id="sidebar">
+    <div class="admin-sidebar-label">Navigation</div>
+    <button class="admin-nav-item active" data-tab="dashboard">
+      <span class="nav-icon">📊</span> Dashboard
+    </button>
+    <button class="admin-nav-item" data-tab="add-product">
+      <span class="nav-icon">✨</span> Add Product
+      <span class="nav-badge">New</span>
+    </button>
+    <button class="admin-nav-item" data-tab="manage-products">
+      <span class="nav-icon">📦</span> Manage Products
+      <span class="nav-badge" id="productCount">0</span>
+    </button>
+    <button class="admin-nav-item" data-tab="orders">
+      <span class="nav-icon">🛍️</span> Orders
+      <span class="nav-badge" id="orderBadge">0</span>
+    </button>
+    <button class="admin-nav-item" data-tab="settings">
+      <span class="nav-icon">⚙️</span> Settings
+    </button>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="admin-main">
+
+    <!-- ===== LOGIN SCREEN ===== -->
+    <div id="loginScreen" class="admin-login-wrapper">
+      <div class="admin-login-box">
+        <div class="login-icon">🔐</div>
+        <h2>Welcome Back</h2>
+        <p class="login-sub">Sign in to manage your jewellery collection</p>
+        <form id="loginForm">
+          <div class="field">
+            <label>Email Address</label>
+            <input type="email" id="loginEmail" placeholder="admin@styleoflife.com" required autocomplete="email">
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter your password" required autocomplete="current-password">
+          </div>
+          <button class="btn-login" type="submit" id="loginBtn">Sign In</button>
+          <div class="login-msg" id="loginMsg"></div>
+        </form>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- ===== TRUST BAR ===== -->
-<section class="trust-bar">
-  <div class="trust-item">
-    <div class="trust-icon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h13v9H3z"/><path d="M16 10h3l2 3v3h-5z"/><circle cx="7.5" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg>
-    </div>
-    <div class="trust-content">
-      <strong>Free Shipping</strong>
-      <span>On orders above ₹999</span>
-    </div>
-  </div>
-  
-  <div class="trust-item">
-    <div class="trust-icon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l7 4v6c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/></svg>
-    </div>
-    <div class="trust-content">
-      <strong>Quality Checked</strong>
-      <span>Every piece inspected</span>
-    </div>
-  </div>
-  
-  <div class="trust-item">
-    <div class="trust-icon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
-    </div>
-    <div class="trust-content">
-      <strong>Live Stock</strong>
-      <span>Real-time availability</span>
-    </div>
-  </div>
-  
-  <div class="trust-item">
-    <div class="trust-icon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 6v6l4 2"/></svg>
-    </div>
-    <div class="trust-content">
-      <strong>Handcrafted with Love</strong>
-      <span>Each piece made with care</span>
-    </div>
-  </div>
-</section>
+    <!-- ===== DASHBOARD ===== -->
+    <div id="dashboardContent" style="display:none;">
 
-<!-- ===== COLLECTION SECTION ===== -->
-<section class="collection-section" id="collection">
-  <div class="section-header">
-    <span class="section-subtitle">✦ The Collection</span>
-    <h2 class="section-title">Fresh Off The Counter</h2>
-    <p class="section-description">
-      Every piece below is live in our stock right now — added straight from the workshop, 
-      no reprints, no waiting.
-    </p>
-  </div>
-  
-  <div class="collection-toolbar">
-    <div class="filter-chips" id="chips"></div>
-    <div class="search-wrapper">
-      <span class="search-icon">🔍</span>
-      <input class="search-input" id="search" type="text" placeholder="Search the collection…">
-    </div>
-  </div>
-  
-  <div class="product-grid" id="tray">
-    <div class="loading-state">
-      <div class="loading-spinner"></div>
-      <p>Curating the collection…</p>
-    </div>
-  </div>
-</section>
-
-<!-- ===== WHY US ===== -->
-<section class="why-us" id="why-us">
-  <div class="section-header">
-    <span class="section-subtitle">✦ Why Choose Us</span>
-    <h2 class="section-title">Designed With You In Mind</h2>
-  </div>
-  
-  <div class="why-grid">
-    <div class="why-card">
-      <div class="why-card-icon">👑</div>
-      <h3>Handpicked Quality</h3>
-      <p>Each piece is chosen and checked by hand before it's photographed — nothing goes live unless we'd wear it ourselves.</p>
-    </div>
-    
-    <div class="why-card">
-      <div class="why-card-icon">🚚</div>
-      <h3>Free Shipping</h3>
-      <p>Enjoy free shipping on all orders above ₹999. No hidden charges, no surprises — just beautiful jewellery delivered to your door.</p>
-    </div>
-    
-    <div class="why-card">
-      <div class="why-card-icon">❤️</div>
-      <h3>Handcrafted with Love</h3>
-      <p>Every piece is lovingly crafted by skilled artisans who pour their heart into each design. You're not just buying jewellery — you're receiving a piece of art.</p>
-    </div>
-    
-    <div class="why-card">
-      <div class="why-card-icon">📡</div>
-      <h3>Real-Time Stock</h3>
-      <p>What's shown here is what's actually available today — our system updates the site instantly when a piece is added or sold out.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ===== TESTIMONIALS ===== -->
-<section class="testimonials" id="testimonials">
-  <div class="section-header">
-    <span class="section-subtitle">✦ What Our Customers Say</span>
-    <h2 class="section-title">Real Stories, Real Love</h2>
-  </div>
-  
-  <div class="testimonial-grid">
-    <div class="testimonial-card">
-      <div class="testimonial-stars">★★★★★</div>
-      <p class="testimonial-text">"The quality is absolutely stunning! I ordered a kundan set for my sister's wedding and it looked even better in person. The delivery was quick and the packaging was beautiful."</p>
-      <div class="testimonial-author">
-        <span class="author-name">Priya S.</span>
-        <span class="author-location">Mumbai</span>
+      <!-- Dashboard Header -->
+      <div class="dashboard-header">
+        <div>
+          <h1>👋 Welcome back!</h1>
+          <p class="subtitle">Here's what's happening with your store today.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-secondary" onclick="switchTab('add-product')">
+            ✨ Add New Product
+          </button>
+        </div>
       </div>
-    </div>
-    
-    <div class="testimonial-card">
-      <div class="testimonial-stars">★★★★★</div>
-      <p class="testimonial-text">"You can really feel the love and care put into each piece. The handcrafted details are exquisite, and I love that each design feels unique and special."</p>
-      <div class="testimonial-author">
-        <span class="author-name">Ananya R.</span>
-        <span class="author-location">Delhi</span>
+
+      <!-- Stats -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <div class="stat-number" id="totalProducts">0</div>
+          <div class="stat-label">Total Products</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🆕</div>
+          <div class="stat-number" id="newProducts">0</div>
+          <div class="stat-label">New This Week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🏷️</div>
+          <div class="stat-number" id="categoriesCount">0</div>
+          <div class="stat-label">Categories</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-number" id="avgPrice">₹0</div>
+          <div class="stat-label">Average Price</div>
+        </div>
       </div>
-    </div>
-    
-    <div class="testimonial-card">
-      <div class="testimonial-stars">★★★★★</div>
-      <p class="testimonial-text">"The real-time stock feature gave me confidence that what I ordered was actually available. The WhatsApp support was incredibly helpful in picking the perfect piece!"</p>
-      <div class="testimonial-author">
-        <span class="author-name">Meera K.</span>
-        <span class="author-location">Bangalore</span>
+
+      <!-- Add Product Panel -->
+      <div class="admin-panel" id="addProductPanel">
+        <div class="admin-panel-header">
+          <div>
+            <h2>✨ Add New Product</h2>
+            <span class="panel-sub">Upload a new piece to your collection</span>
+          </div>
+        </div>
+        <form id="uploadForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Product Name <span class="required">*</span></label>
+              <input type="text" id="pName" placeholder="e.g. Kundan Choker Set" required>
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <input type="text" id="pCategory" placeholder="Earrings, Necklace, Bangles…">
+            </div>
+          </div>
+
+          <div class="form-row-3">
+            <div class="form-group">
+              <label>Selling Price (₹) <span class="required">*</span></label>
+              <input type="number" id="pPrice" min="0" step="1" placeholder="499" required>
+            </div>
+            <div class="form-group">
+              <label>MRP / Original Price (₹)</label>
+              <input type="number" id="pOriginalPrice" min="0" step="1" placeholder="Leave blank for no discount">
+            </div>
+            <div class="form-group">
+              <label>Badge</label>
+              <select id="pBadge">
+                <option value="">None</option>
+                <option value="New">✨ New</option>
+                <option value="Bestseller">⭐ Bestseller</option>
+                <option value="Sale">🔥 Sale</option>
+                <option value="Limited Stock">⚠️ Limited Stock</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="pDesc" placeholder="Material, style, care instructions…"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Product Image <span class="required">*</span></label>
+            <div class="file-upload-wrapper" id="fileUploadWrapper">
+              <span class="upload-icon">🖼️</span>
+              <span class="upload-text">Click or drag to upload image</span>
+              <span class="upload-hint">JPEG, PNG or WEBP · Max 5MB</span>
+              <input type="file" id="pImage" accept="image/jpeg,image/png,image/webp" required>
+            </div>
+            <div class="file-preview" id="filePreview">
+              <img id="previewImage" src="" alt="Preview">
+            </div>
+          </div>
+
+          <button class="btn-submit" type="submit" id="uploadBtn">
+            <span>📤</span> Publish to Store
+          </button>
+          <div class="form-msg" id="uploadMsg"></div>
+        </form>
       </div>
-    </div>
-  </div>
-</section>
 
-<!-- ===== CTA BANNER ===== -->
-<section class="cta-banner">
-  <div class="cta-banner-content">
-    <span class="cta-banner-subtitle">✨ Need Help Deciding?</span>
-    <h2 class="cta-banner-title">Let's Find Your Perfect Piece</h2>
-    <p class="cta-banner-text">
-      Send us a photo of your outfit on WhatsApp and we'll help you choose — no obligation, just honest advice.
-    </p>
-    <a href="#" id="ctaWa" class="btn btn-primary btn-large" target="_blank" rel="noopener">
-      <span class="btn-icon">💬</span> Chat With Us Now
-    </a>
-  </div>
-</section>
+      <!-- Manage Products Panel -->
+      <div class="admin-panel" id="manageProductsPanel">
+        <div class="admin-panel-header">
+          <div>
+            <h2>📦 Manage Products</h2>
+            <span class="panel-sub">View, edit and remove products from your collection</span>
+          </div>
+          <div>
+            <button class="btn-secondary" onclick="refreshProducts()">
+              🔄 Refresh
+            </button>
+          </div>
+        </div>
 
-<!-- ===== FOOTER ===== -->
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <a class="brand" href="index.html">
-        <span class="brand-icon">✦</span>
-        Style OF Life
-        <small>Imitation Jewellery</small>
-      </a>
-      <p class="footer-description">
-        Imitation jewellery for everyday wear and festive occasions — kundan, meenakari 
-        and temple-style pieces, added live as they arrive.
-      </p>
-      <div class="footer-socials">
-        <a href="#" aria-label="Instagram" class="social-link">📸</a>
-        <a href="#" aria-label="Facebook" class="social-link">📘</a>
-        <a href="#" id="footerWa" aria-label="WhatsApp" class="social-link" target="_blank" rel="noopener">💬</a>
+        <div class="product-list-header">
+          <div class="list-info">
+            Showing <strong id="listCount">0</strong> products
+          </div>
+          <div class="list-info">
+            <input type="text" id="productSearch" placeholder="🔍 Search products…" style="padding:6px 12px;border:1px solid var(--admin-border);border-radius:6px;font-size:0.8rem;background:var(--admin-bg);">
+          </div>
+        </div>
+
+        <div class="product-list" id="adminList">
+          <div class="empty-state">
+            <span class="empty-icon">📭</span>
+            <h3>No products yet</h3>
+            <p>Add your first piece using the form above.</p>
+          </div>
+        </div>
       </div>
-    </div>
-    
-    <div class="footer-links">
-      <h4>Explore</h4>
-      <ul>
-        <li><a href="#collection">Collection</a></li>
-        <li><a href="#why-us">Why Choose Us</a></li>
-        <li><a href="#testimonials">Testimonials</a></li>
-      </ul>
-    </div>
-    
-    <div class="footer-links">
-      <h4>Support</h4>
-      <ul>
-        <li><a href="#" id="footerWa2" target="_blank" rel="noopener">💬 WhatsApp Enquiry</a></li>
-        <li><a href="#">Shipping Policy</a></li>
-        <li><a href="#">Privacy Policy</a></li>
-      </ul>
-    </div>
-    
-    <div class="footer-newsletter">
-      <h4>Stay Updated</h4>
-      <p>Be the first to know about new arrivals and exclusive offers.</p>
-      <form class="newsletter-form" id="newsletterForm">
-        <input type="email" placeholder="Enter your email" class="newsletter-input">
-        <button type="submit" class="newsletter-btn">→</button>
-      </form>
-    </div>
-  </div>
-  
-  <div class="footer-bottom">
-    <span class="footer-copy">© <span id="year"></span> Style OF Life — All rights reserved</span>
-    <span class="footer-tagline">✦ Crafted with care, updated live</span>
-  </div>
-</footer>
 
-<!-- ===== FLOATING WHATSAPP ===== -->
-<a href="#" id="floatWa" class="float-wa" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
-  <svg width="28" height="28" viewBox="0 0 32 32" fill="#fff">
-    <path d="M16 3C9 3 3 9 3 16c0 2.6.8 5 2.1 7L3 29l6.2-2c1.9 1 4.1 1.6 6.4 1.6 7 0 13-6 13-13.1S23 3 16 3zm7.6 18.5c-.3.9-1.7 1.7-2.4 1.8-.6.1-1.4.1-2.2-.1-.5-.2-1.2-.4-2-.8-3.5-1.5-5.8-5-6-5.3-.2-.3-1.4-1.9-1.4-3.6s.9-2.6 1.3-2.9c.3-.3.7-.4 1-.4h.7c.2 0 .5 0 .8.6.3.7 1 2.4 1.1 2.6.1.2.2.4 0 .7-.1.3-.2.4-.4.7-.2.2-.4.5-.6.6-.2.2-.4.4-.2.8.2.4 1 1.6 2.1 2.6 1.4 1.3 2.6 1.7 3 1.9.4.2.6.1.8-.1.2-.3.9-1 1.1-1.4.2-.3.5-.3.8-.2.3.1 2 1 2.4 1.1.4.2.6.3.7.4.1.2.1.9-.2 1.8z"/>
-  </svg>
-</a>
+      <!-- Orders Panel -->
+      <div class="admin-panel" id="ordersPanel" style="display:none;">
+        <div class="admin-panel-header">
+          <div>
+            <h2>🛍️ Order Management</h2>
+            <span class="panel-sub">View and manage all customer orders</span>
+          </div>
+          <div>
+            <button class="btn-secondary" onclick="refreshOrders()">
+              🔄 Refresh
+            </button>
+          </div>
+        </div>
 
-<!-- ===== PRODUCT MODAL ===== -->
-<div class="modal-backdrop" id="modalBackdrop">
-  <div class="modal" id="modalBody"></div>
+        <!-- Order Stats -->
+        <div class="order-stats-grid">
+          <div class="stat-card mini">
+            <div class="stat-number" id="ordersCount">0</div>
+            <div class="stat-label">Total Orders</div>
+          </div>
+          <div class="stat-card mini">
+            <div class="stat-number" id="pendingCount">0</div>
+            <div class="stat-label">Pending</div>
+          </div>
+          <div class="stat-card mini">
+            <div class="stat-number" id="shippedCount">0</div>
+            <div class="stat-label">In Transit</div>
+          </div>
+          <div class="stat-card mini">
+            <div class="stat-number" id="deliveredCount">0</div>
+            <div class="stat-label">Delivered</div>
+          </div>
+          <div class="stat-card mini highlight">
+            <div class="stat-number" id="totalRevenue">₹0</div>
+            <div class="stat-label">Total Revenue</div>
+          </div>
+        </div>
+
+        <!-- Order Filters -->
+        <div class="order-filters">
+          <select id="orderStatusFilter" class="filter-select">
+            <option value="all">All Status</option>
+            <option value="pending">⏳ Pending</option>
+            <option value="confirmed">✅ Confirmed</option>
+            <option value="processing">🔧 Processing</option>
+            <option value="shipped">🚚 Shipped</option>
+            <option value="delivered">📦 Delivered</option>
+            <option value="cancelled">❌ Cancelled</option>
+          </select>
+          <input type="text" id="orderSearch" placeholder="🔍 Search orders…" class="filter-search">
+        </div>
+
+        <!-- Order List -->
+        <div class="order-list" id="orderList">
+          <div class="empty-state">
+            <span class="empty-icon">📭</span>
+            <h3>No orders yet</h3>
+            <p>Orders will appear here when customers place them.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Panel -->
+      <div class="admin-panel" id="settingsPanel">
+        <div class="admin-panel-header">
+          <div>
+            <h2>⚙️ Settings</h2>
+            <span class="panel-sub">Manage your store configuration</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>WhatsApp Business Number</label>
+          <input type="text" id="settingsWhatsApp" placeholder="e.g. 916352925472" value="916352925472">
+          <p style="font-size:0.75rem;color:var(--admin-text-light);margin-top:4px;">Enter with country code, no spaces or + sign</p>
+        </div>
+
+        <div class="form-group">
+          <label>Store Name</label>
+          <input type="text" id="settingsStoreName" placeholder="Style OF Life" value="Style OF Life">
+        </div>
+
+        <div class="form-group">
+          <label>Currency</label>
+          <select id="settingsCurrency">
+            <option value="₹">₹ (INR)</option>
+            <option value="$">$ (USD)</option>
+            <option value="€">€ (EUR)</option>
+            <option value="£">£ (GBP)</option>
+          </select>
+        </div>
+
+        <button class="btn-submit" onclick="saveSettings()">
+          <span>💾</span> Save Settings
+        </button>
+        <div class="form-msg" id="settingsMsg"></div>
+      </div>
+
+    </div>
+
+  </main>
 </div>
 
-<!-- ===== ORDER MODAL ===== -->
-<div class="order-modal" id="orderModal">
-  <div class="order-modal-backdrop" id="orderModalBackdrop"></div>
-  <div class="order-modal-content">
-    <button class="modal-close-btn" onclick="closeOrderModal()">✕</button>
-    <h2>🛍️ Place Your Order</h2>
-    <p style="color:var(--color-muted);margin-bottom:16px;">Fill in your details to complete your purchase.</p>
-    
-    <div class="product-summary">
-      <span id="orderProductName">Product Name</span>
-      <span class="price" id="orderProductPrice">₹0</span>
-    </div>
-    
-    <form class="order-form" id="orderForm">
-      <input type="hidden" id="orderProductId">
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label>Full Name *</label>
-          <input type="text" id="customerName" required placeholder="Your full name">
-        </div>
-        <div class="form-group">
-          <label>Email *</label>
-          <input type="email" id="customerEmail" required placeholder="your@email.com">
-        </div>
-      </div>
-      
-      <div class="form-group">
-        <label>Phone Number *</label>
-        <input type="tel" id="customerPhone" required placeholder="10-digit mobile number">
-      </div>
-      
-      <div class="form-group">
-        <label>Delivery Address *</label>
-        <textarea id="customerAddress" required placeholder="Street address, building, apartment"></textarea>
-      </div>
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label>City *</label>
-          <input type="text" id="customerCity" required placeholder="Your city">
-        </div>
-        <div class="form-group">
-          <label>State *</label>
-          <input type="text" id="customerState" required placeholder="Your state">
-        </div>
-      </div>
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label>Pincode *</label>
-          <input type="text" id="customerPincode" required placeholder="6-digit pincode">
-        </div>
-        <div class="form-group">
-          <label>Quantity</label>
-          <input type="number" id="orderQuantity" value="1" min="1" max="10">
-        </div>
-      </div>
-      
-      <div class="form-group">
-        <label>Payment Method</label>
-        <select id="paymentMethod">
-          <option value="prepaid">💳 Prepaid (UPI/Card)</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label>Order Notes (Optional)</label>
-        <textarea id="orderNotes" placeholder="Any special instructions or delivery notes"></textarea>
-      </div>
-      
-      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">
-        🛍️ Place Order
-      </button>
-    </form>
-    
-    <div class="order-success" id="orderSuccess">
-      <span class="success-icon">✅</span>
-      <h3>Order Placed Successfully!</h3>
-      <p>Your order number is:</p>
-      <div class="order-number-display" id="orderNumberDisplay">SOL24010001</div>
-      <p style="color:var(--color-muted);font-size:0.85rem;">
-        We'll send you a confirmation on WhatsApp shortly.
-      </p>
-      <button class="btn btn-secondary" onclick="closeOrderModal()" style="margin-top:12px;">
-        Continue Shopping
-      </button>
-    </div>
-  </div>
-</div>
+<!-- ===== TOAST CONTAINER ===== -->
+<div class="toast-container" id="toastContainer"></div>
 
-<!-- ===== SCRIPTS ===== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/config.js"></script>
-<script src="assets/app.js"></script>
+<script src="assets/admin.js"></script>
 </body>
 </html>
