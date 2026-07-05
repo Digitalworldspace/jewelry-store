@@ -112,6 +112,9 @@
             <div class="product-card-overlay">
               <span>👁️ Quick View</span>
             </div>
+            <button class="product-card-order-btn" onclick="event.stopPropagation(); openOrderForm('${p.id}', '${escapeHtml(p.name)}', '${p.price}')">
+              🛍️ Buy Now
+            </button>
           </div>
           <div class="product-card-info">
             <div class="product-card-category">${escapeHtml(p.category || "Uncategorised")}</div>
@@ -129,7 +132,9 @@
     }).join("");
 
     grid.querySelectorAll(".product-card").forEach((card) => {
-      card.addEventListener("click", () => {
+      card.addEventListener("click", (e) => {
+        // Don't open modal if clicking the order button
+        if (e.target.closest(".product-card-order-btn")) return;
         const p = allProducts.find((x) => String(x.id) === card.dataset.id);
         if (p) openModal(p);
       });
@@ -159,7 +164,10 @@
           ` : ""}
         </div>
         <p class="modal-description">${escapeHtml(p.description || "No description added yet.")}</p>
-        <a class="btn btn-primary" href="${waLink}" target="_blank" rel="noopener" style="width:100%;justify-content:center;">
+        <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="closeModal(); openOrderForm('${p.id}', '${escapeHtml(p.name)}', '${p.price}')">
+          🛍️ Buy Now
+        </button>
+        <a class="btn btn-secondary" href="${waLink}" target="_blank" rel="noopener" style="width:100%;justify-content:center;margin-top:8px;">
           <span class="btn-icon">💬</span> Enquire on WhatsApp
         </a>
       </div>
@@ -187,6 +195,107 @@
     activeSearch = e.target.value;
     renderGrid();
   });
+
+  // ===== ORDER FUNCTIONS =====
+  window.openOrderForm = function(productId, productName, productPrice) {
+    document.getElementById("orderProductName").textContent = productName;
+    document.getElementById("orderProductPrice").textContent = "₹" + Number(productPrice).toLocaleString("en-IN");
+    document.getElementById("orderProductId").value = productId;
+    
+    document.getElementById("orderModal").style.display = "flex";
+    document.body.style.overflow = "hidden";
+  };
+
+  window.closeOrderModal = function() {
+    document.getElementById("orderModal").style.display = "none";
+    document.getElementById("orderForm").style.display = "block";
+    document.getElementById("orderSuccess").style.display = "none";
+    document.getElementById("orderForm").reset();
+    document.body.style.overflow = "";
+  };
+
+  // Close order modal on backdrop click
+  document.getElementById("orderModalBackdrop").addEventListener("click", function(e) {
+    if (e.target === this) closeOrderModal();
+  });
+
+  // ===== SUBMIT ORDER =====
+  const orderForm = document.getElementById("orderForm");
+  orderForm.addEventListener("submit", async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "⏳ Placing Order...";
+
+    const productId = document.getElementById("orderProductId").value;
+    const productName = document.getElementById("orderProductName").textContent;
+    const productPriceText = document.getElementById("orderProductPrice").textContent;
+    const productPrice = parseFloat(productPriceText.replace(/[₹,]/g, ""));
+    const quantity = parseInt(document.getElementById("orderQuantity").value) || 1;
+
+    const formData = {
+      customer_name: document.getElementById("customerName").value.trim(),
+      customer_email: document.getElementById("customerEmail").value.trim(),
+      customer_phone: document.getElementById("customerPhone").value.trim(),
+      customer_address: document.getElementById("customerAddress").value.trim(),
+      city: document.getElementById("customerCity").value.trim(),
+      state: document.getElementById("customerState").value.trim(),
+      pincode: document.getElementById("customerPincode").value.trim(),
+      product_id: productId,
+      product_name: productName,
+      product_price: productPrice,
+      quantity: quantity,
+      total_amount: productPrice * quantity,
+      payment_method: document.getElementById("paymentMethod").value,
+      notes: document.getElementById("orderNotes").value.trim(),
+      status: "pending"
+    };
+
+    try {
+      const { data, error } = await window.supabaseClient
+        .from("orders")
+        .insert([formData])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Show success
+      orderForm.style.display = "none";
+      document.getElementById("orderSuccess").style.display = "block";
+      document.getElementById("orderNumberDisplay").textContent = data.order_number;
+
+      // Send WhatsApp notification
+      sendWhatsAppNotification(data);
+
+    } catch (err) {
+      alert("Failed to place order: " + err.message);
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+
+  function sendWhatsAppNotification(order) {
+    const message = encodeURIComponent(
+      `🛍️ *New Order Received!*\n\n` +
+      `📦 Order: ${order.order_number}\n` +
+      `👤 Customer: ${order.customer_name}\n` +
+      `📞 Phone: ${order.customer_phone}\n` +
+      `📧 Email: ${order.customer_email}\n` +
+      `🏷️ Product: ${order.product_name}\n` +
+      `💰 Amount: ₹${Number(order.total_amount).toLocaleString("en-IN")}\n` +
+      `📍 Address: ${order.customer_address}, ${order.city}, ${order.state} - ${order.pincode}\n\n` +
+      `Please confirm and process this order.`
+    );
+    
+    const waLink = window.WHATSAPP_NUMBER 
+      ? `https://wa.me/${window.WHATSAPP_NUMBER.replace(/\s/g, "")}?text=${message}`
+      : "#";
+    
+    window.open(waLink, "_blank");
+  }
 
   async function loadProducts() {
     grid.innerHTML = `
