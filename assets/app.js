@@ -96,6 +96,9 @@
             <span class="price">${formatPrice(p.price)}</span>
             ${off > 0 ? `<span class="mrp">${formatPrice(p.original_price)}</span><span class="off">${off}% off</span>` : ""}
           </div>
+          <div class="actions">
+            <button class="btn-buy" data-buy="${p.id}">Buy Now</button>
+          </div>
         </div>
       </article>
     `;
@@ -105,6 +108,13 @@
       card.addEventListener("click", () => {
         const p = allProducts.find((x) => String(x.id) === card.dataset.id);
         if (p) openModal(p);
+      });
+    });
+    grid.querySelectorAll("[data-buy]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const p = allProducts.find((x) => String(x.id) === btn.dataset.buy);
+        if (p) openCheckout(p);
       });
     });
   }
@@ -129,10 +139,17 @@
           ${off > 0 ? `<span class="mrp">${formatPrice(p.original_price)}</span><span class="off">${off}% off</span>` : ""}
         </div>
         <p class="desc">${escapeHtml(p.description || "No description added yet.")}</p>
-        <a class="btn" href="${waLink}" target="_blank" rel="noopener"><span class="shine"></span>Enquire on WhatsApp</a>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button class="btn gold" id="modalBuyNow"><span class="shine"></span>Buy Now</button>
+          <a class="btn ghost" href="${waLink}" target="_blank" rel="noopener"><span class="shine"></span>Enquire on WhatsApp</a>
+        </div>
       </div>
     `;
     modalBody.querySelector(".close").addEventListener("click", closeModal);
+    modalBody.querySelector("#modalBuyNow").addEventListener("click", () => {
+      closeModal();
+      openCheckout(p);
+    });
     modalBackdrop.classList.add("open");
   }
 
@@ -145,6 +162,118 @@
   });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeModal();
+  });
+
+  // ---------------- Checkout / Buy Now ----------------
+  const checkoutBackdrop = document.getElementById("checkoutBackdrop");
+  const checkoutBody = document.getElementById("checkoutBody");
+
+  function closeCheckout() {
+    checkoutBackdrop.classList.remove("open");
+    checkoutBody.innerHTML = "";
+  }
+  checkoutBackdrop.addEventListener("click", (e) => {
+    if (e.target === checkoutBackdrop) closeCheckout();
+  });
+
+  function openCheckout(p) {
+    checkoutBody.innerHTML = `
+      <div class="modal-body">
+        <button class="close" aria-label="Close">&times;</button>
+        <h2>Complete your order</h2>
+        <div class="co-product">
+          ${p.image_url ? `<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}">` : ""}
+          <div>
+            <div class="name">${escapeHtml(p.name)}</div>
+            <div class="price">${formatPrice(p.price)}</div>
+          </div>
+        </div>
+        <form id="checkoutForm">
+          <div class="field">
+            <label>Full name</label>
+            <input type="text" id="coName" required>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label>Phone number</label>
+              <input type="tel" id="coPhone" required>
+            </div>
+            <div class="field">
+              <label>Quantity</label>
+              <input type="number" id="coQty" min="1" value="1" required>
+            </div>
+          </div>
+          <div class="field">
+            <label>Delivery address</label>
+            <textarea id="coAddress" required placeholder="House no, street, city, state, PIN code"></textarea>
+          </div>
+          <button class="btn gold" type="submit" style="width:100%; justify-content:center;"><span class="shine"></span>Place order — Cash on Delivery</button>
+          <div class="msg" id="checkoutMsg"></div>
+        </form>
+      </div>
+    `;
+    checkoutBody.querySelector(".close").addEventListener("click", closeCheckout);
+
+    checkoutBody.querySelector("#checkoutForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = checkoutBody.querySelector("#checkoutMsg");
+      const name = checkoutBody.querySelector("#coName").value.trim();
+      const phone = checkoutBody.querySelector("#coPhone").value.trim();
+      const qty = parseInt(checkoutBody.querySelector("#coQty").value, 10) || 1;
+      const address = checkoutBody.querySelector("#coAddress").value.trim();
+
+      if (!name || !phone || !address) {
+        msg.textContent = "Please fill in all fields.";
+        msg.className = "msg error";
+        return;
+      }
+
+      msg.textContent = "Placing your order…";
+      msg.className = "msg";
+
+      const { error } = await window.supabaseClient.from("orders").insert([{
+        product_id: p.id,
+        product_name: p.name,
+        unit_price: p.price,
+        quantity: qty,
+        customer_name: name,
+        customer_phone: phone,
+        customer_address: address,
+        status: "Pending"
+      }]);
+
+      if (error) {
+        msg.textContent = "Couldn't place the order: " + error.message;
+        msg.className = "msg error";
+        return;
+      }
+
+      const waText = encodeURIComponent(
+        `Hi! I just placed an order on the website:\n\n` +
+        `Product: ${p.name}\nQty: ${qty}\nPrice: ${formatPrice(p.price)} each\n\n` +
+        `Name: ${name}\nPhone: ${phone}\nAddress: ${address}\n\nPlease confirm my order. Thank you!`
+      );
+      const waLink = window.WHATSAPP_NUMBER ? `https://wa.me/${window.WHATSAPP_NUMBER}?text=${waText}` : "#";
+
+      checkoutBody.innerHTML = `
+        <div class="modal-body">
+          <button class="close" aria-label="Close">&times;</button>
+          <div class="checkout-success">
+            <div class="tick">✓</div>
+            <h2>Order received!</h2>
+            <p>We've noted your order for <strong>${escapeHtml(p.name)}</strong>. Tap below to confirm it instantly on WhatsApp so we can get it packed and shipped.</p>
+            <a class="btn gold" href="${waLink}" target="_blank" rel="noopener"><span class="shine"></span>Confirm on WhatsApp</a>
+          </div>
+        </div>
+      `;
+      checkoutBody.querySelector(".close").addEventListener("click", closeCheckout);
+    });
+
+    checkoutBackdrop.classList.add("open");
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeCheckout();
   });
 
   searchBox.addEventListener("input", (e) => {
