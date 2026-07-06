@@ -675,3 +675,94 @@ img{ max-width:100%; display:block; }
 .faq-item.open .plus{ transform:rotate(45deg); }
 .faq-a{ max-height:0; overflow:hidden; transition:max-height .3s ease; color:var(--muted); font-size:.94rem; line-height:1.75; }
 .faq-item.open .faq-a{ padding-bottom:22px; }
+
+/* ============================================================
+   FULL-SITE MOTION LAYER
+   ============================================================ */
+
+/* top scroll progress bar */
+.scroll-progress{
+  position:fixed; top:0; left:0; height:3px; width:0%;
+  background:linear-gradient(90deg, var(--oxblood), var(--gold));
+  z-index:200;
+  transition:width .1s linear;
+}
+
+/* header gets a shadow once you scroll */
+.site-header{ transition:box-shadow .25s ease; }
+.site-header.scrolled{ box-shadow:0 10px 26px rgba(0,0,0,.3); }
+
+/* animated nav underline */
+.header-links a:not(.cta-mini){ position:relative; }
+.header-links a:not(.cta-mini)::after{
+  content:""; position:absolute; left:0; bottom:-5px; width:0; height:1px;
+  background:var(--gold-2); transition:width .25s ease;
+}
+.header-links a:not(.cta-mini):hover::after{ width:100%; }
+
+/* hero staggered entrance */
+@keyframes fadeUp{ from{ opacity:0; transform:translateY(26px); } to{ opacity:1; transform:translateY(0); } }
+.hero-inner > *{ opacity:0; animation:fadeUp .8s cubic-bezier(.2,.7,.3,1) forwards; }
+.hero-inner > *:nth-child(1){ animation-delay:.05s; }
+.hero-inner > *:nth-child(2){ animation-delay:.16s; }
+.hero-inner > *:nth-child(3){ animation-delay:.28s; }
+.hero-inner > *:nth-child(4){ animation-delay:.4s; }
+.hero-inner > *:nth-child(5){ animation-delay:.52s; }
+.stat-badge{ opacity:0; animation:fadeUp .8s ease forwards; animation-delay:.7s; }
+.stat-badge:nth-of-type(2){ animation-delay:.85s; }
+.hero-motif{ animation:float 7s ease-in-out infinite; }
+@keyframes float{ 0%,100%{ transform:translateY(0) rotate(0deg); } 50%{ transform:translateY(-14px) rotate(1.5deg); } }
+
+/* generic scroll-reveal (activated via JS adding .in-view) */
+.reveal{
+  opacity:0; transform:translateY(30px);
+  transition:opacity .7s ease, transform .7s cubic-bezier(.2,.7,.3,1);
+}
+.reveal.in-view{ opacity:1; transform:translateY(0); }
+.reveal-group > .reveal:nth-child(1){ transition-delay:0s; }
+.reveal-group > .reveal:nth-child(2){ transition-delay:.08s; }
+.reveal-group > .reveal:nth-child(3){ transition-delay:.16s; }
+.reveal-group > .reveal:nth-child(4){ transition-delay:.24s; }
+.reveal-group > .reveal:nth-child(5){ transition-delay:.32s; }
+.reveal-group > .reveal:nth-child(6){ transition-delay:.4s; }
+
+/* pause marquee on hover so it's readable */
+.marquee-wrap:hover .marquee-track{ animation-play-state:paused; }
+
+/* button shine sweep */
+.btn{ position:relative; overflow:hidden; }
+.btn .shine{
+  position:absolute; top:0; left:-60%; width:35%; height:100%;
+  background:linear-gradient(120deg, transparent, rgba(255,255,255,.4), transparent);
+  transform:skewX(-20deg);
+  transition:left .55s ease;
+  pointer-events:none;
+}
+.btn:hover .shine{ left:130%; }
+
+/* chip / card / footer micro-interactions */
+.chip{ transition:all .2s ease, transform .2s ease; }
+.chip:hover{ transform:translateY(-2px); }
+.why-card{ transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+.why-card:hover{ transform:translateY(-5px); box-shadow:var(--shadow-sm); border-color:var(--gold); }
+.compare-col{ transition:transform .25s ease; }
+.compare-col:hover{ transform:translateY(-4px); }
+.trust-item .ico{ transition:transform .25s ease, background .25s ease; }
+.trust-item:hover .ico{ transform:scale(1.12) rotate(-6deg); background:var(--gold); color:var(--ivory-2); border-color:var(--gold); }
+.footer-grid a{ position:relative; transition:color .2s; padding-bottom:1px; }
+.footer-grid a::after{
+  content:""; position:absolute; left:0; bottom:-2px; width:0; height:1px; background:var(--gold-2);
+  transition:width .25s ease;
+}
+.footer-grid a:hover::after{ width:100%; }
+.float-wa{ transition:transform .2s ease; }
+.float-wa:hover{ transform:scale(1.08); }
+
+/* faq plus rotate already present; add smooth color transition */
+.faq-q{ transition:color .2s ease; }
+.faq-q:hover{ color:var(--oxblood); }
+
+@media (prefers-reduced-motion: reduce){
+  .hero-inner > *, .stat-badge, .reveal{ animation:none !important; opacity:1 !important; transform:none !important; transition:none !important; }
+  .hero-motif{ animation:none !important; }
+}
