@@ -129,7 +129,7 @@
           ${off > 0 ? `<span class="mrp">${formatPrice(p.original_price)}</span><span class="off">${off}% off</span>` : ""}
         </div>
         <p class="desc">${escapeHtml(p.description || "No description added yet.")}</p>
-        <a class="btn" href="${waLink}" target="_blank" rel="noopener">Enquire on WhatsApp</a>
+        <a class="btn" href="${waLink}" target="_blank" rel="noopener"><span class="shine"></span>Enquire on WhatsApp</a>
       </div>
     `;
     modalBody.querySelector(".close").addEventListener("click", closeModal);
@@ -196,10 +196,78 @@
     });
   }
 
+  function wireScrollFx() {
+    const bar = document.getElementById("scrollProgress");
+    const header = document.querySelector(".site-header");
+    function onScroll() {
+      const h = document.documentElement;
+      const scrolled = h.scrollTop || document.body.scrollTop;
+      const max = h.scrollHeight - h.clientHeight;
+      if (bar) bar.style.width = (max > 0 ? (scrolled / max) * 100 : 0) + "%";
+      if (header) header.classList.toggle("scrolled", scrolled > 8);
+    }
+    document.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  }
+
+  function wireReveals() {
+    const els = document.querySelectorAll(".reveal");
+    if (!els.length) return;
+    if (!("IntersectionObserver" in window)) {
+      els.forEach((el) => el.classList.add("in-view"));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in-view");
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+    els.forEach((el) => io.observe(el));
+  }
+
+  function wireCountUp() {
+    const badges = document.querySelectorAll(".stat-badge b[data-count]");
+    if (!badges.length) return;
+    const animate = (el) => {
+      const target = parseFloat(el.dataset.count);
+      const decimals = parseInt(el.dataset.decimal || "0", 10);
+      const suffix = el.dataset.suffix || "";
+      const duration = 1200;
+      const start = performance.now();
+      function tick(now) {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const val = target * eased;
+        el.textContent = val.toFixed(decimals) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    };
+    if (!("IntersectionObserver" in window)) {
+      badges.forEach(animate);
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          animate(entry.target);
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.6 });
+    badges.forEach((b) => io.observe(b));
+  }
+
   const yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   wireWhatsAppLinks();
   wireFaq();
+  wireScrollFx();
+  wireReveals();
+  wireCountUp();
   loadProducts();
 })();
