@@ -43,16 +43,31 @@ That's your backend fully live. No further Supabase setup needed.
 
 ## 4. Using it day to day
 
-- Open `admin.html`, sign in with the admin account you created in step 1.4.
+**Managing products**
+- Open `admin.html` directly (it's no longer linked from the public storefront — bookmark it). Sign in with the admin account you created in step 1.4.
 - Fill in name, price, category, description, and choose a JPEG/PNG photo.
   - **MRP / original price** is optional — fill it in only when there's a real discount; the storefront will automatically show a strikethrough price and "% off".
   - **Badge** (New / Bestseller / Sale / Limited Stock) is optional and yours to set honestly — it's shown as a ribbon on the product card.
-- Click **Upload & publish live** — the photo goes to Supabase Storage, the product row is saved, and it appears on `index.html` immediately (open it in another tab to watch it appear without refreshing).
+- Click **Upload & publish live** — it appears on `index.html` immediately.
 - To remove a piece, click **Remove** next to it in the admin panel's product list.
+
+**Handling orders (Buy Now)**
+- Every product card and quick-view has a **Buy Now** button. A customer fills in their name, phone, quantity, and address, and it's saved straight into your Supabase `orders` table — no payment gateway involved, this is a cash-on-delivery style order request.
+- After placing an order, the customer gets a **"Confirm on WhatsApp"** button that opens a pre-filled message to your WhatsApp number, so you can confirm the order with them directly.
+- In `admin.html`, switch to the **Orders** tab to see every order live (it updates in real time), with a WhatsApp shortcut to message that customer and a status dropdown (Pending → Confirmed → Shipped → Delivered, or Cancelled).
+- The Orders tab badge shows how many orders are still **Pending**.
+
+## Why "Admin" isn't in the storefront menu
+
+The admin link was removed from the public header and footer so casual visitors don't stumble onto the login screen — `admin.html` still works exactly the same if you go to it directly (e.g. `yoursite.com/admin.html`), just bookmark it for yourself. This isn't real access control by itself — that's handled by Supabase Auth and the RLS policies in `supabase-setup.sql` — it just keeps the storefront focused on customers.
 
 ## Important: keep the trust messaging honest
 
-The homepage includes a top banner, a trust bar, and a "Why shop with us" section mentioning things like free shipping, cash on delivery, and 7-day returns. **Edit these in `index.html` to match your actual policies** before you go live — search for the text in the `.announce`, `.trust-bar`, and `#why` sections. Don't leave claims that aren't true for your store; it's both a trust issue with customers and, depending on your region, can have legal implications for advertising.
+The homepage includes a top banner, a trust bar, and a "Why shop with us" section mentioning things like free shipping, cash on delivery, and 7-day returns. **Edit these in `index.html` to match your actual policies** before you go live — search for the text in the `.announce`, `.trust-bar`, and `#why` sections. Don't leave claims that aren't true for your store; it's both a trust issue with customers and, depending on your region, can have legal implications for advertising. The same applies to the FAQ answers and hero stat badges (500+ / 4.9★) — replace the placeholders with your real numbers.
+
+## A note on the orders table's security
+
+Anyone visiting the site can *create* an order (that's required — customers aren't logged in when they check out), but nobody except your signed-in admin account can *read, edit, or delete* orders. This is enforced by the RLS policies in `supabase-setup.sql`, not by hiding the admin link. If you start getting spammy fake orders, consider adding a CAPTCHA or a phone-verification step — that would need a bit more setup than covered here.
 
 ## Security notes — please read
 
@@ -64,16 +79,5 @@ The homepage includes a top banner, a trust bar, and a "Why shop with us" sectio
 ## Customising
 
 - Store name: edit the `<a class="brand">` text in `index.html` and `admin.html`.
-- WhatsApp enquiry number: edit `WHATSAPP_NUMBER` in `assets/config.js` (remove spaces and + sign).
+- WhatsApp enquiry number: edit `WHATSAPP_NUMBER` in `assets/config.js`.
 - Colours/fonts: edit the `:root` variables at the top of `assets/style.css`.
-
-## Design enhancements
-
-The store features:
-- ✨ Smooth animations and transitions throughout
-- 🎨 Rich colour palette inspired by antique jewellery
-- 📱 Fully responsive for all device sizes
-- 💬 Integrated WhatsApp business chat
-- 🔄 Real-time product updates without page refresh
-- 🏷️ Product badges for promotions
-- 📸 Image modal for product details
