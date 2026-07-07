@@ -207,7 +207,7 @@
             <label>Delivery address</label>
             <textarea id="coAddress" required placeholder="House no, street, city, state, PIN code"></textarea>
           </div>
-          <button class="btn gold" type="submit" style="width:100%; justify-content:center;"><span class="shine"></span>Place order — Cash on Delivery</button>
+          <button class="btn gold" type="submit" style="width:100%; justify-content:center;"><span class="shine"></span>Submit order request</button>
           <div class="msg" id="checkoutMsg"></div>
         </form>
       </div>
@@ -261,7 +261,7 @@
           <div class="checkout-success">
             <div class="tick">✓</div>
             <h2>Order received!</h2>
-            <p>We've noted your order for <strong>${escapeHtml(p.name)}</strong>. Tap below to confirm it instantly on WhatsApp so we can get it packed and shipped.</p>
+            <p>We've noted your order request for <strong>${escapeHtml(p.name)}</strong>. Tap below to confirm it on WhatsApp — we'll get back to you with payment details and delivery timeline there.</p>
             <a class="btn gold" href="${waLink}" target="_blank" rel="noopener"><span class="shine"></span>Confirm on WhatsApp</a>
           </div>
         </div>
@@ -281,6 +281,69 @@
     renderGrid();
   });
 
+  function renderShowroom() {
+    const stage = document.getElementById("showroomStage");
+    const content = document.getElementById("showroomContent");
+    if (!stage || !content) return;
+
+    if (!allProducts.length) {
+      content.innerHTML = `<div class="showroom-empty">Add your first pieces in the admin panel — they'll take their place here automatically.</div>`;
+      return;
+    }
+
+    const picks = allProducts.slice(0, 7);
+    const center = picks[0];
+    const orbit = picks.slice(1, 7);
+
+    const centerHtml = `
+      <div class="showroom-center" data-id="${center.id}">
+        ${center.image_url ? `<img src="${escapeHtml(center.image_url)}" alt="${escapeHtml(center.name)}">` : ""}
+        <div class="tag">${escapeHtml(center.name)}</div>
+      </div>
+    `;
+    const orbitHtml = orbit.map((p, i) => `
+      <div class="showroom-item" data-id="${p.id}" data-pos="${i + 1}">
+        ${p.image_url ? `<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}">` : ""}
+      </div>
+    `).join("");
+
+    content.innerHTML = centerHtml + orbitHtml;
+
+    content.querySelectorAll("[data-id]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const prod = allProducts.find((x) => String(x.id) === el.dataset.id);
+        if (prod) openModal(prod);
+      });
+    });
+
+    // Re-trigger the settle-into-place animation for the freshly rendered items
+    stage.classList.remove("in-view");
+    if (showroomObserved) {
+      requestAnimationFrame(() => stage.classList.add("in-view"));
+    }
+  }
+
+  let showroomObserved = false;
+  function wireShowroomReveal() {
+    const stage = document.getElementById("showroomStage");
+    if (!stage) return;
+    if (!("IntersectionObserver" in window)) {
+      showroomObserved = true;
+      stage.classList.add("in-view");
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          showroomObserved = true;
+          stage.classList.add("in-view");
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.25 });
+    io.observe(stage);
+  }
+
   async function loadProducts() {
     grid.innerHTML = `<div class="state-msg">Loading the collection…</div>`;
     const { data, error } = await window.supabaseClient
@@ -295,6 +358,7 @@
     allProducts = data || [];
     renderChips();
     renderGrid();
+    renderShowroom();
   }
 
   // Live updates: new / edited / removed products from the admin
@@ -398,5 +462,6 @@
   wireScrollFx();
   wireReveals();
   wireCountUp();
+  wireShowroomReveal();
   loadProducts();
 })();
