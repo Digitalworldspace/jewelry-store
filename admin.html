@@ -36,12 +36,20 @@
       <button class="btn" type="submit">Sign in</button>
       <div class="msg" id="loginMsg"></div>
     </form>
+    <button class="small-link" id="forgotBtn" style="margin-top:6px">Forgot password?</button>
   </section>
 
   <section id="dashPanel" style="display:none">
     <p style="font-family:var(--font-mono);font-size:.8rem;color:#6b5c4f">
       Signed in as <span id="whoami"></span>
     </p>
+
+    <div class="stat-cards">
+      <div class="stat-card"><div class="v" id="statProducts">0</div><div class="l">Products live</div></div>
+      <div class="stat-card"><div class="v" id="statOrders">0</div><div class="l">Total orders</div></div>
+      <div class="stat-card"><div class="v" id="statPending">0</div><div class="l">Pending orders</div></div>
+      <div class="stat-card"><div class="v" id="statRevenue">₹0</div><div class="l">Confirmed+ revenue</div></div>
+    </div>
 
     <div class="tabs">
       <button class="tab-btn active" data-tab="products">Products</button>
@@ -50,7 +58,7 @@
 
     <div id="productsTab">
       <div class="panel">
-        <h2>Add a new piece</h2>
+        <h2 id="formTitle">Add a new piece</h2>
         <form id="uploadForm">
           <div class="row2">
             <div class="field">
@@ -59,7 +67,8 @@
             </div>
             <div class="field">
               <label>Category</label>
-              <input type="text" id="pCategory" placeholder="Earrings, Necklace, Bangles…">
+              <input type="text" id="pCategory" list="categoryList" placeholder="Earrings, Necklace, Bangles…">
+              <datalist id="categoryList"></datalist>
             </div>
           </div>
           <div class="row3">
@@ -87,26 +96,46 @@
             <textarea id="pDesc" placeholder="Material, style, care instructions…"></textarea>
           </div>
           <div class="field">
-            <label>Product image (JPEG / PNG / WEBP)</label>
-            <input type="file" id="pImage" accept="image/jpeg,image/png,image/webp" required>
+            <label id="pImageLabel">Product image (JPEG / PNG / WEBP)</label>
+            <input type="file" id="pImage" accept="image/jpeg,image/png,image/webp">
           </div>
-          <button class="btn" type="submit">Upload &amp; publish live</button>
+          <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+            <button class="btn" type="submit" id="formSubmitBtn">Upload &amp; publish live</button>
+            <button class="small-link" type="button" id="cancelEditBtn" style="display:none">Cancel edit</button>
+          </div>
           <div class="msg" id="uploadMsg"></div>
         </form>
       </div>
 
       <div class="panel">
-        <h2>Current catalog</h2>
+        <div class="panel-head">
+          <h2>Current catalog</h2>
+          <input class="search-box" id="productSearch" type="text" placeholder="Search your catalog…">
+        </div>
         <div class="admin-list" id="adminList">Loading…</div>
       </div>
     </div>
 
     <div id="ordersTab" style="display:none">
       <div class="panel">
-        <h2>Incoming orders</h2>
-        <p style="color:#6b5c4f;font-size:.9rem;margin-top:-10px">
+        <div class="panel-head">
+          <h2>Incoming orders</h2>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <input class="search-box" id="orderSearch" type="text" placeholder="Search name or phone…">
+            <button class="small-link" id="exportOrdersBtn">Export CSV</button>
+          </div>
+        </div>
+        <p style="color:#6b5c4f;font-size:.9rem;margin:-4px 0 16px">
           Placed live from the "Buy Now" button on the storefront. Update the status as you process each one — customers aren't notified automatically, so confirm with them on WhatsApp.
         </p>
+        <div class="admin-toolbar" id="orderFilters">
+          <button class="filter-chip active" data-status="All">All</button>
+          <button class="filter-chip" data-status="Pending">Pending</button>
+          <button class="filter-chip" data-status="Confirmed">Confirmed</button>
+          <button class="filter-chip" data-status="Shipped">Shipped</button>
+          <button class="filter-chip" data-status="Delivered">Delivered</button>
+          <button class="filter-chip" data-status="Cancelled">Cancelled</button>
+        </div>
         <div id="ordersList">Loading…</div>
       </div>
     </div>
