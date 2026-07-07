@@ -57,13 +57,17 @@ That's your backend fully live. No further Supabase setup needed.
 - In `admin.html`, switch to the **Orders** tab to see every order live (it updates in real time), with a WhatsApp shortcut to message that customer and a status dropdown (Pending → Confirmed → Shipped → Delivered, or Cancelled).
 - The Orders tab badge shows how many orders are still **Pending**.
 
+## The Showroom
+
+Right under the hero, "The Showroom" pulls your **most recently added product** into a large center spot and the next six into an orbiting diamond formation around it — all real, live data from your `products` table. The moment a visitor scrolls to it, the pieces fly in from off-screen and settle into place. Add a new product in the admin panel and it'll take its place in the showroom automatically (newest items show up first, since it uses the same "newest first" ordering as the rest of the site). If you have fewer than 7 products, the layout just uses however many you have.
+
 ## Why "Admin" isn't in the storefront menu
 
 The admin link was removed from the public header and footer so casual visitors don't stumble onto the login screen — `admin.html` still works exactly the same if you go to it directly (e.g. `yoursite.com/admin.html`), just bookmark it for yourself. This isn't real access control by itself — that's handled by Supabase Auth and the RLS policies in `supabase-setup.sql` — it just keeps the storefront focused on customers.
 
 ## Important: keep the trust messaging honest
 
-The homepage includes a top banner, a trust bar, and a "Why shop with us" section mentioning things like free shipping, cash on delivery, and 7-day returns. **Edit these in `index.html` to match your actual policies** before you go live — search for the text in the `.announce`, `.trust-bar`, and `#why` sections. Don't leave claims that aren't true for your store; it's both a trust issue with customers and, depending on your region, can have legal implications for advertising. The same applies to the FAQ answers and hero stat badges (500+ / 4.9★) — replace the placeholders with your real numbers.
+The homepage includes a top banner, a trust bar, and a "Why shop with us" section. These currently mention free shipping, WhatsApp-confirmed orders, handpicked quality, and gift-ready packaging — **make sure every claim is true for your store** before you go live (search `.announce`, `.trust-bar`, and `#why` in `index.html`). Don't leave claims that aren't accurate; it's both a trust issue with customers and, depending on your region, can have legal implications for advertising. The same applies to the FAQ answers and hero stat badges (500+ / 4.9★) — replace the placeholders with your real numbers and policies.
 
 ## A note on the orders table's security
 
