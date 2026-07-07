@@ -45,17 +45,21 @@ That's your backend fully live. No further Supabase setup needed.
 
 **Managing products**
 - Open `admin.html` directly (it's no longer linked from the public storefront — bookmark it). Sign in with the admin account you created in step 1.4.
-- Fill in name, price, category, description, and choose a JPEG/PNG photo.
+- The dashboard up top shows **live stats**: products live, total orders, pending orders, and revenue from Confirmed/Shipped/Delivered orders.
+- Fill in name, price, category (existing categories autocomplete as you type), description, and choose a JPEG/PNG photo.
   - **MRP / original price** is optional — fill it in only when there's a real discount; the storefront will automatically show a strikethrough price and "% off".
   - **Badge** (New / Bestseller / Sale / Limited Stock) is optional and yours to set honestly — it's shown as a ribbon on the product card.
 - Click **Upload & publish live** — it appears on `index.html` immediately.
-- To remove a piece, click **Remove** next to it in the admin panel's product list.
+- Use **Search your catalog** to quickly find a product in a long list.
+- Click **Edit** on any product to load it back into the form — change anything, optionally swap the photo, and click **Save changes**. Click **Cancel edit** to go back to adding a new piece.
+- Click **Remove** to delete a piece from the live store.
+- Forgot your password? Enter your email in the sign-in form and tap **Forgot password?** — Supabase will email you a reset link. (One-time setup: in Supabase, go to **Authentication → URL Configuration** and make sure your GitHub Pages URL is added under "Redirect URLs," or the reset link won't be allowed to complete.)
 
 **Handling orders (Buy Now)**
-- Every product card and quick-view has a **Buy Now** button. A customer fills in their name, phone, quantity, and address, and it's saved straight into your Supabase `orders` table — no payment gateway involved, this is a cash-on-delivery style order request.
-- After placing an order, the customer gets a **"Confirm on WhatsApp"** button that opens a pre-filled message to your WhatsApp number, so you can confirm the order with them directly.
-- In `admin.html`, switch to the **Orders** tab to see every order live (it updates in real time), with a WhatsApp shortcut to message that customer and a status dropdown (Pending → Confirmed → Shipped → Delivered, or Cancelled).
-- The Orders tab badge shows how many orders are still **Pending**.
+- Every product card and quick-view has a **Buy Now** button. A customer fills in their name, phone, quantity, and address, and it's saved straight into your Supabase `orders` table.
+- After placing an order, the customer gets a **"Confirm on WhatsApp"** button that opens a pre-filled message to your WhatsApp number, so you can confirm the order (and share payment details) with them directly.
+- In `admin.html`, switch to the **Orders** tab to see every order live (it updates in real time). Filter by status (Pending / Confirmed / Shipped / Delivered / Cancelled), search by customer name or phone, message them on WhatsApp with one click, and update status with the dropdown.
+- Click **Export CSV** to download all currently-filtered orders as a spreadsheet — handy for bookkeeping or bulk processing.
 
 ## The Showroom
 
