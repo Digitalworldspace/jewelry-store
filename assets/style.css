@@ -840,3 +840,252 @@ img{ max-width:100%; display:block; }
   padding:9px 18px; border:1px solid var(--line); border-radius:30px; background:transparent; cursor:pointer;
 }
 .tab-btn.active{ background:var(--oxblood); color:var(--ivory-2); border-color:var(--oxblood); }
+
+/* ============================================================
+   VIRTUAL SHOWROOM — 3D rotating product ring
+   ============================================================ */
+.showroom{
+  background:
+    radial-gradient(circle at 50% 15%, rgba(199,154,86,.14), transparent 55%),
+    var(--ink);
+  padding:11vh 6vw 13vh;
+  overflow:hidden;
+  position:relative;
+  border-bottom:1px solid var(--line);
+  color:var(--ivory);
+}
+.showroom .section-head h2{ color:var(--ivory); }
+.showroom .section-head p{ color:#B7A48C; }
+
+.showroom-stage{
+  position:relative;
+  height:520px;
+  margin-top:4vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  perspective:1500px;
+}
+.showroom-floor{
+  position:absolute;
+  bottom:6%;
+  width:70%;
+  height:80px;
+  left:50%;
+  transform:translateX(-50%);
+  background:radial-gradient(ellipse at center, rgba(199,154,86,.22), transparent 70%);
+  filter:blur(4px);
+}
+.showroom-diamond{
+  position:absolute;
+  width:64px; height:64px;
+  z-index:1;
+  animation:spinDiamond 7s linear infinite;
+  filter:drop-shadow(0 0 22px rgba(199,154,86,.55));
+}
+@keyframes spinDiamond{ from{ transform:rotateY(0deg) rotateX(8deg); } to{ transform:rotateY(360deg) rotateX(8deg); } }
+
+.showroom-orbit{
+  position:relative;
+  width:100%; height:100%;
+  transform-style:preserve-3d;
+}
+.showroom-orbit.spin-active{ animation:orbitSpin 32s linear infinite; }
+.showroom-orbit:hover{ animation-play-state:paused; }
+
+@keyframes orbitSpin{ from{ transform:rotateY(0deg); } to{ transform:rotateY(360deg); } }
+
+.orbit-item{
+  position:absolute; top:50%; left:50%;
+  width:150px; height:150px;
+  margin:-75px 0 0 -75px;
+  border-radius:50%;
+  overflow:hidden;
+  border:2px solid var(--gold);
+  box-shadow:0 14px 34px rgba(0,0,0,.45);
+  cursor:pointer;
+  backface-visibility:hidden;
+  opacity:0;
+  transition:transform 1.15s cubic-bezier(.16,.84,.44,1), opacity .7s ease, box-shadow .3s ease;
+}
+.orbit-item:hover{ box-shadow:0 0 0 7px rgba(199,154,86,.32), 0 18px 44px rgba(0,0,0,.55); }
+.orbit-item img{ width:100%; height:100%; object-fit:cover; }
+.orbit-item .orbit-label{
+  position:absolute; bottom:0; left:0; right:0;
+  background:linear-gradient(0deg, rgba(27,18,14,.85), transparent);
+  color:var(--gold-2);
+  font-family:var(--font-mono);
+  font-size:.58rem; letter-spacing:.05em;
+  text-align:center;
+  padding:20px 6px 8px;
+}
+
+.showroom-sparkles{ position:absolute; inset:0; pointer-events:none; z-index:2; }
+.sparkle{
+  position:absolute;
+  background:var(--gold-2);
+  border-radius:50%;
+  opacity:0;
+  animation:sparkleTwinkle 3.2s ease-in-out infinite;
+}
+@keyframes sparkleTwinkle{
+  0%,100%{ opacity:0; transform:scale(0); }
+  50%{ opacity:.9; transform:scale(1); }
+}
+
+.showroom-hint{
+  text-align:center;
+  margin-top:5vh;
+  font-family:var(--font-mono);
+  font-size:.7rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+@media (max-width:900px){
+  .showroom-stage{ height:400px; perspective:1000px; }
+  .orbit-item{ width:110px; height:110px; margin:-55px 0 0 -55px; }
+}
+@media (max-width:640px){
+  .showroom-stage{ height:340px; }
+  .orbit-item{ width:88px; height:88px; margin:-44px 0 0 -44px; }
+  .showroom-diamond{ width:44px; height:44px; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .showroom-diamond, .showroom-orbit.spin-active{ animation:none !important; }
+  .orbit-item{ transition:none !important; }
+}
+
+/* ============================================================
+   THE SHOWROOM — live product diamond-formation display
+   ============================================================ */
+.showroom-section{
+  background:var(--ink);
+  color:var(--ivory);
+  padding:12vh 6vw 14vh;
+  position:relative;
+  overflow:hidden;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.showroom-section .section-head{ padding-top:0; position:relative; z-index:3; }
+.showroom-section .section-head h2{ color:var(--ivory); }
+.showroom-section .section-head p{ color:#B7A48C; }
+
+.showroom-stage{
+  position:relative;
+  width:min(620px, 88vw);
+  aspect-ratio:1/1;
+  margin:8vh auto 6vh;
+}
+
+/* orbit rings + rotating prismatic glow */
+.showroom-ring{
+  position:absolute; inset:0;
+  border:1px dashed var(--line);
+  border-radius:50%;
+  animation:spinSlow 46s linear infinite;
+}
+.showroom-ring.ring2{ inset:9%; border-color:rgba(232,204,156,.22); animation-duration:64s; animation-direction:reverse; }
+@keyframes spinSlow{ to{ transform:rotate(360deg); } }
+
+.showroom-glow{
+  position:absolute; inset:-25%;
+  background:conic-gradient(from 0deg, transparent, rgba(199,154,86,.28), transparent 32%, transparent 60%, rgba(126,33,48,.22), transparent 92%);
+  filter:blur(46px);
+  animation:spinSlow 22s linear infinite;
+  z-index:0;
+}
+
+/* diamond sparkle particles */
+.sparkle{
+  position:absolute;
+  width:8px; height:8px;
+  background:var(--gold-2);
+  transform:rotate(45deg);
+  opacity:.2;
+  animation:twinkle 3.4s ease-in-out infinite;
+  z-index:1;
+  pointer-events:none;
+}
+@keyframes twinkle{
+  0%,100%{ opacity:.12; transform:rotate(45deg) scale(.55); }
+  50%{ opacity:1; transform:rotate(45deg) scale(1.15); }
+}
+
+/* center featured piece */
+.showroom-center{
+  position:absolute; top:50%; left:50%;
+  width:36%; aspect-ratio:1/1;
+  transform:translate(-50%,-50%) scale(.7);
+  border-radius:50%;
+  overflow:hidden;
+  border:2px solid var(--gold);
+  box-shadow:0 0 0 8px rgba(199,154,86,.08), 0 20px 50px rgba(0,0,0,.5);
+  z-index:5;
+  opacity:0;
+  transition:opacity 1s ease, transform 1s cubic-bezier(.2,.8,.2,1);
+  cursor:pointer;
+  background:#000;
+}
+.showroom-center img{ width:100%; height:100%; object-fit:cover; }
+.showroom-center .tag{
+  position:absolute; bottom:8%; left:50%; transform:translateX(-50%);
+  background:rgba(20,17,16,.75); backdrop-filter:blur(6px);
+  color:var(--gold-2); font-family:var(--font-mono); font-size:.6rem;
+  letter-spacing:.1em; text-transform:uppercase;
+  padding:6px 14px; border-radius:20px; white-space:nowrap;
+}
+
+/* orbiting pieces */
+.showroom-item{
+  --tx:0px; --ty:0px; --rot:0deg;
+  position:absolute;
+  width:21%; aspect-ratio:1/1;
+  border-radius:50%;
+  overflow:hidden;
+  border:1px solid var(--line);
+  box-shadow:0 12px 30px rgba(0,0,0,.4);
+  z-index:4;
+  opacity:0;
+  cursor:pointer;
+  background:#000;
+  transform:translate(-50%,-50%) translate(var(--tx),var(--ty)) rotate(var(--rot)) scale(.6);
+  transition:transform 1.1s cubic-bezier(.16,.84,.24,1), opacity .9s ease, box-shadow .25s ease;
+}
+.showroom-item img{ width:100%; height:100%; object-fit:cover; transition:transform .45s ease; }
+.showroom-item:hover{ box-shadow:0 16px 40px rgba(199,154,86,.35); }
+.showroom-item:hover img{ transform:scale(1.14); }
+
+.showroom-item[data-pos="1"]{ top:3%;  left:50%; --tx:0px;    --ty:-120px; --rot:-14deg; }
+.showroom-item[data-pos="2"]{ top:22%; left:94%; --tx:150px;  --ty:-70px;  --rot:12deg;  }
+.showroom-item[data-pos="3"]{ top:78%; left:94%; --tx:160px;  --ty:80px;   --rot:-10deg; }
+.showroom-item[data-pos="4"]{ top:97%; left:50%; --tx:0px;    --ty:130px;  --rot:9deg;   }
+.showroom-item[data-pos="5"]{ top:78%; left:6%;  --tx:-160px; --ty:80px;   --rot:8deg;   }
+.showroom-item[data-pos="6"]{ top:22%; left:6%;  --tx:-150px; --ty:-70px;  --rot:-12deg; }
+
+.showroom-stage.in-view .showroom-center{ opacity:1; transform:translate(-50%,-50%) scale(1); transition-delay:.05s; }
+.showroom-stage.in-view .showroom-item{ opacity:1; transform:translate(-50%,-50%) translate(0,0) rotate(0deg) scale(1); }
+.showroom-stage.in-view .showroom-item[data-pos="1"]{ transition-delay:.18s; }
+.showroom-stage.in-view .showroom-item[data-pos="2"]{ transition-delay:.30s; }
+.showroom-stage.in-view .showroom-item[data-pos="3"]{ transition-delay:.42s; }
+.showroom-stage.in-view .showroom-item[data-pos="4"]{ transition-delay:.54s; }
+.showroom-stage.in-view .showroom-item[data-pos="5"]{ transition-delay:.66s; }
+.showroom-stage.in-view .showroom-item[data-pos="6"]{ transition-delay:.78s; }
+
+.showroom-empty{ text-align:center; color:var(--muted); font-family:var(--font-mono); font-size:.85rem; padding:6vh 0; }
+
+.showroom-cta{ text-align:center; position:relative; z-index:3; }
+
+@media (max-width:760px){
+  .showroom-stage{ width:88vw; }
+  .showroom-item{ width:26%; }
+  .showroom-center{ width:42%; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .showroom-ring, .showroom-glow, .sparkle{ animation:none !important; }
+  .showroom-center, .showroom-item{ transition:opacity .3s ease !important; transform:translate(-50%,-50%) !important; }
+}
