@@ -33,12 +33,16 @@
   // ---------------- Tabs ----------------
   function wireTabs() {
     const tabs = document.querySelectorAll(".tab-btn");
+    const tabPanels = { products: "productsTab", orders: "ordersTab", analytics: "analyticsTab" };
     tabs.forEach((btn) => {
       btn.addEventListener("click", () => {
         tabs.forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
-        document.getElementById("productsTab").style.display = btn.dataset.tab === "products" ? "block" : "none";
-        document.getElementById("ordersTab").style.display = btn.dataset.tab === "orders" ? "block" : "none";
+        Object.entries(tabPanels).forEach(([key, panelId]) => {
+          const panel = document.getElementById(panelId);
+          if (panel) panel.style.display = key === btn.dataset.tab ? "block" : "none";
+        });
+        if (btn.dataset.tab === "analytics") renderAnalytics();
       });
     });
   }
@@ -56,7 +60,7 @@
     statPending.textContent = allOrders.filter((o) => o.status === "Pending").length;
 
     const revenue = allOrders
-      .filter((o) => o.status === "Confirmed" || o.status === "Shipped" || o.status === "Delivered")
+      .filter((o) => o.payment_status === "Paid")
       .reduce((sum, o) => sum + (Number(o.unit_price) || 0) * (Number(o.quantity) || 1), 0);
     statRevenue.textContent = "₹" + revenue.toLocaleString("en-IN");
   }
@@ -332,7 +336,10 @@
         <div>
           <div class="o-top">
             <span class="o-product">${escapeHtml(o.product_name)} × ${o.quantity}</span>
-            <span class="status-badge ${escapeHtml(o.status)}">${escapeHtml(o.status)}</span>
+            <span>
+              <span class="status-badge ${escapeHtml(o.status)}">${escapeHtml(o.status)}</span>
+              <span class="pay-badge ${escapeHtml(o.payment_status || "Unpaid")}">${escapeHtml(o.payment_status || "Unpaid")}</span>
+            </span>
           </div>
           <div class="o-meta">
             ₹${escapeHtml(o.unit_price)} each · ${new Date(o.created_at).toLocaleString("en-IN")}<br>
@@ -342,9 +349,11 @@
         </div>
         <div class="o-actions">
           <a class="link-btn" href="${waLink}" target="_blank" rel="noopener">WhatsApp</a>
+          <button class="link-btn" data-action="label">Shipping label</button>
           <select class="order-select" data-action="status">
             ${STATUSES.map((s) => `<option value="${s}" ${s === o.status ? "selected" : ""}>${s}</option>`).join("")}
           </select>
+          <button class="link-btn" data-action="delete-order" style="color:var(--oxblood)">Delete</button>
         </div>
       </div>
     `;
@@ -358,6 +367,73 @@
         loadOrders();
       });
     });
+
+    list.querySelectorAll('[data-action="label"]').forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const row = btn.closest(".order-row");
+        const o = allOrders.find((x) => String(x.id) === row.dataset.id);
+        if (o) printShippingLabel(o);
+      });
+    });
+
+    list.querySelectorAll('[data-action="delete-order"]').forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const row = btn.closest(".order-row");
+        const id = row.dataset.id;
+        if (!confirm("Delete this order permanently? This can't be undone.")) return;
+        await window.supabaseClient.from("orders").delete().eq("id", id);
+        loadOrders();
+      });
+    });
+  }
+
+  // ---------------- Shipping label ----------------
+  function printShippingLabel(o) {
+    const win = window.open("", "_blank", "width=480,height=640");
+    if (!win) {
+      alert("Please allow pop-ups to print a shipping label.");
+      return;
+    }
+    const shortId = String(o.id).slice(0, 8).toUpperCase();
+    win.document.write(`
+      <!DOCTYPE html>
+      <html><head><title>Shipping Label — ${shortId}</title>
+      <style>
+        @page{ size:4in 6in; margin:0.2in; }
+        body{ font-family: 'Courier New', monospace; padding:16px; color:#1B120E; }
+        .label{ border:2px solid #1B120E; padding:18px; }
+        .brand{ font-size:20px; font-weight:bold; letter-spacing:1px; margin-bottom:2px; }
+        .sub{ font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#555; margin-bottom:16px; }
+        .section{ border-top:1px dashed #999; padding-top:10px; margin-top:10px; }
+        .label-tag{ font-size:10px; letter-spacing:1px; text-transform:uppercase; color:#777; }
+        .value{ font-size:15px; font-weight:bold; margin-top:2px; }
+        .addr{ font-size:14px; line-height:1.5; margin-top:2px; }
+        .order-id{ font-size:11px; color:#777; margin-top:16px; }
+        .items{ font-size:13px; margin-top:2px; }
+        @media print{ .no-print{ display:none; } }
+      </style>
+      </head><body>
+        <div class="label">
+          <div class="brand">STYLE OF LIFE</div>
+          <div class="sub">Imitation Jewellery</div>
+          <div class="section">
+            <div class="label-tag">Ship To</div>
+            <div class="value">${escapeHtml(o.customer_name)}</div>
+            <div class="addr">${escapeHtml(o.customer_address).replace(/\n/g, "<br>")}</div>
+            <div class="addr">Phone: ${escapeHtml(o.customer_phone)}</div>
+          </div>
+          <div class="section">
+            <div class="label-tag">Contents</div>
+            <div class="items">${escapeHtml(o.product_name)} &times; ${o.quantity}</div>
+          </div>
+          <div class="order-id">Order ${shortId} &nbsp;·&nbsp; ${new Date(o.created_at).toLocaleDateString("en-IN")} &nbsp;·&nbsp; ${escapeHtml(o.payment_status || "Unpaid")}</div>
+        </div>
+        <p class="no-print" style="text-align:center; margin-top:16px;">
+          <button onclick="window.print()" style="font-family:sans-serif; padding:10px 20px; cursor:pointer;">Print label</button>
+        </p>
+      </body></html>
+    `);
+    win.document.close();
   }
 
   async function loadOrders() {
@@ -375,17 +451,20 @@
     allOrders = data || [];
     renderOrders();
     renderStats();
+    const analyticsTab = document.getElementById("analyticsTab");
+    if (analyticsTab && analyticsTab.style.display === "block") renderAnalytics();
   }
 
   orderSearch.addEventListener("input", renderOrders);
 
   function exportOrdersCsv() {
     if (!allOrders.length) return;
-    const header = ["Date", "Product", "Quantity", "Unit Price", "Customer Name", "Phone", "Address", "Status"];
+    const header = ["Order ID", "Date", "Product", "Quantity", "Unit Price", "Customer Name", "Phone", "Address", "Status", "Payment Status", "Razorpay Payment ID"];
     const rows = allOrders.map((o) => [
-      new Date(o.created_at).toLocaleString("en-IN"),
+      o.id, new Date(o.created_at).toLocaleString("en-IN"),
       o.product_name, o.quantity, o.unit_price,
-      o.customer_name, o.customer_phone, o.customer_address, o.status
+      o.customer_name, o.customer_phone, o.customer_address, o.status,
+      o.payment_status || "Unpaid", o.razorpay_payment_id || ""
     ]);
     const csv = [header, ...rows]
       .map((row) => row.map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
@@ -401,6 +480,166 @@
     URL.revokeObjectURL(url);
   }
   document.getElementById("exportOrdersBtn").addEventListener("click", exportOrdersCsv);
+
+  // ---------------- Bulk status update via Excel/CSV ----------------
+  document.getElementById("bulkStatusBtn").addEventListener("click", () => {
+    const fileInput = document.getElementById("bulkStatusFile");
+    const msg = document.getElementById("bulkStatusMsg");
+    const file = fileInput.files[0];
+    if (!file) {
+      msg.textContent = "Choose a file first.";
+      msg.className = "msg error";
+      return;
+    }
+    if (typeof XLSX === "undefined") {
+      msg.textContent = "The Excel reader didn't load — check your internet connection and try again.";
+      msg.className = "msg error";
+      return;
+    }
+
+    msg.textContent = "Reading file…";
+    msg.className = "msg";
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+        if (!rows.length) {
+          msg.textContent = "That file has no rows.";
+          msg.className = "msg error";
+          return;
+        }
+
+        let updated = 0, skipped = 0;
+        for (const row of rows) {
+          const keys = Object.keys(row);
+          const idKey = keys.find((k) => k.trim().toLowerCase() === "order id");
+          const statusKey = keys.find((k) => k.trim().toLowerCase() === "status");
+          const id = idKey ? String(row[idKey]).trim() : "";
+          const status = statusKey ? String(row[statusKey]).trim() : "";
+
+          if (!id || !STATUSES.includes(status)) {
+            skipped++;
+            continue;
+          }
+          const { error } = await window.supabaseClient.from("orders").update({ status }).eq("id", id);
+          if (error) skipped++; else updated++;
+        }
+
+        msg.textContent = `Updated ${updated} order${updated === 1 ? "" : "s"}${skipped ? `, skipped ${skipped} (missing/invalid Order ID or Status)` : ""}.`;
+        msg.className = updated ? "msg ok" : "msg error";
+        fileInput.value = "";
+        loadOrders();
+      } catch (err) {
+        msg.textContent = "Couldn't read that file: " + err.message;
+        msg.className = "msg error";
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
+  // ---------------- Analytics ----------------
+  let charts = {};
+  function upsertChart(id, config) {
+    const canvas = document.getElementById(id);
+    if (!canvas || typeof Chart === "undefined") return;
+    if (charts[id]) {
+      charts[id].data = config.data;
+      charts[id].options = config.options || charts[id].options;
+      charts[id].update();
+    } else {
+      charts[id] = new Chart(canvas, config);
+    }
+  }
+
+  function renderAnalytics() {
+    if (typeof Chart === "undefined") return;
+
+    const chartFont = { family: "IBM Plex Mono, monospace", size: 11 };
+    Chart.defaults.font = chartFont;
+    Chart.defaults.color = "#6b5c4f";
+
+    // Revenue by day (paid orders only)
+    const byDay = {};
+    allOrders.filter((o) => o.payment_status === "Paid").forEach((o) => {
+      const day = new Date(o.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short" });
+      byDay[day] = (byDay[day] || 0) + (Number(o.unit_price) || 0) * (Number(o.quantity) || 1);
+    });
+    const dayLabels = Object.keys(byDay);
+    upsertChart("chartRevenue", {
+      type: "line",
+      data: {
+        labels: dayLabels,
+        datasets: [{
+          label: "Revenue (₹)",
+          data: dayLabels.map((d) => byDay[d]),
+          borderColor: "#7E2130",
+          backgroundColor: "rgba(126,33,48,0.12)",
+          tension: 0.35,
+          fill: true,
+          pointBackgroundColor: "#C79A56",
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+
+    // Orders by status
+    const statusCounts = STATUSES.map((s) => allOrders.filter((o) => o.status === s).length);
+    upsertChart("chartStatus", {
+      type: "doughnut",
+      data: {
+        labels: STATUSES,
+        datasets: [{
+          data: statusCounts,
+          backgroundColor: ["#E4CBA2", "#BBD6EA", "#D6C4EE", "#BFE2CC", "#EEC4C9"],
+          borderWidth: 0,
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { position: "bottom" } } }
+    });
+
+    // Top selling products (by quantity across all orders)
+    const byProduct = {};
+    allOrders.forEach((o) => {
+      byProduct[o.product_name] = (byProduct[o.product_name] || 0) + (Number(o.quantity) || 1);
+    });
+    const topEntries = Object.entries(byProduct).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    upsertChart("chartTopProducts", {
+      type: "bar",
+      data: {
+        labels: topEntries.map(([name]) => name),
+        datasets: [{
+          label: "Units ordered",
+          data: topEntries.map(([, qty]) => qty),
+          backgroundColor: "#C79A56",
+        }]
+      },
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { x: { ticks: { precision: 0 } } }
+      }
+    });
+
+    // At-a-glance cards
+    const paidOrders = allOrders.filter((o) => o.payment_status === "Paid");
+    const totalRevenue = paidOrders.reduce((s, o) => s + (Number(o.unit_price) || 0) * (Number(o.quantity) || 1), 0);
+    const avgOrder = paidOrders.length ? totalRevenue / paidOrders.length : 0;
+    const itemsSold = allOrders.reduce((s, o) => s + (Number(o.quantity) || 1), 0);
+    const uniqueCustomers = new Set(allOrders.map((o) => (o.customer_phone || "").trim())).size;
+
+    document.getElementById("analyticsCards").innerHTML = `
+      <div class="stat-card"><div class="v">₹${Math.round(avgOrder).toLocaleString("en-IN")}</div><div class="l">Avg. paid order value</div></div>
+      <div class="stat-card"><div class="v">${itemsSold}</div><div class="l">Total items ordered</div></div>
+      <div class="stat-card"><div class="v">${uniqueCustomers}</div><div class="l">Unique customers</div></div>
+      <div class="stat-card"><div class="v">${paidOrders.length}</div><div class="l">Paid orders</div></div>
+    `;
+  }
 
   // ---------------- Realtime ----------------
   window.supabaseClient
