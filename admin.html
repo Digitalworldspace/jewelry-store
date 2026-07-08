@@ -48,12 +48,13 @@
       <div class="stat-card"><div class="v" id="statProducts">0</div><div class="l">Products live</div></div>
       <div class="stat-card"><div class="v" id="statOrders">0</div><div class="l">Total orders</div></div>
       <div class="stat-card"><div class="v" id="statPending">0</div><div class="l">Pending orders</div></div>
-      <div class="stat-card"><div class="v" id="statRevenue">₹0</div><div class="l">Confirmed+ revenue</div></div>
+      <div class="stat-card"><div class="v" id="statRevenue">₹0</div><div class="l">Verified paid revenue</div></div>
     </div>
 
     <div class="tabs">
       <button class="tab-btn active" data-tab="products">Products</button>
       <button class="tab-btn" data-tab="orders">Orders <span id="orderCountBadge"></span></button>
+      <button class="tab-btn" data-tab="analytics">Analytics</button>
     </div>
 
     <div id="productsTab">
@@ -126,7 +127,7 @@
           </div>
         </div>
         <p style="color:#6b5c4f;font-size:.9rem;margin:-4px 0 16px">
-          Placed live from the "Buy Now" button on the storefront. Update the status as you process each one — customers aren't notified automatically, so confirm with them on WhatsApp.
+          Placed live from the "Buy Now" button on the storefront. Update the status as you process each one, print a shipping label once it's ready to pack, and confirm with customers on WhatsApp.
         </p>
         <div class="admin-toolbar" id="orderFilters">
           <button class="filter-chip active" data-status="All">All</button>
@@ -138,6 +139,40 @@
         </div>
         <div id="ordersList">Loading…</div>
       </div>
+
+      <div class="panel">
+        <h2>Bulk update statuses via Excel/CSV</h2>
+        <p style="color:#6b5c4f;font-size:.9rem">
+          Export your orders as CSV above, edit the <strong>Status</strong> column in Excel (Pending / Confirmed / Shipped / Delivered / Cancelled), keep the <strong>Order ID</strong> column untouched, then upload it here to update everything at once.
+        </p>
+        <div class="field">
+          <label>Excel or CSV file</label>
+          <input type="file" id="bulkStatusFile" accept=".xlsx,.xls,.csv">
+        </div>
+        <button class="btn" type="button" id="bulkStatusBtn">Update statuses from file</button>
+        <div class="msg" id="bulkStatusMsg"></div>
+      </div>
+    </div>
+
+    <div id="analyticsTab" style="display:none">
+      <div class="panel">
+        <h2>Revenue over time</h2>
+        <canvas id="chartRevenue" height="90"></canvas>
+      </div>
+      <div class="row2" style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+        <div class="panel">
+          <h2>Orders by status</h2>
+          <canvas id="chartStatus" height="220"></canvas>
+        </div>
+        <div class="panel">
+          <h2>Top selling products</h2>
+          <canvas id="chartTopProducts" height="220"></canvas>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>At a glance</h2>
+        <div class="stat-cards" id="analyticsCards"></div>
+      </div>
     </div>
 
   </section>
@@ -145,6 +180,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="assets/config.js"></script>
 <script src="assets/admin.js"></script>
 </body>
