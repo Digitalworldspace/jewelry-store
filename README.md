@@ -107,6 +107,19 @@ If a customer closes the payment window, their card is declined, or something go
 - Click **Delete** to permanently remove an order (e.g. spam or a duplicate test order). This can't be undone.
 - Click **Export CSV** to download all currently-filtered orders as a spreadsheet, including the **Order ID**, **Payment Status**, and **Admin Notes** columns.
 
+**Bulk actions — orders**
+Tick the checkbox on any order row (or **Select all shown** to grab everything currently visible under your filters), and a bulk action bar appears above the list:
+- **Set status…** / **Set payment…** — apply a new status or payment status to every selected order at once
+- **Print labels** — opens one window with a shipping label for every selected order, ready to print in one go
+- **Export selected** — downloads just the selected orders as CSV
+- **Delete** — permanently removes every selected order (with confirmation)
+- **Clear** — deselects everything
+
+**Bulk actions — products**
+Same pattern in the Products tab: tick products (or **Select all shown**), then:
+- **Set badge…** — apply New/Bestseller/Sale/Limited Stock (or clear the badge) across every selected product
+- **Delete** — permanently removes every selected product, including their photos from storage
+
 **Bulk-updating orders from Excel**
 1. Click **Export CSV** to download your orders.
 2. Open it in Excel/Google Sheets and edit the **Status** column and/or the **Payment Status** column (Status must exactly match: Pending, Confirmed, Shipped, Delivered, or Cancelled — Payment Status must be Paid or Unpaid). Leave the **Order ID** column untouched. You can fill in just one of the two columns, or both.
