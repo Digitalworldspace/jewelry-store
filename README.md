@@ -41,7 +41,48 @@ That's your backend fully live. No further Supabase setup needed.
 3. GitHub gives you a live URL like `https://your-username.github.io/style-of-life/` within a minute or two.
 4. Your storefront is `.../index.html` (or just the root URL) and your admin panel is `.../admin.html`.
 
-## 4. Using it day to day
+## 4. Accept real online payments with Razorpay
+
+The "Buy Now" checkout now opens a real Razorpay payment window and only marks an order as **Paid** after the payment is verified — all done through browser-based steps, no command line.
+
+### 4a. Get your Razorpay keys
+1. Sign up at [razorpay.com](https://razorpay.com) (free to start).
+2. In the Razorpay Dashboard, make sure you're in **Test Mode** (toggle top-right) while you're setting things up.
+3. Go to **Settings → API Keys → Generate Test Key**. Copy the **Key Id** (starts `rzp_test_...`) and **Key Secret** — you'll only see the secret once, so save it somewhere safe.
+
+### 4b. Deploy the two Edge Functions (Supabase Dashboard only — no CLI)
+Your project already has two function files ready to paste in: `supabase/functions/create-razorpay-order/index.ts` and `supabase/functions/verify-razorpay-payment/index.ts`.
+
+1. In Supabase, open **Edge Functions** in the sidebar → **Deploy a new function** → **Via Editor**.
+2. Name it exactly `create-razorpay-order`, delete the placeholder code, and paste in the contents of `supabase/functions/create-razorpay-order/index.ts`. Click **Deploy**.
+3. Repeat for `verify-razorpay-payment` using that file's contents.
+
+### 4c. Add your secrets
+Still in **Edge Functions**, open the **Secrets** tab and add:
+| Name | Value |
+|---|---|
+| `RAZORPAY_KEY_ID` | your Razorpay Key Id |
+| `RAZORPAY_KEY_SECRET` | your Razorpay Key Secret |
+| `SUPABASE_URL` | `https://fdzcgnxmgyyaoxnrvxdg.supabase.co` |
+| `SUPABASE_SERVICE_ROLE_KEY` | your project's **secret** key (the `sb_secret_...` one — never the publishable one) |
+
+These secrets are only ever readable by your Edge Functions on Supabase's servers — never by the browser.
+
+### 4d. Re-run the SQL, then add your public key to the site
+1. Re-run `supabase-setup.sql` in the SQL Editor — it now adds `payment_status`, `razorpay_order_id`, and `razorpay_payment_id` columns to `orders` (safe to re-run).
+2. In `assets/config.js`, replace `window.RAZORPAY_KEY_ID = "rzp_test_XXXXXXXXXXXXXX"` with your real **Key Id** (the public one — this is safe to commit to GitHub, same as a Stripe publishable key).
+3. Re-upload everything to GitHub, including the new `supabase/functions/` folder (good to keep in the repo even though it isn't served — it's your source of truth for the functions).
+
+### 4e. Test it
+Place a test order on your live site and use one of [Razorpay's test cards](https://razorpay.com/docs/payments/payments/test-card-details/) (e.g. card number `4111 1111 1111 1111`, any future expiry, any CVV) to simulate a real payment without spending money.
+
+### 4f. Going live
+Once you've tested everything, complete Razorpay's KYC/business verification, switch Razorpay to **Live Mode**, generate **Live** API keys, and update both the `RAZORPAY_KEY_ID`/`RAZORPAY_KEY_SECRET` Edge Function secrets and `window.RAZORPAY_KEY_ID` in `config.js` to the live values (`rzp_live_...`).
+
+### What happens if payment isn't completed
+If a customer closes the payment window, their card is declined, or something goes wrong, the order is still saved as `Pending` / `Unpaid` — the site shows a "Retry payment" button plus a WhatsApp fallback so you never lose the lead. Nothing is ever marked "Paid" unless the Edge Function's signature check genuinely passes.
+
+## 5. Using it day to day
 
 **Managing products**
 - Open `admin.html` directly (it's no longer linked from the public storefront — bookmark it). Sign in with the admin account you created in step 1.4.
@@ -59,7 +100,21 @@ That's your backend fully live. No further Supabase setup needed.
 - Every product card and quick-view has a **Buy Now** button. A customer fills in their name, phone, quantity, and address, and it's saved straight into your Supabase `orders` table.
 - After placing an order, the customer gets a **"Confirm on WhatsApp"** button that opens a pre-filled message to your WhatsApp number, so you can confirm the order (and share payment details) with them directly.
 - In `admin.html`, switch to the **Orders** tab to see every order live (it updates in real time). Filter by status (Pending / Confirmed / Shipped / Delivered / Cancelled), search by customer name or phone, message them on WhatsApp with one click, and update status with the dropdown.
-- Click **Export CSV** to download all currently-filtered orders as a spreadsheet — handy for bookkeeping or bulk processing.
+- Click **Shipping label** on any order to open a print-ready 4×6" label (ship-to address, phone, contents, order ID) — click **Print label** in that window to send it to your printer.
+- Click **Delete** to permanently remove an order (e.g. spam or a duplicate test order). This can't be undone.
+- Click **Export CSV** to download all currently-filtered orders as a spreadsheet, including the **Order ID** column.
+
+**Bulk-updating order statuses from Excel**
+1. Click **Export CSV** to download your orders.
+2. Open it in Excel/Google Sheets, edit the **Status** column for whichever orders you've processed (must exactly match: Pending, Confirmed, Shipped, Delivered, or Cancelled), and leave the **Order ID** column untouched.
+3. Save it (as .xlsx or .csv), then use the **Bulk update statuses via Excel/CSV** uploader in the Orders tab to upload it. Every row with a matching Order ID and a valid status gets updated in one go.
+
+**Analytics**
+The **Analytics** tab shows: revenue over time (from verified paid orders), a breakdown of orders by status, your top-selling products by units ordered, and at-a-glance cards (average paid order value, total items ordered, unique customers, paid order count). All computed live from your real `orders` data — nothing here is simulated.
+
+## The layout, top to bottom
+
+The storefront now opens with a **small header**, a compact one-line intro banner, and goes straight into **The Showroom** — your live products flying into their diamond formation — before the full scrollable catalog. This puts your actual inventory in front of visitors immediately instead of behind a large hero section.
 
 ## The Showroom
 
