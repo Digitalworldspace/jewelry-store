@@ -18,11 +18,14 @@
 
   const BUCKET = "product-images";
   const STATUSES = ["Pending", "Confirmed", "Shipped", "Delivered", "Cancelled"];
+  const PAYMENT_STATUSES = ["Unpaid", "Paid"];
 
   let allAdminProducts = [];
   let allOrders = [];
   let editingProductId = null;
   let activeOrderStatus = "All";
+  let activePaymentFilter = "All";
+  let activeDateFilter = "All";
 
   function escapeHtml(str) {
     return String(str || "").replace(/[&<>"']/g, (c) => ({
@@ -303,6 +306,39 @@
         renderOrders();
       });
     });
+    document.querySelectorAll("#paymentFilters .filter-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll("#paymentFilters .filter-chip").forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        activePaymentFilter = chip.dataset.payment;
+        renderOrders();
+      });
+    });
+    const dateFilter = document.getElementById("dateFilter");
+    if (dateFilter) {
+      dateFilter.addEventListener("change", () => {
+        activeDateFilter = dateFilter.value;
+        renderOrders();
+      });
+    }
+  }
+
+  function withinDateFilter(dateStr) {
+    if (activeDateFilter === "All") return true;
+    const d = new Date(dateStr);
+    const now = new Date();
+    if (activeDateFilter === "today") {
+      return d.toDateString() === now.toDateString();
+    }
+    if (activeDateFilter === "week") {
+      const weekAgo = new Date(now);
+      weekAgo.setDate(now.getDate() - 7);
+      return d >= weekAgo;
+    }
+    if (activeDateFilter === "month") {
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }
+    return true;
   }
 
   function renderOrders() {
@@ -314,6 +350,8 @@
     const q = (orderSearch.value || "").trim().toLowerCase();
     let items = allOrders;
     if (activeOrderStatus !== "All") items = items.filter((o) => o.status === activeOrderStatus);
+    if (activePaymentFilter !== "All") items = items.filter((o) => (o.payment_status || "Unpaid") === activePaymentFilter);
+    items = items.filter((o) => withinDateFilter(o.created_at));
     if (q) {
       items = items.filter((o) =>
         (o.customer_name || "").toLowerCase().includes(q) ||
@@ -346,12 +384,16 @@
             ${escapeHtml(o.customer_name)} · ${escapeHtml(o.customer_phone)}<br>
             ${escapeHtml(o.customer_address)}
           </div>
+          <input class="order-notes" data-action="notes" type="text" placeholder="Internal note (not shown to customer)…" value="${escapeHtml(o.admin_notes || "")}">
         </div>
         <div class="o-actions">
           <a class="link-btn" href="${waLink}" target="_blank" rel="noopener">WhatsApp</a>
           <button class="link-btn" data-action="label">Shipping label</button>
           <select class="order-select" data-action="status">
             ${STATUSES.map((s) => `<option value="${s}" ${s === o.status ? "selected" : ""}>${s}</option>`).join("")}
+          </select>
+          <select class="order-select" data-action="payment">
+            ${PAYMENT_STATUSES.map((s) => `<option value="${s}" ${s === (o.payment_status || "Unpaid") ? "selected" : ""}>${s}</option>`).join("")}
           </select>
           <button class="link-btn" data-action="delete-order" style="color:var(--oxblood)">Delete</button>
         </div>
@@ -365,6 +407,23 @@
         const id = row.dataset.id;
         await window.supabaseClient.from("orders").update({ status: sel.value }).eq("id", id);
         loadOrders();
+      });
+    });
+
+    list.querySelectorAll('[data-action="payment"]').forEach((sel) => {
+      sel.addEventListener("change", async () => {
+        const row = sel.closest(".order-row");
+        const id = row.dataset.id;
+        await window.supabaseClient.from("orders").update({ payment_status: sel.value }).eq("id", id);
+        loadOrders();
+      });
+    });
+
+    list.querySelectorAll('[data-action="notes"]').forEach((input) => {
+      input.addEventListener("blur", async () => {
+        const row = input.closest(".order-row");
+        const id = row.dataset.id;
+        await window.supabaseClient.from("orders").update({ admin_notes: input.value.trim() }).eq("id", id);
       });
     });
 
@@ -422,11 +481,7 @@
             <div class="addr">${escapeHtml(o.customer_address).replace(/\n/g, "<br>")}</div>
             <div class="addr">Phone: ${escapeHtml(o.customer_phone)}</div>
           </div>
-          <div class="section">
-            <div class="label-tag">Contents</div>
-            <div class="items">${escapeHtml(o.product_name)} &times; ${o.quantity}</div>
-          </div>
-          <div class="order-id">Order ${shortId} &nbsp;·&nbsp; ${new Date(o.created_at).toLocaleDateString("en-IN")} &nbsp;·&nbsp; ${escapeHtml(o.payment_status || "Unpaid")}</div>
+          <div class="order-id">Order ${shortId} &nbsp;·&nbsp; ${new Date(o.created_at).toLocaleDateString("en-IN")}</div>
         </div>
         <p class="no-print" style="text-align:center; margin-top:16px;">
           <button onclick="window.print()" style="font-family:sans-serif; padding:10px 20px; cursor:pointer;">Print label</button>
@@ -459,12 +514,12 @@
 
   function exportOrdersCsv() {
     if (!allOrders.length) return;
-    const header = ["Order ID", "Date", "Product", "Quantity", "Unit Price", "Customer Name", "Phone", "Address", "Status", "Payment Status", "Razorpay Payment ID"];
+    const header = ["Order ID", "Date", "Product", "Quantity", "Unit Price", "Customer Name", "Phone", "Address", "Status", "Payment Status", "Razorpay Payment ID", "Admin Notes"];
     const rows = allOrders.map((o) => [
       o.id, new Date(o.created_at).toLocaleString("en-IN"),
       o.product_name, o.quantity, o.unit_price,
       o.customer_name, o.customer_phone, o.customer_address, o.status,
-      o.payment_status || "Unpaid", o.razorpay_payment_id || ""
+      o.payment_status || "Unpaid", o.razorpay_payment_id || "", o.admin_notes || ""
     ]);
     const csv = [header, ...rows]
       .map((row) => row.map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
@@ -519,18 +574,24 @@
           const keys = Object.keys(row);
           const idKey = keys.find((k) => k.trim().toLowerCase() === "order id");
           const statusKey = keys.find((k) => k.trim().toLowerCase() === "status");
+          const paymentKey = keys.find((k) => k.trim().toLowerCase() === "payment status");
           const id = idKey ? String(row[idKey]).trim() : "";
           const status = statusKey ? String(row[statusKey]).trim() : "";
+          const payment = paymentKey ? String(row[paymentKey]).trim() : "";
 
-          if (!id || !STATUSES.includes(status)) {
+          const updates = {};
+          if (STATUSES.includes(status)) updates.status = status;
+          if (PAYMENT_STATUSES.includes(payment)) updates.payment_status = payment;
+
+          if (!id || Object.keys(updates).length === 0) {
             skipped++;
             continue;
           }
-          const { error } = await window.supabaseClient.from("orders").update({ status }).eq("id", id);
+          const { error } = await window.supabaseClient.from("orders").update(updates).eq("id", id);
           if (error) skipped++; else updated++;
         }
 
-        msg.textContent = `Updated ${updated} order${updated === 1 ? "" : "s"}${skipped ? `, skipped ${skipped} (missing/invalid Order ID or Status)` : ""}.`;
+        msg.textContent = `Updated ${updated} order${updated === 1 ? "" : "s"}${skipped ? `, skipped ${skipped} (missing Order ID, or no valid Status/Payment Status value)` : ""}.`;
         msg.className = updated ? "msg ok" : "msg error";
         fileInput.value = "";
         loadOrders();
