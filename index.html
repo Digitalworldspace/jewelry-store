@@ -11,6 +11,8 @@
 </head>
 <body>
 
+<div id="pageLoader"><div class="loader-diamond"></div></div>
+
 <div class="scroll-progress" id="scrollProgress"></div>
 
 <div class="announce">✦ Free shipping on orders above ₹999 &nbsp;·&nbsp; New pieces added every week &nbsp;·&nbsp; Every order confirmed personally on WhatsApp ✦</div>
@@ -24,40 +26,20 @@
   </nav>
 </header>
 
-<section class="hero">
-  <svg class="hero-motif" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="200" cy="120" r="90" stroke="#C79A56" stroke-width="1" opacity="0.5"/>
-    <circle cx="200" cy="120" r="60" stroke="#E8CC9C" stroke-width="1" opacity="0.5"/>
-    <path d="M60 210 C130 260, 270 260, 340 210" stroke="#C79A56" stroke-width="1.4" opacity="0.6"/>
-    <path d="M40 250 C130 320, 270 320, 360 250" stroke="#E8CC9C" stroke-width="1" opacity="0.4"/>
-    <circle cx="200" cy="230" r="6" fill="#C79A56" opacity="0.8"/>
-    <circle cx="150" cy="245" r="4" fill="#E8CC9C" opacity="0.7"/>
-    <circle cx="250" cy="245" r="4" fill="#E8CC9C" opacity="0.7"/>
-  </svg>
-  <div class="hero-inner">
-    <div class="hero-index">01 / 06 — <b>The Current Drop</b></div>
-    <span class="eyebrow">New arrivals, live every week</span>
-    <h1>Jewellery that catches<br>the light, <em>not the price.</em></h1>
-    <p>Handpicked kundan, meenakari and temple-style pieces — photographed and listed the moment they arrive at our counter, so what you see here is exactly what's in stock today.</p>
-    <div class="hero-actions">
-      <a href="#tray" class="btn gold"><span class="shine"></span>Shop the collection</a>
-      <a href="#why" class="btn ghost"><span class="shine"></span>Why shop with us</a>
-    </div>
+<section class="mini-hero">
+  <div class="mini-hero-inner">
+    <span class="eyebrow">✦ New arrivals, live every week</span>
+    <h1 id="miniHeroHeading">Jewellery that catches the light, <em>not the price.</em></h1>
+    <a href="#showroom" class="btn gold"><span class="shine"></span>Step into the showroom</a>
   </div>
+</section>
+
+<section class="showroom-section" id="showroom">
   <!-- Placeholder figures — replace with your real numbers before launch -->
-  <div class="stat-badge" style="top:16%; right:9%;"><b data-count="500" data-suffix="+">0</b><span>Pieces curated</span></div>
-  <div class="stat-badge" style="bottom:10%; left:5%;"><b data-count="4.9" data-decimal="1" data-suffix="★">0</b><span>Customer rated</span></div>
-</section>
+  <div class="stat-badge" style="top:10%; right:4%;"><b data-count="500" data-suffix="+">0</b><span>Pieces curated</span></div>
+  <div class="stat-badge" style="top:10%; left:4%;"><b data-count="4.9" data-decimal="1" data-suffix="★">0</b><span>Customer rated</span></div>
 
-<section class="marquee-wrap">
-  <div class="marquee-track">
-    <span>Weddings</span><span>Engagements</span><span>Festivals</span><span>Sangeet Nights</span><span>Daily Wear</span><span>Gifting</span>
-    <span>Weddings</span><span>Engagements</span><span>Festivals</span><span>Sangeet Nights</span><span>Daily Wear</span><span>Gifting</span>
-  </div>
-</section>
-
-<section class="showroom-section">
-  <div class="section-head">
+  <div class="section-head reveal">
     <span class="eyebrow2" style="color:var(--gold-2)">The Showroom</span>
     <h2>Step into our counter, from anywhere</h2>
     <p>The pieces below are pulled live from what we've actually listed — watch them settle into place, just like walking up to our display case.</p>
@@ -80,6 +62,28 @@
 
   <div class="showroom-cta">
     <a href="#tray" class="btn ghost"><span class="shine"></span>See the full collection</a>
+  </div>
+</section>
+
+<div class="toolbar">
+  <div class="chips" id="chips"></div>
+  <input class="search-box" id="search" type="text" placeholder="Search the collection…">
+</div>
+
+<div class="section-head reveal" id="tray-head">
+  <span class="eyebrow2">The Collection</span>
+  <h2>Fresh off the counter</h2>
+  <p>Every piece below is live in our stock right now — added straight from the workshop, no reprints, no waiting.</p>
+</div>
+
+<main class="tray" id="tray">
+  <div class="state-msg">Loading the collection…</div>
+</main>
+
+<section class="marquee-wrap">
+  <div class="marquee-track">
+    <span>Weddings</span><span>Engagements</span><span>Festivals</span><span>Sangeet Nights</span><span>Daily Wear</span><span>Gifting</span>
+    <span>Weddings</span><span>Engagements</span><span>Festivals</span><span>Sangeet Nights</span><span>Daily Wear</span><span>Gifting</span>
   </div>
 </section>
 
@@ -124,21 +128,6 @@
   </div>
 </section>
 
-<div class="toolbar">
-  <div class="chips" id="chips"></div>
-  <input class="search-box" id="search" type="text" placeholder="Search the collection…">
-</div>
-
-<div class="section-head" id="tray-head">
-  <span class="eyebrow2">The Collection</span>
-  <h2>Fresh off the counter</h2>
-  <p>Every piece below is live in our stock right now — added straight from the workshop, no reprints, no waiting.</p>
-</div>
-
-<main class="tray" id="tray">
-  <div class="state-msg">Loading the collection…</div>
-</main>
-
 <section class="why-grid reveal-group" id="why">
   <div class="why-card reveal">
     <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l7 4v6c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
@@ -163,7 +152,7 @@
 </section>
 
 <section class="compare-section">
-  <div class="section-head" style="padding-top:0">
+  <div class="section-head reveal" style="padding-top:0">
     <span class="eyebrow2" style="color:var(--gold-2)">The Difference</span>
     <h2 style="color:var(--ivory)">Not all imitation jewellery is the same</h2>
   </div>
@@ -192,7 +181,7 @@
 </section>
 
 <section class="faq-section">
-  <div class="section-head" style="padding-top:0">
+  <div class="section-head reveal" style="padding-top:0">
     <span class="eyebrow2">Questions</span>
     <h2>Before you order</h2>
     <p>Everything customers usually ask us on WhatsApp, answered here first.</p>
@@ -265,6 +254,7 @@
   <div class="modal checkout-modal" id="checkoutBody"></div>
 </div>
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/config.js"></script>
 <script src="assets/app.js"></script>
