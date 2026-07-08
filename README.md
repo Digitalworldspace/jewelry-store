@@ -100,14 +100,17 @@ If a customer closes the payment window, their card is declined, or something go
 - Every product card and quick-view has a **Buy Now** button. A customer fills in their name, phone, quantity, and address, and it's saved straight into your Supabase `orders` table.
 - After placing an order, the customer gets a **"Confirm on WhatsApp"** button that opens a pre-filled message to your WhatsApp number, so you can confirm the order (and share payment details) with them directly.
 - In `admin.html`, switch to the **Orders** tab to see every order live (it updates in real time). Filter by status (Pending / Confirmed / Shipped / Delivered / Cancelled), search by customer name or phone, message them on WhatsApp with one click, and update status with the dropdown.
-- Click **Shipping label** on any order to open a print-ready 4×6" label (ship-to address, phone, contents, order ID) — click **Print label** in that window to send it to your printer.
+- Click **Shipping label** on any order to open a print-ready 4×6" label (ship-to address, phone, order ID, date only — no order contents or payment info shown, so it's safe to hand to a courier) — click **Print label** in that window to send it to your printer.
+- Each order has its own **Status** and **Payment Status** (Paid/Unpaid) dropdowns — set Payment Status manually any time, independent of Razorpay (useful for UPI/cash payments taken outside the site).
+- Add a private **internal note** under any order (visible only in the admin panel, never shown to the customer) — it saves automatically when you click away from the field.
+- Filter orders by status, by payment status, and by date range (Today / This week / This month / All time) — combine all three plus the search box.
 - Click **Delete** to permanently remove an order (e.g. spam or a duplicate test order). This can't be undone.
-- Click **Export CSV** to download all currently-filtered orders as a spreadsheet, including the **Order ID** column.
+- Click **Export CSV** to download all currently-filtered orders as a spreadsheet, including the **Order ID**, **Payment Status**, and **Admin Notes** columns.
 
-**Bulk-updating order statuses from Excel**
+**Bulk-updating orders from Excel**
 1. Click **Export CSV** to download your orders.
-2. Open it in Excel/Google Sheets, edit the **Status** column for whichever orders you've processed (must exactly match: Pending, Confirmed, Shipped, Delivered, or Cancelled), and leave the **Order ID** column untouched.
-3. Save it (as .xlsx or .csv), then use the **Bulk update statuses via Excel/CSV** uploader in the Orders tab to upload it. Every row with a matching Order ID and a valid status gets updated in one go.
+2. Open it in Excel/Google Sheets and edit the **Status** column and/or the **Payment Status** column (Status must exactly match: Pending, Confirmed, Shipped, Delivered, or Cancelled — Payment Status must be Paid or Unpaid). Leave the **Order ID** column untouched. You can fill in just one of the two columns, or both.
+3. Save it (as .xlsx or .csv), then use the **Bulk update statuses via Excel/CSV** uploader in the Orders tab to upload it. Every row with a matching Order ID and at least one valid value gets updated in one go.
 
 **Analytics**
 The **Analytics** tab shows: revenue over time (from verified paid orders), a breakdown of orders by status, your top-selling products by units ordered, and at-a-glance cards (average paid order value, total items ordered, unique customers, paid order count). All computed live from your real `orders` data — nothing here is simulated.
