@@ -26,6 +26,8 @@
   let activeOrderStatus = "All";
   let activePaymentFilter = "All";
   let activeDateFilter = "All";
+  let selectedOrderIds = new Set();
+  let selectedProductIds = new Set();
 
   function escapeHtml(str) {
     return String(str || "").replace(/[&<>"']/g, (c) => ({
@@ -236,11 +238,13 @@
 
     if (!items.length) {
       adminList.innerHTML = `<div class="msg">${allAdminProducts.length ? "No products match your search." : "No products yet — add your first piece above."}</div>`;
+      renderProductBulkBar();
       return;
     }
 
     adminList.innerHTML = items.map((p) => `
       <div class="admin-row ${p.id === editingProductId ? "editing" : ""}" data-id="${p.id}" data-path="${escapeHtml(p.storage_path || "")}">
+        <div class="p-check"><input type="checkbox" class="product-check" ${selectedProductIds.has(String(p.id)) ? "checked" : ""}></div>
         <img src="${escapeHtml(p.image_url || "")}" alt="">
         <div>
           <div class="name">${escapeHtml(p.name)}</div>
@@ -253,6 +257,15 @@
         </div>
       </div>
     `).join("");
+
+    adminList.querySelectorAll(".product-check").forEach((cb) => {
+      cb.addEventListener("change", () => {
+        const id = cb.closest(".admin-row").dataset.id;
+        if (cb.checked) selectedProductIds.add(id); else selectedProductIds.delete(id);
+        renderProductBulkBar();
+        syncSelectAllCheckbox("selectAllProducts", ".product-check");
+      });
+    });
 
     adminList.querySelectorAll('[data-action="edit"]').forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -275,6 +288,91 @@
         if (editingProductId === id) resetForm();
         loadAdminProducts();
       });
+    });
+
+    renderProductBulkBar();
+    syncSelectAllCheckbox("selectAllProducts", ".product-check");
+  }
+
+  // ---------------- Bulk selection helpers ----------------
+  function syncSelectAllCheckbox(checkboxId, itemSelector) {
+    const all = document.getElementById(checkboxId);
+    const items = document.querySelectorAll(`#${checkboxId === "selectAllProducts" ? "adminList" : "ordersList"} ${itemSelector}`);
+    if (!all) return;
+    if (!items.length) { all.checked = false; all.indeterminate = false; return; }
+    const checkedCount = Array.from(items).filter((c) => c.checked).length;
+    all.checked = checkedCount === items.length;
+    all.indeterminate = checkedCount > 0 && checkedCount < items.length;
+  }
+
+  const BADGE_OPTIONS = ["", "New", "Bestseller", "Sale", "Limited Stock"];
+
+  function renderProductBulkBar() {
+    const bar = document.getElementById("productBulkBar");
+    if (!bar) return;
+    const n = selectedProductIds.size;
+    if (n === 0) {
+      bar.classList.add("empty");
+      bar.innerHTML = `Select products below to apply bulk actions.`;
+      return;
+    }
+    bar.classList.remove("empty");
+    bar.innerHTML = `
+      <span class="bb-count">${n} selected</span>
+      <div class="bb-actions">
+        <select id="bulkBadgeSelect">
+          <option value="">Set badge…</option>
+          ${BADGE_OPTIONS.filter((b) => b).map((b) => `<option value="${b}">${b}</option>`).join("")}
+          <option value="__clear__">No badge</option>
+        </select>
+        <button class="bb-btn" id="bulkApplyBadgeBtn">Apply</button>
+        <button class="bb-btn danger" id="bulkDeleteProductsBtn">Delete</button>
+        <button class="bb-btn" id="bulkClearProductsBtn">Clear</button>
+      </div>
+    `;
+
+    document.getElementById("bulkApplyBadgeBtn").addEventListener("click", async () => {
+      const val = document.getElementById("bulkBadgeSelect").value;
+      if (!val) return;
+      const badge = val === "__clear__" ? null : val;
+      for (const id of selectedProductIds) {
+        await window.supabaseClient.from("products").update({ badge }).eq("id", id);
+      }
+      selectedProductIds.clear();
+      loadAdminProducts();
+    });
+
+    document.getElementById("bulkDeleteProductsBtn").addEventListener("click", async () => {
+      const ids = Array.from(selectedProductIds);
+      if (!confirm(`Remove ${ids.length} product${ids.length === 1 ? "" : "s"} from the live store? This can't be undone.`)) return;
+      for (const id of ids) {
+        const p = allAdminProducts.find((x) => String(x.id) === id);
+        await window.supabaseClient.from("products").delete().eq("id", id);
+        if (p && p.storage_path) {
+          await window.supabaseClient.storage.from(BUCKET).remove([p.storage_path]);
+        }
+      }
+      selectedProductIds.clear();
+      if (ids.includes(editingProductId)) resetForm();
+      loadAdminProducts();
+    });
+
+    document.getElementById("bulkClearProductsBtn").addEventListener("click", () => {
+      selectedProductIds.clear();
+      renderAdminProducts();
+    });
+  }
+
+  function wireSelectAllProducts() {
+    const all = document.getElementById("selectAllProducts");
+    if (!all) return;
+    all.addEventListener("change", () => {
+      document.querySelectorAll("#adminList .product-check").forEach((cb) => {
+        cb.checked = all.checked;
+        const id = cb.closest(".admin-row").dataset.id;
+        if (all.checked) selectedProductIds.add(id); else selectedProductIds.delete(id);
+      });
+      renderProductBulkBar();
     });
   }
 
@@ -361,6 +459,7 @@
 
     if (!items.length) {
       list.innerHTML = `<div class="msg">${allOrders.length ? "No orders match this filter." : "No orders yet — they'll appear here the moment someone hits \"Buy Now\" on the storefront."}</div>`;
+      renderOrderBulkBar();
       return;
     }
 
@@ -371,6 +470,7 @@
       const waLink = `https://wa.me/${(o.customer_phone || "").replace(/[^0-9]/g, "")}?text=${waMsg}`;
       return `
       <div class="order-row" data-id="${o.id}">
+        <div class="o-check"><input type="checkbox" class="order-check" ${selectedOrderIds.has(String(o.id)) ? "checked" : ""}></div>
         <div>
           <div class="o-top">
             <span class="o-product">${escapeHtml(o.product_name)} × ${o.quantity}</span>
@@ -444,47 +544,77 @@
         loadOrders();
       });
     });
+
+    list.querySelectorAll(".order-check").forEach((cb) => {
+      cb.addEventListener("change", () => {
+        const id = cb.closest(".order-row").dataset.id;
+        if (cb.checked) selectedOrderIds.add(id); else selectedOrderIds.delete(id);
+        renderOrderBulkBar();
+        syncSelectAllCheckbox("selectAllOrders", ".order-check");
+      });
+    });
+
+    renderOrderBulkBar();
+    syncSelectAllCheckbox("selectAllOrders", ".order-check");
   }
 
   // ---------------- Shipping label ----------------
+  function labelBlockHtml(o) {
+    const shortId = String(o.id).slice(0, 8).toUpperCase();
+    return `
+      <div class="label">
+        <div class="brand">STYLE OF LIFE</div>
+        <div class="sub">Imitation Jewellery</div>
+        <div class="section">
+          <div class="label-tag">Ship To</div>
+          <div class="value">${escapeHtml(o.customer_name)}</div>
+          <div class="addr">${escapeHtml(o.customer_address).replace(/\n/g, "<br>")}</div>
+          <div class="addr">Phone: ${escapeHtml(o.customer_phone)}</div>
+        </div>
+        <div class="order-id">Order ${shortId} &nbsp;·&nbsp; ${new Date(o.created_at).toLocaleDateString("en-IN")}</div>
+      </div>
+    `;
+  }
+
+  const LABEL_STYLES = `
+    @page{ size:4in 6in; margin:0.2in; }
+    body{ font-family: 'Courier New', monospace; padding:16px; color:#1B120E; }
+    .label{ border:2px solid #1B120E; padding:18px; }
+    .brand{ font-size:20px; font-weight:bold; letter-spacing:1px; margin-bottom:2px; }
+    .sub{ font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#555; margin-bottom:16px; }
+    .section{ border-top:1px dashed #999; padding-top:10px; margin-top:10px; }
+    .label-tag{ font-size:10px; letter-spacing:1px; text-transform:uppercase; color:#777; }
+    .value{ font-size:15px; font-weight:bold; margin-top:2px; }
+    .addr{ font-size:14px; line-height:1.5; margin-top:2px; }
+    .order-id{ font-size:11px; color:#777; margin-top:16px; }
+    .label-page{ margin-bottom:24px; }
+    @media print{
+      .no-print{ display:none; }
+      .label-page{ page-break-after:always; margin-bottom:0; }
+      .label-page:last-child{ page-break-after:auto; }
+    }
+  `;
+
   function printShippingLabel(o) {
+    printShippingLabelsBulk([o]);
+  }
+
+  function printShippingLabelsBulk(orders) {
+    if (!orders.length) return;
     const win = window.open("", "_blank", "width=480,height=640");
     if (!win) {
-      alert("Please allow pop-ups to print a shipping label.");
+      alert("Please allow pop-ups to print shipping labels.");
       return;
     }
-    const shortId = String(o.id).slice(0, 8).toUpperCase();
+    const blocks = orders.map((o) => `<div class="label-page">${labelBlockHtml(o)}</div>`).join("");
     win.document.write(`
       <!DOCTYPE html>
-      <html><head><title>Shipping Label — ${shortId}</title>
-      <style>
-        @page{ size:4in 6in; margin:0.2in; }
-        body{ font-family: 'Courier New', monospace; padding:16px; color:#1B120E; }
-        .label{ border:2px solid #1B120E; padding:18px; }
-        .brand{ font-size:20px; font-weight:bold; letter-spacing:1px; margin-bottom:2px; }
-        .sub{ font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#555; margin-bottom:16px; }
-        .section{ border-top:1px dashed #999; padding-top:10px; margin-top:10px; }
-        .label-tag{ font-size:10px; letter-spacing:1px; text-transform:uppercase; color:#777; }
-        .value{ font-size:15px; font-weight:bold; margin-top:2px; }
-        .addr{ font-size:14px; line-height:1.5; margin-top:2px; }
-        .order-id{ font-size:11px; color:#777; margin-top:16px; }
-        .items{ font-size:13px; margin-top:2px; }
-        @media print{ .no-print{ display:none; } }
-      </style>
+      <html><head><title>Shipping Label${orders.length > 1 ? "s" : ""}</title>
+      <style>${LABEL_STYLES}</style>
       </head><body>
-        <div class="label">
-          <div class="brand">STYLE OF LIFE</div>
-          <div class="sub">Imitation Jewellery</div>
-          <div class="section">
-            <div class="label-tag">Ship To</div>
-            <div class="value">${escapeHtml(o.customer_name)}</div>
-            <div class="addr">${escapeHtml(o.customer_address).replace(/\n/g, "<br>")}</div>
-            <div class="addr">Phone: ${escapeHtml(o.customer_phone)}</div>
-          </div>
-          <div class="order-id">Order ${shortId} &nbsp;·&nbsp; ${new Date(o.created_at).toLocaleDateString("en-IN")}</div>
-        </div>
+        ${blocks}
         <p class="no-print" style="text-align:center; margin-top:16px;">
-          <button onclick="window.print()" style="font-family:sans-serif; padding:10px 20px; cursor:pointer;">Print label</button>
+          <button onclick="window.print()" style="font-family:sans-serif; padding:10px 20px; cursor:pointer;">Print ${orders.length} label${orders.length === 1 ? "" : "s"}</button>
         </p>
       </body></html>
     `);
@@ -512,29 +642,128 @@
 
   orderSearch.addEventListener("input", renderOrders);
 
-  function exportOrdersCsv() {
-    if (!allOrders.length) return;
+  function ordersToCsv(list) {
     const header = ["Order ID", "Date", "Product", "Quantity", "Unit Price", "Customer Name", "Phone", "Address", "Status", "Payment Status", "Razorpay Payment ID", "Admin Notes"];
-    const rows = allOrders.map((o) => [
+    const rows = list.map((o) => [
       o.id, new Date(o.created_at).toLocaleString("en-IN"),
       o.product_name, o.quantity, o.unit_price,
       o.customer_name, o.customer_phone, o.customer_address, o.status,
       o.payment_status || "Unpaid", o.razorpay_payment_id || "", o.admin_notes || ""
     ]);
-    const csv = [header, ...rows]
+    return [header, ...rows]
       .map((row) => row.map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(","))
       .join("\n");
+  }
+
+  function downloadCsv(csv, filename) {
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `orders-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
+
+  function exportOrdersCsv() {
+    if (!allOrders.length) return;
+    downloadCsv(ordersToCsv(allOrders), `orders-${new Date().toISOString().slice(0, 10)}.csv`);
+  }
   document.getElementById("exportOrdersBtn").addEventListener("click", exportOrdersCsv);
+
+  // ---------------- Order bulk actions ----------------
+  function renderOrderBulkBar() {
+    const bar = document.getElementById("orderBulkBar");
+    if (!bar) return;
+    const n = selectedOrderIds.size;
+    if (n === 0) {
+      bar.classList.add("empty");
+      bar.innerHTML = `Select orders below to apply bulk actions.`;
+      return;
+    }
+    bar.classList.remove("empty");
+    bar.innerHTML = `
+      <span class="bb-count">${n} selected</span>
+      <div class="bb-actions">
+        <select id="bulkOrderStatusSelect">
+          <option value="">Set status…</option>
+          ${STATUSES.map((s) => `<option value="${s}">${s}</option>`).join("")}
+        </select>
+        <button class="bb-btn" id="bulkApplyStatusBtn">Apply</button>
+        <select id="bulkOrderPaymentSelect">
+          <option value="">Set payment…</option>
+          ${PAYMENT_STATUSES.map((s) => `<option value="${s}">${s}</option>`).join("")}
+        </select>
+        <button class="bb-btn" id="bulkApplyPaymentBtn">Apply</button>
+        <button class="bb-btn" id="bulkPrintLabelsBtn">Print labels</button>
+        <button class="bb-btn" id="bulkExportSelectedBtn">Export selected</button>
+        <button class="bb-btn danger" id="bulkDeleteOrdersBtn">Delete</button>
+        <button class="bb-btn" id="bulkClearOrdersBtn">Clear</button>
+      </div>
+    `;
+
+    function getSelectedOrders() {
+      return allOrders.filter((o) => selectedOrderIds.has(String(o.id)));
+    }
+
+    document.getElementById("bulkApplyStatusBtn").addEventListener("click", async () => {
+      const val = document.getElementById("bulkOrderStatusSelect").value;
+      if (!val) return;
+      for (const id of selectedOrderIds) {
+        await window.supabaseClient.from("orders").update({ status: val }).eq("id", id);
+      }
+      selectedOrderIds.clear();
+      loadOrders();
+    });
+
+    document.getElementById("bulkApplyPaymentBtn").addEventListener("click", async () => {
+      const val = document.getElementById("bulkOrderPaymentSelect").value;
+      if (!val) return;
+      for (const id of selectedOrderIds) {
+        await window.supabaseClient.from("orders").update({ payment_status: val }).eq("id", id);
+      }
+      selectedOrderIds.clear();
+      loadOrders();
+    });
+
+    document.getElementById("bulkPrintLabelsBtn").addEventListener("click", () => {
+      printShippingLabelsBulk(getSelectedOrders());
+    });
+
+    document.getElementById("bulkExportSelectedBtn").addEventListener("click", () => {
+      downloadCsv(ordersToCsv(getSelectedOrders()), `orders-selected-${new Date().toISOString().slice(0, 10)}.csv`);
+    });
+
+    document.getElementById("bulkDeleteOrdersBtn").addEventListener("click", async () => {
+      const ids = Array.from(selectedOrderIds);
+      if (!confirm(`Delete ${ids.length} order${ids.length === 1 ? "" : "s"} permanently? This can't be undone.`)) return;
+      for (const id of ids) {
+        await window.supabaseClient.from("orders").delete().eq("id", id);
+      }
+      selectedOrderIds.clear();
+      loadOrders();
+    });
+
+    document.getElementById("bulkClearOrdersBtn").addEventListener("click", () => {
+      selectedOrderIds.clear();
+      renderOrders();
+    });
+  }
+
+  function wireSelectAllOrders() {
+    const all = document.getElementById("selectAllOrders");
+    if (!all) return;
+    all.addEventListener("change", () => {
+      document.querySelectorAll("#ordersList .order-check").forEach((cb) => {
+        cb.checked = all.checked;
+        const id = cb.closest(".order-row").dataset.id;
+        if (all.checked) selectedOrderIds.add(id); else selectedOrderIds.delete(id);
+      });
+      renderOrderBulkBar();
+    });
+  }
 
   // ---------------- Bulk status update via Excel/CSV ----------------
   document.getElementById("bulkStatusBtn").addEventListener("click", () => {
@@ -715,6 +944,8 @@
 
   wireTabs();
   wireOrderFilters();
+  wireSelectAllOrders();
+  wireSelectAllProducts();
   window.supabaseClient.auth.onAuthStateChange(() => refreshSessionUI());
   refreshSessionUI();
 })();
