@@ -35,6 +35,17 @@
   }
 
   // Wire every WhatsApp entry point on the page to the configured number
+  function formatWhatsAppNumber(raw) {
+    const digits = String(raw || "").replace(/[^0-9]/g, "");
+    if (digits.length === 12 && digits.startsWith("91")) {
+      return `+91 ${digits.slice(2, 7)} ${digits.slice(7)}`;
+    }
+    if (digits.length === 10) {
+      return `+91 ${digits.slice(0, 5)} ${digits.slice(5)}`;
+    }
+    return digits ? `+${digits}` : "";
+  }
+
   function wireWhatsAppLinks() {
     const base = window.WHATSAPP_NUMBER
       ? `https://wa.me/${window.WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I'd like to know more about your jewellery collection.")}`
@@ -43,6 +54,17 @@
       const el = document.getElementById(id);
       if (el) el.href = base;
     });
+
+    const displayNumber = formatWhatsAppNumber(window.WHATSAPP_NUMBER);
+    const footerNum = document.getElementById("footerWaNumber");
+    if (footerNum) {
+      footerNum.textContent = displayNumber || "Add your WhatsApp number in config.js";
+      footerNum.href = base;
+    }
+    const ctaNum = document.getElementById("ctaWaNumber");
+    if (ctaNum && displayNumber) {
+      ctaNum.textContent = `or message us directly on ${displayNumber}`;
+    }
   }
 
   function renderChips() {
@@ -195,8 +217,8 @@
           </div>
           <div class="row2">
             <div class="field">
-              <label>Phone number</label>
-              <input type="tel" id="coPhone" required>
+              <label>WhatsApp number</label>
+              <input type="tel" id="coPhone" placeholder="10-digit mobile number" required>
             </div>
             <div class="field">
               <label>Quantity</label>
@@ -267,11 +289,16 @@
     checkoutBackdrop.classList.add("open");
   }
 
+  function shortOrderId(id) {
+    return String(id).slice(0, 8).toUpperCase();
+  }
+
   function showWhatsAppFallback(orderRow, p, name, phone, address, qty, note) {
+    const orderCode = shortOrderId(orderRow.id);
     const waText = encodeURIComponent(
-      `Hi! I just placed an order on the website:\n\n` +
+      `Hi! I just placed order #${orderCode} on the website:\n\n` +
       `Product: ${p.name}\nQty: ${qty}\nPrice: ${formatPrice(p.price)} each\n\n` +
-      `Name: ${name}\nPhone: ${phone}\nAddress: ${address || ""}\n\nPlease help me complete payment / confirm my order. Thank you!`
+      `Name: ${name}\nWhatsApp number: ${phone}\nAddress: ${address || ""}\n\nPlease help me complete payment / confirm my order. Thank you!`
     );
     const waLink = window.WHATSAPP_NUMBER ? `https://wa.me/${window.WHATSAPP_NUMBER}?text=${waText}` : "#";
     checkoutBody.innerHTML = `
@@ -280,6 +307,7 @@
         <div class="checkout-success">
           <div class="tick" style="background:var(--gold-deep)">!</div>
           <h2>Order saved — payment not completed</h2>
+          <div class="order-code">Order #${orderCode}</div>
           <p>${note} Your order for <strong>${escapeHtml(p.name)}</strong> is saved. You can retry payment, or message us on WhatsApp to sort it out directly.</p>
           <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
             <button class="btn gold" id="retryPayBtn"><span class="shine"></span>Retry payment</button>
@@ -295,8 +323,9 @@
     });
   }
 
-  function showPaidSuccess(p, qty) {
-    const waText = encodeURIComponent(`Hi! I just paid for my order — ${p.name} x${qty}. Looking forward to it!`);
+  function showPaidSuccess(orderRow, p, qty) {
+    const orderCode = shortOrderId(orderRow.id);
+    const waText = encodeURIComponent(`Hi! I just paid for order #${orderCode} — ${p.name} x${qty}. Looking forward to it!`);
     const waLink = window.WHATSAPP_NUMBER ? `https://wa.me/${window.WHATSAPP_NUMBER}?text=${waText}` : "#";
     checkoutBody.innerHTML = `
       <div class="modal-body">
@@ -304,6 +333,7 @@
         <div class="checkout-success">
           <div class="tick">✓</div>
           <h2>Payment successful!</h2>
+          <div class="order-code">Order #${orderCode}</div>
           <p>Your order for <strong>${escapeHtml(p.name)}</strong> is confirmed and paid. We'll get it packed and shipped — feel free to say hi on WhatsApp for delivery updates.</p>
           <a class="btn gold" href="${waLink}" target="_blank" rel="noopener"><span class="shine"></span>Message us on WhatsApp</a>
         </div>
@@ -356,7 +386,7 @@
               })
               .then(({ data: verifyData }) => {
                 if (verifyData && verifyData.verified) {
-                  showPaidSuccess(p, qty);
+                  showPaidSuccess(orderRow, p, qty);
                 } else {
                   showWhatsAppFallback(orderRow, p, name, phone, orderRow.customer_address, qty,
                     "We received a payment response but couldn't verify it.");
