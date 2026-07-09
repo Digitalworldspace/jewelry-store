@@ -169,3 +169,25 @@ Anyone visiting the site can *create* an order (that's required — customers ar
 - Store name: edit the `<a class="brand">` text in `index.html` and `admin.html`.
 - WhatsApp enquiry number: edit `WHATSAPP_NUMBER` in `assets/config.js`.
 - Colours/fonts: edit the `:root` variables at the top of `assets/style.css`.
+
+## SEO checklist
+
+The site now has real SEO groundwork built in — here's what's there and what you need to fill in before launch.
+
+**What's already done:**
+- Descriptive, keyword-rich `<title>` and meta description
+- Open Graph and Twitter Card tags (so links look good when shared on WhatsApp, Facebook, X, etc.)
+- `JewelryStore` structured data (JSON-LD) describing your business to Google
+- **Live product structured data** — every time the catalog loads, `app.js` rebuilds a `Product` list in JSON-LD using your real live prices, names, and images, so Google can potentially show rich results (price, availability) for your actual catalog
+- `robots.txt` (allows the storefront, blocks `admin.html` from being indexed)
+- `sitemap.xml`
+- `manifest.json` and a brand favicon (`assets/favicon.svg`)
+- Clean heading structure (one `<h1>`, proper `<h2>`/`<h3>` nesting) and `alt` text on every product image
+
+**What you need to fill in — search each file for "siteConfig" to find every spot:**
+1. **Your real domain** — once GitHub Pages gives you a URL, update it in: `index.html` (canonical link, `og:url`, `og:image`, the JSON-LD `url`), `robots.txt` (Sitemap line), and `sitemap.xml` (`<loc>`).
+2. **A real social preview image** — create a 1200×630px image (a nice product flat-lay or logo) and save it as `assets/og-image.jpg`, matching the path already referenced in the meta tags.
+3. **Real business details** — in the `JewelryStore` structured data in `index.html`, replace the placeholder `telephone` with your real number, and add your social profile URLs to `sameAs` (e.g. Instagram, Facebook) if you have them.
+4. **Submit to Google** — once live, submit `sitemap.xml` in [Google Search Console](https://search.google.com/search-console) (add your property, verify ownership, then Sitemaps → add `sitemap.xml`).
+
+**A limitation worth knowing:** your product catalog is loaded live from Supabase via JavaScript. Modern Googlebot generally executes JavaScript and can index this, but it's not instant or guaranteed the way a plain HTML page is — search engines may take longer to pick up new products, and some other crawlers (Bing, social-media link previews) may not run JavaScript at all and will only see the static content above the fold. This is a normal tradeoff for any live, database-backed storefront like this one.
