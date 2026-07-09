@@ -439,6 +439,21 @@
     return true;
   }
 
+  function shortOrderId(id) {
+    return String(id).slice(0, 8).toUpperCase();
+  }
+
+  function orderDateGroupLabel(dateStr) {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const isSameDay = (a, b) => a.toDateString() === b.toDateString();
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    if (isSameDay(d, now)) return "Today";
+    if (isSameDay(d, yesterday)) return "Yesterday";
+    return d.toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
+  }
+
   function renderOrders() {
     const list = document.getElementById("ordersList");
     const badge = document.getElementById("orderCountBadge");
@@ -453,7 +468,8 @@
     if (q) {
       items = items.filter((o) =>
         (o.customer_name || "").toLowerCase().includes(q) ||
-        (o.customer_phone || "").toLowerCase().includes(q)
+        (o.customer_phone || "").toLowerCase().includes(q) ||
+        shortOrderId(o.id).toLowerCase().includes(q)
       );
     }
 
@@ -463,43 +479,61 @@
       return;
     }
 
-    list.innerHTML = items.map((o) => {
-      const waMsg = encodeURIComponent(
-        `Hi ${o.customer_name}, this is Style OF Life confirming your order for ${o.product_name} (x${o.quantity}). Just checking in on your order status!`
-      );
-      const waLink = `https://wa.me/${(o.customer_phone || "").replace(/[^0-9]/g, "")}?text=${waMsg}`;
-      return `
-      <div class="order-row" data-id="${o.id}">
-        <div class="o-check"><input type="checkbox" class="order-check" ${selectedOrderIds.has(String(o.id)) ? "checked" : ""}></div>
-        <div>
-          <div class="o-top">
-            <span class="o-product">${escapeHtml(o.product_name)} × ${o.quantity}</span>
-            <span>
-              <span class="status-badge ${escapeHtml(o.status)}">${escapeHtml(o.status)}</span>
-              <span class="pay-badge ${escapeHtml(o.payment_status || "Unpaid")}">${escapeHtml(o.payment_status || "Unpaid")}</span>
-            </span>
+    // Group orders by calendar day, newest day first (items already arrive newest-first from loadOrders)
+    const groups = [];
+    let currentKey = null;
+    items.forEach((o) => {
+      const key = new Date(o.created_at).toDateString();
+      if (key !== currentKey) {
+        groups.push({ key, label: orderDateGroupLabel(o.created_at), orders: [] });
+        currentKey = key;
+      }
+      groups[groups.length - 1].orders.push(o);
+    });
+
+    list.innerHTML = groups.map((g) => `
+      <div class="date-group">
+        <div class="date-group-label">${g.label} <span class="date-group-count">${g.orders.length} order${g.orders.length === 1 ? "" : "s"}</span></div>
+        ${g.orders.map((o) => {
+          const waMsg = encodeURIComponent(
+            `Hi ${o.customer_name}, this is Style OF Life confirming your order ${shortOrderId(o.id)} for ${o.product_name} (x${o.quantity}). Just checking in on your order status!`
+          );
+          const waLink = `https://wa.me/${(o.customer_phone || "").replace(/[^0-9]/g, "")}?text=${waMsg}`;
+          return `
+          <div class="order-row" data-id="${o.id}">
+            <div class="o-check"><input type="checkbox" class="order-check" ${selectedOrderIds.has(String(o.id)) ? "checked" : ""}></div>
+            <div>
+              <div class="o-top">
+                <span class="order-id-tag">#${shortOrderId(o.id)}</span>
+                <span class="o-product">${escapeHtml(o.product_name)} × ${o.quantity}</span>
+                <span>
+                  <span class="status-badge ${escapeHtml(o.status)}">${escapeHtml(o.status)}</span>
+                  <span class="pay-badge ${escapeHtml(o.payment_status || "Unpaid")}">${escapeHtml(o.payment_status || "Unpaid")}</span>
+                </span>
+              </div>
+              <div class="o-meta">
+                ₹${escapeHtml(o.unit_price)} each · ${new Date(o.created_at).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}<br>
+                ${escapeHtml(o.customer_name)} · ${escapeHtml(o.customer_phone)}<br>
+                ${escapeHtml(o.customer_address)}
+              </div>
+              <input class="order-notes" data-action="notes" type="text" placeholder="Internal note (not shown to customer)…" value="${escapeHtml(o.admin_notes || "")}">
+            </div>
+            <div class="o-actions">
+              <a class="link-btn" href="${waLink}" target="_blank" rel="noopener">WhatsApp</a>
+              <button class="link-btn" data-action="label">Shipping label</button>
+              <select class="order-select" data-action="status">
+                ${STATUSES.map((s) => `<option value="${s}" ${s === o.status ? "selected" : ""}>${s}</option>`).join("")}
+              </select>
+              <select class="order-select" data-action="payment">
+                ${PAYMENT_STATUSES.map((s) => `<option value="${s}" ${s === (o.payment_status || "Unpaid") ? "selected" : ""}>${s}</option>`).join("")}
+              </select>
+              <button class="link-btn" data-action="delete-order" style="color:var(--oxblood)">Delete</button>
+            </div>
           </div>
-          <div class="o-meta">
-            ₹${escapeHtml(o.unit_price)} each · ${new Date(o.created_at).toLocaleString("en-IN")}<br>
-            ${escapeHtml(o.customer_name)} · ${escapeHtml(o.customer_phone)}<br>
-            ${escapeHtml(o.customer_address)}
-          </div>
-          <input class="order-notes" data-action="notes" type="text" placeholder="Internal note (not shown to customer)…" value="${escapeHtml(o.admin_notes || "")}">
-        </div>
-        <div class="o-actions">
-          <a class="link-btn" href="${waLink}" target="_blank" rel="noopener">WhatsApp</a>
-          <button class="link-btn" data-action="label">Shipping label</button>
-          <select class="order-select" data-action="status">
-            ${STATUSES.map((s) => `<option value="${s}" ${s === o.status ? "selected" : ""}>${s}</option>`).join("")}
-          </select>
-          <select class="order-select" data-action="payment">
-            ${PAYMENT_STATUSES.map((s) => `<option value="${s}" ${s === (o.payment_status || "Unpaid") ? "selected" : ""}>${s}</option>`).join("")}
-          </select>
-          <button class="link-btn" data-action="delete-order" style="color:var(--oxblood)">Delete</button>
-        </div>
+        `;
+        }).join("")}
       </div>
-    `;
-    }).join("");
+    `).join("");
 
     list.querySelectorAll('[data-action="status"]').forEach((sel) => {
       sel.addEventListener("change", async () => {
@@ -560,7 +594,7 @@
 
   // ---------------- Shipping label ----------------
   function labelBlockHtml(o) {
-    const shortId = String(o.id).slice(0, 8).toUpperCase();
+    const shortId = shortOrderId(o.id);
     return `
       <div class="label">
         <div class="brand">STYLE OF LIFE</div>
