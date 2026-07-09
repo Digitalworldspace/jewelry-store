@@ -505,6 +505,42 @@
     renderChips();
     renderGrid();
     renderShowroom();
+    renderProductStructuredData();
+  }
+
+  // Structured data helps search engines show rich results (price,
+  // availability, images) for the live catalog. Rebuilt every time
+  // products load or change, using real data — never placeholder text.
+  function renderProductStructuredData() {
+    let script = document.getElementById("productStructuredData");
+    if (!script) {
+      script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.id = "productStructuredData";
+      document.head.appendChild(script);
+    }
+    const items = allProducts.slice(0, 40).map((p, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "item": {
+        "@type": "Product",
+        "name": p.name,
+        "description": p.description || undefined,
+        "image": p.image_url || undefined,
+        "category": p.category || undefined,
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "INR",
+          "price": p.price,
+          "availability": "https://schema.org/InStock"
+        }
+      }
+    }));
+    script.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "itemListElement": items
+    });
   }
 
   // Live updates: new / edited / removed products from the admin
