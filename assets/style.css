@@ -361,15 +361,31 @@ img{ max-width:100%; display:block; }
   text-transform:uppercase;
   color:var(--oxblood);
 }
+.tag-card{ display:flex; flex-direction:column; }
+.tag-card .info{ padding:16px 18px 18px; display:flex; flex-direction:column; flex:1; }
+.tag-card .cat{
+  font-family:var(--font-mono);
+  font-size:.62rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--oxblood);
+  height:1.4em;
+}
 .tag-card h3{
   font-family:var(--font-display);
   font-size:1.15rem;
   margin:.35em 0 .3em;
+  display:-webkit-box;
+  -webkit-line-clamp:1;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-height:1.3em;
 }
 .tag-card .price-row{
   display:flex; align-items:baseline; gap:9px;
   border-top:1px dashed var(--line);
-  margin-top:10px;
+  margin-top:auto;
   padding-top:10px;
   font-family:var(--font-mono);
 }
@@ -834,6 +850,18 @@ img{ max-width:100%; display:block; }
   margin:0 auto 18px; font-size:1.6rem;
 }
 .checkout-success h2{ margin-bottom:8px; }
+.checkout-success .order-code{
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:.75rem;
+  letter-spacing:.08em;
+  background:var(--ivory);
+  border:1px solid var(--line);
+  color:var(--oxblood);
+  padding:5px 14px;
+  border-radius:20px;
+  margin-bottom:14px;
+}
 .checkout-success p{ color:var(--muted); margin-bottom:22px; }
 
 /* ---------- admin orders panel ---------- */
@@ -1267,3 +1295,105 @@ img{ max-width:100%; display:block; }
 .order-row .o-check, .admin-row .p-check{ display:flex; align-items:flex-start; padding-top:2px; }
 .order-row .o-check input, .admin-row .p-check input{ width:16px; height:16px; accent-color:var(--oxblood); cursor:pointer; }
 .admin-row{ grid-template-columns:auto 64px 1fr auto auto; }
+
+/* ============================================================
+   DATE-GROUPED ORDER LIST + ORDER ID TAG
+   ============================================================ */
+.date-group{ margin-bottom:22px; }
+.date-group-label{
+  font-family:var(--font-mono);
+  font-size:.7rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--gold-deep);
+  background:#FBF3E4;
+  border:1px solid var(--line);
+  padding:8px 14px;
+  margin-bottom:1px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.date-group-count{ color:var(--muted); letter-spacing:.04em; }
+.order-id-tag{
+  font-family:var(--font-mono);
+  font-size:.68rem;
+  letter-spacing:.03em;
+  background:var(--ink);
+  color:var(--gold-2);
+  padding:2px 9px;
+  border-radius:20px;
+  margin-right:2px;
+}
+
+/* ============================================================
+   ADMIN MOBILE RESPONSIVENESS PASS
+   ============================================================ */
+@media (max-width:820px){
+  .admin-wrap{ padding:5vh 4vw 8vh; }
+  .stat-cards{ grid-template-columns:repeat(2,1fr); }
+  .tabs{ flex-wrap:wrap; }
+  .tab-btn{ flex:1 1 auto; text-align:center; }
+
+  .row2, .row3{ grid-template-columns:1fr; }
+
+  .admin-toolbar{ flex-direction:column; align-items:stretch; }
+  .admin-toolbar .search-box{ width:100%; }
+  #paymentFilters{ margin-top:0; }
+  #dateFilter{ margin-left:0 !important; width:100%; }
+
+  .panel-head{ flex-direction:column; align-items:stretch; }
+  .panel-head .search-box{ width:100%; }
+
+  .admin-row{
+    grid-template-columns:auto 56px 1fr;
+    grid-template-areas:
+      "check img info"
+      "check img meta"
+      "actions actions actions";
+    row-gap:6px;
+  }
+  .admin-row .p-check{ grid-area:check; }
+  .admin-row img{ grid-area:img; width:56px; height:56px; }
+  .admin-row > div:not(.p-check){ grid-area:info; }
+  .admin-row .meta{ grid-area:meta; }
+  .admin-row .row-actions{ grid-area:actions; justify-content:flex-start; margin-top:6px; }
+
+  .order-row{ grid-template-columns:auto 1fr; }
+  .order-row .o-actions{ justify-content:flex-start; margin-top:10px; }
+  .order-row .o-actions select, .order-row .o-actions .link-btn{ flex:1 1 auto; text-align:center; }
+
+  .bulk-bar{ flex-direction:column; align-items:stretch; }
+  .bulk-bar .bb-actions{ margin-left:0; width:100%; }
+  .bulk-bar .bb-actions select, .bulk-bar .bb-actions .bb-btn{ flex:1 1 auto; }
+
+  .stat-card{ padding:16px; }
+  .stat-card .v{ font-size:1.4rem; }
+}
+
+@media (max-width:480px){
+  .stat-cards{ grid-template-columns:1fr 1fr; }
+  .o-top{ flex-direction:column; align-items:flex-start !important; gap:6px; }
+}
+
+/* visible WhatsApp number display */
+.wa-number-display{ font-family:var(--font-mono); font-size:.82rem; letter-spacing:.03em; }
+.cta-wa-number{
+  margin-top:14px;
+  font-family:var(--font-mono);
+  font-size:.78rem;
+  color:#D9C7AE;
+  position:relative;
+  z-index:1;
+}
+
+/* ============================================================
+   STOREFRONT MOBILE RESPONSIVENESS PASS
+   ============================================================ */
+@media (max-width:600px){
+  .checkout-modal .co-product{ flex-wrap:wrap; }
+  .checkout-modal .row2{ grid-template-columns:1fr; }
+  .story-lines p{ font-size:1.3rem; }
+  .compare-col{ padding:26px 22px; }
+  .why-grid{ padding:5vh 6vw 7vh; }
+}
