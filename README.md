@@ -128,6 +128,15 @@ Same pattern in the Products tab: tick products (or **Select all shown**), then:
 **Analytics**
 The **Analytics** tab shows: revenue over time (from verified paid orders), a breakdown of orders by status, your top-selling products by units ordered, and at-a-glance cards (average paid order value, total items ordered, unique customers, paid order count). All computed live from your real `orders` data — nothing here is simulated.
 
+## Order IDs, date grouping, and mobile polish
+
+- Every order now shows a short **Order ID** tag (e.g. `#A1B2C3D4`) right on its row in the admin panel, and orders are grouped under **date headers** (Today / Yesterday / the full date) so it's easy to scan what came in when.
+- Search in the Orders tab now matches name, phone, **or Order ID**.
+- Customers see their own Order ID on the "Order saved" and "Payment successful" screens after checkout, and it's included in the WhatsApp messages sent both ways — so an Order ID is something you and the customer can both reference immediately.
+- The "Phone number" field in checkout is now labelled **WhatsApp number**, since that's what it's actually used for. Your own store's WhatsApp number is now shown as visible, tappable text (not just a button) in the footer and above the "Chat with us" button — pulled automatically from `WHATSAPP_NUMBER` in `config.js`.
+- Product cards in "The Collection" are now a strict uniform size regardless of name length or badges (long names truncate with an ellipsis rather than stretching the card).
+- Did a full mobile pass on both `index.html` and `admin.html` — order rows, product rows, the bulk-action bar, filters, and stat cards all reflow into single-column, thumb-friendly layouts on small screens instead of staying in a cramped grid.
+
 ## The layout, top to bottom
 
 The storefront now opens with a **small header**, a compact one-line intro banner, and goes straight into **The Showroom** — your live products flying into their diamond formation — before the full scrollable catalog. This puts your actual inventory in front of visitors immediately instead of behind a large hero section.
