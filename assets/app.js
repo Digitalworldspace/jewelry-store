@@ -349,6 +349,10 @@
     }
 
     if (!window.Razorpay || !window.RAZORPAY_KEY_ID || window.RAZORPAY_KEY_ID.includes("XXXX")) {
+      console.error("[Razorpay] Not ready:", {
+        razorpayScriptLoaded: !!window.Razorpay,
+        keyConfigured: window.RAZORPAY_KEY_ID
+      });
       showWhatsAppFallback(orderRow, p, name, phone, orderRow.customer_address, qty,
         "Online payment isn't set up on this site yet, so we couldn't open the payment window.");
       return;
@@ -360,6 +364,7 @@
       })
       .then(({ data, error }) => {
         if (error || !data || data.error) {
+          console.error("[Razorpay] create-razorpay-order failed:", error || data);
           showWhatsAppFallback(orderRow, p, name, phone, orderRow.customer_address, qty,
             "We couldn't start the payment right now.");
           return;
@@ -384,15 +389,17 @@
                   razorpay_signature: response.razorpay_signature
                 }
               })
-              .then(({ data: verifyData }) => {
+              .then(({ data: verifyData, error: verifyError }) => {
                 if (verifyData && verifyData.verified) {
                   showPaidSuccess(orderRow, p, qty);
                 } else {
+                  console.error("[Razorpay] verify-razorpay-payment failed:", verifyError || verifyData);
                   showWhatsAppFallback(orderRow, p, name, phone, orderRow.customer_address, qty,
                     "We received a payment response but couldn't verify it.");
                 }
               })
-              .catch(() => {
+              .catch((err) => {
+                console.error("[Razorpay] verify-razorpay-payment threw:", err);
                 showWhatsAppFallback(orderRow, p, name, phone, orderRow.customer_address, qty,
                   "We received a payment response but couldn't verify it.");
               });
@@ -405,14 +412,16 @@
           }
         });
 
-        rzp.on("payment.failed", function () {
+        rzp.on("payment.failed", function (resp) {
+          console.error("[Razorpay] payment.failed:", resp && resp.error);
           showWhatsAppFallback(orderRow, p, name, phone, orderRow.customer_address, qty,
             "The payment attempt didn't go through.");
         });
 
         rzp.open();
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("[Razorpay] create-razorpay-order threw:", err);
         showWhatsAppFallback(orderRow, p, name, phone, orderRow.customer_address, qty,
           "We couldn't start the payment right now.");
       });
