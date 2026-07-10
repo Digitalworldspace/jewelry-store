@@ -452,7 +452,7 @@
 
     const centerHtml = `
       <div class="showroom-center" data-id="${center.id}">
-        ${center.image_url ? `<img src="${escapeHtml(center.image_url)}"
+        ${center.image_url ? `<img src="${escapeHtml(center.image_url)}" alt="${escapeHtml(center.name)}">` : ""}
         <div class="tag">${escapeHtml(center.name)}</div>
       </div>
     `;
