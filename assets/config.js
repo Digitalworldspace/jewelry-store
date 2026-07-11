@@ -27,4 +27,4 @@ window.WHATSAPP_NUMBER = "916352925472";
    NEVER put your Razorpay Key SECRET anywhere in this project —
    it only ever belongs inside your Supabase Edge Function secrets.
    Starts with "rzp_test_" while testing, "rzp_live_" once you go live. */
-window.RAZORPAY_KEY_ID = "rzp_live_Sa1tFsYEgmLi8S";
+window.RAZORPAY_KEY_ID = "rzp_live_TC2ibFsu1A5oaF";
