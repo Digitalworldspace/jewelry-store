@@ -41,46 +41,39 @@ That's your backend fully live. No further Supabase setup needed.
 3. GitHub gives you a live URL like `https://your-username.github.io/style-of-life/` within a minute or two.
 4. Your storefront is `.../index.html` (or just the root URL) and your admin panel is `.../admin.html`.
 
-## 4. Accept real online payments with Razorpay
+## 4. Accept real online payments with Razorpay (no Edge Functions)
 
-The "Buy Now" checkout now opens a real Razorpay payment window and only marks an order as **Paid** after the payment is verified — all done through browser-based steps, no command line.
+The "Buy Now" checkout opens a real Razorpay payment window entirely from the browser — no Supabase Edge Functions, no backend server, nothing beyond your Razorpay Key Id. This is simpler to set up, but comes with two tradeoffs worth understanding:
 
-### 4a. Get your Razorpay keys
+- **The amount isn't locked server-side.** Because there's no backend creating a fixed-amount order first, a technically determined visitor could in theory alter the amount in their browser's dev tools before paying. For a small personal store this is a low-probability risk, but it's real — if you outgrow this, the fix is reintroducing a server-side order-creation step (ask if you want that built later).
+- **Payments aren't auto-verified.** Instead of the system confirming "Paid" automatically, **you confirm each payment yourself**: the customer's Payment ID is shown to them and sent to you on WhatsApp, you check it against your Razorpay Dashboard, then flip that order's **Payment Status** to Paid in the admin panel. This is a completely normal way small stores run UPI/card payments.
+
+### 4a. Get your Razorpay key
 1. Sign up at [razorpay.com](https://razorpay.com) (free to start).
-2. In the Razorpay Dashboard, make sure you're in **Test Mode** (toggle top-right) while you're setting things up.
-3. Go to **Settings → API Keys → Generate Test Key**. Copy the **Key Id** (starts `rzp_test_...`) and **Key Secret** — you'll only see the secret once, so save it somewhere safe.
+2. In the Razorpay Dashboard, go to **Settings → API Keys**.
+3. Copy your **Key Id** — that's the only value this setup needs (starts `rzp_test_...` in Test Mode, `rzp_live_...` once you're live). You do **not** need the Key Secret anywhere in this project.
 
-### 4b. Deploy the two Edge Functions (Supabase Dashboard only — no CLI)
-Your project already has two function files ready to paste in: `supabase/functions/create-razorpay-order/index.ts` and `supabase/functions/verify-razorpay-payment/index.ts`.
+### 4b. Add it to the site
+1. Re-run `supabase-setup.sql` in the SQL Editor — it adds `payment_status`, `razorpay_order_id`, and `razorpay_payment_id` columns to `orders` (safe to re-run).
+2. In `assets/config.js`, replace `window.RAZORPAY_KEY_ID = "rzp_test_XXXXXXXXXXXXXX"` with your real **Key Id**. This is safe to commit to GitHub — it's a public identifier, the same way a Stripe publishable key is.
+3. Re-upload `assets/config.js` (and `assets/app.js` if you haven't already) to GitHub.
 
-1. In Supabase, open **Edge Functions** in the sidebar → **Deploy a new function** → **Via Editor**.
-2. Name it exactly `create-razorpay-order`, delete the placeholder code, and paste in the contents of `supabase/functions/create-razorpay-order/index.ts`. Click **Deploy**.
-3. Repeat for `verify-razorpay-payment` using that file's contents.
+### 4c. Test it
+Place a test order on your live site using a **Test Mode** Key Id and one of [Razorpay's test cards](https://razorpay.com/docs/payments/payments/test-card-details/) (e.g. card number `4111 1111 1111 1111`, any future expiry, any CVV) — no real money moves.
 
-### 4c. Add your secrets
-Still in **Edge Functions**, open the **Secrets** tab and add:
-| Name | Value |
-|---|---|
-| `RAZORPAY_KEY_ID` | your Razorpay Key Id |
-| `RAZORPAY_KEY_SECRET` | your Razorpay Key Secret |
-| `SUPABASE_URL` | `https://fdzcgnxmgyyaoxnrvxdg.supabase.co` |
-| `SUPABASE_SERVICE_ROLE_KEY` | your project's **secret** key (the `sb_secret_...` one — never the publishable one) |
+### 4d. Going live
+Complete Razorpay's KYC/business verification, switch to **Live Mode** in their dashboard, copy your **Live** Key Id, and update `window.RAZORPAY_KEY_ID` in `config.js` to it (`rzp_live_...`). That's the only change needed to go from test to live.
 
-These secrets are only ever readable by your Edge Functions on Supabase's servers — never by the browser.
-
-### 4d. Re-run the SQL, then add your public key to the site
-1. Re-run `supabase-setup.sql` in the SQL Editor — it now adds `payment_status`, `razorpay_order_id`, and `razorpay_payment_id` columns to `orders` (safe to re-run).
-2. In `assets/config.js`, replace `window.RAZORPAY_KEY_ID = "rzp_test_XXXXXXXXXXXXXX"` with your real **Key Id** (the public one — this is safe to commit to GitHub, same as a Stripe publishable key).
-3. Re-upload everything to GitHub, including the new `supabase/functions/` folder (good to keep in the repo even though it isn't served — it's your source of truth for the functions).
-
-### 4e. Test it
-Place a test order on your live site and use one of [Razorpay's test cards](https://razorpay.com/docs/payments/payments/test-card-details/) (e.g. card number `4111 1111 1111 1111`, any future expiry, any CVV) to simulate a real payment without spending money.
-
-### 4f. Going live
-Once you've tested everything, complete Razorpay's KYC/business verification, switch Razorpay to **Live Mode**, generate **Live** API keys, and update both the `RAZORPAY_KEY_ID`/`RAZORPAY_KEY_SECRET` Edge Function secrets and `window.RAZORPAY_KEY_ID` in `config.js` to the live values (`rzp_live_...`).
+### Confirming a payment
+1. After a customer pays, they see a **Payment ID** (e.g. `pay_ABC123...`) and can send it to you directly via a pre-filled WhatsApp message.
+2. Open your **Razorpay Dashboard → Payments**, search for that Payment ID, and confirm the amount and status look right.
+3. In `admin.html`, find that order and set its **Payment Status** dropdown to **Paid**.
 
 ### What happens if payment isn't completed
-If a customer closes the payment window, their card is declined, or something goes wrong, the order is still saved as `Pending` / `Unpaid` — the site shows a "Retry payment" button plus a WhatsApp fallback so you never lose the lead. Nothing is ever marked "Paid" unless the Edge Function's signature check genuinely passes.
+If a customer closes the payment window, their card is declined, or something goes wrong, the order is still saved as `Pending` / `Unpaid` — the site shows a **Retry payment** button plus a WhatsApp fallback so you never lose the lead.
+
+### The `supabase/functions/` folder
+This project still includes `create-razorpay-order` and `verify-razorpay-payment` as optional Edge Functions, but **nothing in the live site calls them anymore**. They're there in case you want to upgrade to the more secure, fully-verified flow later — just ask, and I can wire them back in along with the setup steps.
 
 ## 5. Using it day to day
 
