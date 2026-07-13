@@ -323,19 +323,23 @@
     });
   }
 
-  function showPaidSuccess(orderRow, p, qty) {
+  function showPaymentSubmitted(orderRow, p, qty, razorpayPaymentId) {
     const orderCode = shortOrderId(orderRow.id);
-    const waText = encodeURIComponent(`Hi! I just paid for order #${orderCode} — ${p.name} x${qty}. Looking forward to it!`);
+    const waText = encodeURIComponent(
+      `Hi! I just paid for order #${orderCode} — ${p.name} x${qty}.\n` +
+      `Razorpay payment ID: ${razorpayPaymentId}\n` +
+      `Looking forward to it!`
+    );
     const waLink = window.WHATSAPP_NUMBER ? `https://wa.me/${window.WHATSAPP_NUMBER}?text=${waText}` : "#";
     checkoutBody.innerHTML = `
       <div class="modal-body">
         <button class="close" aria-label="Close">&times;</button>
         <div class="checkout-success">
           <div class="tick">✓</div>
-          <h2>Payment successful!</h2>
+          <h2>Payment submitted!</h2>
           <div class="order-code">Order #${orderCode}</div>
-          <p>Your order for <strong>${escapeHtml(p.name)}</strong> is confirmed and paid. We'll get it packed and shipped — feel free to say hi on WhatsApp for delivery updates.</p>
-          <a class="btn gold" href="${waLink}" target="_blank" rel="noopener"><span class="shine"></span>Message us on WhatsApp</a>
+          <p>Thanks — your payment for <strong>${escapeHtml(p.name)}</strong> went through on Razorpay. We'll confirm it on our end and get your order packed shortly. Tap below to send us your payment ID directly so we can confirm it faster.</p>
+          <a class="btn gold" href="${waLink}" target="_blank" rel="noopener"><span class="shine"></span>Send payment ID on WhatsApp</a>
         </div>
       </div>
     `;
@@ -358,73 +362,38 @@
       return;
     }
 
-    window.supabaseClient.functions
-      .invoke("create-razorpay-order", {
-        body: { order_id: orderRow.id, amount: totalAmount, name, phone }
-      })
-      .then(({ data, error }) => {
-        if (error || !data || data.error) {
-          console.error("[Razorpay] create-razorpay-order failed:", error || data);
+    // No backend involved: Razorpay Checkout opens directly with the amount,
+    // using only the public Key ID (safe to expose, like a Stripe publishable key).
+    // Because there's no server here to verify the payment signature, a paid
+    // order is NOT marked "Paid" automatically — the admin panel's Payment
+    // Status dropdown confirms it manually against the Razorpay Dashboard.
+    const rzp = new window.Razorpay({
+      key: window.RAZORPAY_KEY_ID,
+      amount: Math.round(totalAmount * 100), // paise
+      currency: "INR",
+      name: "Style OF Life",
+      description: `${p.name} × ${qty}`,
+      prefill: { name, contact: phone },
+      notes: { order_id: orderRow.id, product: p.name, quantity: qty },
+      theme: { color: "#7E2130" },
+      handler: function (response) {
+        showPaymentSubmitted(orderRow, p, qty, response.razorpay_payment_id);
+      },
+      modal: {
+        ondismiss: function () {
           showWhatsAppFallback(orderRow, p, name, phone, orderRow.customer_address, qty,
-            "We couldn't start the payment right now.");
-          return;
+            "Looks like the payment window was closed before completing.");
         }
+      }
+    });
 
-        const rzp = new window.Razorpay({
-          key: window.RAZORPAY_KEY_ID,
-          amount: data.amount,
-          currency: data.currency,
-          order_id: data.id,
-          name: "Style OF Life",
-          description: `${p.name} × ${qty}`,
-          prefill: { name, contact: phone },
-          theme: { color: "#7E2130" },
-          handler: function (response) {
-            window.supabaseClient.functions
-              .invoke("verify-razorpay-payment", {
-                body: {
-                  order_id: orderRow.id,
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature
-                }
-              })
-              .then(({ data: verifyData, error: verifyError }) => {
-                if (verifyData && verifyData.verified) {
-                  showPaidSuccess(orderRow, p, qty);
-                } else {
-                  console.error("[Razorpay] verify-razorpay-payment failed:", verifyError || verifyData);
-                  showWhatsAppFallback(orderRow, p, name, phone, orderRow.customer_address, qty,
-                    "We received a payment response but couldn't verify it.");
-                }
-              })
-              .catch((err) => {
-                console.error("[Razorpay] verify-razorpay-payment threw:", err);
-                showWhatsAppFallback(orderRow, p, name, phone, orderRow.customer_address, qty,
-                  "We received a payment response but couldn't verify it.");
-              });
-          },
-          modal: {
-            ondismiss: function () {
-              showWhatsAppFallback(orderRow, p, name, phone, orderRow.customer_address, qty,
-                "Looks like the payment window was closed before completing.");
-            }
-          }
-        });
+    rzp.on("payment.failed", function (resp) {
+      console.error("[Razorpay] payment.failed:", resp && resp.error);
+      showWhatsAppFallback(orderRow, p, name, phone, orderRow.customer_address, qty,
+        "The payment attempt didn't go through.");
+    });
 
-        rzp.on("payment.failed", function (resp) {
-          console.error("[Razorpay] payment.failed:", resp && resp.error);
-          showWhatsAppFallback(orderRow, p, name, phone, orderRow.customer_address, qty,
-            "The payment attempt didn't go through.");
-        });
-
-        rzp.open();
-      })
-      .catch((err) => {
-        console.error("[Razorpay] create-razorpay-order threw:", err);
-        showWhatsAppFallback(orderRow, p, name, phone, orderRow.customer_address, qty,
-          "We couldn't start the payment right now.");
-      });
+    rzp.open();
   }
 
   document.addEventListener("keydown", (e) => {
