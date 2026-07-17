@@ -35,10 +35,20 @@
     }[c]));
   }
 
+  let currentActorEmail = null;
+  function logActivity(action, details) {
+    try {
+      window.supabaseClient
+        .from("admin_activity_log")
+        .insert([{ actor: currentActorEmail, action, details: details || null }])
+        .then(() => {}, () => {});
+    } catch (e) { /* never let logging break the admin panel */ }
+  }
+
   // ---------------- Tabs ----------------
   function wireTabs() {
     const tabs = document.querySelectorAll(".tab-btn");
-    const tabPanels = { products: "productsTab", orders: "ordersTab", analytics: "analyticsTab" };
+    const tabPanels = { products: "productsTab", orders: "ordersTab", analytics: "analyticsTab", activity: "activityTab" };
     tabs.forEach((btn) => {
       btn.addEventListener("click", () => {
         tabs.forEach((b) => b.classList.remove("active"));
@@ -48,6 +58,7 @@
           if (panel) panel.style.display = key === btn.dataset.tab ? "block" : "none";
         });
         if (btn.dataset.tab === "analytics") renderAnalytics();
+        if (btn.dataset.tab === "activity") loadActivity();
       });
     });
   }
@@ -77,11 +88,13 @@
       loginPanel.style.display = "none";
       dashPanel.style.display = "block";
       whoami.textContent = session.user.email;
+      currentActorEmail = session.user.email;
       loadAdminProducts();
       loadOrders();
     } else {
       loginPanel.style.display = "block";
       dashPanel.style.display = "none";
+      currentActorEmail = null;
     }
   }
 
@@ -96,6 +109,8 @@
       loginMsg.className = "msg error";
       return;
     }
+    currentActorEmail = email;
+    logActivity("login", `Signed in from ${navigator.userAgent.slice(0, 80)}`);
     refreshSessionUI();
   });
 
@@ -205,12 +220,14 @@
           .eq("id", editingProductId);
         if (updErr) throw updErr;
         uploadMsg.textContent = `"${name}" updated.`;
+        logActivity("edit_product", name);
       } else {
         const { error: insErr } = await window.supabaseClient
           .from("products")
           .insert([{ name, price, original_price, badge, category, description, image_url, storage_path }]);
         if (insErr) throw insErr;
         uploadMsg.textContent = `"${name}" is live on the site now.`;
+        logActivity("add_product", name);
       }
 
       uploadMsg.className = "msg ok";
@@ -281,10 +298,12 @@
         const id = row.dataset.id;
         const path = row.dataset.path;
         if (!confirm("Remove this piece from the live store?")) return;
+        const removedProduct = allAdminProducts.find((x) => String(x.id) === id);
         await window.supabaseClient.from("products").delete().eq("id", id);
         if (path) {
           await window.supabaseClient.storage.from(BUCKET).remove([path]);
         }
+        logActivity("delete_product", removedProduct ? removedProduct.name : id);
         if (editingProductId === id) resetForm();
         loadAdminProducts();
       });
@@ -338,6 +357,7 @@
       for (const id of selectedProductIds) {
         await window.supabaseClient.from("products").update({ badge }).eq("id", id);
       }
+      logActivity("bulk_set_badge", `${selectedProductIds.size} product(s) → ${badge || "no badge"}`);
       selectedProductIds.clear();
       loadAdminProducts();
     });
@@ -352,6 +372,7 @@
           await window.supabaseClient.storage.from(BUCKET).remove([p.storage_path]);
         }
       }
+      logActivity("bulk_delete_products", `${ids.length} product(s)`);
       selectedProductIds.clear();
       if (ids.includes(editingProductId)) resetForm();
       loadAdminProducts();
@@ -491,55 +512,80 @@
       groups[groups.length - 1].orders.push(o);
     });
 
-    list.innerHTML = groups.map((g) => `
-      <div class="date-group">
-        <div class="date-group-label">${g.label} <span class="date-group-count">${g.orders.length} order${g.orders.length === 1 ? "" : "s"}</span></div>
-        ${g.orders.map((o) => {
-          const waMsg = encodeURIComponent(
-            `Hi ${o.customer_name}, this is Style OF Life confirming your order ${shortOrderId(o.id)} for ${o.product_name} (x${o.quantity}). Just checking in on your order status!`
-          );
-          const waLink = `https://wa.me/${(o.customer_phone || "").replace(/[^0-9]/g, "")}?text=${waMsg}`;
-          return `
-          <div class="order-row" data-id="${o.id}">
-            <div class="o-check"><input type="checkbox" class="order-check" ${selectedOrderIds.has(String(o.id)) ? "checked" : ""}></div>
-            <div>
-              <div class="o-top">
-                <span class="order-id-tag">#${shortOrderId(o.id)}</span>
-                <span class="o-product">${escapeHtml(o.product_name)} × ${o.quantity}</span>
-                <span>
-                  <span class="status-badge ${escapeHtml(o.status)}">${escapeHtml(o.status)}</span>
-                  <span class="pay-badge ${escapeHtml(o.payment_status || "Unpaid")}">${escapeHtml(o.payment_status || "Unpaid")}</span>
-                </span>
-              </div>
-              <div class="o-meta">
-                ₹${escapeHtml(o.unit_price)} each · ${new Date(o.created_at).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}<br>
-                ${escapeHtml(o.customer_name)} · ${escapeHtml(o.customer_phone)}<br>
-                ${escapeHtml(o.customer_address)}
-              </div>
-              <input class="order-notes" data-action="notes" type="text" placeholder="Internal note (not shown to customer)…" value="${escapeHtml(o.admin_notes || "")}">
-            </div>
-            <div class="o-actions">
-              <a class="link-btn" href="${waLink}" target="_blank" rel="noopener">WhatsApp</a>
-              <button class="link-btn" data-action="label">Shipping label</button>
-              <select class="order-select" data-action="status">
-                ${STATUSES.map((s) => `<option value="${s}" ${s === o.status ? "selected" : ""}>${s}</option>`).join("")}
-              </select>
-              <select class="order-select" data-action="payment">
-                ${PAYMENT_STATUSES.map((s) => `<option value="${s}" ${s === (o.payment_status || "Unpaid") ? "selected" : ""}>${s}</option>`).join("")}
-              </select>
-              <button class="link-btn" data-action="delete-order" style="color:var(--oxblood)">Delete</button>
-            </div>
-          </div>
-        `;
-        }).join("")}
+    list.innerHTML = `
+      <div class="table-scroll">
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Order</th>
+            <th>Product</th>
+            <th>Customer</th>
+            <th>Address</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Note</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${groups.map((g) => `
+            <tr class="ot-group-row"><td colspan="10">${g.label} — ${g.orders.length} order${g.orders.length === 1 ? "" : "s"}</td></tr>
+            ${g.orders.map((o) => {
+              const waMsg = encodeURIComponent(
+                `Hi ${o.customer_name}, this is Style OF Life confirming your order ${shortOrderId(o.id)} for ${o.product_name} (x${o.quantity}). Just checking in on your order status!`
+              );
+              const waLink = `https://wa.me/${(o.customer_phone || "").replace(/[^0-9]/g, "")}?text=${waMsg}`;
+              return `
+              <tr class="order-row" data-id="${o.id}">
+                <td><input type="checkbox" class="order-check" ${selectedOrderIds.has(String(o.id)) ? "checked" : ""}></td>
+                <td>
+                  <span class="order-id-tag">#${shortOrderId(o.id)}</span>
+                </td>
+                <td>
+                  ${escapeHtml(o.product_name)}
+                  <span class="ot-sub">× ${o.quantity} · ₹${escapeHtml(o.unit_price)}</span>
+                </td>
+                <td>
+                  ${escapeHtml(o.customer_name)}
+                  <span class="ot-sub">${escapeHtml(o.customer_phone)}</span>
+                </td>
+                <td class="ot-address">${escapeHtml(o.customer_address)}</td>
+                <td class="ot-sub">${new Date(o.created_at).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</td>
+                <td>
+                  <select class="order-select" data-action="status">
+                    ${STATUSES.map((s) => `<option value="${s}" ${s === o.status ? "selected" : ""}>${s}</option>`).join("")}
+                  </select>
+                </td>
+                <td>
+                  <select class="order-select" data-action="payment">
+                    ${PAYMENT_STATUSES.map((s) => `<option value="${s}" ${s === (o.payment_status || "Unpaid") ? "selected" : ""}>${s}</option>`).join("")}
+                  </select>
+                </td>
+                <td><input class="order-notes" data-action="notes" type="text" placeholder="Note…" value="${escapeHtml(o.admin_notes || "")}"></td>
+                <td>
+                  <div class="ot-actions">
+                    <a class="link-btn" href="${waLink}" target="_blank" rel="noopener">WhatsApp</a>
+                    <button class="link-btn" data-action="label">Shipping label</button>
+                    <button class="link-btn" data-action="delete-order" style="color:var(--oxblood)">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            `;
+            }).join("")}
+          `).join("")}
+        </tbody>
+      </table>
       </div>
-    `).join("");
+    `;
 
     list.querySelectorAll('[data-action="status"]').forEach((sel) => {
       sel.addEventListener("change", async () => {
         const row = sel.closest(".order-row");
         const id = row.dataset.id;
         await window.supabaseClient.from("orders").update({ status: sel.value }).eq("id", id);
+        logActivity("order_status_change", `#${shortOrderId(id)} → ${sel.value}`);
         loadOrders();
       });
     });
@@ -549,6 +595,7 @@
         const row = sel.closest(".order-row");
         const id = row.dataset.id;
         await window.supabaseClient.from("orders").update({ payment_status: sel.value }).eq("id", id);
+        logActivity("order_payment_change", `#${shortOrderId(id)} → ${sel.value}`);
         loadOrders();
       });
     });
@@ -575,6 +622,7 @@
         const id = row.dataset.id;
         if (!confirm("Delete this order permanently? This can't be undone.")) return;
         await window.supabaseClient.from("orders").delete().eq("id", id);
+        logActivity("delete_order", `#${shortOrderId(id)}`);
         loadOrders();
       });
     });
@@ -748,6 +796,7 @@
       for (const id of selectedOrderIds) {
         await window.supabaseClient.from("orders").update({ status: val }).eq("id", id);
       }
+      logActivity("bulk_order_status_change", `${selectedOrderIds.size} order(s) → ${val}`);
       selectedOrderIds.clear();
       loadOrders();
     });
@@ -758,6 +807,7 @@
       for (const id of selectedOrderIds) {
         await window.supabaseClient.from("orders").update({ payment_status: val }).eq("id", id);
       }
+      logActivity("bulk_order_payment_change", `${selectedOrderIds.size} order(s) → ${val}`);
       selectedOrderIds.clear();
       loadOrders();
     });
@@ -776,6 +826,7 @@
       for (const id of ids) {
         await window.supabaseClient.from("orders").delete().eq("id", id);
       }
+      logActivity("bulk_delete_orders", `${ids.length} order(s)`);
       selectedOrderIds.clear();
       loadOrders();
     });
@@ -866,7 +917,7 @@
     reader.readAsArrayBuffer(file);
   });
 
-  // ---------------- Analytics ----------------
+  // ---------------- Analytics: addresses + products sold only ----------------
   let charts = {};
   function upsertChart(id, config) {
     const canvas = document.getElementById(id);
@@ -880,6 +931,19 @@
     }
   }
 
+  // Crude, best-effort location extraction from free-text addresses —
+  // takes the last comma-separated segment (usually city/area) and
+  // strips trailing PIN codes, so this is a rough guide, not exact data.
+  function extractLocation(address) {
+    if (!address) return "Unknown";
+    const parts = address.split(",").map((p) => p.trim()).filter(Boolean);
+    if (!parts.length) return "Unknown";
+    let last = parts[parts.length - 1];
+    last = last.replace(/\b\d{6}\b/g, "").trim();
+    if (!last && parts.length > 1) last = parts[parts.length - 2];
+    return last || "Unknown";
+  }
+
   function renderAnalytics() {
     if (typeof Chart === "undefined") return;
 
@@ -887,51 +951,37 @@
     Chart.defaults.font = chartFont;
     Chart.defaults.color = "#6b5c4f";
 
-    // Revenue by day (paid orders only)
-    const byDay = {};
-    allOrders.filter((o) => o.payment_status === "Paid").forEach((o) => {
-      const day = new Date(o.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short" });
-      byDay[day] = (byDay[day] || 0) + (Number(o.unit_price) || 0) * (Number(o.quantity) || 1);
+    // Top delivery locations
+    const byLocation = {};
+    allOrders.forEach((o) => {
+      const loc = extractLocation(o.customer_address);
+      byLocation[loc] = (byLocation[loc] || 0) + 1;
     });
-    const dayLabels = Object.keys(byDay);
-    upsertChart("chartRevenue", {
-      type: "line",
+    const topLocations = Object.entries(byLocation).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    upsertChart("chartLocations", {
+      type: "bar",
       data: {
-        labels: dayLabels,
+        labels: topLocations.map(([loc]) => loc),
         datasets: [{
-          label: "Revenue (₹)",
-          data: dayLabels.map((d) => byDay[d]),
-          borderColor: "#7E2130",
-          backgroundColor: "rgba(126,33,48,0.12)",
-          tension: 0.35,
-          fill: true,
-          pointBackgroundColor: "#C79A56",
+          label: "Orders",
+          data: topLocations.map(([, count]) => count),
+          backgroundColor: "#7E2130",
         }]
       },
-      options: { responsive: true, plugins: { legend: { display: false } } }
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { x: { ticks: { precision: 0 } } }
+      }
     });
 
-    // Orders by status
-    const statusCounts = STATUSES.map((s) => allOrders.filter((o) => o.status === s).length);
-    upsertChart("chartStatus", {
-      type: "doughnut",
-      data: {
-        labels: STATUSES,
-        datasets: [{
-          data: statusCounts,
-          backgroundColor: ["#E4CBA2", "#BBD6EA", "#D6C4EE", "#BFE2CC", "#EEC4C9"],
-          borderWidth: 0,
-        }]
-      },
-      options: { responsive: true, plugins: { legend: { position: "bottom" } } }
-    });
-
-    // Top selling products (by quantity across all orders)
+    // Which products sold (by quantity across all orders)
     const byProduct = {};
     allOrders.forEach((o) => {
       byProduct[o.product_name] = (byProduct[o.product_name] || 0) + (Number(o.quantity) || 1);
     });
-    const topEntries = Object.entries(byProduct).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    const topEntries = Object.entries(byProduct).sort((a, b) => b[1] - a[1]).slice(0, 8);
     upsertChart("chartTopProducts", {
       type: "bar",
       data: {
@@ -950,20 +1000,120 @@
       }
     });
 
-    // At-a-glance cards
-    const paidOrders = allOrders.filter((o) => o.payment_status === "Paid");
-    const totalRevenue = paidOrders.reduce((s, o) => s + (Number(o.unit_price) || 0) * (Number(o.quantity) || 1), 0);
-    const avgOrder = paidOrders.length ? totalRevenue / paidOrders.length : 0;
-    const itemsSold = allOrders.reduce((s, o) => s + (Number(o.quantity) || 1), 0);
-    const uniqueCustomers = new Set(allOrders.map((o) => (o.customer_phone || "").trim())).size;
+    loadCustomerInsights();
+  }
 
-    document.getElementById("analyticsCards").innerHTML = `
-      <div class="stat-card"><div class="v">₹${Math.round(avgOrder).toLocaleString("en-IN")}</div><div class="l">Avg. paid order value</div></div>
-      <div class="stat-card"><div class="v">${itemsSold}</div><div class="l">Total items ordered</div></div>
-      <div class="stat-card"><div class="v">${uniqueCustomers}</div><div class="l">Unique customers</div></div>
-      <div class="stat-card"><div class="v">${paidOrders.length}</div><div class="l">Paid orders</div></div>
+  // ---------------- Customer behavior insights (owner-only) ----------------
+  async function loadCustomerInsights() {
+    const { data, error } = await window.supabaseClient
+      .from("customer_events")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(5000);
+
+    const cards = document.getElementById("customerStatCards");
+    const viewedList = document.getElementById("mostViewedList");
+    const searchList = document.getElementById("topSearchesList");
+    if (!cards) return;
+
+    if (error) {
+      cards.innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`;
+      return;
+    }
+
+    const events = data || [];
+    const pageViews = events.filter((e) => e.event_type === "page_view").length;
+    const productViews = events.filter((e) => e.event_type === "view_product");
+    const searches = events.filter((e) => e.event_type === "search");
+    const waClicks = events.filter((e) => e.event_type === "whatsapp_click").length;
+    const buyClicks = events.filter((e) => e.event_type === "buy_now_click").length;
+    const ordersPlaced = allOrders.length;
+    const conversion = buyClicks ? ((ordersPlaced / buyClicks) * 100).toFixed(1) : "0.0";
+
+    cards.innerHTML = `
+      <div class="stat-card"><div class="v">${pageViews}</div><div class="l">Page views</div></div>
+      <div class="stat-card"><div class="v">${productViews.length}</div><div class="l">Product views</div></div>
+      <div class="stat-card"><div class="v">${waClicks}</div><div class="l">WhatsApp clicks</div></div>
+      <div class="stat-card"><div class="v">${buyClicks}</div><div class="l">Buy Now clicks</div></div>
+      <div class="stat-card"><div class="v">${conversion}%</div><div class="l">Buy-click → order rate</div></div>
+    `;
+
+    const viewedCounts = {};
+    productViews.forEach((e) => { viewedCounts[e.event_detail] = (viewedCounts[e.event_detail] || 0) + 1; });
+    const topViewed = Object.entries(viewedCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    viewedList.innerHTML = topViewed.length
+      ? topViewed.map(([name, count]) => `<div class="insight-row"><span>${escapeHtml(name || "Unknown")}</span><span class="insight-count">${count}</span></div>`).join("")
+      : `<div class="msg">No product views logged yet.</div>`;
+
+    const searchCounts = {};
+    searches.forEach((e) => {
+      const term = (e.event_detail || "").toLowerCase();
+      if (!term) return;
+      searchCounts[term] = (searchCounts[term] || 0) + 1;
+    });
+    const topSearches = Object.entries(searchCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    searchList.innerHTML = topSearches.length
+      ? topSearches.map(([term, count]) => `<div class="insight-row"><span>"${escapeHtml(term)}"</span><span class="insight-count">${count}</span></div>`).join("")
+      : `<div class="msg">No searches logged yet.</div>`;
+  }
+
+  // ---------------- Admin activity log ----------------
+  async function loadActivity() {
+    const list = document.getElementById("activityList");
+    const cards = document.getElementById("loginStatCards");
+    if (!list) return;
+    list.innerHTML = "Loading…";
+
+    const { data, error } = await window.supabaseClient
+      .from("admin_activity_log")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(300);
+
+    if (error) {
+      list.innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`;
+      return;
+    }
+
+    const events = data || [];
+    const logins = events.filter((e) => e.action === "login");
+    const lastLogin = logins[0];
+    const uniqueActors = new Set(events.map((e) => e.actor).filter(Boolean)).size;
+
+    if (cards) {
+      cards.innerHTML = `
+        <div class="stat-card"><div class="v">${logins.length}</div><div class="l">Total sign-ins logged</div></div>
+        <div class="stat-card"><div class="v">${uniqueActors}</div><div class="l">Unique admin accounts</div></div>
+        <div class="stat-card"><div class="v" style="font-size:1rem">${lastLogin ? new Date(lastLogin.created_at).toLocaleString("en-IN") : "—"}</div><div class="l">Most recent sign-in</div></div>
+      `;
+    }
+
+    if (!events.length) {
+      list.innerHTML = `<div class="msg">No activity logged yet.</div>`;
+      return;
+    }
+
+    list.innerHTML = `
+      <div class="table-scroll">
+      <table class="orders-table">
+        <thead><tr><th>When</th><th>Who</th><th>Action</th><th>Details</th></tr></thead>
+        <tbody>
+          ${events.map((e) => `
+            <tr>
+              <td class="ot-sub">${new Date(e.created_at).toLocaleString("en-IN")}</td>
+              <td>${escapeHtml(e.actor || "—")}</td>
+              <td><span class="status-badge Pending">${escapeHtml(e.action)}</span></td>
+              <td class="ot-sub">${escapeHtml(e.details || "")}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+      </div>
     `;
   }
+
+  const refreshActivityBtn = document.getElementById("refreshActivityBtn");
+  if (refreshActivityBtn) refreshActivityBtn.addEventListener("click", loadActivity);
 
   // ---------------- Realtime ----------------
   window.supabaseClient
