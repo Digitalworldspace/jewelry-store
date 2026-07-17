@@ -551,7 +551,7 @@ img{ max-width:100%; display:block; }
 }
 
 /* ---------- admin ---------- */
-.admin-wrap{ max-width:960px; margin:0 auto; padding:6vh 5vw 10vh; }
+.admin-wrap{ max-width:1440px; margin:0 auto; padding:6vh 3vw 10vh; }
 .panel{
   background:var(--ivory-2);
   border:1px solid var(--line);
@@ -864,22 +864,45 @@ img{ max-width:100%; display:block; }
 }
 .checkout-success p{ color:var(--muted); margin-bottom:22px; }
 
-/* ---------- admin orders panel ---------- */
-.order-row{
-  background:var(--ivory-2);
-  border-bottom:1px solid var(--line);
-  padding:16px;
-  display:grid;
-  grid-template-columns:1fr auto;
-  gap:10px;
+/* ---------- admin orders panel: real table, row-wise ---------- */
+.table-scroll{ overflow-x:auto; border:1px solid var(--line); }
+.orders-table{ width:100%; border-collapse:collapse; background:var(--ivory-2); font-size:.85rem; }
+.orders-table thead th{
+  background:var(--ink);
+  color:var(--gold-2);
+  font-family:var(--font-mono);
+  font-size:.65rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  text-align:left;
+  padding:12px 14px;
+  white-space:nowrap;
+  position:sticky; top:0; z-index:2;
 }
-.order-row .o-top{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px; }
-.order-row .o-product{ font-weight:600; }
-.order-row .o-meta{ font-family:var(--font-mono); font-size:.78rem; color:var(--muted); line-height:1.6; }
-.order-row .o-actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+.orders-table tbody td{
+  padding:12px 14px;
+  border-bottom:1px solid var(--line);
+  vertical-align:top;
+}
+.orders-table tbody tr.order-row:hover{ background:#FBF6EC; }
+.orders-table .ot-group-row td{
+  background:#FBF3E4;
+  font-family:var(--font-mono);
+  font-size:.7rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--gold-deep);
+  padding:9px 14px;
+  border-bottom:1px solid var(--line);
+}
+.orders-table .ot-sub{ display:block; font-family:var(--font-mono); font-size:.74rem; color:var(--muted); margin-top:2px; }
+.orders-table .ot-address{ max-width:220px; font-size:.8rem; color:var(--muted); }
+.orders-table .ot-actions{ display:flex; flex-direction:column; gap:6px; min-width:110px; }
+.orders-table .ot-actions .link-btn{ text-align:left; }
+.orders-table .order-notes{ min-width:160px; margin-top:0; }
 .status-badge{
   font-family:var(--font-mono); font-size:.65rem; letter-spacing:.06em; text-transform:uppercase;
-  padding:5px 12px; border-radius:20px; border:1px solid var(--line);
+  padding:5px 12px; border-radius:20px; border:1px solid var(--line); display:inline-block;
 }
 .status-badge.Pending{ background:#FBF0D9; color:#8C6A31; border-color:#E4CBA2; }
 .status-badge.Confirmed{ background:#E4EEF7; color:#2A5C82; border-color:#BBD6EA; }
@@ -890,7 +913,7 @@ img{ max-width:100%; display:block; }
   font-family:var(--font-mono); font-size:.75rem;
   padding:7px 10px; border:1px solid var(--line); border-radius:2px; background:#fff;
 }
-.tabs{ display:flex; gap:10px; margin-bottom:20px; }
+.tabs{ display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
 .tab-btn{
   font-family:var(--font-mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
   padding:9px 18px; border:1px solid var(--line); border-radius:30px; background:transparent; cursor:pointer;
@@ -1291,30 +1314,13 @@ img{ max-width:100%; display:block; }
 .bulk-bar .bb-btn.danger{ border-color:var(--oxblood); color:var(--oxblood); }
 .bulk-bar .bb-btn.danger:hover{ background:var(--oxblood); color:#fff; }
 
-.order-row{ grid-template-columns:auto 1fr auto; }
-.order-row .o-check, .admin-row .p-check{ display:flex; align-items:flex-start; padding-top:2px; }
-.order-row .o-check input, .admin-row .p-check input{ width:16px; height:16px; accent-color:var(--oxblood); cursor:pointer; }
+.order-row .order-check, .admin-row .p-check input{ width:16px; height:16px; accent-color:var(--oxblood); cursor:pointer; }
+.admin-row .p-check{ display:flex; align-items:flex-start; padding-top:2px; }
 .admin-row{ grid-template-columns:auto 64px 1fr auto auto; }
 
 /* ============================================================
-   DATE-GROUPED ORDER LIST + ORDER ID TAG
+   ORDER ID TAG
    ============================================================ */
-.date-group{ margin-bottom:22px; }
-.date-group-label{
-  font-family:var(--font-mono);
-  font-size:.7rem;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  color:var(--gold-deep);
-  background:#FBF3E4;
-  border:1px solid var(--line);
-  padding:8px 14px;
-  margin-bottom:1px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.date-group-count{ color:var(--muted); letter-spacing:.04em; }
 .order-id-tag{
   font-family:var(--font-mono);
   font-size:.68rem;
@@ -1359,10 +1365,6 @@ img{ max-width:100%; display:block; }
   .admin-row .meta{ grid-area:meta; }
   .admin-row .row-actions{ grid-area:actions; justify-content:flex-start; margin-top:6px; }
 
-  .order-row{ grid-template-columns:auto 1fr; }
-  .order-row .o-actions{ justify-content:flex-start; margin-top:10px; }
-  .order-row .o-actions select, .order-row .o-actions .link-btn{ flex:1 1 auto; text-align:center; }
-
   .bulk-bar{ flex-direction:column; align-items:stretch; }
   .bulk-bar .bb-actions{ margin-left:0; width:100%; }
   .bulk-bar .bb-actions select, .bulk-bar .bb-actions .bb-btn{ flex:1 1 auto; }
@@ -1373,7 +1375,6 @@ img{ max-width:100%; display:block; }
 
 @media (max-width:480px){
   .stat-cards{ grid-template-columns:1fr 1fr; }
-  .o-top{ flex-direction:column; align-items:flex-start !important; gap:6px; }
 }
 
 /* visible WhatsApp number display */
@@ -1396,4 +1397,18 @@ img{ max-width:100%; display:block; }
   .story-lines p{ font-size:1.3rem; }
   .compare-col{ padding:26px 22px; }
   .why-grid{ padding:5vh 6vw 7vh; }
+}
+
+/* customer insight lists */
+.insight-row{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:9px 0;
+  border-bottom:1px solid var(--line);
+  font-size:.88rem;
+}
+.insight-row:last-child{ border-bottom:none; }
+.insight-count{
+  font-family:var(--font-mono); font-size:.78rem;
+  background:var(--ink); color:var(--gold-2);
+  padding:2px 10px; border-radius:20px;
 }
