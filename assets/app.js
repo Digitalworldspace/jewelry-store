@@ -1,5 +1,22 @@
 (function () {
   const grid = document.getElementById("tray");
+
+  // ---------------- Anonymous behavior tracking (owner-only visibility) ----------------
+  // Logs interactions like page views, product views, searches, and clicks
+  // so the store owner can see them in admin.html. No names, phone numbers,
+  // or addresses are ever included here — see customer_events RLS in
+  // supabase-setup.sql, which blocks anyone but the signed-in admin from
+  // reading this table at all.
+  const sessionId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now());
+  function trackEvent(eventType, detail) {
+    try {
+      window.supabaseClient
+        .from("customer_events")
+        .insert([{ event_type: eventType, event_detail: detail || null, session_id: sessionId }])
+        .then(() => {}, () => {});
+    } catch (e) { /* never let tracking break the site */ }
+  }
+  trackEvent("page_view", document.title);
   const chipsBox = document.getElementById("chips");
   const searchBox = document.getElementById("search");
   const modalBackdrop = document.getElementById("modalBackdrop");
@@ -52,7 +69,10 @@
       : "#";
     ["headerWa", "ctaWa", "footerWa", "floatWa"].forEach((id) => {
       const el = document.getElementById(id);
-      if (el) el.href = base;
+      if (el) {
+        el.href = base;
+        el.addEventListener("click", () => trackEvent("whatsapp_click", id));
+      }
     });
 
     const displayNumber = formatWhatsAppNumber(window.WHATSAPP_NUMBER);
@@ -77,6 +97,7 @@
         activeCategory = btn.dataset.cat;
         renderChips();
         renderGrid();
+        if (activeCategory !== "All") trackEvent("filter_category", activeCategory);
       });
     });
   }
@@ -142,6 +163,7 @@
   }
 
   function openModal(p) {
+    trackEvent("view_product", p.name);
     const off = discountPct(p.price, p.original_price);
     const waMsg = encodeURIComponent(`Hi! I'm interested in "${p.name}" (${formatPrice(p.price)}). Is it available?`);
     const waLink = window.WHATSAPP_NUMBER
@@ -172,6 +194,8 @@
       closeModal();
       openCheckout(p);
     });
+    const enquireLink = modalBody.querySelector("a.btn.ghost");
+    if (enquireLink) enquireLink.addEventListener("click", () => trackEvent("whatsapp_click", "product_enquiry: " + p.name));
     modalBackdrop.classList.add("open");
   }
 
@@ -199,6 +223,7 @@
   });
 
   function openCheckout(p) {
+    trackEvent("buy_now_click", p.name);
     checkoutBody.innerHTML = `
       <div class="modal-body">
         <button class="close" aria-label="Close">&times;</button>
@@ -400,9 +425,15 @@
     if (e.key === "Escape") closeCheckout();
   });
 
+  let searchTrackTimer = null;
   searchBox.addEventListener("input", (e) => {
     activeSearch = e.target.value;
     renderGrid();
+    clearTimeout(searchTrackTimer);
+    const term = e.target.value.trim();
+    if (term) {
+      searchTrackTimer = setTimeout(() => trackEvent("search", term), 900);
+    }
   });
 
   function renderShowroom() {
