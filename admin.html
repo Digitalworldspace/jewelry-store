@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — Style OF Life</title>
 <meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Jost:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
@@ -55,6 +56,7 @@
       <button class="tab-btn active" data-tab="products">Products</button>
       <button class="tab-btn" data-tab="orders">Orders <span id="orderCountBadge"></span></button>
       <button class="tab-btn" data-tab="analytics">Analytics</button>
+      <button class="tab-btn" data-tab="activity">Activity Log</button>
     </div>
 
     <div id="productsTab">
@@ -174,23 +176,53 @@
     </div>
 
     <div id="analyticsTab" style="display:none">
-      <div class="panel">
-        <h2>Revenue over time</h2>
-        <canvas id="chartRevenue" height="90"></canvas>
-      </div>
+      <p style="color:#6b5c4f;font-size:.9rem;max-width:70ch">
+        This tab is visible only to you, signed in as admin — none of this is shown to customers.
+      </p>
       <div class="row2" style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
         <div class="panel">
-          <h2>Orders by status</h2>
-          <canvas id="chartStatus" height="220"></canvas>
+          <h2>Top delivery locations</h2>
+          <p style="color:#6b5c4f;font-size:.85rem;margin-top:-10px">Best-effort, based on the last part of each order's address — not exact city/pincode data.</p>
+          <canvas id="chartLocations" height="220"></canvas>
         </div>
         <div class="panel">
-          <h2>Top selling products</h2>
+          <h2>Which products sold</h2>
           <canvas id="chartTopProducts" height="220"></canvas>
         </div>
       </div>
+
       <div class="panel">
-        <h2>At a glance</h2>
-        <div class="stat-cards" id="analyticsCards"></div>
+        <h2>Customer activity on the storefront</h2>
+        <p style="color:#6b5c4f;font-size:.9rem;margin-top:-10px">
+          Anonymous behavior only — no names, phone numbers, or addresses are tracked here. That information only ever lives in your Orders tab.
+        </p>
+        <div class="stat-cards" id="customerStatCards"></div>
+        <div class="row2" style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:24px;">
+          <div>
+            <h3 style="font-family:var(--font-display); margin:0 0 10px">Most-viewed products</h3>
+            <div id="mostViewedList"></div>
+          </div>
+          <div>
+            <h3 style="font-family:var(--font-display); margin:0 0 10px">Top searches</h3>
+            <div id="topSearchesList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="activityTab" style="display:none">
+      <div class="panel">
+        <h2>Admin sign-ins</h2>
+        <p style="color:#6b5c4f;font-size:.9rem;margin-top:-10px">Every time anyone signs into this admin panel, it's logged here — visible only to you.</p>
+        <div class="stat-cards" id="loginStatCards"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Full activity log</h2>
+          <button class="small-link" id="refreshActivityBtn">Refresh</button>
+        </div>
+        <p style="color:#6b5c4f;font-size:.9rem;margin-top:-10px">Every login and every product/order change made in this admin panel, most recent first.</p>
+        <div id="activityList">Loading…</div>
       </div>
     </div>
 
