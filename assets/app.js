@@ -162,6 +162,28 @@
     });
   }
 
+  function relatedProductsHtml(p) {
+    let related = allProducts.filter((x) => String(x.id) !== String(p.id) && x.category && x.category === p.category);
+    if (!related.length) {
+      related = allProducts.filter((x) => String(x.id) !== String(p.id));
+    }
+    related = shuffleArray(related).slice(0, 4);
+    if (!related.length) return "";
+    return `
+      <div class="related-products">
+        <div class="related-label">Goes well with this piece</div>
+        <div class="related-row">
+          ${related.map((r) => `
+            <div class="related-item" data-id="${r.id}">
+              ${r.image_url ? `<img src="${escapeHtml(r.image_url)}" alt="${escapeHtml(r.name)}">` : `<div class="ph" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:.6rem;">no image</div>`}
+              <span>${escapeHtml(r.name)}</span>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
   function openModal(p) {
     trackEvent("view_product", p.name);
     const off = discountPct(p.price, p.original_price);
@@ -187,6 +209,7 @@
           <button class="btn gold" id="modalBuyNow"><span class="shine"></span>Buy Now</button>
           <a class="btn ghost" href="${waLink}" target="_blank" rel="noopener"><span class="shine"></span>Enquire on WhatsApp</a>
         </div>
+        ${relatedProductsHtml(p)}
       </div>
     `;
     modalBody.querySelector(".close").addEventListener("click", closeModal);
@@ -196,6 +219,12 @@
     });
     const enquireLink = modalBody.querySelector("a.btn.ghost");
     if (enquireLink) enquireLink.addEventListener("click", () => trackEvent("whatsapp_click", "product_enquiry: " + p.name));
+    modalBody.querySelectorAll(".related-item").forEach((el) => {
+      el.addEventListener("click", () => {
+        const rp = allProducts.find((x) => String(x.id) === el.dataset.id);
+        if (rp) openModal(rp);
+      });
+    });
     modalBackdrop.classList.add("open");
   }
 
@@ -436,6 +465,17 @@
     }
   });
 
+  function shuffleArray(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  let showroomPickIds = null; // fixed for this page load so it doesn't jump around while browsing
+
   function renderShowroom() {
     const stage = document.getElementById("showroomStage");
     const content = document.getElementById("showroomContent");
@@ -446,7 +486,23 @@
       return;
     }
 
-    const picks = allProducts.slice(0, 7);
+    let picks;
+    if (showroomPickIds) {
+      // Keep the same random picks stable across live product updates during this visit,
+      // falling back gracefully if one of them got removed/sold out.
+      picks = showroomPickIds
+        .map((id) => allProducts.find((p) => String(p.id) === id))
+        .filter(Boolean);
+      const missing = 7 - picks.length;
+      if (missing > 0) {
+        const extra = shuffleArray(allProducts.filter((p) => !picks.includes(p))).slice(0, missing);
+        picks = picks.concat(extra);
+      }
+    } else {
+      picks = shuffleArray(allProducts).slice(0, 7);
+      showroomPickIds = picks.map((p) => String(p.id));
+    }
+
     const center = picks[0];
     const orbit = picks.slice(1, 7);
 
