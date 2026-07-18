@@ -136,7 +136,9 @@ The storefront now opens with a **small header**, a compact one-line intro banne
 
 ## The Showroom
 
-Right under the hero, "The Showroom" pulls your **most recently added product** into a large center spot and the next six into an orbiting diamond formation around it — all real, live data from your `products` table. The moment a visitor scrolls to it, the pieces fly in from off-screen and settle into place. Add a new product in the admin panel and it'll take its place in the showroom automatically (newest items show up first, since it uses the same "newest first" ordering as the rest of the site). If you have fewer than 7 products, the layout just uses however many you have.
+Right under the hero, "The Showroom" pulls **7 random products** into a large center spot plus an orbiting diamond formation around it — a different, real, live selection each time someone loads the page (it stays stable while they're browsing, then reshuffles on their next visit). All real data from your `products` table — nothing here is simulated. If you have fewer than 7 products, it just uses however many you have.
+
+Click any product anywhere on the site (Showroom or the main Collection) and its quick-view now shows a **"Goes well with this piece"** strip of related products — same category when possible, otherwise a random mix — click any of them to jump straight to that product.
 
 ## Why "Admin" isn't in the storefront menu
 
@@ -184,3 +186,26 @@ The site now has real SEO groundwork built in — here's what's there and what y
 4. **Submit to Google** — once live, submit `sitemap.xml` in [Google Search Console](https://search.google.com/search-console) (add your property, verify ownership, then Sitemaps → add `sitemap.xml`).
 
 **A limitation worth knowing:** your product catalog is loaded live from Supabase via JavaScript. Modern Googlebot generally executes JavaScript and can index this, but it's not instant or guaranteed the way a plain HTML page is — search engines may take longer to pick up new products, and some other crawlers (Bing, social-media link previews) may not run JavaScript at all and will only see the static content above the fold. This is a normal tradeoff for any live, database-backed storefront like this one.
+
+## Team roles: Owner vs Staff
+
+`admin.html` now supports two roles:
+- **Owner** — everything Staff can do, plus the **Activity Log** (every sign-in and action, filterable per person) and the **Team** tab (add/remove team members, assign roles).
+- **Staff** — can manage Products and Orders (the day-to-day work), but the Activity Log and Team tabs are hidden, and the database itself blocks them from reading activity/customer-analytics data even if they tried directly — this isn't just a hidden button.
+
+**One-time setup — make yourself the owner:**
+1. Open `supabase-setup.sql`, find the line near the bottom that says:
+   ```sql
+   insert into public.admin_users (email, role)
+   values ('you@example.com', 'owner')
+   ```
+2. Replace `you@example.com` with the exact email of your existing admin login (the one from Supabase → Authentication → Users).
+3. Run the full script in the SQL Editor (safe to re-run).
+4. Sign into `admin.html` — you'll see "Owner" next to your name, and the Activity Log and Team tabs will appear.
+
+**Adding a staff member:**
+1. First create their login the normal way: Supabase → Authentication → Users → Add user.
+2. Then, as the owner, go to the **Team** tab in `admin.html`, enter their email, leave the role as **Staff**, and save. They'll now be able to sign in and manage products/orders, but won't see Activity Log or Team.
+3. To promote someone to Owner later, just re-save their email with the Owner role selected.
+
+Anyone who signs in but isn't listed in the Team tab yet is treated as **Staff** by default — a safe, least-privilege fallback rather than accidentally granting owner access.
