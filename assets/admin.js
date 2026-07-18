@@ -48,7 +48,7 @@
   // ---------------- Tabs ----------------
   function wireTabs() {
     const tabs = document.querySelectorAll(".tab-btn");
-    const tabPanels = { products: "productsTab", orders: "ordersTab", analytics: "analyticsTab", activity: "activityTab" };
+    const tabPanels = { products: "productsTab", orders: "ordersTab", analytics: "analyticsTab", activity: "activityTab", team: "teamTab" };
     tabs.forEach((btn) => {
       btn.addEventListener("click", () => {
         tabs.forEach((b) => b.classList.remove("active"));
@@ -59,6 +59,7 @@
         });
         if (btn.dataset.tab === "analytics") renderAnalytics();
         if (btn.dataset.tab === "activity") loadActivity();
+        if (btn.dataset.tab === "team") loadTeam();
       });
     });
   }
@@ -82,6 +83,37 @@
   }
 
   // ---------------- Auth ----------------
+  let currentUserRole = "staff"; // safe default until proven otherwise
+
+  async function loadCurrentRole(email) {
+    if (!email) { currentUserRole = "staff"; return; }
+    try {
+      const { data } = await window.supabaseClient
+        .from("admin_users")
+        .select("role")
+        .eq("email", email)
+        .maybeSingle();
+      currentUserRole = (data && data.role === "owner") ? "owner" : "staff";
+    } catch (e) {
+      currentUserRole = "staff";
+    }
+    applyRoleVisibility();
+  }
+
+  function applyRoleVisibility() {
+    const isOwner = currentUserRole === "owner";
+    document.querySelectorAll('.tab-btn[data-tab="activity"], .tab-btn[data-tab="team"]').forEach((btn) => {
+      btn.style.display = isOwner ? "" : "none";
+    });
+    const roleTag = document.getElementById("roleTag");
+    if (roleTag) roleTag.textContent = isOwner ? "Owner" : "Staff";
+    // If a staff account is currently sitting on an owner-only tab, bounce them to Products
+    const activeTab = document.querySelector(".tab-btn.active");
+    if (!isOwner && activeTab && (activeTab.dataset.tab === "activity" || activeTab.dataset.tab === "team")) {
+      document.querySelector('.tab-btn[data-tab="products"]').click();
+    }
+  }
+
   async function refreshSessionUI() {
     const { data: { session } } = await window.supabaseClient.auth.getSession();
     if (session) {
@@ -89,12 +121,14 @@
       dashPanel.style.display = "block";
       whoami.textContent = session.user.email;
       currentActorEmail = session.user.email;
+      await loadCurrentRole(session.user.email);
       loadAdminProducts();
       loadOrders();
     } else {
       loginPanel.style.display = "block";
       dashPanel.style.display = "none";
       currentActorEmail = null;
+      currentUserRole = "staff";
     }
   }
 
@@ -1058,9 +1092,12 @@
   }
 
   // ---------------- Admin activity log ----------------
+  let activityActorFilterValue = "All";
+
   async function loadActivity() {
     const list = document.getElementById("activityList");
     const cards = document.getElementById("loginStatCards");
+    const actorSelect = document.getElementById("activityActorFilter");
     if (!list) return;
     list.innerHTML = "Loading…";
 
@@ -1075,21 +1112,32 @@
       return;
     }
 
-    const events = data || [];
-    const logins = events.filter((e) => e.action === "login");
+    const allEvents = data || [];
+    const logins = allEvents.filter((e) => e.action === "login");
     const lastLogin = logins[0];
-    const uniqueActors = new Set(events.map((e) => e.actor).filter(Boolean)).size;
+    const uniqueActors = [...new Set(allEvents.map((e) => e.actor).filter(Boolean))];
+
+    if (actorSelect) {
+      const current = actorSelect.value || "All";
+      actorSelect.innerHTML = `<option value="All">Everyone</option>` +
+        uniqueActors.map((a) => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join("");
+      actorSelect.value = uniqueActors.includes(current) || current === "All" ? current : "All";
+      activityActorFilterValue = actorSelect.value;
+    }
 
     if (cards) {
+      const loginsForActor = activityActorFilterValue === "All" ? logins : logins.filter((e) => e.actor === activityActorFilterValue);
       cards.innerHTML = `
-        <div class="stat-card"><div class="v">${logins.length}</div><div class="l">Total sign-ins logged</div></div>
-        <div class="stat-card"><div class="v">${uniqueActors}</div><div class="l">Unique admin accounts</div></div>
-        <div class="stat-card"><div class="v" style="font-size:1rem">${lastLogin ? new Date(lastLogin.created_at).toLocaleString("en-IN") : "—"}</div><div class="l">Most recent sign-in</div></div>
+        <div class="stat-card"><div class="v">${loginsForActor.length}</div><div class="l">Sign-ins${activityActorFilterValue === "All" ? " (all team)" : ""}</div></div>
+        <div class="stat-card"><div class="v">${uniqueActors.length}</div><div class="l">Unique admin accounts</div></div>
+        <div class="stat-card"><div class="v" style="font-size:1rem">${lastLogin ? new Date(lastLogin.created_at).toLocaleString("en-IN") : "—"}</div><div class="l">Most recent sign-in (anyone)</div></div>
       `;
     }
 
+    const events = activityActorFilterValue === "All" ? allEvents : allEvents.filter((e) => e.actor === activityActorFilterValue);
+
     if (!events.length) {
-      list.innerHTML = `<div class="msg">No activity logged yet.</div>`;
+      list.innerHTML = `<div class="msg">No activity logged yet${activityActorFilterValue !== "All" ? " for this person" : ""}.</div>`;
       return;
     }
 
@@ -1114,6 +1162,83 @@
 
   const refreshActivityBtn = document.getElementById("refreshActivityBtn");
   if (refreshActivityBtn) refreshActivityBtn.addEventListener("click", loadActivity);
+  const activityActorFilter = document.getElementById("activityActorFilter");
+  if (activityActorFilter) {
+    activityActorFilter.addEventListener("change", () => {
+      activityActorFilterValue = activityActorFilter.value;
+      loadActivity();
+    });
+  }
+
+  // ---------------- Team management (owner-only) ----------------
+  async function loadTeam() {
+    const list = document.getElementById("teamList");
+    if (!list) return;
+    list.innerHTML = "Loading…";
+    const { data, error } = await window.supabaseClient
+      .from("admin_users")
+      .select("*")
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      list.innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`;
+      return;
+    }
+    if (!data.length) {
+      list.innerHTML = `<div class="msg">No team members added yet.</div>`;
+      return;
+    }
+    list.innerHTML = data.map((u) => `
+      <div class="admin-row" data-email="${escapeHtml(u.email)}" style="grid-template-columns:1fr auto auto;">
+        <div>
+          <div class="name">${escapeHtml(u.email)}</div>
+          <div class="meta">Added ${new Date(u.created_at).toLocaleDateString("en-IN")}</div>
+        </div>
+        <div class="meta" style="align-self:center; text-transform:uppercase; letter-spacing:.06em;">${escapeHtml(u.role)}</div>
+        <div class="row-actions">
+          <button class="link-btn" data-action="remove-team" style="color:var(--oxblood)">Remove</button>
+        </div>
+      </div>
+    `).join("");
+
+    list.querySelectorAll('[data-action="remove-team"]').forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const email = btn.closest(".admin-row").dataset.email;
+        if (email === currentActorEmail) {
+          alert("You can't remove your own account from the Team tab.");
+          return;
+        }
+        if (!confirm(`Remove ${email} from the team? They'll be treated as Staff by default if they still have login access.`)) return;
+        await window.supabaseClient.from("admin_users").delete().eq("email", email);
+        logActivity("remove_team_member", email);
+        loadTeam();
+      });
+    });
+  }
+
+  const teamForm = document.getElementById("teamForm");
+  if (teamForm) {
+    teamForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById("teamMsg");
+      const email = document.getElementById("teamEmail").value.trim().toLowerCase();
+      const role = document.getElementById("teamRole").value;
+      if (!email) return;
+      const { error } = await window.supabaseClient
+        .from("admin_users")
+        .upsert([{ email, role }], { onConflict: "email" });
+      if (error) {
+        msg.textContent = error.message;
+        msg.className = "msg error";
+        return;
+      }
+      msg.textContent = `${email} is now ${role}.`;
+      msg.className = "msg ok";
+      logActivity("set_team_role", `${email} → ${role}`);
+      teamForm.reset();
+      loadTeam();
+    });
+  }
 
   // ---------------- Realtime ----------------
   window.supabaseClient
