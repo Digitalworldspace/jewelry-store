@@ -105,6 +105,8 @@
     document.querySelectorAll('.tab-btn[data-tab="activity"], .tab-btn[data-tab="team"]').forEach((btn) => {
       btn.style.display = isOwner ? "" : "none";
     });
+    const customerPanel = document.getElementById("customerInsightsPanel");
+    if (customerPanel) customerPanel.style.display = isOwner ? "" : "none";
     const roleTag = document.getElementById("roleTag");
     if (roleTag) roleTag.textContent = isOwner ? "Owner" : "Staff";
     // If a staff account is currently sitting on an owner-only tab, bounce them to Products
@@ -119,6 +121,7 @@
     if (session) {
       loginPanel.style.display = "none";
       dashPanel.style.display = "block";
+      logoutBtn.style.display = "inline-block";
       whoami.textContent = session.user.email;
       currentActorEmail = session.user.email;
       await loadCurrentRole(session.user.email);
@@ -127,6 +130,7 @@
     } else {
       loginPanel.style.display = "block";
       dashPanel.style.display = "none";
+      logoutBtn.style.display = "none";
       currentActorEmail = null;
       currentUserRole = "staff";
     }
@@ -258,7 +262,7 @@
       } else {
         const { error: insErr } = await window.supabaseClient
           .from("products")
-          .insert([{ name, price, original_price, badge, category, description, image_url, storage_path }]);
+          .insert([{ name, price, original_price, badge, category, description, image_url, storage_path, created_by: currentActorEmail }]);
         if (insErr) throw insErr;
         uploadMsg.textContent = `"${name}" is live on the site now.`;
         logActivity("add_product", name);
@@ -433,15 +437,25 @@
 
   async function loadAdminProducts() {
     adminList.innerHTML = "Loading…";
-    const { data, error } = await window.supabaseClient
+    let query = window.supabaseClient
       .from("products")
       .select("*")
       .order("created_at", { ascending: false });
+    if (currentUserRole !== "owner" && currentActorEmail) {
+      query = query.eq("created_by", currentActorEmail);
+    }
+    const { data, error } = await query;
     if (error) {
       adminList.innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`;
       return;
     }
     allAdminProducts = data || [];
+    const scopeNote = document.getElementById("catalogScopeNote");
+    if (scopeNote) {
+      scopeNote.textContent = currentUserRole === "owner"
+        ? "Showing every product added by anyone on the team."
+        : "Showing only products you've added — other team members' products aren't shown here.";
+    }
     populateCategoryList();
     renderAdminProducts();
     renderStats();
@@ -1039,6 +1053,7 @@
 
   // ---------------- Customer behavior insights (owner-only) ----------------
   async function loadCustomerInsights() {
+    if (currentUserRole !== "owner") return; // panel is hidden for staff; RLS would block this anyway
     const { data, error } = await window.supabaseClient
       .from("customer_events")
       .select("*")
