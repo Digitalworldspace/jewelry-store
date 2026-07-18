@@ -42,7 +42,7 @@
 
   <section id="dashPanel" style="display:none">
     <p style="font-family:var(--font-mono);font-size:.8rem;color:#6b5c4f">
-      Signed in as <span id="whoami"></span>
+      Signed in as <span id="whoami"></span> · <span class="role-tag" id="roleTag">…</span>
     </p>
 
     <div class="stat-cards">
@@ -56,7 +56,8 @@
       <button class="tab-btn active" data-tab="products">Products</button>
       <button class="tab-btn" data-tab="orders">Orders <span id="orderCountBadge"></span></button>
       <button class="tab-btn" data-tab="analytics">Analytics</button>
-      <button class="tab-btn" data-tab="activity">Activity Log</button>
+      <button class="tab-btn" data-tab="activity" style="display:none">Activity Log</button>
+      <button class="tab-btn" data-tab="team" style="display:none">Team</button>
     </div>
 
     <div id="productsTab">
@@ -113,6 +114,7 @@
       <div class="panel">
         <div class="panel-head">
           <h2>Current catalog</h2>
+          <p id="catalogScopeNote" style="color:#6b5c4f;font-size:.82rem;margin:-8px 0 12px"></p>
           <input class="search-box" id="productSearch" type="text" placeholder="Search your catalog…">
         </div>
         <div class="select-all-row">
@@ -191,10 +193,10 @@
         </div>
       </div>
 
-      <div class="panel">
+      <div class="panel" id="customerInsightsPanel">
         <h2>Customer activity on the storefront</h2>
         <p style="color:#6b5c4f;font-size:.9rem;margin-top:-10px">
-          Anonymous behavior only — no names, phone numbers, or addresses are tracked here. That information only ever lives in your Orders tab.
+          Anonymous behavior only — no names, phone numbers, or addresses are tracked here. That information only ever lives in your Orders tab. Visible to the Owner only.
         </p>
         <div class="stat-cards" id="customerStatCards"></div>
         <div class="row2" style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:24px;">
@@ -219,10 +221,45 @@
       <div class="panel">
         <div class="panel-head">
           <h2>Full activity log</h2>
-          <button class="small-link" id="refreshActivityBtn">Refresh</button>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <select class="order-select" id="activityActorFilter">
+              <option value="All">Everyone</option>
+            </select>
+            <button class="small-link" id="refreshActivityBtn">Refresh</button>
+          </div>
         </div>
-        <p style="color:#6b5c4f;font-size:.9rem;margin-top:-10px">Every login and every product/order change made in this admin panel, most recent first.</p>
+        <p style="color:#6b5c4f;font-size:.9rem;margin-top:-10px">Every login and every product/order change made in this admin panel, most recent first — filter by team member above.</p>
         <div id="activityList">Loading…</div>
+      </div>
+    </div>
+
+    <div id="teamTab" style="display:none">
+      <div class="panel">
+        <h2>Add or update a team member</h2>
+        <p style="color:#6b5c4f;font-size:.9rem">
+          This controls what someone can see once they're already signed in — it doesn't create their login. To give someone admin access at all, first create their account in Supabase → Authentication → Users, then add their email here with the right role.
+        </p>
+        <form id="teamForm">
+          <div class="row2">
+            <div class="field">
+              <label>Email</label>
+              <input type="email" id="teamEmail" required>
+            </div>
+            <div class="field">
+              <label>Role</label>
+              <select id="teamRole">
+                <option value="staff">Staff — products &amp; orders only</option>
+                <option value="owner">Owner — full access, including Activity Log &amp; Team</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn" type="submit">Save role</button>
+          <div class="msg" id="teamMsg"></div>
+        </form>
+      </div>
+      <div class="panel">
+        <h2>Current team</h2>
+        <div id="teamList">Loading…</div>
       </div>
     </div>
 
