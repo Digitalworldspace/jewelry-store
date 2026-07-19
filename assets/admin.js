@@ -308,6 +308,7 @@
         <div class="meta">${new Date(p.created_at).toLocaleDateString("en-IN")}</div>
         <div class="row-actions">
           <button class="link-btn" data-action="edit">Edit</button>
+          ${p.image_url ? `<button class="link-btn" data-action="remove-image">Remove image</button>` : ""}
           <button class="link-btn" data-action="delete">Remove</button>
         </div>
       </div>
@@ -327,6 +328,29 @@
         const row = btn.closest(".admin-row");
         const p = allAdminProducts.find((x) => String(x.id) === row.dataset.id);
         if (p) startEdit(p);
+      });
+    });
+
+    adminList.querySelectorAll('[data-action="remove-image"]').forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const row = btn.closest(".admin-row");
+        const id = row.dataset.id;
+        const path = row.dataset.path;
+        const p = allAdminProducts.find((x) => String(x.id) === id);
+        if (!confirm(`Remove the photo from "${p ? p.name : "this product"}"? The listing stays live, just without an image until you add a new one.`)) return;
+        const { error } = await window.supabaseClient
+          .from("products")
+          .update({ image_url: null, storage_path: null })
+          .eq("id", id);
+        if (error) {
+          alert(error.message);
+          return;
+        }
+        if (path) {
+          await window.supabaseClient.storage.from(BUCKET).remove([path]);
+        }
+        logActivity("remove_product_image", p ? p.name : id);
+        loadAdminProducts();
       });
     });
 
@@ -1190,42 +1214,48 @@
     const list = document.getElementById("teamList");
     if (!list) return;
     list.innerHTML = "Loading…";
-    const { data, error } = await window.supabaseClient
-      .from("admin_users")
-      .select("*")
-      .order("created_at", { ascending: true });
+    const { data, error } = await window.supabaseClient.rpc("list_team_candidates");
 
     if (error) {
       list.innerHTML = `<div class="msg error">${escapeHtml(error.message)}</div>`;
       return;
     }
-    if (!data.length) {
-      list.innerHTML = `<div class="msg">No team members added yet.</div>`;
+    if (!data || !data.length) {
+      list.innerHTML = `<div class="msg">No admin logins found yet — create one in Supabase → Authentication → Users.</div>`;
       return;
     }
     list.innerHTML = data.map((u) => `
       <div class="admin-row" data-email="${escapeHtml(u.email)}" style="grid-template-columns:1fr auto auto;">
         <div>
           <div class="name">${escapeHtml(u.email)}</div>
-          <div class="meta">Added ${new Date(u.created_at).toLocaleDateString("en-IN")}</div>
+          <div class="meta">Login created ${new Date(u.user_created_at).toLocaleDateString("en-IN")}</div>
         </div>
         <div class="meta" style="align-self:center; text-transform:uppercase; letter-spacing:.06em;">${escapeHtml(u.role)}</div>
         <div class="row-actions">
-          <button class="link-btn" data-action="remove-team" style="color:var(--oxblood)">Remove</button>
+          <button class="link-btn" data-action="quick-role" data-email="${escapeHtml(u.email)}" data-role="${u.role === "owner" ? "staff" : "owner"}">
+            Make ${u.role === "owner" ? "Staff" : "Owner"}
+          </button>
         </div>
       </div>
     `).join("");
 
-    list.querySelectorAll('[data-action="remove-team"]').forEach((btn) => {
+    list.querySelectorAll('[data-action="quick-role"]').forEach((btn) => {
       btn.addEventListener("click", async () => {
-        const email = btn.closest(".admin-row").dataset.email;
-        if (email === currentActorEmail) {
-          alert("You can't remove your own account from the Team tab.");
+        const email = btn.dataset.email;
+        const role = btn.dataset.role;
+        if (role === "staff" && email === currentActorEmail) {
+          alert("You can't demote your own account — ask another owner, or change it directly in Supabase.");
           return;
         }
-        if (!confirm(`Remove ${email} from the team? They'll be treated as Staff by default if they still have login access.`)) return;
-        await window.supabaseClient.from("admin_users").delete().eq("email", email);
-        logActivity("remove_team_member", email);
+        if (!confirm(`Set ${email} to ${role === "owner" ? "Owner" : "Staff"}?`)) return;
+        const { error: upErr } = await window.supabaseClient
+          .from("admin_users")
+          .upsert([{ email, role }], { onConflict: "email" });
+        if (upErr) {
+          alert(upErr.message);
+          return;
+        }
+        logActivity("set_team_role", `${email} → ${role}`);
         loadTeam();
       });
     });
