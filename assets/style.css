@@ -1466,3 +1466,134 @@ img{ max-width:100%; display:block; }
   -webkit-box-orient:vertical;
   overflow:hidden;
 }
+
+/* ============================================================
+   SHOWROOM — extra fashion-boutique animation pass
+   ============================================================ */
+
+/* gentle floating sway on orbiting pieces, like a jewelry display
+   case catching light — layered on top of the existing entrance
+   transform via a second animation once settled into place */
+@keyframes showroomFloat{
+  0%,100%{ margin-top:0px; }
+  50%{ margin-top:-10px; }
+}
+.showroom-stage.in-view .showroom-item{
+  animation: showroomFloat 4.2s ease-in-out infinite;
+}
+.showroom-stage.in-view .showroom-item[data-pos="1"]{ animation-delay:.1s; }
+.showroom-stage.in-view .showroom-item[data-pos="2"]{ animation-delay:.55s; }
+.showroom-stage.in-view .showroom-item[data-pos="3"]{ animation-delay:1s; }
+.showroom-stage.in-view .showroom-item[data-pos="4"]{ animation-delay:1.45s; }
+.showroom-stage.in-view .showroom-item[data-pos="5"]{ animation-delay:1.9s; }
+.showroom-stage.in-view .showroom-item[data-pos="6"]{ animation-delay:2.35s; }
+
+/* breathing gold aura behind the featured center piece */
+.showroom-center::before{
+  content:"";
+  position:absolute;
+  inset:-14px;
+  border-radius:50%;
+  border:1px solid rgba(199,154,86,.5);
+  animation: showroomBreathe 3.4s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes showroomBreathe{
+  0%,100%{ transform:scale(1); opacity:.55; }
+  50%{ transform:scale(1.09); opacity:0; }
+}
+
+/* diagonal light sweep across the featured piece, like a jeweller's
+   loupe catching a facet — repeats every few seconds */
+.showroom-center{ overflow:hidden; }
+.showroom-center::after{
+  content:"";
+  position:absolute;
+  top:0; left:-60%;
+  width:40%; height:100%;
+  background:linear-gradient(75deg, transparent, rgba(255,255,255,.55), transparent);
+  transform:skewX(-18deg);
+  animation: showroomShine 3.6s ease-in-out infinite;
+  animation-delay:1.2s;
+  pointer-events:none;
+}
+@keyframes showroomShine{
+  0%{ left:-60%; }
+  35%{ left:130%; }
+  100%{ left:130%; }
+}
+
+/* matching, gentler shine on the orbiting pieces */
+.showroom-item{ overflow:hidden; }
+.showroom-item::after{
+  content:"";
+  position:absolute;
+  top:0; left:-60%;
+  width:45%; height:100%;
+  background:linear-gradient(75deg, transparent, rgba(255,255,255,.4), transparent);
+  transform:skewX(-18deg);
+  animation: showroomShine 4.6s ease-in-out infinite;
+  pointer-events:none;
+}
+.showroom-item[data-pos="1"]::after{ animation-delay:.4s; }
+.showroom-item[data-pos="2"]::after{ animation-delay:1.3s; }
+.showroom-item[data-pos="3"]::after{ animation-delay:2.2s; }
+.showroom-item[data-pos="4"]::after{ animation-delay:.9s; }
+.showroom-item[data-pos="5"]::after{ animation-delay:1.8s; }
+.showroom-item[data-pos="6"]::after{ animation-delay:2.7s; }
+
+/* rotating spotlight sweep behind the whole stage — subtle, like a
+   boutique display light slowly panning across the pieces */
+.showroom-spotlight{
+  position:absolute;
+  inset:-10%;
+  background:conic-gradient(from 0deg,
+    transparent 0deg,
+    rgba(255,255,255,.05) 8deg,
+    transparent 20deg,
+    transparent 360deg);
+  animation: spinSlow 9s linear infinite;
+  pointer-events:none;
+  z-index:1;
+}
+
+/* small boutique-style eyebrow tag above the showroom heading */
+.showroom-boutique-tag{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-family:var(--font-mono);
+  font-size:.62rem;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+  color:var(--gold-2);
+  border:1px solid var(--line);
+  padding:6px 16px;
+  border-radius:30px;
+  margin-bottom:14px;
+}
+.showroom-boutique-tag::before{
+  content:"";
+  width:5px; height:5px; border-radius:50%;
+  background:var(--gold);
+  animation: twinkle 2.2s ease-in-out infinite;
+}
+
+/* extra sparkle variety */
+.sparkle.sparkle-star{
+  width:5px; height:5px;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  transform:none;
+  background:var(--gold);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .showroom-stage.in-view .showroom-item{ animation:none !important; }
+  .showroom-center::before, .showroom-center::after, .showroom-item::after,
+  .showroom-spotlight, .showroom-boutique-tag::before{ animation:none !important; }
+  .showroom-center::after, .showroom-item::after{ display:none; }
+}
+
+@media (max-width:760px){
+  .showroom-stage.in-view .showroom-item{ animation:none; }
+}
