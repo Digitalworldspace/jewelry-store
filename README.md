@@ -86,6 +86,7 @@ This project still includes `create-razorpay-order` and `verify-razorpay-payment
 - Click **Upload & publish live** — it appears on `index.html` immediately.
 - Use **Search your catalog** to quickly find a product in a long list.
 - Click **Edit** on any product to load it back into the form — change anything, optionally swap the photo, and click **Save changes**. Click **Cancel edit** to go back to adding a new piece.
+- Click **Remove image** on any product to clear just its photo (the listing stays live, price/name/etc. untouched) — handy when a photo needs replacing without recreating the whole product. Click **Edit** afterward to upload a new one.
 - Click **Remove** to delete a piece from the live store.
 - Forgot your password? Enter your email in the sign-in form and tap **Forgot password?** — Supabase will email you a reset link. (One-time setup: in Supabase, go to **Authentication → URL Configuration** and make sure your GitHub Pages URL is added under "Redirect URLs," or the reset link won't be allowed to complete.)
 
@@ -189,12 +190,12 @@ The site now has real SEO groundwork built in — here's what's there and what y
 
 ## Team roles: Owner vs Staff
 
-`admin.html` now supports two roles:
+`admin.html` supports two roles:
 - **Owner** — everything Staff can do, plus the **Activity Log** (every sign-in and action, filterable per person) and the **Team** tab (add/remove team members, assign roles).
 - **Staff** — can manage Products and Orders (the day-to-day work), but the Activity Log and Team tabs are hidden, and the database itself blocks them from reading activity/customer-analytics data even if they tried directly — this isn't just a hidden button.
 
 **One-time setup — make yourself the owner:**
-1. Open `supabase-setup.sql`, find the line near the bottom that says:
+1. Open `supabase-setup.sql`, find the line that says:
    ```sql
    insert into public.admin_users (email, role)
    values ('you@example.com', 'owner')
@@ -208,4 +209,10 @@ The site now has real SEO groundwork built in — here's what's there and what y
 2. Then, as the owner, go to the **Team** tab in `admin.html`, enter their email, leave the role as **Staff**, and save. They'll now be able to sign in and manage products/orders, but won't see Activity Log or Team.
 3. To promote someone to Owner later, just re-save their email with the Owner role selected.
 
-Anyone who signs in but isn't listed in the Team tab yet is treated as **Staff** by default — a safe, least-privilege fallback rather than accidentally granting owner access.
+You can also set roles directly in Supabase if you prefer — either **Table Editor → admin_users** (insert/edit a row, `role` must be exactly `owner` or `staff`), or by running `set-admin-role.sql` in the SQL Editor. Both paths write to the same table, so the Team tab always reflects whichever way you made the change.
+
+Anyone who signs in but isn't listed in `admin_users` yet is treated as **Staff** by default — a safe, least-privilege fallback rather than accidentally granting owner access.
+
+**The Team tab now shows every login, not just ones already assigned a role** — it pulls the full list straight from Supabase Authentication (via a secure function only an Owner can call), showing "Staff" as the default for anyone not yet set. Click **Make Owner** / **Make Staff** right next to any name for a one-click change, or use the form above it the same way as before.
+
+**Products are also scoped per person now:** Staff only see and can edit/delete the products *they personally added* — other team members' products don't show up in their catalog at all. The Owner always sees and can manage everyone's products. This is enforced by the database itself (not just hidden in the UI), so a staff account genuinely cannot modify someone else's product even by calling the API directly. The public storefront is unaffected — customers always see the full combined catalog from everyone.
