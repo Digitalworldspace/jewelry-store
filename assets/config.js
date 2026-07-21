@@ -24,7 +24,22 @@ window.WHATSAPP_NUMBER = "916352925472";
 
 /* Your Razorpay Key ID — this one is meant to be public (like a
    publishable key), safe to keep in this file and in GitHub.
-   NEVER put your Razorpay Key SECRET anywhere in this project —
-   it only ever belongs inside your Supabase Edge Function secrets.
-   Starts with "rzp_test_" while testing, "rzp_live_" once you go live. */
+   NEVER put your Razorpay Key SECRET anywhere in this project — this
+   site never needs it at all, since checkout opens Razorpay directly
+   from the browser with just this Key ID (no backend/Edge Function
+   involved). Starts with "rzp_test_" while testing, "rzp_live_" once
+   you go live. */
 window.RAZORPAY_KEY_ID = "rzp_live_TC2ibFsu1A5oaF";
+
+/* Flat shipping fee charged to the customer, in ₹. Shown clearly on
+   every order (cart drawer + checkout) before payment — never hidden
+   or added as a surprise at the last step. Set to 0 if you want to
+   offer free shipping instead. */
+window.SHIPPING_FEE = 49;
+
+/* Orders at or above this subtotal (in ₹) get free shipping — this
+   must match whatever your on-site copy promises (the announcement
+   bar and trust bar currently say "Free shipping on orders above
+   ₹999"). Set to a very large number to effectively disable this and
+   always charge SHIPPING_FEE, or edit the on-site copy to match. */
+window.FREE_SHIPPING_THRESHOLD = 999;
