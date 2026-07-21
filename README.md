@@ -160,6 +160,14 @@ Anyone visiting the site can *create* an order (that's required — customers ar
 - Because that secret key was pasted into this chat, it's good practice to rotate it: Supabase Dashboard → **Project Settings → API** → regenerate the secret key. You don't need to update anything in this project when you do — it's simply not used here.
 - Keep your admin password private; anyone with it can add/remove products through `admin.html`.
 
+## Fashion store rebrand, cart, and policies
+
+- **Broader positioning**: the site now reads as a general fashion store (jewellery, ethnic wear, accessories) rather than jewelry-only — title, meta description, keywords, Open Graph tags, and the structured data (`ClothingStore` + `JewelryStore`) were all updated to match. As you add clothing/other categories in the admin panel, the SEO framing already supports it — no further changes needed there.
+- **"Complete the look"**: the product quick-view now suggests items from a *different* category first (e.g. a necklace shown alongside a kurti), falling back to the same category if that's all you have. Each suggestion gets a rotating styling phrase ("Stunning together," "A perfect match," etc.).
+- **Cart**: a full shopping cart (top-right cart icon, item count badge, slide-out drawer) lets customers add multiple products and check out together in one go, alongside the original single-item "Buy Now." Cart contents persist in the browser (not shared with anyone, including you) so a customer doesn't lose their cart on refresh.
+- **Shipping cost**: set in `assets/config.js` (`SHIPPING_FEE`, `FREE_SHIPPING_THRESHOLD`) and shown plainly in the cart drawer and checkout *before* payment — never hidden or sprung on the customer at the last step, but also not shouted at them from a giant banner. Make sure the announce bar/trust bar text (currently "Free shipping on orders above ₹999") matches whatever you set here.
+- **7-day replacement policy**: added to the trust bar and FAQ — covers genuine issues (damaged, defective, wrong item), not general change-of-mind returns. Update the FAQ answer with your real process if it differs.
+
 ## Customising
 
 - Store name: edit the `<a class="brand">` text in `index.html` and `admin.html`.
