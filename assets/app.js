@@ -174,6 +174,27 @@
   let allProducts = [];
   let activeCategory = "All";
   let activeSearch = "";
+  let priceMin = null;
+  let priceMax = null;
+  let sortBy = "newest";
+  let wishlistOnly = false;
+
+  // ---------------- Wishlist (real, working, saved in this browser) ----------------
+  function loadWishlist() {
+    try {
+      return new Set(JSON.parse(localStorage.getItem("sol_wishlist") || "[]"));
+    } catch (e) { return new Set(); }
+  }
+  let wishlist = loadWishlist();
+  function saveWishlist() {
+    try { localStorage.setItem("sol_wishlist", JSON.stringify([...wishlist])); } catch (e) {}
+  }
+  function toggleWishlist(id) {
+    id = String(id);
+    if (wishlist.has(id)) wishlist.delete(id); else wishlist.add(id);
+    saveWishlist();
+    renderGrid();
+  }
 
   function escapeHtml(str) {
     return String(str || "").replace(/[&<>"']/g, (c) => ({
@@ -236,19 +257,49 @@
     }
   }
 
+  function setCategory(cat) {
+    activeCategory = cat;
+    renderChips();
+    renderCategoryFilterList();
+    renderGrid();
+    if (activeCategory !== "All") trackEvent("filter_category", activeCategory);
+  }
+
   function renderChips() {
     const cats = ["All", ...new Set(allProducts.map((p) => p.category).filter(Boolean))];
     chipsBox.innerHTML = cats.map((c) =>
       `<button class="chip ${c === activeCategory ? "active" : ""}" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</button>`
     ).join("");
     chipsBox.querySelectorAll(".chip").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        activeCategory = btn.dataset.cat;
-        renderChips();
-        renderGrid();
-        if (activeCategory !== "All") trackEvent("filter_category", activeCategory);
-      });
+      btn.addEventListener("click", () => setCategory(btn.dataset.cat));
     });
+  }
+
+  function renderCategoryFilterList() {
+    const list = document.getElementById("filterCategoryList");
+    if (!list) return;
+    const cats = ["All", ...new Set(allProducts.map((p) => p.category).filter(Boolean))];
+    list.innerHTML = cats.map((c) => `
+      <label class="filter-check-row">
+        <input type="radio" name="filterCategory" value="${escapeHtml(c)}" ${c === activeCategory ? "checked" : ""}>
+        <span>${escapeHtml(c)}</span>
+      </label>
+    `).join("") + `
+      <label class="filter-check-row filter-wishlist-row">
+        <input type="checkbox" id="filterWishlistOnly" ${wishlistOnly ? "checked" : ""}>
+        <span>♥ My wishlist only</span>
+      </label>
+    `;
+    list.querySelectorAll('input[name="filterCategory"]').forEach((input) => {
+      input.addEventListener("change", () => setCategory(input.value));
+    });
+    const wOnly = document.getElementById("filterWishlistOnly");
+    if (wOnly) {
+      wOnly.addEventListener("change", () => {
+        wishlistOnly = wOnly.checked;
+        renderGrid();
+      });
+    }
   }
 
   function renderGrid() {
@@ -263,18 +314,37 @@
         (p.description || "").toLowerCase().includes(q)
       );
     }
+    if (priceMin !== null && !Number.isNaN(priceMin)) {
+      items = items.filter((p) => Number(p.price) >= priceMin);
+    }
+    if (priceMax !== null && !Number.isNaN(priceMax)) {
+      items = items.filter((p) => Number(p.price) <= priceMax);
+    }
+    if (wishlistOnly) {
+      items = items.filter((p) => wishlist.has(String(p.id)));
+    }
+
+    items = items.slice();
+    if (sortBy === "price-asc") items.sort((a, b) => Number(a.price) - Number(b.price));
+    else if (sortBy === "price-desc") items.sort((a, b) => Number(b.price) - Number(a.price));
+    else if (sortBy === "name-asc") items.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    // "newest" keeps the incoming order (already newest-first from Supabase)
 
     if (!items.length) {
-      grid.innerHTML = `<div class="state-msg">No pieces match yet — try another filter, or check back soon.</div>`;
+      grid.innerHTML = `<div class="state-msg">${wishlistOnly ? "Nothing saved to your wishlist yet — tap the heart on any piece." : "No pieces match yet — try another filter, or check back soon."}</div>`;
       return;
     }
 
     grid.innerHTML = items.map((p, i) => {
       const off = discountPct(p.price, p.original_price);
+      const saved = wishlist.has(String(p.id));
       return `
       <article class="tag-card" data-id="${p.id}" style="animation-delay:${Math.min(i, 10) * 40}ms">
         <span class="punch"></span>
         ${p.badge ? `<span class="ribbon ${ribbonClass(p.badge)}">${escapeHtml(p.badge)}</span>` : ""}
+        <button class="wishlist-heart ${saved ? "saved" : ""}" data-wishlist="${p.id}" aria-label="${saved ? "Remove from" : "Add to"} wishlist" title="${saved ? "Remove from" : "Add to"} wishlist">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="${saved ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+        </button>
         <div class="thumb">
           ${p.image_url
             ? `<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" loading="lazy">`
@@ -319,6 +389,59 @@
         if (p) addToCart(p);
       });
     });
+    grid.querySelectorAll("[data-wishlist]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleWishlist(btn.dataset.wishlist);
+      });
+    });
+  }
+
+  function wireFilterSidebar() {
+    const priceMinInput = document.getElementById("filterPriceMin");
+    const priceMaxInput = document.getElementById("filterPriceMax");
+    const sortSelect = document.getElementById("sortSelect");
+    const clearBtn = document.getElementById("clearFiltersBtn");
+    const toggleBtn = document.getElementById("filterToggleBtn");
+    const sidebar = document.getElementById("filtersSidebar");
+
+    if (priceMinInput) {
+      priceMinInput.addEventListener("input", () => {
+        const v = priceMinInput.value.trim();
+        priceMin = v === "" ? null : Number(v);
+        renderGrid();
+      });
+    }
+    if (priceMaxInput) {
+      priceMaxInput.addEventListener("input", () => {
+        const v = priceMaxInput.value.trim();
+        priceMax = v === "" ? null : Number(v);
+        renderGrid();
+      });
+    }
+    if (sortSelect) {
+      sortSelect.addEventListener("change", () => {
+        sortBy = sortSelect.value;
+        renderGrid();
+      });
+    }
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        priceMin = null; priceMax = null; sortBy = "newest"; wishlistOnly = false;
+        activeCategory = "All";
+        if (priceMinInput) priceMinInput.value = "";
+        if (priceMaxInput) priceMaxInput.value = "";
+        if (sortSelect) sortSelect.value = "newest";
+        renderChips();
+        renderCategoryFilterList();
+        renderGrid();
+      });
+    }
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+      });
+    }
   }
 
   const STYLE_PHRASES = [
@@ -407,11 +530,24 @@
       });
     });
     modalBackdrop.classList.add("open");
+    syncBodyScrollLock();
+  }
+
+  // Prevents background scroll while any modal is open — also sidesteps
+  // a class of mobile viewport glitches (address-bar resize, iOS
+  // rubber-banding) that can otherwise make a modal look cut off or let
+  // the header show through it.
+  function syncBodyScrollLock() {
+    const anyOpen = [modalBackdrop, checkoutBackdrop, trackBackdrop].some(
+      (el) => el && el.classList.contains("open")
+    );
+    document.body.style.overflow = anyOpen ? "hidden" : "";
   }
 
   function closeModal() {
     modalBackdrop.classList.remove("open");
     modalBody.innerHTML = "";
+    syncBodyScrollLock();
   }
   modalBackdrop.addEventListener("click", (e) => {
     if (e.target === modalBackdrop) closeModal();
@@ -427,10 +563,170 @@
   function closeCheckout() {
     checkoutBackdrop.classList.remove("open");
     checkoutBody.innerHTML = "";
+    syncBodyScrollLock();
   }
   checkoutBackdrop.addEventListener("click", (e) => {
     if (e.target === checkoutBackdrop) closeCheckout();
   });
+
+  // ---------------- Track Order / Request Return ----------------
+  const trackBackdrop = document.getElementById("trackBackdrop");
+  const trackBody = document.getElementById("trackBody");
+
+  function closeTrack() {
+    trackBackdrop.classList.remove("open");
+    trackBody.innerHTML = "";
+    syncBodyScrollLock();
+  }
+  trackBackdrop.addEventListener("click", (e) => {
+    if (e.target === trackBackdrop) closeTrack();
+  });
+
+  function renderTrackLookupForm(prefillMsg) {
+    trackBody.innerHTML = `
+      <div class="modal-body">
+        <button class="close" aria-label="Close">&times;</button>
+        <h2>Track your order</h2>
+        <p class="desc">Enter your Order ID (from your confirmation message) and the WhatsApp number you ordered with.</p>
+        <form id="trackForm">
+          <div class="field">
+            <label>Order ID</label>
+            <input type="text" id="trackOrderId" placeholder="e.g. A1B2C3D4" required>
+          </div>
+          <div class="field">
+            <label>WhatsApp number</label>
+            <input type="tel" id="trackPhone" placeholder="10-digit mobile number" required>
+          </div>
+          <button class="btn gold" type="submit" style="width:100%; justify-content:center;"><span class="shine"></span>Find my order</button>
+          <div class="msg" id="trackMsg">${prefillMsg || ""}</div>
+        </form>
+      </div>
+    `;
+    trackBody.querySelector(".close").addEventListener("click", closeTrack);
+    trackBody.querySelector("#trackForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = trackBody.querySelector("#trackMsg");
+      const orderId = trackBody.querySelector("#trackOrderId").value.trim();
+      const phone = trackBody.querySelector("#trackPhone").value.trim();
+      if (!orderId || !phone) return;
+
+      msg.textContent = "Looking up your order…";
+      msg.className = "msg";
+
+      const { data, error } = await window.supabaseClient.rpc("get_order_for_customer", {
+        short_id: orderId,
+        phone: phone
+      });
+
+      if (error) {
+        msg.textContent = "Something went wrong: " + error.message;
+        msg.className = "msg error";
+        return;
+      }
+      if (!data || !data.length) {
+        msg.textContent = "No order found with that Order ID and phone number. Double-check both and try again.";
+        msg.className = "msg error";
+        return;
+      }
+      renderTrackResults(data, orderId, phone);
+    });
+    trackBackdrop.classList.add("open");
+    syncBodyScrollLock();
+  }
+
+  function renderTrackResults(orders, orderId, phone) {
+    const eligibleForReturn = orders.some((o) =>
+      !o.return_requested &&
+      new Date(o.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    );
+    const alreadyRequested = orders.some((o) => o.return_requested);
+
+    trackBody.innerHTML = `
+      <div class="modal-body">
+        <button class="close" aria-label="Close">&times;</button>
+        <h2>Your order</h2>
+        <div class="track-order-list">
+          ${orders.map((o) => `
+            <div class="track-order-item">
+              <div class="track-order-top">
+                <strong>${escapeHtml(o.product_name)}</strong>
+                <span class="status-tag">${escapeHtml(o.status)}</span>
+              </div>
+              <div class="ot-sub">Qty ${o.quantity} · Payment: ${escapeHtml(o.payment_status)} · Placed ${new Date(o.created_at).toLocaleDateString("en-IN")}</div>
+              ${o.tracking_number ? `<div class="ot-sub">📦 ${escapeHtml(o.carrier || "Courier")} tracking: ${escapeHtml(o.tracking_number)}</div>` : ""}
+              ${o.return_requested ? `<div class="ot-sub">Return status: ${escapeHtml(o.return_status)}</div>` : ""}
+            </div>
+          `).join("")}
+        </div>
+        ${alreadyRequested
+          ? `<p class="desc" style="margin-top:16px;">You've already requested a return for this order — we'll follow up on WhatsApp.</p>`
+          : eligibleForReturn
+            ? `
+              <div class="field" style="margin-top:20px;">
+                <label>Want to request a return? Tell us why (only for damaged, defective, or wrong items — within 7 days of ordering)</label>
+                <textarea id="trackReturnReason" placeholder="What went wrong?"></textarea>
+              </div>
+              <button class="btn ghost" id="trackReturnBtn" style="width:100%; justify-content:center;"><span class="shine"></span>Request a return</button>
+              <div class="msg" id="trackReturnMsg"></div>
+            `
+            : `<p class="desc" style="margin-top:16px;">This order is outside the 7-day return window, or already checked. Message us on WhatsApp if you still need help.</p>`
+        }
+      </div>
+    `;
+    trackBody.querySelector(".close").addEventListener("click", closeTrack);
+
+    const returnBtn = trackBody.querySelector("#trackReturnBtn");
+    if (returnBtn) {
+      returnBtn.addEventListener("click", async () => {
+        const reason = trackBody.querySelector("#trackReturnReason").value.trim();
+        const rmsg = trackBody.querySelector("#trackReturnMsg");
+        if (!reason) {
+          rmsg.textContent = "Please tell us what went wrong first.";
+          rmsg.className = "msg error";
+          return;
+        }
+        rmsg.textContent = "Submitting your request…";
+        rmsg.className = "msg";
+        const { data, error } = await window.supabaseClient.rpc("request_order_return", {
+          short_id: orderId,
+          phone: phone,
+          reason: reason
+        });
+        if (error) {
+          rmsg.textContent = "Something went wrong: " + error.message;
+          rmsg.className = "msg error";
+          return;
+        }
+        if (data === "ok") {
+          trackBody.innerHTML = `
+            <div class="modal-body">
+              <button class="close" aria-label="Close">&times;</button>
+              <div class="checkout-success">
+                <div class="tick">✓</div>
+                <h2>Return requested</h2>
+                <p>We've got your request — we'll confirm next steps on WhatsApp shortly.</p>
+              </div>
+            </div>
+          `;
+          trackBody.querySelector(".close").addEventListener("click", closeTrack);
+        } else if (data === "not_eligible") {
+          rmsg.textContent = "This order isn't eligible for a return anymore (already requested, or past 7 days).";
+          rmsg.className = "msg error";
+        } else {
+          rmsg.textContent = "We couldn't find that order. Double-check your Order ID and phone number.";
+          rmsg.className = "msg error";
+        }
+      });
+    }
+  }
+
+  const trackOrderLink = document.getElementById("trackOrderLink");
+  if (trackOrderLink) {
+    trackOrderLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      renderTrackLookupForm();
+    });
+  }
 
   function openCheckout(p) {
     trackEvent("buy_now_click", p.name);
@@ -536,6 +832,7 @@
     });
 
     checkoutBackdrop.classList.add("open");
+    syncBodyScrollLock();
   }
 
   function shortOrderId(id) {
@@ -642,6 +939,7 @@
     });
 
     checkoutBackdrop.classList.add("open");
+    syncBodyScrollLock();
   }
 
   function showCartWhatsAppFallback(orderRows, name, phone, address, note) {
@@ -872,6 +1170,8 @@
   }
 
   let showroomPickIds = null; // fixed for this page load so it doesn't jump around while browsing
+  let showroomDeck = [];
+  let deckIndex = 0;
 
   function renderShowroom() {
     const stage = document.getElementById("showroomStage");
@@ -884,52 +1184,141 @@
     }
 
     let picks;
+    const deckSize = Math.min(10, allProducts.length);
     if (showroomPickIds) {
       // Keep the same random picks stable across live product updates during this visit,
       // falling back gracefully if one of them got removed/sold out.
       picks = showroomPickIds
         .map((id) => allProducts.find((p) => String(p.id) === id))
         .filter(Boolean);
-      const missing = 7 - picks.length;
+      const missing = deckSize - picks.length;
       if (missing > 0) {
         const extra = shuffleArray(allProducts.filter((p) => !picks.includes(p))).slice(0, missing);
         picks = picks.concat(extra);
       }
     } else {
-      picks = shuffleArray(allProducts).slice(0, 7);
+      picks = shuffleArray(allProducts).slice(0, deckSize);
       showroomPickIds = picks.map((p) => String(p.id));
     }
 
-    const center = picks[0];
-    const orbit = picks.slice(1, 7);
+    showroomDeck = picks;
+    if (deckIndex >= showroomDeck.length) deckIndex = 0;
+    renderSwipeStack();
 
-    const centerHtml = `
-      <div class="showroom-center" data-id="${center.id}">
-        ${center.image_url ? `<img src="${escapeHtml(center.image_url)}" alt="${escapeHtml(center.name)}">` : ""}
-        <div class="tag">${escapeHtml(center.name)}</div>
-      </div>
-    `;
-    const orbitHtml = orbit.map((p, i) => `
-      <div class="showroom-item" data-id="${p.id}" data-pos="${i + 1}">
-        ${p.image_url ? `<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}">` : ""}
-      </div>
-    `).join("");
-
-    content.innerHTML = centerHtml + orbitHtml;
-
-    content.querySelectorAll("[data-id]").forEach((el) => {
-      el.addEventListener("click", () => {
-        const prod = allProducts.find((x) => String(x.id) === el.dataset.id);
-        if (prod) openModal(prod);
-      });
-    });
-
-    // Re-trigger the settle-into-place animation for the freshly rendered items
-    stage.classList.remove("in-view");
     if (showroomObserved) {
+      stage.classList.remove("in-view");
       requestAnimationFrame(() => stage.classList.add("in-view"));
     }
   }
+
+  function renderSwipeStack() {
+    const content = document.getElementById("showroomContent");
+    if (!content || !showroomDeck.length) return;
+
+    const visibleCount = Math.min(3, showroomDeck.length);
+    let html = '<div class="swipe-deck" id="swipeDeck">';
+    for (let i = visibleCount - 1; i >= 0; i--) {
+      const idx = (deckIndex + i) % showroomDeck.length;
+      const p = showroomDeck[idx];
+      const off = discountPct(p.price, p.original_price);
+      html += `
+        <div class="swipe-card" data-id="${p.id}" data-depth="${i}">
+          <div class="swipe-card-img">
+            ${p.image_url ? `<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}">` : `<div class="ph">no image yet</div>`}
+            <span class="swipe-tap-hint">Tap for details</span>
+          </div>
+          <div class="swipe-card-info">
+            <span class="cat">${escapeHtml(p.category || "")}</span>
+            <h3>${escapeHtml(p.name)}</h3>
+            <div class="price-row">
+              <span class="price">${formatPrice(p.price)}</span>
+              ${off > 0 ? `<span class="off">${off}% off</span>` : ""}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    html += "</div>";
+    content.innerHTML = html;
+
+    renderSwipeDots();
+    wireSwipeCard();
+  }
+
+  function renderSwipeDots() {
+    const dots = document.getElementById("swipeDots");
+    if (!dots) return;
+    const max = Math.min(showroomDeck.length, 10);
+    dots.innerHTML = showroomDeck.slice(0, max).map((_, i) =>
+      `<span class="swipe-dot ${i === deckIndex ? "active" : ""}"></span>`
+    ).join("");
+  }
+
+  function advanceDeck(dir) {
+    if (!showroomDeck.length) return;
+    deckIndex = (deckIndex + dir + showroomDeck.length) % showroomDeck.length;
+    renderSwipeStack();
+  }
+
+  function wireSwipeCard() {
+    const deck = document.getElementById("swipeDeck");
+    if (!deck) return;
+    const topCard = deck.querySelector('.swipe-card[data-depth="0"]');
+    if (!topCard) return;
+
+    let startX = 0, startY = 0, dx = 0, dy = 0, dragging = false;
+
+    function onDown(e) {
+      dragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      dx = 0; dy = 0;
+      topCard.style.transition = "none";
+      topCard.setPointerCapture && e.pointerId != null && topCard.setPointerCapture(e.pointerId);
+    }
+    function onMove(e) {
+      if (!dragging) return;
+      dx = e.clientX - startX;
+      dy = e.clientY - startY;
+      const rotate = dx / 16;
+      topCard.style.transform = `translate(${dx}px, ${dy * 0.25}px) rotate(${rotate}deg)`;
+      topCard.classList.toggle("swipe-like", dx > 40);
+      topCard.classList.toggle("swipe-nope", dx < -40);
+    }
+    function onUp() {
+      if (!dragging) return;
+      dragging = false;
+      topCard.style.transition = "transform .35s cubic-bezier(.2,.8,.2,1)";
+      topCard.classList.remove("swipe-like", "swipe-nope");
+
+      const movedFar = Math.abs(dx) > 90;
+      const wasTap = Math.abs(dx) < 6 && Math.abs(dy) < 6;
+
+      if (wasTap) {
+        topCard.style.transform = "";
+        const p = showroomDeck.find((x) => String(x.id) === topCard.dataset.id);
+        if (p) openModal(p);
+      } else if (movedFar) {
+        const dir = dx > 0 ? 1 : -1;
+        topCard.style.transform = `translate(${dir * 700}px, ${dy * 0.4}px) rotate(${dir * 26}deg)`;
+        topCard.style.opacity = "0";
+        setTimeout(() => advanceDeck(1), 220);
+      } else {
+        topCard.style.transform = "";
+      }
+      dx = 0; dy = 0;
+    }
+
+    topCard.addEventListener("pointerdown", onDown);
+    topCard.addEventListener("pointermove", onMove);
+    topCard.addEventListener("pointerup", onUp);
+    topCard.addEventListener("pointercancel", onUp);
+  }
+
+  const swipePrevBtn = document.getElementById("swipePrevBtn");
+  const swipeNextBtn = document.getElementById("swipeNextBtn");
+  if (swipePrevBtn) swipePrevBtn.addEventListener("click", () => advanceDeck(-1));
+  if (swipeNextBtn) swipeNextBtn.addEventListener("click", () => advanceDeck(1));
 
   let showroomObserved = false;
   function wireShowroomReveal() {
@@ -965,6 +1354,7 @@
     }
     allProducts = data || [];
     renderChips();
+    renderCategoryFilterList();
     renderGrid();
     renderShowroom();
     renderProductStructuredData();
@@ -1221,6 +1611,7 @@
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   wireCartUI();
+  wireFilterSidebar();
   wireWhatsAppLinks();
   wireFaq();
   wireScrollFx();
