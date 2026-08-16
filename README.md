@@ -168,6 +168,35 @@ Anyone visiting the site can *create* an order (that's required — customers ar
 - **Shipping cost**: set in `assets/config.js` (`SHIPPING_FEE`, `FREE_SHIPPING_THRESHOLD`) and shown plainly in the cart drawer and checkout *before* payment — never hidden or sprung on the customer at the last step, but also not shouted at them from a giant banner. Make sure the announce bar/trust bar text (currently "Free shipping on orders above ₹999") matches whatever you set here.
 - **7-day replacement policy**: added to the trust bar and FAQ — covers genuine issues (damaged, defective, wrong item), not general change-of-mind returns. Update the FAQ answer with your real process if it differs.
 
+## Shipping (Ekart) and returns
+
+**Returns are fully working right now, no setup needed:** customers can look up their order via "Track order / request return" in the footer (Order ID + WhatsApp number), and request a return within 7 days for a genuine issue. You review each request in the admin **Returns** panel (appears automatically when there's something to review) and Approve or Reject it.
+
+**Ekart shipment/pickup automation needs one more step from you before it'll work.** I built the secure scaffold (Edge Functions, secret handling, the "Dispatch to Ekart" and "Schedule pickup with Ekart" buttons in admin.html) — but Ekart's exact API request format isn't public, so the actual API call inside `supabase/functions/ekart-create-shipment/index.ts` and `ekart-create-return/index.ts` is a **placeholder** clearly marked `EKART REQUEST — FILL THIS IN`. To finish it:
+
+1. Get the "Create Shipment" (and ideally "Reverse Pickup"/RTO) section of Ekart's API guide from whoever issued your API key — usually a PDF or Postman collection from your Ekart account contact.
+2. Send it to me, or edit the two files yourself: replace `EKART_ENDPOINT`/`EKART_RETURN_ENDPOINT`, the `Authorization` header format, and the field names in `ekartPayload` to match exactly what Ekart expects.
+3. Deploy both functions via Supabase → Edge Functions → paste the code in (same no-CLI process as the Razorpay functions earlier).
+4. Add these secrets in Supabase → Edge Functions → Secrets:
+
+| Secret | Value |
+|---|---|
+| `EKART_API_KEY` | your Ekart Merchant/API key — **never put this in any frontend file** |
+| `EKART_PICKUP_NAME` | your business name, shown to Ekart as the sender |
+| `EKART_PICKUP_ADDRESS` | your pickup address |
+| `EKART_PICKUP_PINCODE` | your pickup location's PIN code |
+| `EKART_PICKUP_PHONE` | a contact number for pickup coordination |
+
+5. Test with one real order first, and confirm in Ekart's own dashboard that the shipment actually appears correctly, before relying on this for every order.
+
+Until that's done, "Dispatch to Ekart" will show a clear error rather than silently failing — you can keep using the manual "Shipping label" button in the meantime, exactly like before.
+
+## Mobile modal fix, swipeable showroom, and the new Collection layout
+
+- **Fixed a real mobile bug**: the product/checkout/track modals were overflowing and letting the header show through on small screens. Root cause was a missing container size + a z-index conflict — both fixed, and modals now use a proper full-screen sheet on mobile instead of a cramped centered box.
+- **The Showroom is now a swipeable card deck** (inspired by the side-swipe interaction you referenced) — drag left/right on mobile or desktop, tap a card to see details, or use the arrow buttons. Cards behind the top one recede in genuine 3D (`rotateX` + scale) for a real depth effect, most visible on desktop.
+- **The Collection section now has a filter sidebar** (Price range, Category, Sort by) matching the layout style you referenced, plus a real working **wishlist** (heart icon on every card, saved in the browser via `localStorage` — not decorative). The grid itself is a true masonry layout (varying card heights based on each photo's natural proportions) instead of a uniform grid. On mobile, tap **Filters** to open the sidebar as a slide-in panel.
+
 ## Customising
 
 - Store name: edit the `<a class="brand">` text in `index.html` and `admin.html`.
